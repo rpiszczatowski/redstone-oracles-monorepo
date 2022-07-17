@@ -118,6 +118,8 @@ abstract contract RedstoneConsumerBaseV2 {
     returns (uint256[] memory)
   {
     // Initializing helpful variables and allocating memory
+    uint256[] memory gasTmp = new uint256[](5);
+    gasTmp[0] = gasleft();
     uint256[] memory uniqueSignerCountForSymbols = new uint256[](symbols.length);
     uint256[] memory signersBitmapForSymbols = new uint256[](symbols.length);
     uint256[][] memory valuesForSymbols = new uint256[][](symbols.length);
@@ -125,6 +127,27 @@ abstract contract RedstoneConsumerBaseV2 {
       signersBitmapForSymbols[i] = 0; // empty bitmap
       valuesForSymbols[i] = new uint256[](uniqueSignersThreshold);
     }
+    gasTmp[1] = gasleft();
+
+    // TODO: remove mock array creation
+    {
+      uint256[] memory uniqueSignerCountForSymbols2 = new uint256[](symbols.length);
+      uint256[] memory signersBitmapForSymbols2 = new uint256[](symbols.length);
+      uint256[][] memory valuesForSymbols2 = new uint256[][](symbols.length);
+      for (uint256 i = 0; i < symbols.length; i++) {
+        uniqueSignerCountForSymbols2[i] = i;
+        signersBitmapForSymbols2[i] = i;
+        valuesForSymbols2[i] = new uint256[](uniqueSignersThreshold);
+        for (uint256 j = 0; j < uniqueSignersThreshold; j++) {
+          valuesForSymbols2[i][j] = j;
+        }
+      }
+    }
+
+    gasTmp[2] = gasleft();
+
+    console.log("Gas for memory allocation: ", gasTmp[0] - gasTmp[1]);
+    console.log("Gas for memory allocation and filling: ", gasTmp[1] - gasTmp[2]);
 
     // Extracting the number of data packages from calldata
     uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata();

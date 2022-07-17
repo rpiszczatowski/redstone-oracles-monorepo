@@ -1,0 +1,999 @@
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":1,"dataPointsCount":1}
+Gas for memory allocation:  3080
+Gas for memory allocation and filling:  1611
+{
+  gasReport: {
+    forAttachingDataToCalldata: 1560,
+    forDataExtractionAndVerification: 16486
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":1,"dataPointsCount":2}
+Gas for memory allocation:  3634
+Gas for memory allocation and filling:  2688
+{
+  gasReport: {
+    forAttachingDataToCalldata: 1936,
+    forDataExtractionAndVerification: 20624
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":1,"dataPointsCount":10}
+Gas for memory allocation:  8067
+Gas for memory allocation and filling:  11324
+{
+  gasReport: {
+    forAttachingDataToCalldata: 4932,
+    forDataExtractionAndVerification: 67602
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":1,"dataPointsCount":20}
+Gas for memory allocation:  13621
+Gas for memory allocation and filling:  22147
+{
+  gasReport: {
+    forAttachingDataToCalldata: 8824,
+    forDataExtractionAndVerification: 160958
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":1,"dataPointsCount":50}
+Gas for memory allocation:  30362
+Gas for memory allocation and filling:  54818
+{
+  gasReport: {
+    forAttachingDataToCalldata: 20452,
+    forDataExtractionAndVerification: 671884
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":2,"dataPointsCount":1}
+Gas for memory allocation:  3080
+Gas for memory allocation and filling:  1611
+{
+  gasReport: {
+    forAttachingDataToCalldata: 1560,
+    forDataExtractionAndVerification: 16486
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":2,"dataPointsCount":2}
+Gas for memory allocation:  3634
+Gas for memory allocation and filling:  2688
+{
+  gasReport: {
+    forAttachingDataToCalldata: 1936,
+    forDataExtractionAndVerification: 20624
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":2,"dataPointsCount":10}
+Gas for memory allocation:  8067
+Gas for memory allocation and filling:  11324
+{
+  gasReport: {
+    forAttachingDataToCalldata: 4932,
+    forDataExtractionAndVerification: 67602
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":2,"dataPointsCount":20}
+Gas for memory allocation:  13621
+Gas for memory allocation and filling:  22147
+{
+  gasReport: {
+    forAttachingDataToCalldata: 8824,
+    forDataExtractionAndVerification: 160958
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":2,"dataPointsCount":50}
+Gas for memory allocation:  30362
+Gas for memory allocation and filling:  54818
+{
+  gasReport: {
+    forAttachingDataToCalldata: 20452,
+    forDataExtractionAndVerification: 671884
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":10,"dataPointsCount":1}
+Gas for memory allocation:  3080
+Gas for memory allocation and filling:  1611
+{
+  gasReport: {
+    forAttachingDataToCalldata: 1560,
+    forDataExtractionAndVerification: 16486
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":10,"dataPointsCount":2}
+Gas for memory allocation:  3634
+Gas for memory allocation and filling:  2688
+{
+  gasReport: {
+    forAttachingDataToCalldata: 1936,
+    forDataExtractionAndVerification: 20624
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":10,"dataPointsCount":10}
+Gas for memory allocation:  8067
+Gas for memory allocation and filling:  11324
+{
+  gasReport: {
+    forAttachingDataToCalldata: 4932,
+    forDataExtractionAndVerification: 67602
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":10,"dataPointsCount":20}
+Gas for memory allocation:  13621
+Gas for memory allocation and filling:  22147
+{
+  gasReport: {
+    forAttachingDataToCalldata: 8824,
+    forDataExtractionAndVerification: 160958
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":10,"dataPointsCount":50}
+Gas for memory allocation:  30362
+Gas for memory allocation and filling:  54818
+{
+  gasReport: {
+    forAttachingDataToCalldata: 20452,
+    forDataExtractionAndVerification: 671884
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":20,"dataPointsCount":1}
+Gas for memory allocation:  3080
+Gas for memory allocation and filling:  1611
+{
+  gasReport: {
+    forAttachingDataToCalldata: 1560,
+    forDataExtractionAndVerification: 16486
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":20,"dataPointsCount":2}
+Gas for memory allocation:  3634
+Gas for memory allocation and filling:  2688
+{
+  gasReport: {
+    forAttachingDataToCalldata: 1936,
+    forDataExtractionAndVerification: 20624
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":20,"dataPointsCount":10}
+Gas for memory allocation:  8067
+Gas for memory allocation and filling:  11324
+{
+  gasReport: {
+    forAttachingDataToCalldata: 4932,
+    forDataExtractionAndVerification: 67602
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":20,"dataPointsCount":20}
+Gas for memory allocation:  13621
+Gas for memory allocation and filling:  22147
+{
+  gasReport: {
+    forAttachingDataToCalldata: 8824,
+    forDataExtractionAndVerification: 160958
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":20,"dataPointsCount":50}
+Gas for memory allocation:  30362
+Gas for memory allocation and filling:  54818
+{
+  gasReport: {
+    forAttachingDataToCalldata: 20452,
+    forDataExtractionAndVerification: 671884
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":30,"dataPointsCount":1}
+Gas for memory allocation:  3080
+Gas for memory allocation and filling:  1611
+{
+  gasReport: {
+    forAttachingDataToCalldata: 1560,
+    forDataExtractionAndVerification: 16486
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":30,"dataPointsCount":2}
+Gas for memory allocation:  3634
+Gas for memory allocation and filling:  2688
+{
+  gasReport: {
+    forAttachingDataToCalldata: 1936,
+    forDataExtractionAndVerification: 20624
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":30,"dataPointsCount":10}
+Gas for memory allocation:  8067
+Gas for memory allocation and filling:  11324
+{
+  gasReport: {
+    forAttachingDataToCalldata: 4932,
+    forDataExtractionAndVerification: 67602
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":30,"dataPointsCount":20}
+Gas for memory allocation:  13621
+Gas for memory allocation and filling:  22147
+{
+  gasReport: {
+    forAttachingDataToCalldata: 8824,
+    forDataExtractionAndVerification: 160958
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":1,"requestedSymbolsCount":30,"dataPointsCount":50}
+Gas for memory allocation:  30362
+Gas for memory allocation and filling:  54818
+{
+  gasReport: {
+    forAttachingDataToCalldata: 20452,
+    forDataExtractionAndVerification: 671884
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":1,"dataPointsCount":1}
+Gas for memory allocation:  3086
+Gas for memory allocation and filling:  1947
+{
+  gasReport: {
+    forAttachingDataToCalldata: 3112,
+    forDataExtractionAndVerification: 23276
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":1,"dataPointsCount":2}
+Gas for memory allocation:  3646
+Gas for memory allocation and filling:  3361
+{
+  gasReport: {
+    forAttachingDataToCalldata: 3852,
+    forDataExtractionAndVerification: 29829
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":1,"dataPointsCount":10}
+Gas for memory allocation:  8130
+Gas for memory allocation and filling:  14692
+{
+  gasReport: {
+    forAttachingDataToCalldata: 9856,
+    forDataExtractionAndVerification: 109966
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":1,"dataPointsCount":20}
+Gas for memory allocation:  13752
+Gas for memory allocation and filling:  28896
+{
+  gasReport: {
+    forAttachingDataToCalldata: 17628,
+    forDataExtractionAndVerification: 279375
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":1,"dataPointsCount":50}
+Gas for memory allocation:  30728
+Gas for memory allocation and filling:  71793
+{
+  gasReport: {
+    forAttachingDataToCalldata: 40884,
+    forDataExtractionAndVerification: 1249163
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":2,"dataPointsCount":1}
+Gas for memory allocation:  3086
+Gas for memory allocation and filling:  1947
+{
+  gasReport: {
+    forAttachingDataToCalldata: 3112,
+    forDataExtractionAndVerification: 23276
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":2,"dataPointsCount":2}
+Gas for memory allocation:  3646
+Gas for memory allocation and filling:  3361
+{
+  gasReport: {
+    forAttachingDataToCalldata: 3852,
+    forDataExtractionAndVerification: 29829
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":2,"dataPointsCount":10}
+Gas for memory allocation:  8130
+Gas for memory allocation and filling:  14692
+{
+  gasReport: {
+    forAttachingDataToCalldata: 9856,
+    forDataExtractionAndVerification: 109966
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":2,"dataPointsCount":20}
+Gas for memory allocation:  13752
+Gas for memory allocation and filling:  28896
+{
+  gasReport: {
+    forAttachingDataToCalldata: 17628,
+    forDataExtractionAndVerification: 279375
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":2,"dataPointsCount":50}
+Gas for memory allocation:  30728
+Gas for memory allocation and filling:  71793
+{
+  gasReport: {
+    forAttachingDataToCalldata: 40884,
+    forDataExtractionAndVerification: 1249163
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":10,"dataPointsCount":1}
+Gas for memory allocation:  3086
+Gas for memory allocation and filling:  1947
+{
+  gasReport: {
+    forAttachingDataToCalldata: 3112,
+    forDataExtractionAndVerification: 23276
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":10,"dataPointsCount":2}
+Gas for memory allocation:  3646
+Gas for memory allocation and filling:  3361
+{
+  gasReport: {
+    forAttachingDataToCalldata: 3852,
+    forDataExtractionAndVerification: 29829
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":10,"dataPointsCount":10}
+Gas for memory allocation:  8130
+Gas for memory allocation and filling:  14692
+{
+  gasReport: {
+    forAttachingDataToCalldata: 9856,
+    forDataExtractionAndVerification: 109966
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":10,"dataPointsCount":20}
+Gas for memory allocation:  13752
+Gas for memory allocation and filling:  28896
+{
+  gasReport: {
+    forAttachingDataToCalldata: 17628,
+    forDataExtractionAndVerification: 279375
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":10,"dataPointsCount":50}
+Gas for memory allocation:  30728
+Gas for memory allocation and filling:  71793
+{
+  gasReport: {
+    forAttachingDataToCalldata: 40884,
+    forDataExtractionAndVerification: 1249163
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":20,"dataPointsCount":1}
+Gas for memory allocation:  3086
+Gas for memory allocation and filling:  1947
+{
+  gasReport: {
+    forAttachingDataToCalldata: 3112,
+    forDataExtractionAndVerification: 23276
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":20,"dataPointsCount":2}
+Gas for memory allocation:  3646
+Gas for memory allocation and filling:  3361
+{
+  gasReport: {
+    forAttachingDataToCalldata: 3852,
+    forDataExtractionAndVerification: 29829
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":20,"dataPointsCount":10}
+Gas for memory allocation:  8130
+Gas for memory allocation and filling:  14692
+{
+  gasReport: {
+    forAttachingDataToCalldata: 9856,
+    forDataExtractionAndVerification: 109966
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":20,"dataPointsCount":20}
+Gas for memory allocation:  13752
+Gas for memory allocation and filling:  28896
+{
+  gasReport: {
+    forAttachingDataToCalldata: 17628,
+    forDataExtractionAndVerification: 279375
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":20,"dataPointsCount":50}
+Gas for memory allocation:  30728
+Gas for memory allocation and filling:  71793
+{
+  gasReport: {
+    forAttachingDataToCalldata: 40884,
+    forDataExtractionAndVerification: 1249163
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":30,"dataPointsCount":1}
+Gas for memory allocation:  3086
+Gas for memory allocation and filling:  1947
+{
+  gasReport: {
+    forAttachingDataToCalldata: 3112,
+    forDataExtractionAndVerification: 23276
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":30,"dataPointsCount":2}
+Gas for memory allocation:  3646
+Gas for memory allocation and filling:  3361
+{
+  gasReport: {
+    forAttachingDataToCalldata: 3852,
+    forDataExtractionAndVerification: 29829
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":30,"dataPointsCount":10}
+Gas for memory allocation:  8130
+Gas for memory allocation and filling:  14692
+{
+  gasReport: {
+    forAttachingDataToCalldata: 9856,
+    forDataExtractionAndVerification: 109966
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":30,"dataPointsCount":20}
+Gas for memory allocation:  13752
+Gas for memory allocation and filling:  28896
+{
+  gasReport: {
+    forAttachingDataToCalldata: 17628,
+    forDataExtractionAndVerification: 279375
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":2,"requestedSymbolsCount":30,"dataPointsCount":50}
+Gas for memory allocation:  30728
+Gas for memory allocation and filling:  71793
+{
+  gasReport: {
+    forAttachingDataToCalldata: 40884,
+    forDataExtractionAndVerification: 1249163
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":1,"dataPointsCount":1}
+Gas for memory allocation:  3135
+Gas for memory allocation and filling:  4637
+{
+  gasReport: {
+    forAttachingDataToCalldata: 15516,
+    forDataExtractionAndVerification: 81126
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":1,"dataPointsCount":2}
+Gas for memory allocation:  3744
+Gas for memory allocation and filling:  8742
+{
+  gasReport: {
+    forAttachingDataToCalldata: 19144,
+    forDataExtractionAndVerification: 109394
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":1,"dataPointsCount":10}
+Gas for memory allocation:  8649
+Gas for memory allocation and filling:  41675
+{
+  gasReport: {
+    forAttachingDataToCalldata: 49200,
+    forDataExtractionAndVerification: 474151
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":1,"dataPointsCount":20}
+Gas for memory allocation:  14858
+Gas for memory allocation and filling:  83057
+{
+  gasReport: {
+    forAttachingDataToCalldata: 88036,
+    forDataExtractionAndVerification: 1276580
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":1,"dataPointsCount":50}
+Gas for memory allocation:  34010
+Gas for memory allocation and filling:  208646
+{
+  gasReport: {
+    forAttachingDataToCalldata: 204328,
+    forDataExtractionAndVerification: 5993729
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":2,"dataPointsCount":1}
+Gas for memory allocation:  3135
+Gas for memory allocation and filling:  4637
+{
+  gasReport: {
+    forAttachingDataToCalldata: 15516,
+    forDataExtractionAndVerification: 81126
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":2,"dataPointsCount":2}
+Gas for memory allocation:  3744
+Gas for memory allocation and filling:  8742
+{
+  gasReport: {
+    forAttachingDataToCalldata: 19144,
+    forDataExtractionAndVerification: 109394
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":2,"dataPointsCount":10}
+Gas for memory allocation:  8649
+Gas for memory allocation and filling:  41675
+{
+  gasReport: {
+    forAttachingDataToCalldata: 49200,
+    forDataExtractionAndVerification: 474151
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":2,"dataPointsCount":20}
+Gas for memory allocation:  14858
+Gas for memory allocation and filling:  83057
+{
+  gasReport: {
+    forAttachingDataToCalldata: 88036,
+    forDataExtractionAndVerification: 1276580
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":2,"dataPointsCount":50}
+Gas for memory allocation:  34010
+Gas for memory allocation and filling:  208646
+{
+  gasReport: {
+    forAttachingDataToCalldata: 204328,
+    forDataExtractionAndVerification: 5993729
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":10,"dataPointsCount":1}
+Gas for memory allocation:  3135
+Gas for memory allocation and filling:  4637
+{
+  gasReport: {
+    forAttachingDataToCalldata: 15516,
+    forDataExtractionAndVerification: 81126
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":10,"dataPointsCount":2}
+Gas for memory allocation:  3744
+Gas for memory allocation and filling:  8742
+{
+  gasReport: {
+    forAttachingDataToCalldata: 19144,
+    forDataExtractionAndVerification: 109394
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":10,"dataPointsCount":10}
+Gas for memory allocation:  8649
+Gas for memory allocation and filling:  41675
+{
+  gasReport: {
+    forAttachingDataToCalldata: 49200,
+    forDataExtractionAndVerification: 474151
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":10,"dataPointsCount":20}
+Gas for memory allocation:  14858
+Gas for memory allocation and filling:  83057
+{
+  gasReport: {
+    forAttachingDataToCalldata: 88036,
+    forDataExtractionAndVerification: 1276580
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":10,"dataPointsCount":50}
+Gas for memory allocation:  34010
+Gas for memory allocation and filling:  208646
+{
+  gasReport: {
+    forAttachingDataToCalldata: 204328,
+    forDataExtractionAndVerification: 5993729
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":20,"dataPointsCount":1}
+Gas for memory allocation:  3135
+Gas for memory allocation and filling:  4637
+{
+  gasReport: {
+    forAttachingDataToCalldata: 15516,
+    forDataExtractionAndVerification: 81126
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":20,"dataPointsCount":2}
+Gas for memory allocation:  3744
+Gas for memory allocation and filling:  8742
+{
+  gasReport: {
+    forAttachingDataToCalldata: 19144,
+    forDataExtractionAndVerification: 109394
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":20,"dataPointsCount":10}
+Gas for memory allocation:  8649
+Gas for memory allocation and filling:  41675
+{
+  gasReport: {
+    forAttachingDataToCalldata: 49200,
+    forDataExtractionAndVerification: 474151
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":20,"dataPointsCount":20}
+Gas for memory allocation:  14858
+Gas for memory allocation and filling:  83057
+{
+  gasReport: {
+    forAttachingDataToCalldata: 88036,
+    forDataExtractionAndVerification: 1276580
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":20,"dataPointsCount":50}
+Gas for memory allocation:  34010
+Gas for memory allocation and filling:  208646
+{
+  gasReport: {
+    forAttachingDataToCalldata: 204328,
+    forDataExtractionAndVerification: 5993729
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":30,"dataPointsCount":1}
+Gas for memory allocation:  3135
+Gas for memory allocation and filling:  4637
+{
+  gasReport: {
+    forAttachingDataToCalldata: 15516,
+    forDataExtractionAndVerification: 81126
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":30,"dataPointsCount":2}
+Gas for memory allocation:  3744
+Gas for memory allocation and filling:  8742
+{
+  gasReport: {
+    forAttachingDataToCalldata: 19144,
+    forDataExtractionAndVerification: 109394
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":30,"dataPointsCount":10}
+Gas for memory allocation:  8649
+Gas for memory allocation and filling:  41675
+{
+  gasReport: {
+    forAttachingDataToCalldata: 49200,
+    forDataExtractionAndVerification: 474151
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":30,"dataPointsCount":20}
+Gas for memory allocation:  14858
+Gas for memory allocation and filling:  83057
+{
+  gasReport: {
+    forAttachingDataToCalldata: 88036,
+    forDataExtractionAndVerification: 1276580
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":10,"requestedSymbolsCount":30,"dataPointsCount":50}
+Gas for memory allocation:  34010
+Gas for memory allocation and filling:  208646
+{
+  gasReport: {
+    forAttachingDataToCalldata: 204328,
+    forDataExtractionAndVerification: 5993729
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":1,"dataPointsCount":1}
+Gas for memory allocation:  3196
+Gas for memory allocation and filling:  8000
+{
+  gasReport: {
+    forAttachingDataToCalldata: 31024,
+    forDataExtractionAndVerification: 168129
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":1,"dataPointsCount":2}
+Gas for memory allocation:  3869
+Gas for memory allocation and filling:  15472
+{
+  gasReport: {
+    forAttachingDataToCalldata: 38268,
+    forDataExtractionAndVerification: 235357
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":1,"dataPointsCount":10}
+Gas for memory allocation:  9333
+Gas for memory allocation and filling:  75509
+{
+  gasReport: {
+    forAttachingDataToCalldata: 98416,
+    forDataExtractionAndVerification: 1050825
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":1,"dataPointsCount":20}
+Gas for memory allocation:  16382
+Gas for memory allocation and filling:  151178
+{
+  gasReport: {
+    forAttachingDataToCalldata: 176040,
+    forDataExtractionAndVerification: 2764214
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":1,"dataPointsCount":50}
+Gas for memory allocation:  38990
+Gas for memory allocation and filling:  382349
+{
+  gasReport: {
+    forAttachingDataToCalldata: 408588,
+    forDataExtractionAndVerification: 12531363
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":2,"dataPointsCount":1}
+Gas for memory allocation:  3196
+Gas for memory allocation and filling:  8000
+{
+  gasReport: {
+    forAttachingDataToCalldata: 31024,
+    forDataExtractionAndVerification: 168129
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":2,"dataPointsCount":2}
+Gas for memory allocation:  3869
+Gas for memory allocation and filling:  15472
+{
+  gasReport: {
+    forAttachingDataToCalldata: 38268,
+    forDataExtractionAndVerification: 235357
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":2,"dataPointsCount":10}
+Gas for memory allocation:  9333
+Gas for memory allocation and filling:  75509
+{
+  gasReport: {
+    forAttachingDataToCalldata: 98416,
+    forDataExtractionAndVerification: 1050825
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":2,"dataPointsCount":20}
+Gas for memory allocation:  16382
+Gas for memory allocation and filling:  151178
+{
+  gasReport: {
+    forAttachingDataToCalldata: 176040,
+    forDataExtractionAndVerification: 2764214
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":2,"dataPointsCount":50}
+Gas for memory allocation:  38990
+Gas for memory allocation and filling:  382349
+{
+  gasReport: {
+    forAttachingDataToCalldata: 408588,
+    forDataExtractionAndVerification: 12531363
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":10,"dataPointsCount":1}
+Gas for memory allocation:  3196
+Gas for memory allocation and filling:  8000
+{
+  gasReport: {
+    forAttachingDataToCalldata: 31024,
+    forDataExtractionAndVerification: 168129
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":10,"dataPointsCount":2}
+Gas for memory allocation:  3869
+Gas for memory allocation and filling:  15472
+{
+  gasReport: {
+    forAttachingDataToCalldata: 38268,
+    forDataExtractionAndVerification: 235357
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":10,"dataPointsCount":10}
+Gas for memory allocation:  9333
+Gas for memory allocation and filling:  75509
+{
+  gasReport: {
+    forAttachingDataToCalldata: 98416,
+    forDataExtractionAndVerification: 1050825
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":10,"dataPointsCount":20}
+Gas for memory allocation:  16382
+Gas for memory allocation and filling:  151178
+{
+  gasReport: {
+    forAttachingDataToCalldata: 176040,
+    forDataExtractionAndVerification: 2764214
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":10,"dataPointsCount":50}
+Gas for memory allocation:  38990
+Gas for memory allocation and filling:  382349
+{
+  gasReport: {
+    forAttachingDataToCalldata: 408588,
+    forDataExtractionAndVerification: 12531363
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":20,"dataPointsCount":1}
+Gas for memory allocation:  3196
+Gas for memory allocation and filling:  8000
+{
+  gasReport: {
+    forAttachingDataToCalldata: 31024,
+    forDataExtractionAndVerification: 168129
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":20,"dataPointsCount":2}
+Gas for memory allocation:  3869
+Gas for memory allocation and filling:  15472
+{
+  gasReport: {
+    forAttachingDataToCalldata: 38268,
+    forDataExtractionAndVerification: 235357
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":20,"dataPointsCount":10}
+Gas for memory allocation:  9333
+Gas for memory allocation and filling:  75509
+{
+  gasReport: {
+    forAttachingDataToCalldata: 98416,
+    forDataExtractionAndVerification: 1050825
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":20,"dataPointsCount":20}
+Gas for memory allocation:  16382
+Gas for memory allocation and filling:  151178
+{
+  gasReport: {
+    forAttachingDataToCalldata: 176040,
+    forDataExtractionAndVerification: 2764214
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":20,"dataPointsCount":50}
+Gas for memory allocation:  38990
+Gas for memory allocation and filling:  382349
+{
+  gasReport: {
+    forAttachingDataToCalldata: 408588,
+    forDataExtractionAndVerification: 12531363
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":30,"dataPointsCount":1}
+Gas for memory allocation:  3196
+Gas for memory allocation and filling:  8000
+{
+  gasReport: {
+    forAttachingDataToCalldata: 31024,
+    forDataExtractionAndVerification: 168129
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":30,"dataPointsCount":2}
+Gas for memory allocation:  3869
+Gas for memory allocation and filling:  15472
+{
+  gasReport: {
+    forAttachingDataToCalldata: 38268,
+    forDataExtractionAndVerification: 235357
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":30,"dataPointsCount":10}
+Gas for memory allocation:  9333
+Gas for memory allocation and filling:  75509
+{
+  gasReport: {
+    forAttachingDataToCalldata: 98416,
+    forDataExtractionAndVerification: 1050825
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":30,"dataPointsCount":20}
+Gas for memory allocation:  16382
+Gas for memory allocation and filling:  151178
+{
+  gasReport: {
+    forAttachingDataToCalldata: 176040,
+    forDataExtractionAndVerification: 2764214
+  }
+}
+
+Benchmark case testing started: {"requiredSignersCount":20,"requestedSymbolsCount":30,"dataPointsCount":50}
+Gas for memory allocation:  38990
+Gas for memory allocation and filling:  382349
+{
+  gasReport: {
+    forAttachingDataToCalldata: 408588,
+    forDataExtractionAndVerification: 12531363
+  }
+}
