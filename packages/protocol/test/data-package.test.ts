@@ -31,7 +31,7 @@ describe("Data package", () => {
   });
 
   test("Should serialize data package", () => {
-    expect(dataPackage.serializeToBytesHex()).toBe(
+    expect(dataPackage.toBytesHex()).toBe(
       EXPECTED_SERIALIZED_UNSIGNED_DATA_PACKAGE
     );
   });
@@ -41,7 +41,7 @@ describe("Data package", () => {
     expect(signedDataPackage.serializeSignatureToHex()).toBe(
       "0x" + EXPECTED_SIGNATURE
     );
-    expect(signedDataPackage.serializeToBytesHex()).toBe(
+    expect(signedDataPackage.toBytesHex()).toBe(
       EXPECTED_SERIALIZED_UNSIGNED_DATA_PACKAGE + EXPECTED_SIGNATURE
     );
   });

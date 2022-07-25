@@ -6,6 +6,7 @@ import {
 } from "../common/redstone-consts";
 import { Serializable } from "../common/Serializable";
 import { assert, convertIntegerNumberToBytes } from "../common/utils";
+import { deserializeDataPointFromObj } from "../data-point/data-point-deserializer";
 import { DataPoint } from "../data-point/DataPoint";
 import { SignedDataPackage } from "./SignedDataPackage";
 
@@ -27,6 +28,8 @@ export class DataPackage extends Serializable {
         "Values of all data points in DataPackage must have the same number of bytes"
       );
     }
+
+    // TODO: implement data points sorting and requiring no duplicated symbols
   }
 
   // Each data point in this data package can have a different byte size
@@ -35,7 +38,7 @@ export class DataPackage extends Serializable {
     return this.dataPoints[0].getValueByteSize();
   }
 
-  serializeToBytes(): Uint8Array {
+  toBytes(): Uint8Array {
     return concat([
       this.serializeDataPoints(),
       this.serializeTimestamp(),
@@ -44,8 +47,20 @@ export class DataPackage extends Serializable {
     ]);
   }
 
+  toObj() {
+    return {
+      dataPoints: this.dataPoints.map((dataPoint) => dataPoint.toObj()),
+      timestampMilliseconds: this.timestampMilliseconds,
+    };
+  }
+
+  public static fromObj(plainObject: any): DataPackage {
+    const dataPoints = plainObject.dataPoints.map(deserializeDataPointFromObj);
+    return new DataPackage(dataPoints, plainObject.timestampMilliseconds);
+  }
+
   getSignableHash(): Uint8Array {
-    const serializedDataPackage = this.serializeToBytes();
+    const serializedDataPackage = this.toBytes();
     const signableHashHex = keccak256(serializedDataPackage);
     return arrayify(signableHashHex);
   }
@@ -63,7 +78,7 @@ export class DataPackage extends Serializable {
   }
 
   protected serializeDataPoints(): Uint8Array {
-    return concat(this.dataPoints.map((dp) => dp.serializeToBytes()));
+    return concat(this.dataPoints.map((dp) => dp.toBytes()));
   }
 
   protected serializeTimestamp(): Uint8Array {

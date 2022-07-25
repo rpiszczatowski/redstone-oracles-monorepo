@@ -1,12 +1,16 @@
+import { assert } from "console";
 import { Signature } from "ethers";
 import {
   arrayify,
+  base64,
   computeAddress,
   concat,
+  hexlify,
   joinSignature,
   recoverPublicKey,
   splitSignature,
 } from "ethers/lib/utils";
+import _ from "lodash";
 import { Serializable } from "../common/Serializable";
 import { DataPackage } from "./DataPackage";
 
@@ -44,10 +48,31 @@ export class SignedDataPackage extends Serializable {
     return computeAddress(signerPublicKeyBytes);
   }
 
-  serializeToBytes(): Uint8Array {
+  toBytes(): Uint8Array {
     return concat([
-      this.dataPackage.serializeToBytes(),
+      this.dataPackage.toBytes(),
       this.serializeSignatureToBytes(),
     ]);
+  }
+
+  toObj() {
+    const signatureHex = this.serializeSignatureToHex();
+    return {
+      ...this.dataPackage.toObj(),
+      signature: base64.encode(signatureHex),
+    };
+  }
+
+  public static fromObj(plainObject: any): SignedDataPackage {
+    const signatureBase64 = plainObject.signature;
+    assert(!!signatureBase64, "Signature can not be empty");
+    const signatureBytes: Uint8Array = base64.decode(signatureBase64);
+    const signature = splitSignature(signatureBytes);
+
+    const unsignedDataPackage = DataPackage.fromObj(
+      _.omit(plainObject, "signature")
+    );
+
+    return new SignedDataPackage(unsignedDataPackage, signature);
   }
 }

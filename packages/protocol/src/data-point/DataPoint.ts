@@ -1,7 +1,8 @@
-import { concat } from "ethers/lib/utils";
+import { base64, concat } from "ethers/lib/utils";
 import { Serializable } from "../common/Serializable";
 import { convertStringToBytes32 } from "../common/utils";
 import { ConvertableToBytes32 } from "../index-old";
+import { NumericDataPoint } from "./NumericDataPoint";
 
 export class DataPoint extends Serializable {
   constructor(
@@ -15,11 +16,18 @@ export class DataPoint extends Serializable {
     return convertStringToBytes32(this.symbol);
   }
 
+  toObj() {
+    return {
+      symbol: this.symbol,
+      value: base64.encode(this.value),
+    };
+  }
+
   getValueByteSize(): number {
     return this.value.length;
   }
 
-  serializeToBytes(): Uint8Array {
+  toBytes(): Uint8Array {
     const serializedSymbol = this.serializeSymbol();
     return concat([serializedSymbol, this.value]);
   }

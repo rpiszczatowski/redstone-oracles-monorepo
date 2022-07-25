@@ -19,20 +19,26 @@ export interface INumericDataPoint {
 
 // This data point does not store information about data size in its serialized value
 export class NumericDataPoint extends DataPoint {
-  constructor(args: INumericDataPoint) {
+  constructor(private readonly numericDataPointArgs: INumericDataPoint) {
     const decimals = useDefaultIfUndefined(
-      args.decimals,
+      numericDataPointArgs.decimals,
       DEFAULT_NUM_VALUE_DECIMALS
     );
     const valueByteSize = useDefaultIfUndefined(
-      args.valueByteSize,
+      numericDataPointArgs.valueByteSize,
       DEFAULT_NUM_VALUE_BS
     );
     const valueBytes = convertNumberToBytes(
-      args.value,
+      numericDataPointArgs.value,
       decimals,
       valueByteSize
     );
-    super(args.symbol, valueBytes);
+    super(numericDataPointArgs.symbol, valueBytes);
+  }
+
+  toObj(): any {
+    return {
+      ...this.numericDataPointArgs,
+    };
   }
 }
