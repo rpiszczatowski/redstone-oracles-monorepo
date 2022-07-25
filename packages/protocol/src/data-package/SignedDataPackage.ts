@@ -10,7 +10,6 @@ import {
   recoverPublicKey,
   splitSignature,
 } from "ethers/lib/utils";
-import _ from "lodash";
 import { Serializable } from "../common/Serializable";
 import { DataPackage } from "./DataPackage";
 
@@ -67,12 +66,13 @@ export class SignedDataPackage extends Serializable {
     const signatureBase64 = plainObject.signature;
     assert(!!signatureBase64, "Signature can not be empty");
     const signatureBytes: Uint8Array = base64.decode(signatureBase64);
-    const signature = splitSignature(signatureBytes);
+    const parsedSignature = splitSignature(signatureBytes);
 
+    const { signature, ...unsignedDataPackagePlainObj } = plainObject;
     const unsignedDataPackage = DataPackage.fromObj(
-      _.omit(plainObject, "signature")
+      unsignedDataPackagePlainObj
     );
 
-    return new SignedDataPackage(unsignedDataPackage, signature);
+    return new SignedDataPackage(unsignedDataPackage, parsedSignature);
   }
 }

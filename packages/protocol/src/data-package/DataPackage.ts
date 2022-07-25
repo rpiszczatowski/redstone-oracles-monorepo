@@ -77,6 +77,8 @@ export class DataPackage extends Serializable {
     return new SignedDataPackage(this, fullSignature);
   }
 
+  // TODO: implement sorting lexographically by bytes32
+  // representation of symbols
   protected serializeDataPoints(): Uint8Array {
     return concat(this.dataPoints.map((dp) => dp.toBytes()));
   }
