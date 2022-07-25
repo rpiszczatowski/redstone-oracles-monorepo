@@ -25,14 +25,9 @@ import {
   HttpBroadcaster,
   StreamrBroadcaster,
 } from "./broadcasters";
-import {
-  Manifest,
-  NodeConfig,
-  PriceDataAfterAggregation,
-  PriceDataSigned,
-  SignedPricePackage,
-} from "./types";
+import { Manifest, NodeConfig, PriceDataAfterAggregation } from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
+import { SignedDataPackageToBroadcast } from "redstone-protocol";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -220,12 +215,16 @@ export default class NodeRunner {
     );
 
     // Signing
-    const signedPrices: PriceDataSigned[] =
-      await this.priceSignerService!.signPrices(pricesReadyForSigning);
+    const signedPrices = this.priceSignerService!.signPrices(
+      pricesReadyForSigning
+    );
+    const singedPricesPackage = this.priceSignerService!.signPricePackage(
+      pricesReadyForSigning
+    );
 
     // Broadcasting
     await this.broadcastPrices(signedPrices);
-    await this.broadcastEvmPricePackage(signedPrices);
+    await this.broadcastEvmPricePackage(singedPricesPackage);
 
     if (this.shouldBackupOnArweave()) {
       await this.bundlrService.uploadBundlrTransaction(bundlrTx);
@@ -263,7 +262,7 @@ export default class NodeRunner {
     return aggregatedPrices;
   }
 
-  private async broadcastPrices(signedPrices: PriceDataSigned[]) {
+  private async broadcastPrices(signedPrices: SignedDataPackageToBroadcast[]) {
     logger.info("Broadcasting prices");
     const broadcastingTrackingId = trackStart("broadcasting");
     try {
@@ -312,13 +311,13 @@ export default class NodeRunner {
     }
   }
 
-  private async broadcastEvmPricePackage(signedPrices: PriceDataSigned[]) {
+  private async broadcastEvmPricePackage(
+    singedPricesPackage: SignedDataPackageToBroadcast
+  ) {
     logger.info("Broadcasting price package");
     const packageBroadcastingTrackingId = trackStart("package-broadcasting");
     try {
-      const signedPackage =
-        this.priceSignerService!.signPricePackage(signedPrices);
-      await this.broadcastSignedPricePackage(signedPackage);
+      await this.broadcastSignedPricePackage(singedPricesPackage);
       logger.info("Package broadcasting completed");
     } catch (e: any) {
       logger.error("Package broadcasting failed", e.stack);
@@ -327,26 +326,20 @@ export default class NodeRunner {
     }
   }
 
-  private async broadcastSignedPricePackage(signedPackage: SignedPricePackage) {
+  private async broadcastSignedPricePackage(
+    signedPackage: SignedDataPackageToBroadcast
+  ) {
     const signedPackageBroadcastingTrackingId = trackStart(
       "signed-package-broadcasting"
     );
     try {
       const promises = [];
-      promises.push(
-        this.httpBroadcaster.broadcastPricePackage(
-          signedPackage,
-          this.providerAddress
-        )
-      );
+      promises.push(this.httpBroadcaster.broadcastPricePackage(signedPackage));
       const enableStreamrBroadcaster =
         this.currentManifest?.enableStreamrBroadcaster ?? false;
       if (enableStreamrBroadcaster) {
         promises.push(
-          this.streamrBroadcaster.broadcastPricePackage(
-            signedPackage,
-            this.providerAddress
-          )
+          this.streamrBroadcaster.broadcastPricePackage(signedPackage)
         );
       }
       await Promise.all(promises);

@@ -4,10 +4,7 @@ import allSupportedProvidersForTwap from "./all-supported-providers-for-twap.jso
 const fetchersObj: { [name: string]: TwapFetcher } = {};
 
 for (const providerDetails of allSupportedProvidersForTwap) {
-  const twapFetcherInstance = new TwapFetcher(
-    providerDetails.id,
-    providerDetails.evmAddress
-  );
+  const twapFetcherInstance = new TwapFetcher(providerDetails.id);
   fetchersObj[twapFetcherInstance.getName()] = twapFetcherInstance;
 }
 

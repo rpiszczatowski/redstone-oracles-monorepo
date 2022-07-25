@@ -16,7 +16,7 @@ const defaultPriceValues = {
   symbol: "",
   timestamp: 0,
   value: 0,
-  liteEvmSignature: "",
+  signature: "",
   version: "",
 };
 
@@ -155,51 +155,6 @@ describe("twap fetcher", () => {
     // Then
     expect(twapValue).toBe(0.25);
   });
-
-  // TODO: Hmm, should we really round the value?
-  // it("should properly calculate twap value for the same price at 7 time points (rounding)", () => {
-  //   // Given
-  //   const prices = [{
-  //       ...defaultPriceValues,
-  //       value: 1,
-  //       timestamp: 1,
-  //     }, {
-  //       ...defaultPriceValues,
-  //       value: 1,
-  //       timestamp: 2,
-  //     },
-  //     {
-  //       ...defaultPriceValues,
-  //       value: 1,
-  //       timestamp: 3,
-  //     },
-  //     {
-  //       ...defaultPriceValues,
-  //       value: 1,
-  //       timestamp: 4,
-  //     },
-  //     {
-  //       ...defaultPriceValues,
-  //       value: 1,
-  //       timestamp: 5,
-  //     },
-  //     {
-  //       ...defaultPriceValues,
-  //       value: 1,
-  //       timestamp: 6,
-  //     },
-  //     {
-  //       ...defaultPriceValues,
-  //       value: 1,
-  //       timestamp: 7,
-  //     }];
-
-  //   // When
-  //   const twapValue = TwapFetcher.getTwapValue(prices);
-
-  //   // Then
-  //   expect(twapValue).toBe(1);
-  // });
 
   it("should properly calculate twap value for two prices at the same timestamp", () => {
     // Given

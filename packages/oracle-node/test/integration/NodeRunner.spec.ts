@@ -28,18 +28,6 @@ jest.mock("../../src/arweave/BundlrProxy", () => {
   return jest.fn().mockImplementation(() => mockBundlrProxy);
 });
 
-jest.mock("../../src/signers/EvmPriceSigner", () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      signPricePackage: (pricePackage: any) => ({
-        liteSignature: "mock_evm_signed_lite",
-        signerAddress: "mock_evm_signer_address",
-        pricePackage,
-      }),
-    };
-  });
-});
-
 jest.mock("../../src/fetchers/coingecko/CoingeckoFetcher");
 jest.mock("../../src/fetchers/uniswap/UniswapFetcher");
 
@@ -104,6 +92,7 @@ describe("NodeRunner", () => {
         },
         ETH: {},
       },
+      httpBroadcasterURLs: ["http://localhost:9000"],
     };
   });
 
@@ -233,23 +222,25 @@ describe("NodeRunner", () => {
 
     expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/prices", [
       {
-        liteEvmSignature: "mock_evm_signed_lite",
         id: "00000000-0000-0000-0000-000000000000",
+        prices: [{ symbol: "BTC", value: 444.5 }],
         permawebTx: "mockBundlrTransactionId",
         provider: "mockArAddress",
         source: { coingecko: 444, uniswap: 445 },
-        symbol: "BTC",
         timestamp: 111111111,
-        value: 444.5,
         version: "0.4",
+        signature:
+          "0xa2c2b3ae7a9bf3b5d7e75a754c32d900cd8a2e822581fd492bc482d4e9ce8c20463b1169246e188e0e9e42ebe82cca40d68c0ed1a31018eee981ef9b8d8ea0c61c",
+        signerAddress: "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A",
       },
     ]);
     expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/packages", {
       timestamp: 111111111,
-      liteSignature: "mock_evm_signed_lite",
-      signerAddress: "mock_evm_signer_address",
+      signerAddress: "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A",
       provider: "mockArAddress",
       prices: [{ symbol: "BTC", value: 444.5 }],
+      signature:
+        "0xa2c2b3ae7a9bf3b5d7e75a754c32d900cd8a2e822581fd492bc482d4e9ce8c20463b1169246e188e0e9e42ebe82cca40d68c0ed1a31018eee981ef9b8d8ea0c61c",
     });
     expect(mockBundlrProxy.uploadBundlrTransaction).not.toHaveBeenCalled();
     // TODO: cannot spy on setInterval after upgrade to jest 27.
@@ -289,17 +280,18 @@ describe("NodeRunner", () => {
     expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/prices", [
       {
         id: "00000000-0000-0000-0000-000000000000",
+        prices: [{ symbol: "BTC", value: 444.5 }],
         source: {
           coingecko: 444,
           uniswap: 445,
         },
-        symbol: "BTC",
         timestamp: 111111111,
         version: "0.4",
-        value: 444.5,
         permawebTx: "mockBundlrTransactionId",
         provider: "mockArAddress",
-        liteEvmSignature: "mock_evm_signed_lite",
+        signature:
+          "0xa2c2b3ae7a9bf3b5d7e75a754c32d900cd8a2e822581fd492bc482d4e9ce8c20463b1169246e188e0e9e42ebe82cca40d68c0ed1a31018eee981ef9b8d8ea0c61c",
+        signerAddress: "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A",
       },
     ]);
 
