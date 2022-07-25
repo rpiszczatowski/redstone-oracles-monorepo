@@ -10,6 +10,11 @@ on:
     branches:
       - main
       - push-docker-ecr-public
+    paths:
+      - packages/oracle-node/**
+      - .github/workflows/oracle-tests.yaml
+      - .github/workflows/oracle-deploy-to-ecr-public.yaml
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
