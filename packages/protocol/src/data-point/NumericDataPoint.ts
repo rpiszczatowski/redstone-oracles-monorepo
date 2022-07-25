@@ -35,7 +35,7 @@ export class NumericDataPoint extends DataPoint {
     super(numericDataPointArgs.symbol, valueBytes);
   }
 
-  toObj(): any {
+  toObj(): INumericDataPoint {
     return {
       ...this.numericDataPointArgs,
     };

@@ -5,13 +5,16 @@ import {
   base64,
   computeAddress,
   concat,
-  hexlify,
   joinSignature,
   recoverPublicKey,
   splitSignature,
 } from "ethers/lib/utils";
 import { Serializable } from "../common/Serializable";
-import { DataPackage } from "./DataPackage";
+import { DataPackage, DataPackagePlainObj } from "./DataPackage";
+
+export interface SignedDataPackagePlainObj extends DataPackagePlainObj {
+  signature: string; // base64-encoded joined signature
+}
 
 export class SignedDataPackage extends Serializable {
   public readonly signature: Signature;
@@ -54,7 +57,7 @@ export class SignedDataPackage extends Serializable {
     ]);
   }
 
-  toObj() {
+  toObj(): SignedDataPackagePlainObj {
     const signatureHex = this.serializeSignatureToHex();
     return {
       ...this.dataPackage.toObj(),

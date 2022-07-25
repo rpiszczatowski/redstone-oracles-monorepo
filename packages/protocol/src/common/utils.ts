@@ -13,7 +13,7 @@ const ZERO_EX_PREFIX_LENGTH = 2; // length of string "0x"
 
 export type NumberLike = number | string;
 
-export type ConvertableToBytes32 = any;
+export type ConvertableToBytes32 = string;
 
 export const assert = (condition: boolean, errMsg?: string) => {
   if (!condition) {

@@ -7,8 +7,13 @@ import {
 import { Serializable } from "../common/Serializable";
 import { assert, convertIntegerNumberToBytes } from "../common/utils";
 import { deserializeDataPointFromObj } from "../data-point/data-point-deserializer";
-import { DataPoint } from "../data-point/DataPoint";
+import { DataPoint, DataPointPlainObj } from "../data-point/DataPoint";
 import { SignedDataPackage } from "./SignedDataPackage";
+
+export interface DataPackagePlainObj {
+  dataPoints: DataPointPlainObj[];
+  timestampMilliseconds: number;
+}
 
 export class DataPackage extends Serializable {
   constructor(
@@ -47,7 +52,7 @@ export class DataPackage extends Serializable {
     ]);
   }
 
-  toObj() {
+  toObj(): DataPackagePlainObj {
     return {
       dataPoints: this.dataPoints.map((dataPoint) => dataPoint.toObj()),
       timestampMilliseconds: this.timestampMilliseconds,

@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 
 export abstract class Serializable {
   abstract toBytes(): Uint8Array;
-  abstract toObj(): any;
+  abstract toObj(): object;
 
   toBytesHex(): string {
     const serializedBytes = this.toBytes();
