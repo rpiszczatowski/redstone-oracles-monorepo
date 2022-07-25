@@ -12,7 +12,7 @@
     "start:sample": "yarn start:dev > tmp.out",
     "test": "NODE_ENV=test jest",
     "test:watch": "NODE_ENV=test jest --watch",
-    "test:ci": "yarn build:contracts && NODE_ENV=test jest --ci --reporters='default' --reporters='./tools/GithubActionsReporter'",
+    "test:ci": "NODE_ENV=test jest --ci --reporters='default' --reporters='./tools/GithubActionsReporter'",
     "prepublishOnly": "yarn test && yarn build",
     "version": "git add -A src",
     "postversion": "git push && git push --tags",
