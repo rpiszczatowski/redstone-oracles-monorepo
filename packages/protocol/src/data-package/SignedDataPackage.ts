@@ -65,7 +65,9 @@ export class SignedDataPackage extends Serializable {
     };
   }
 
-  public static fromObj(plainObject: any): SignedDataPackage {
+  public static fromObj(
+    plainObject: SignedDataPackagePlainObj
+  ): SignedDataPackage {
     const signatureBase64 = plainObject.signature;
     assert(!!signatureBase64, "Signature can not be empty");
     const signatureBytes: Uint8Array = base64.decode(signatureBase64);

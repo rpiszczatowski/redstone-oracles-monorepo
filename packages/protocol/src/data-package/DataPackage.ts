@@ -63,7 +63,7 @@ export class DataPackage extends Serializable {
     };
   }
 
-  public static fromObj(plainObject: any): DataPackage {
+  public static fromObj(plainObject: DataPackagePlainObj): DataPackage {
     const dataPoints = plainObject.dataPoints.map(deserializeDataPointFromObj);
     return new DataPackage(dataPoints, plainObject.timestampMilliseconds);
   }
