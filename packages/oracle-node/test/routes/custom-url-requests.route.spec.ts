@@ -37,8 +37,8 @@ describe("Custom URL requests route", () => {
 
     expect(response.body).toEqual({
       signerAddress: "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A",
-      liteSignature:
-        "0x6a4fab1950cf3bfd0ff0df5ef50b87d1a39cd451476081d7ef50179562aacd940ac81ddbde946dcf4c45f4cf41eebe876f0e82cd343c9a0799943c95bbad1ee51c",
+      signature:
+        "0x0247ad69853e7693afec915122a32a687cc7553d443548075fa365d2d36410ab2c2476f65df6ada00e61370394316315803b2d48d7f4d20d6b960338a9279cd61b",
       prices: [{ symbol: "0x8edd634f1bbd8320", value: 42 }],
       customRequestConfig: {
         url: "https://example-custom-data-source.com/hehe",

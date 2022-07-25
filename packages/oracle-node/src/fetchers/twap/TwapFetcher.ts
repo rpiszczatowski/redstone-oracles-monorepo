@@ -1,12 +1,11 @@
 import axios from "axios";
-import _ from "lodash";
+import { DataPackage, NumericDataPoint } from "redstone-protocol";
+import { config } from "../../config";
 import { PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
-import EvmPriceSigner from "../../signers/EvmPriceSigner";
 
 const PRICES_URL = "https://api.redstone.finance/prices";
 const MAX_LIMIT = 1000;
-const EVM_CHAIN_ID = 1;
 
 interface ShortPrice {
   timestamp: number;
@@ -15,7 +14,7 @@ interface ShortPrice {
 
 export interface HistoricalPrice extends ShortPrice {
   symbol: string;
-  liteEvmSignature: string;
+  signature: string;
   version: string;
 }
 
@@ -24,10 +23,7 @@ interface ResponseForTwap {
 }
 
 export class TwapFetcher extends BaseFetcher {
-  constructor(
-    private readonly sourceProviderId: string,
-    private readonly providerEvmAddress: string
-  ) {
+  constructor(private readonly sourceProviderId: string) {
     super(`twap-${sourceProviderId}`);
   }
 
@@ -80,21 +76,16 @@ export class TwapFetcher extends BaseFetcher {
   }
 
   async verifySignature(price: HistoricalPrice) {
-    const evmSigner = new EvmPriceSigner(price.version, EVM_CHAIN_ID);
-    const isSignatureValid = evmSigner.verifyLiteSignature({
-      pricePackage: {
-        prices: [
-          {
-            symbol: price.symbol,
-            value: price.value,
-          },
-        ],
-        timestamp: price.timestamp,
-      },
-      signerAddress: this.providerEvmAddress,
-      liteSignature: price.liteEvmSignature,
+    const dataPoint = new NumericDataPoint({
+      symbol: price.symbol,
+      value: price.value,
+      decimals: 18,
     });
-
+    const dataPackage = new DataPackage([dataPoint], price.timestamp);
+    const privateKey = config.privateKeys.ethereumPrivateKey;
+    const signedDataPackage = dataPackage.sign(privateKey);
+    const signatureAsHex = signedDataPackage.serializeSignatureToHex();
+    const isSignatureValid = signatureAsHex === price.signature;
     if (!isSignatureValid) {
       throw new Error(
         `Received an invalid signature: ` + JSON.stringify(price)

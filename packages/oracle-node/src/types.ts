@@ -1,4 +1,5 @@
 import { JWKInterface } from "arweave/node/lib/wallet";
+import { SignedDataPackageToBroadcast } from "redstone-protocol";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
@@ -58,7 +59,7 @@ export interface Aggregator {
 export interface Broadcaster {
   broadcast: (prices: PriceDataSigned[]) => Promise<void>;
   broadcastPricePackage: (
-    pricePackage: SignedPricePackage,
+    pricePackage: SignedDataPackageToBroadcast,
     providerAddress: string
   ) => Promise<void>;
 }
@@ -90,8 +91,7 @@ export interface PriceDataBeforeSigning extends PriceDataAfterAggregation {
 }
 
 export interface PriceDataSigned extends PriceDataBeforeSigning {
-  evmSignature?: string;
-  liteEvmSignature?: string;
+  signature?: string;
 }
 
 export interface ShortSinglePrice {
@@ -103,13 +103,6 @@ export interface PricePackage {
   prices: ShortSinglePrice[];
   timestamp: number;
 }
-
-export interface SignedPricePackage {
-  pricePackage: PricePackage;
-  signerAddress: string;
-  liteSignature: string;
-}
-
 export interface SerializedPriceData {
   symbols: string[];
   values: any[];
@@ -133,4 +126,38 @@ export interface NodeConfig {
   credentials: Credentials;
   privateKeys: PrivateKeys;
   overrideManifestUsingFile?: Manifest;
+}
+
+interface EvolveState {
+  canEvolve: boolean;
+  evolve: string | null;
+}
+
+export interface RedstoneOraclesState extends EvolveState {
+  contractAdmins: string[];
+  nodes: Nodes;
+  dataFeeds: DataFeeds;
+}
+
+type Nodes = { [key in string]: Node };
+type DataFeeds = { [key in string]: DataFeed };
+
+interface Node {
+  name: string;
+  logo: string;
+  description: string;
+  dataFeedId: string;
+  evmAddress: string;
+  ipAddress: string;
+  ecdsaPublicKey: string;
+  arweavePublicKey: string;
+  url?: string;
+}
+
+interface DataFeed {
+  name: string;
+  manifestTxId: string;
+  logo: string;
+  description: string;
+  admin: string;
 }
