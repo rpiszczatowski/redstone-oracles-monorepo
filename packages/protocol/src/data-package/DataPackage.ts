@@ -1,4 +1,10 @@
-import { arrayify, concat, keccak256, SigningKey } from "ethers/lib/utils";
+import {
+  arrayify,
+  concat,
+  hexlify,
+  keccak256,
+  SigningKey,
+} from "ethers/lib/utils";
 import {
   DATA_POINTS_COUNT_BS,
   DATA_POINT_VALUE_BYTE_SIZE_BS,
@@ -33,8 +39,6 @@ export class DataPackage extends Serializable {
         "Values of all data points in DataPackage must have the same number of bytes"
       );
     }
-
-    // TODO: implement data points sorting and requiring no duplicated symbols
   }
 
   // Each data point in this data package can have a different byte size
@@ -82,9 +86,17 @@ export class DataPackage extends Serializable {
     return new SignedDataPackage(this, fullSignature);
   }
 
-  // TODO: implement sorting lexographically by bytes32
-  // representation of symbols
   protected serializeDataPoints(): Uint8Array {
+    // Sorting datapoints by bytes32 representation of symbols lexicographically
+    this.dataPoints.sort((dp1, dp2) => {
+      const bytes32Symbol1Hexlified = hexlify(dp1.serializeSymbol());
+      const bytes32Symbol2Hexlified = hexlify(dp2.serializeSymbol());
+      const comparisonResult = bytes32Symbol1Hexlified.localeCompare(
+        bytes32Symbol2Hexlified
+      );
+      assert(comparisonResult !== 0, `Duplicated symbol found: ${dp1.symbol}`);
+      return comparisonResult;
+    });
     return concat(this.dataPoints.map((dp) => dp.toBytes()));
   }
 

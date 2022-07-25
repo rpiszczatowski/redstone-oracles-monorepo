@@ -82,8 +82,8 @@ describe("Fixed size data package", () => {
 
   test("Should correctly serialize signed standard numeric data package", () => {
     const dataPoints = [
-      { symbol: "ETH", value: 1000 },
       { symbol: "BTC", value: 20000 },
+      { symbol: "ETH", value: 1000 },
     ];
     const signedDataPackage = prepareSignedDataPackageForTests(
       dataPoints.map((dp) => new NumericDataPoint(dp))
@@ -93,7 +93,7 @@ describe("Fixed size data package", () => {
       dataPoints,
       timestampMilliseconds: TIMESTAMP_FOR_TESTS,
       signature:
-        "yeVZdxv4Ld+EjyXsUt8tQrQeermpSrDOlRhl5Wq7SaRyXQfYVzotEALv05HZTeNu7MDC6OCKqAwVd2QfPOqOHxs=",
+        "NX5yd/Cs8HzVdNchrM59uOoSst7n9KK5Ou9pA6S5GTM0RwghGlFjA0S+SVfb85ipg4HzUTKATBZSqPXlWldEEhw=",
     });
     const deserializedSignedDataPackage = SignedDataPackage.fromObj(
       JSON.parse(JSON.stringify(serializedPlainObj))
