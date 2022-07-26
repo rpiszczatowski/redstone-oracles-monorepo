@@ -19,6 +19,8 @@ jest.mock("../../src/arweave/ArweaveProxy", () => {
   return jest.fn().mockImplementation(() => validMockArProxy);
 });
 
+jest.mock("../../src/broadcasters/streamr/StreamrProxy.ts");
+
 const TEST_TIMEOUT_MS = 5;
 
 describe("ArweaveService - getCurrentManifest", () => {
