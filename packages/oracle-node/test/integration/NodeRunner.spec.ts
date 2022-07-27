@@ -1,7 +1,5 @@
 import NodeRunner from "../../src/NodeRunner";
 import { JWKInterface } from "arweave/node/lib/wallet";
-import { mocked } from "ts-jest/utils";
-import ArweaveProxy from "../../src/arweave/ArweaveProxy";
 import fetchers from "../../src/fetchers";
 import axios from "axios";
 import ArweaveService from "../../src/arweave/ArweaveService";
@@ -115,8 +113,6 @@ describe("NodeRunner", () => {
 
   it("should create node instance", async () => {
     // given
-    const mockedArProxy = mocked(ArweaveProxy, true);
-
     const sut = await NodeRunner.create({
       ...nodeConfig,
       overrideManifestUsingFile: manifest,
@@ -124,7 +120,6 @@ describe("NodeRunner", () => {
 
     // then
     expect(sut).not.toBeNull();
-    expect(mockedArProxy).toHaveBeenCalledWith(jwk);
   });
 
   it("should throw if no maxDeviationPercent configured for token", async () => {
