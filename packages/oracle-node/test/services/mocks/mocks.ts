@@ -3,30 +3,31 @@ import { Manifest } from "../../../src/types";
 const validSmartweaveMock = {
   smartweave: {
     contract: (_contractId: string) => ({
-      readState: () => Promise.resolve({
-        state: {
-          nodes: {
-            mockArAddress: {
-              dataFeedId: "testDataFeedId"
-            }
+      readState: () =>
+        Promise.resolve({
+          state: {
+            nodes: {
+              mockArAddress: {
+                dataFeedId: "testDataFeedId",
+              },
+            },
+            dataFeeds: {
+              testDataFeedId: {
+                manifestTxId: "manifestTxIdByGateway",
+              },
+            },
           },
-          dataFeeds: {
-            testDataFeedId: {
-              manifestTxId: "manifestTxIdByGateway"
-            }
-          }
-        }
-      })
-    })
-  }
+        }),
+    }),
+  },
 };
 
 const invalidSmartweaveMock = {
   smartweave: {
     contract: (_contractId: string) => ({
-      readState: () => Promise.reject()
-    })
-  }
+      readState: () => Promise.reject(new Error("Invalid readState")),
+    }),
+  },
 };
 
 export const validMockArProxy = {
@@ -41,6 +42,12 @@ export const invalidMockArProxy = {
 
 export const oldManifestMock = { txId: "oldManifestTxId" } as Manifest;
 
-export const manifestUsingDenMock = { txId: "manifestTxIdByDen", interval: 1000 };
+export const manifestUsingDenMock = {
+  txId: "manifestTxIdByDen",
+  interval: 1000,
+};
 
-export const manifestUsingGatewayMock = { txId: "manifestTxIdByGateway", interval: 1000 };
+export const manifestUsingGatewayMock = {
+  txId: "manifestTxIdByGateway",
+  interval: 1000,
+};
