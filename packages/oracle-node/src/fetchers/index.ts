@@ -1,4 +1,4 @@
-import { Fetcher } from "../types";
+import { ethers } from "ethers";
 import ccxtFetchers from "./ccxt/all-ccxt-fetchers";
 import pangolinFetchers from "./pangolin/all-pangolin-fetchers";
 import { YfUnofficialFetcher } from "./yf-unofficial/YfUnofficialFetcher";
@@ -13,6 +13,8 @@ import { EcbFetcher } from "./ecb/EcbFetcher";
 import { DrandFetcher } from "./drand/DrandFetcher";
 import twapFetchers from "./twap/all-twap-fetchers";
 import { TwelveDataFetcher } from "./twelve-data/TwelveDataFetcher";
+import { AvalancheEvmFetcher } from "./evm-chain/AvalancheEvmFetcher";
+import { Fetcher } from "../types";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -26,6 +28,11 @@ export default {
   kyber: new KyberFetcher(),
   verto: new VertoFetcher(),
   ecb: new EcbFetcher(),
+  "avalanche-evm-fetcher": new AvalancheEvmFetcher(
+    new ethers.providers.JsonRpcProvider(
+      "https://api.avax.network/ext/bc/C/rpc"
+    )
+  ),
 
   ...ccxtFetchers,
   ...pangolinFetchers,

@@ -152,3 +152,13 @@ interface DataFeed {
   description: string;
   admin: string;
 }
+
+export interface MulticallRequest {
+  address: string;
+  data: string;
+  name: string;
+}
+
+export type MulticallParsedResponses = {
+  [x in string]: { success: boolean; value: string };
+};
