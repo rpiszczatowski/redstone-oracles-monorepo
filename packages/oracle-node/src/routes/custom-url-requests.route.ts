@@ -8,6 +8,7 @@ import { DataPackage, NumericDataPoint } from "redstone-protocol";
 import { fromBase64 } from "../utils/base64";
 import { NodeConfig } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
+import { base64 } from "ethers/lib/utils";
 
 const QUERY_PARAM_NAME = "custom-url-request-config-base64";
 const DEFAULT_TIMEOUT_MILLISECONDS = 10000;
@@ -57,10 +58,14 @@ export default function (app: express.Application, nodeConfig: NodeConfig) {
         nodeConfig.privateKeys.ethereumPrivateKey
       );
       const parsedSignedDataPackage = signedDataPackage.toObj();
+      const signerAddress = base64.encode(
+        signedDataPackage.recoverSignerAddress()
+      );
 
       const dataPackageToBroadcast = {
         ...parsedSignedDataPackage,
         customRequestConfig,
+        signerAddress,
       };
 
       // Sending response

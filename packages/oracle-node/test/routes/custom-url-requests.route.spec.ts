@@ -36,8 +36,7 @@ describe("Custom URL requests route", () => {
       .expect(200);
 
     expect(response.body).toEqual({
-      signerAddress:
-        "BE81W9y3zAr3KO88zrlhXZBoS7Wyyl+FmrDwtwQHWHGqOFtrG46tgJymdFTZaD/PK6A0Vtb+LEq+Kwfw+9uy8cE=",
+      signerAddress: "GefjdufCE7fn5+Rsxwpd0Iba/yo=",
       signature:
         "AketaYU+dpOv7JFRIqMqaHzHVT1ENUgHX6Nl0tNkEKssJHb2XfatoA5hNwOUMWMVgDstSNf00g1rlgM4qSec1hs=",
       dataPoints: [{ symbol: "0x8edd634f1bbd8320", value: 42 }],

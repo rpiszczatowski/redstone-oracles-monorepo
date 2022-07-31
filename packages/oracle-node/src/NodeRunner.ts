@@ -25,9 +25,13 @@ import {
   HttpBroadcaster,
   StreamrBroadcaster,
 } from "./broadcasters";
-import { Manifest, NodeConfig, PriceDataAfterAggregation } from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
-import { SignedDataPackagePlainObj } from "redstone-protocol";
+import {
+  Manifest,
+  NodeConfig,
+  PriceDataAfterAggregation,
+  ExtendedSignedDataPackagePlainObj,
+} from "./types";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -262,7 +266,9 @@ export default class NodeRunner {
     return aggregatedPrices;
   }
 
-  private async broadcastPrices(signedPrices: SignedDataPackagePlainObj[]) {
+  private async broadcastPrices(
+    signedPrices: ExtendedSignedDataPackagePlainObj[]
+  ) {
     logger.info("Broadcasting prices");
     const broadcastingTrackingId = trackStart("broadcasting");
     try {
@@ -312,7 +318,7 @@ export default class NodeRunner {
   }
 
   private async broadcastEvmPricePackage(
-    singedPricesPackage: SignedDataPackagePlainObj
+    singedPricesPackage: ExtendedSignedDataPackagePlainObj
   ) {
     logger.info("Broadcasting price package");
     const packageBroadcastingTrackingId = trackStart("package-broadcasting");
@@ -327,7 +333,7 @@ export default class NodeRunner {
   }
 
   private async broadcastSignedPricePackage(
-    signedPackage: SignedDataPackagePlainObj
+    signedPackage: ExtendedSignedDataPackagePlainObj
   ) {
     const signedPackageBroadcastingTrackingId = trackStart(
       "signed-package-broadcasting"

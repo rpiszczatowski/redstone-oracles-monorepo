@@ -1,4 +1,5 @@
 import { JWKInterface } from "arweave/node/lib/wallet";
+import { SignedDataPackagePlainObj } from "redstone-protocol";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
@@ -162,3 +163,15 @@ export interface MulticallRequest {
 export type MulticallParsedResponses = {
   [x in string]: { success: boolean; value: string };
 };
+
+export interface ExtendedSignedDataPackagePlainObj
+  extends SignedDataPackagePlainObj {
+  signerAddress?: string;
+  permawebTx?: string;
+  provider?: string;
+  id?: string;
+  source?: {
+    [sourceName: string]: any;
+  };
+  version?: string;
+}

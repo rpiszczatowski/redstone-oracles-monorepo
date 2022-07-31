@@ -1,11 +1,11 @@
 import { Consola } from "consola";
-import { PriceDataBeforeSigning } from "../types";
-import { trackStart, trackEnd } from "../utils/performance-tracker";
 import {
-  DataPackage,
-  NumericDataPoint,
-  SignedDataPackagePlainObj,
-} from "redstone-protocol";
+  ExtendedSignedDataPackagePlainObj,
+  PriceDataBeforeSigning,
+} from "../types";
+import { trackStart, trackEnd } from "../utils/performance-tracker";
+import { DataPackage, NumericDataPoint } from "redstone-protocol";
+import { base64 } from "ethers/lib/utils";
 
 const logger = require("../utils/logger")("ArweaveService") as Consola;
 
@@ -23,9 +23,11 @@ export default class PriceSignerService {
     this.ethereumPrivateKey = config.ethereumPrivateKey;
   }
 
-  signPrices(prices: PriceDataBeforeSigning[]): SignedDataPackagePlainObj[] {
+  signPrices(
+    prices: PriceDataBeforeSigning[]
+  ): ExtendedSignedDataPackagePlainObj[] {
     const signingTrackingId = trackStart("signing");
-    const signedPrices: SignedDataPackagePlainObj[] = [];
+    const signedPrices: ExtendedSignedDataPackagePlainObj[] = [];
     for (const price of prices) {
       logger.info(`Signing price: ${price.id}`);
       const signedPrice = this.signSinglePrice(price);
@@ -35,7 +37,9 @@ export default class PriceSignerService {
     return signedPrices;
   }
 
-  signSinglePrice(price: PriceDataBeforeSigning): SignedDataPackagePlainObj {
+  signSinglePrice(
+    price: PriceDataBeforeSigning
+  ): ExtendedSignedDataPackagePlainObj {
     logger.info(`Signing price with evm signer: ${price.id}`);
     const { symbol, value, timestamp, ...restParams } = price;
     const dataPoint = new NumericDataPoint({
@@ -45,15 +49,19 @@ export default class PriceSignerService {
     const dataPackage = new DataPackage([dataPoint], timestamp);
     const signedDataPackage = dataPackage.sign(this.ethereumPrivateKey);
     const parsedSignedDataPackage = signedDataPackage.toObj();
+    const signerAddress = base64.encode(
+      signedDataPackage.recoverSignerAddress()
+    );
     return {
       ...parsedSignedDataPackage,
       ...restParams,
+      signerAddress,
     };
   }
 
   signPricePackage(
     prices: PriceDataBeforeSigning[]
-  ): SignedDataPackagePlainObj {
+  ): ExtendedSignedDataPackagePlainObj {
     const signingTrackingId = trackStart("signing");
     const dataPoints: NumericDataPoint[] = [];
 
@@ -70,8 +78,12 @@ export default class PriceSignerService {
     const signedDataPackage = dataPackage.sign(this.ethereumPrivateKey);
     trackEnd(signingTrackingId);
     const parsedSignedDataPackage = signedDataPackage.toObj();
+    const signerAddress = base64.encode(
+      signedDataPackage.recoverSignerAddress()
+    );
     return {
       ...parsedSignedDataPackage,
+      signerAddress,
       provider,
     };
   }
