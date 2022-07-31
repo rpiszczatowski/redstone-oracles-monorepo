@@ -239,14 +239,12 @@ describe("NodeRunner", () => {
         version: "0.4",
         signature:
           "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
-        signerAddress:
-          "BE81W9y3zAr3KO88zrlhXZBoS7Wyyl+FmrDwtwQHWHGqOFtrG46tgJymdFTZaD/PK6A0Vtb+LEq+Kwfw+9uy8cE=",
+        signerAddress: "GefjdufCE7fn5+Rsxwpd0Iba/yo=",
       },
     ]);
     expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/packages", {
       timestampMilliseconds: 111111111,
-      signerAddress:
-        "BE81W9y3zAr3KO88zrlhXZBoS7Wyyl+FmrDwtwQHWHGqOFtrG46tgJymdFTZaD/PK6A0Vtb+LEq+Kwfw+9uy8cE=",
+      signerAddress: "GefjdufCE7fn5+Rsxwpd0Iba/yo=",
       provider: "mockArAddress",
       dataPoints: [{ symbol: "BTC", value: 444.5 }],
       signature:
@@ -301,8 +299,7 @@ describe("NodeRunner", () => {
         provider: "mockArAddress",
         signature:
           "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
-        signerAddress:
-          "BE81W9y3zAr3KO88zrlhXZBoS7Wyyl+FmrDwtwQHWHGqOFtrG46tgJymdFTZaD/PK6A0Vtb+LEq+Kwfw+9uy8cE=",
+        signerAddress: "GefjdufCE7fn5+Rsxwpd0Iba/yo=",
       },
     ]);
 

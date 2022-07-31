@@ -1,8 +1,8 @@
 import _ from "lodash";
 import { Broadcaster } from "../Broadcaster";
-import { SignedDataPackagePlainObj } from "redstone-protocol";
 import { Consola } from "consola";
 import { StreamrProxy } from "./StreamrProxy";
+import { ExtendedSignedDataPackagePlainObj } from "../../types";
 
 const logger = require("../../utils/logger")("StreamrBroadcaster") as Consola;
 
@@ -12,8 +12,8 @@ const PRICES_STREAM_NAME = "prices";
 
 export class StreamrBroadcaster implements Broadcaster {
   private streamrProxy: StreamrProxy;
-  private pricesToBroadcast: Partial<SignedDataPackagePlainObj>[] = [];
-  private packageToBroadcast: SignedDataPackagePlainObj | undefined;
+  private pricesToBroadcast: Partial<ExtendedSignedDataPackagePlainObj>[] = [];
+  private packageToBroadcast: ExtendedSignedDataPackagePlainObj | undefined;
   private timer?: NodeJS.Timer;
 
   constructor(ethereumPrivateKey: string) {
@@ -54,13 +54,13 @@ export class StreamrBroadcaster implements Broadcaster {
     await Promise.all(promises);
   }
 
-  async broadcast(prices: SignedDataPackagePlainObj[]): Promise<void> {
+  async broadcast(prices: ExtendedSignedDataPackagePlainObj[]): Promise<void> {
     this.pricesToBroadcast = prices.map((p) => _.omit(p, ["source"]));
     this.lazyEnableTimer();
   }
 
   async broadcastPricePackage(
-    signedData: SignedDataPackagePlainObj
+    signedData: ExtendedSignedDataPackagePlainObj
   ): Promise<void> {
     this.packageToBroadcast = signedData;
     this.lazyEnableTimer();
