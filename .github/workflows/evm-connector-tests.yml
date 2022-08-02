@@ -17,6 +17,8 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
+      - name: Compile contracts
+        run: yarn compile
       - name: Run tests
         run: yarn test
         env:
