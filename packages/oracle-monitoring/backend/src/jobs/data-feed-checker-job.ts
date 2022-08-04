@@ -1,8 +1,10 @@
+import axios from "axios";
 import redstone from "redstone-api-extended";
 import consola from "consola";
 import { Issue } from "../models/issue";
 import { stringifyError } from "../helpers/error-stringifier";
 import { DataFeedId } from "redstone-api-extended/lib/oracle/redstone-data-feed";
+import { uptimeKumaUrl } from "../config";
 
 interface Input {
   dataFeedId: DataFeedId;
@@ -35,5 +37,7 @@ export const execute = async ({ dataFeedId, symbol }: Input) => {
       dataFeedId,
       comment: errStr,
     }).save();
+    const uptimeKumaUrlWithMessage = `${uptimeKumaUrl}&msg=(${dataFeedId}-${symbol}): ${errStr}`;
+    await axios.get(uptimeKumaUrlWithMessage);
   }
 };
