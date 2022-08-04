@@ -59,6 +59,7 @@ export class SignedDataPackage extends Serializable {
 
   toObj(): SignedDataPackagePlainObj {
     const signatureHex = this.serializeSignatureToHex();
+
     return {
       ...this.dataPackage.toObj(),
       signature: base64.encode(signatureHex),
