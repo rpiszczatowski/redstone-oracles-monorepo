@@ -8,7 +8,6 @@ import {
   Manifest,
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
-  PriceDataBeforeSigning,
   PriceDataFetched,
 } from "../types";
 import { trackEnd, trackStart } from "../utils/performance-tracker";
@@ -172,24 +171,6 @@ export default class PricesService {
       }
     }
     return aggregatedPrices;
-  }
-
-  preparePricesForSigning(
-    prices: PriceDataAfterAggregation[],
-    idArTransaction: string,
-    providerAddress: string
-  ): PriceDataBeforeSigning[] {
-    const pricesBeforeSigning: PriceDataBeforeSigning[] = [];
-
-    for (const price of prices) {
-      pricesBeforeSigning.push({
-        ...price,
-        permawebTx: idArTransaction,
-        provider: providerAddress,
-      });
-    }
-
-    return pricesBeforeSigning;
   }
 
   private maxPriceDeviationPercent(priceSymbol: string): number {

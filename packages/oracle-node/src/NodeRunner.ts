@@ -1,6 +1,7 @@
 import BundlrTransaction from "@bundlr-network/client/build/common/transaction";
 import git from "git-last-commit";
 import { ethers } from "ethers";
+import { SignedDataPackagePlainObj } from "redstone-protocol";
 import { Consola } from "consola";
 import aggregators from "./aggregators";
 import ArweaveProxy from "./arweave/ArweaveProxy";
@@ -212,19 +213,11 @@ export default class NodeRunner {
       await this.fetchPrices();
     const bundlrTx: BundlrTransaction =
       await this.bundlrService.prepareBundlrTransaction(aggregatedPrices);
-    const pricesReadyForSigning = this.pricesService!.preparePricesForSigning(
-      aggregatedPrices,
-      bundlrTx.id,
-      this.providerAddress
-    );
 
     // Signing
-    const signedPrices = this.priceSignerService!.signPrices(
-      pricesReadyForSigning
-    );
-    const singedPricesPackage = this.priceSignerService!.signPricePackage(
-      pricesReadyForSigning
-    );
+    const signedPrices = this.priceSignerService!.signPrices(aggregatedPrices);
+    const singedPricesPackage =
+      this.priceSignerService!.signPricePackage(aggregatedPrices);
 
     // Broadcasting
     await this.broadcastPrices(signedPrices);
@@ -318,7 +311,7 @@ export default class NodeRunner {
   }
 
   private async broadcastEvmPricePackage(
-    singedPricesPackage: ExtendedSignedDataPackagePlainObj
+    singedPricesPackage: SignedDataPackagePlainObj
   ) {
     logger.info("Broadcasting price package");
     const packageBroadcastingTrackingId = trackStart("package-broadcasting");
@@ -333,7 +326,7 @@ export default class NodeRunner {
   }
 
   private async broadcastSignedPricePackage(
-    signedPackage: ExtendedSignedDataPackagePlainObj
+    signedPackage: SignedDataPackagePlainObj
   ) {
     const signedPackageBroadcastingTrackingId = trackStart(
       "signed-package-broadcasting"
