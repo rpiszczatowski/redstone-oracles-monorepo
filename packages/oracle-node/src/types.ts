@@ -77,15 +77,6 @@ export interface PriceDataAfterAggregation extends PriceDataBeforeAggregation {
   value: number;
 }
 
-export interface PriceDataBeforeSigning extends PriceDataAfterAggregation {
-  permawebTx: string;
-  provider: string;
-}
-
-export interface PriceDataSigned extends PriceDataBeforeSigning {
-  signature?: string;
-}
-
 export interface ShortSinglePrice {
   symbol: string;
   value: any;
@@ -166,12 +157,9 @@ export type MulticallParsedResponses = {
 
 export interface ExtendedSignedDataPackagePlainObj
   extends SignedDataPackagePlainObj {
-  signerAddress?: string;
-  permawebTx?: string;
-  provider?: string;
-  id?: string;
+  id: string;
+  version: string;
   source?: {
     [sourceName: string]: any;
   };
-  version?: string;
 }
