@@ -58,14 +58,10 @@ export default function (app: express.Application, nodeConfig: NodeConfig) {
         nodeConfig.privateKeys.ethereumPrivateKey
       );
       const parsedSignedDataPackage = signedDataPackage.toObj();
-      const signerAddress = base64.encode(
-        signedDataPackage.recoverSignerAddress()
-      );
 
       const dataPackageToBroadcast = {
         ...parsedSignedDataPackage,
         customRequestConfig,
-        signerAddress,
       };
 
       // Sending response

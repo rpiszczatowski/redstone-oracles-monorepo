@@ -232,20 +232,15 @@ describe("NodeRunner", () => {
       {
         id: "00000000-0000-0000-0000-000000000000",
         dataPoints: [{ symbol: "BTC", value: 444.5 }],
-        permawebTx: "mockBundlrTransactionId",
-        provider: "mockArAddress",
         source: { coingecko: 444, uniswap: 445 },
         timestampMilliseconds: 111111111,
         version: "0.4",
         signature:
           "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
-        signerAddress: "GefjdufCE7fn5+Rsxwpd0Iba/yo=",
       },
     ]);
     expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/packages", {
       timestampMilliseconds: 111111111,
-      signerAddress: "GefjdufCE7fn5+Rsxwpd0Iba/yo=",
-      provider: "mockArAddress",
       dataPoints: [{ symbol: "BTC", value: 444.5 }],
       signature:
         "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
@@ -295,11 +290,8 @@ describe("NodeRunner", () => {
         },
         timestampMilliseconds: 111111111,
         version: "0.4",
-        permawebTx: "mockBundlrTransactionId",
-        provider: "mockArAddress",
         signature:
           "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
-        signerAddress: "GefjdufCE7fn5+Rsxwpd0Iba/yo=",
       },
     ]);
 
