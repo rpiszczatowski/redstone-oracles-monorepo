@@ -8,19 +8,10 @@ function getFromEnv(envName: string) {
   return valueFromEnv;
 }
 
-export const mailgunConfig = {
-  domain: getFromEnv("MAILGUN_DOMAIN"),
-  apiKey: getFromEnv("MAILGUN_API_KEY"),
-  senderEmail: getFromEnv("MAILGUN_SENDER_EMAIL"),
-};
-
-export const emailNotificationsRecipients = getFromEnv(
-  "EMAIL_NOTIFICATIONS_RECIPIENTS"
-);
 export const mongoDbUrl = getFromEnv("MONGO_DB_URL");
 export const metricsUrl = getFromEnv("METRICS_URL");
-export const emailNotifierJobSchedule = "*/10 * * * * *"; // Every 10 seconds
 export const dbTtlInDays = Number(getFromEnv("DB_DATA_TTL_DAYS"));
+export const uptimeKumaUrl = getFromEnv("UPTIME_KUMA_URL");
 export const dataFeedsToCheck = [
   {
     id: "redstone",
@@ -71,8 +62,3 @@ export const dataFeedsToCheck = [
     schedule: "*/10 * * * * *", // Every 10 seconds
   },
 ];
-
-export const telegramConfig = {
-  token: getFromEnv("TELEGRAM_TOKEN"),
-  chatId: getFromEnv("TELEGRAM_CHAT_ID"),
-};
