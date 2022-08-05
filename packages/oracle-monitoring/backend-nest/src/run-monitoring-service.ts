@@ -15,12 +15,6 @@ export function runMonitoringService() {
   logger.info("Connecting to MongoDB");
   connectToRemoteMongo();
 
-  // bootstrap();
-
-  // Starting email notifier job
-  logger.info("Starting the email notifier job");
-  schedule.scheduleJob(emailNotifierJobSchedule, executeEmailNotifierJob);
-
   // Starting data feed checker jobs
   for (const dataFeed of dataFeedsToCheck) {
     // Starting job for checking whole data package fetching
