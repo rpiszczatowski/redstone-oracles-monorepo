@@ -94,6 +94,19 @@ describe("SampleRedstoneConsumerNumericMockManyDataFeeds", function () {
     );
   });
 
+  it("Should revert for enough data packages but insufficient number of one data feed id", async () => {
+    const newMockPackages = [...mockNumericPackages];
+    newMockPackages[1] = getMockNumericPackage({
+      ...mockNumericPackageConfigs[1],
+      dataPoints: [mockNumericPackageConfigs[1].dataPoints[0]],
+    });
+    await testShouldRevertWith(
+      newMockPackages,
+      ["BTC", "ETH"],
+      "Insufficient number of unique signers"
+    );
+  });
+
   it("Should revert for too old timestamp", async () => {
     const newMockPackages = [...mockNumericPackages];
     newMockPackages[1] = getMockNumericPackage({
