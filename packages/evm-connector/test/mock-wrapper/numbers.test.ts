@@ -15,6 +15,9 @@ import {
   UNAUTHORISED_SIGNER_INDEX,
 } from "../tests-common";
 
+// TODO audit: experiment with max safe numbers of signers,
+// datafeeds, data packages, and data points and write it down
+
 // TODO audit: test if there are enough packages but one of them doesn't
 // contain requested data feed id (e.g. BTC has 3 signatures, but ETH has only 2)
 
