@@ -12,31 +12,9 @@ import {
   expectedNumericValues,
   mockNumericPackageConfigs,
   mockNumericPackages,
+  NUMBER_OF_MOCK_NUMERIC_SIGNERS,
   UNAUTHORISED_SIGNER_INDEX,
 } from "../tests-common";
-
-// TODO audit: experiment with max safe numbers of signers,
-// datafeeds, data packages, and data points and write it down
-
-// TODO audit: test if there are enough packages but one of them doesn't
-// contain requested data feed id (e.g. BTC has 3 signatures, but ETH has only 2)
-
-// TODO audit: test if an adversarial provider can block ability to use
-// other providers' data (in redstone-protocol as well)
-
-// TODO audit: add some limits to byte size of values (to avoid attacks created
-// by one adversarial provider)
-
-// TODO audit: test reverting for corrrupted data
-
-// TODO audit: test / think if going out of redstone payload may break the system
-
-// TODO audit: describe responsibilities of each module in our system, e.g.:
-// - evm-connector: prepare correct payload
-// - redstone-protocol: correctly serialize data
-// ...
-
-const NUMBER_OF_MOCK_NUMERIC_SIGNERS = 10;
 
 describe("SampleRedstoneConsumerNumericMock", function () {
   let contract: SampleRedstoneConsumerNumericMock;
