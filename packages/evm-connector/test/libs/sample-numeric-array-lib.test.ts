@@ -3,6 +3,11 @@ import { SampleNumericArrayLib } from "../../typechain-types";
 import { expect } from "chai";
 import { BigNumber } from "ethers";
 
+// TODO audit: test 0,1, and 2 elements array
+// TODO audit: test for more elements: 50
+// TODO audit: experiment with max safe numbers of signers,
+// datafeeds, data packages, and data points and write it down
+
 describe("SampleNumericArrayLib", function () {
   let contract: SampleNumericArrayLib;
 

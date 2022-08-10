@@ -61,7 +61,7 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
       mstore(message, resultMessageByteSize)
 
       // Copying function and its arguments byte by byte
-      // TODO: check if it can be implemented in a more efficient way (e.g. with less iterations in the loop)
+      // TODO audit: check if it can be implemented in a more efficient way (e.g. with less iterations in the loop)
       for {
         i := 0
       } lt(i, encodedFunctionBytesCount) {
@@ -117,14 +117,12 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
       DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
   }
 
-  // TODO: test error message forwarding (compare V1 and V2)
   function _prepareReturnValue(bool success, bytes memory result)
     internal
     pure
     returns (bytes memory)
   {
     if (!success) {
-      // V1
       if (result.length > 0) {
         assembly {
           let result_size := mload(result)
@@ -133,13 +131,6 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
       } else {
         revert("Proxy calldata failed");
       }
-
-      // V2
-      // assembly {
-      //   let errMsgPtr := mload(FREE_MEMORY_PTR)
-      //   returndatacopy(errMsgPtr, 0, returndatasize())
-      //   revert(errMsgPtr, returndatasize())
-      // }
     }
 
     return result;
