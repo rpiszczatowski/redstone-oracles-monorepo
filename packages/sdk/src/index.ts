@@ -25,6 +25,19 @@ export const getOracleRegistryState =
     throw "TODO: implement";
   };
 
+// TODO: maybe implement lowerification of addresses
+export const getDataServiceIdForSignerAddress = (
+  oracleState: RedstoneOraclesState,
+  signerAddress: string
+) => {
+  for (const nodeDetails of Object.values(oracleState.nodes)) {
+    if (nodeDetails.evmAddress === signerAddress) {
+      return nodeDetails.dataServiceId;
+    }
+  }
+  throw new Error(`Data service not found for ${signerAddress}`);
+};
+
 // TODO: implement
 // This function will simply proxy requests to
 // the requested cache services (given urls)
