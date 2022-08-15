@@ -7,7 +7,6 @@ import {
   mockSigner,
   MOCK_PRIVATE_KEY,
 } from "../common/mock-values";
-import redstoneSDK from "redstone-sdk";
 import { connectToTestDB, dropTestDatabase } from "../common/test-db";
 import { DataPackage } from "../../src/data-packages/data-packages.model";
 import {
@@ -17,7 +16,14 @@ import {
   toUtf8Bytes,
 } from "ethers/lib/utils";
 
-jest.mock("redstone-sdk");
+jest.mock("redstone-sdk", () => {
+  const originalModule = jest.requireActual("redstone-sdk");
+  return {
+    __esModule: true,
+    ...originalModule,
+    getOracleRegistryState: jest.fn(() => mockOracleRegistryState),
+  };
+});
 
 const signByMockSigner = (message: string): string => {
   const digest = keccak256(toUtf8Bytes(message));
@@ -48,12 +54,6 @@ describe("Data packages (e2e)", () => {
     app = moduleFixture.createNestApplication();
     await app.init();
     httpServer = app.getHttpServer();
-
-    // Mock oracle registry state
-    const mockedRedstoneSDK = redstoneSDK as jest.Mocked<typeof redstoneSDK>;
-    mockedRedstoneSDK.getOracleRegistryState.mockResolvedValue(
-      mockOracleRegistryState
-    );
 
     // Connect to mongoDB in memory
     await connectToTestDB();

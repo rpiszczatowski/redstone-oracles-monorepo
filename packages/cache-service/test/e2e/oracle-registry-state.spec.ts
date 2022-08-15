@@ -5,7 +5,14 @@ import { AppModule } from "../../src/app.module";
 import redstoneSDK from "redstone-sdk";
 import { mockOracleRegistryState } from "../common/mock-values";
 
-jest.mock("redstone-sdk");
+jest.mock("redstone-sdk", () => {
+  const originalModule = jest.requireActual("redstone-sdk");
+  return {
+    __esModule: true,
+    ...originalModule,
+    getOracleRegistryState: jest.fn(() => mockOracleRegistryState),
+  };
+});
 
 describe("Oracle registry state (e2e)", () => {
   let app: INestApplication;
@@ -20,11 +27,6 @@ describe("Oracle registry state (e2e)", () => {
   });
 
   it("/oracle-registry-state (GET)", async () => {
-    const mockedRedstoneSDK = redstoneSDK as jest.Mocked<typeof redstoneSDK>;
-    mockedRedstoneSDK.getOracleRegistryState.mockResolvedValue(
-      mockOracleRegistryState
-    );
-
     const testResponse = await request(app.getHttpServer())
       .get("/oracle-registry-state")
       .expect(200);

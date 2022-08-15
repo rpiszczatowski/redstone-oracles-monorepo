@@ -8,7 +8,7 @@ import {
 import { RedstoneOraclesState } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
 import {
   DataPackagesRequestParams,
-  // getDataServiceIdForSigner,
+  getDataServiceIdForSigner,
   getOracleRegistryState,
 } from "redstone-sdk";
 import {
@@ -17,20 +17,6 @@ import {
 } from "./data-packages.controller";
 import { CachedDataPackage } from "./data-packages.interface";
 import { DataPackage } from "./data-packages.model";
-
-// TODO: switch to the version from redstone-sdk
-// And remove the implementation below
-const getDataServiceIdForSigner = (
-  oracleState: RedstoneOraclesState,
-  signerAddress: string
-) => {
-  for (const nodeDetails of Object.values(oracleState.nodes)) {
-    if (nodeDetails.evmAddress.toLowerCase() === signerAddress.toLowerCase()) {
-      return nodeDetails.dataServiceId;
-    }
-  }
-  throw new Error(`Data service not found for ${signerAddress}`);
-};
 
 @Injectable()
 export class DataPackagesService {
@@ -104,6 +90,7 @@ export class DataPackagesService {
       dataServicesRegistry,
       signerAddress
     );
+
     return {
       dataServiceId,
       signerAddress,
