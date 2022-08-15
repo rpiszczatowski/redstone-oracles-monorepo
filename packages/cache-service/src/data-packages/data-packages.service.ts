@@ -5,7 +5,6 @@ import {
   recoverPublicKey,
   toUtf8Bytes,
 } from "ethers/lib/utils";
-import { RedstoneOraclesState } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
 import {
   DataPackagesRequestParams,
   getDataServiceIdForSigner,
@@ -15,7 +14,10 @@ import {
   BulkPostRequestBody,
   DataPackagesResponse,
 } from "./data-packages.controller";
-import { CachedDataPackage } from "./data-packages.interface";
+import {
+  CachedDataPackage,
+  ReceivedDataPackage,
+} from "./data-packages.interface";
 import { DataPackage } from "./data-packages.model";
 
 @Injectable()
@@ -75,32 +77,48 @@ export class DataPackagesService {
     return fetchedPackagesPerDataFeed;
   }
 
-  // TODO: implement it using DB
-  async loadDataServicesRegistry(): Promise<RedstoneOraclesState> {
-    return await getOracleRegistryState();
-  }
-
   async verifyRequester(body: BulkPostRequestBody) {
     const signerAddress = this.recoverSigner(
       JSON.stringify(body.dataPackages),
       body.requestSignature
     );
-    const dataServicesRegistry = await this.loadDataServicesRegistry();
-    const dataServiceId = getDataServiceIdForSigner(
-      dataServicesRegistry,
-      signerAddress
-    );
 
-    return {
-      dataServiceId,
-      signerAddress,
-    };
+    return signerAddress;
   }
 
   // TODO: maybe move this logic to a shared module (e.g. redstone-sdk)
+  // Maybe use personal sign instead
   recoverSigner(message: string, signature: string): string {
     const digest = keccak256(toUtf8Bytes(message));
     const publicKey = recoverPublicKey(digest, signature);
     return computeAddress(publicKey);
+  }
+
+  async prepareReceivedDataPackagesForBulkSaving(
+    receivedDataPackages: ReceivedDataPackage[],
+    signerAddress: string
+  ) {
+    const oracleRegistryState = await getOracleRegistryState();
+    const dataServiceId = getDataServiceIdForSigner(
+      oracleRegistryState,
+      signerAddress
+    );
+
+    const dataPackagesForSaving = receivedDataPackages.map(
+      (receivedDataPackage) => {
+        const cachedDataPackage: CachedDataPackage = {
+          ...receivedDataPackage,
+          dataServiceId,
+          signerAddress,
+        };
+        if (receivedDataPackage.dataPoints.length === 1) {
+          cachedDataPackage.dataFeedId =
+            receivedDataPackage.dataPoints[0].dataFeedId;
+        }
+        return cachedDataPackage;
+      }
+    );
+
+    return dataPackagesForSaving;
   }
 }

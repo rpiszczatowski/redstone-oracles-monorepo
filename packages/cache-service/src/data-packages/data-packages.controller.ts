@@ -43,21 +43,13 @@ export class DataPackagesController {
   async addBulk(@Body() body: BulkPostRequestBody) {
     // TODO: implement request validation
 
-    const { dataServiceId, signerAddress } =
-      await this.dataPackagesService.verifyRequester(body);
+    const signerAddress = await this.dataPackagesService.verifyRequester(body);
 
-    const dataPackagesToSave = body.dataPackages.map((receivedDataPackage) => {
-      const cachedDataPackage: CachedDataPackage = {
-        ...receivedDataPackage,
-        dataServiceId,
-        signerAddress,
-      };
-      if (receivedDataPackage.dataPoints.length === 1) {
-        cachedDataPackage.dataFeedId =
-          receivedDataPackage.dataPoints[0].dataFeedId;
-      }
-      return cachedDataPackage;
-    });
+    const dataPackagesToSave =
+      await this.dataPackagesService.prepareReceivedDataPackagesForBulkSaving(
+        body.dataPackages,
+        signerAddress
+      );
 
     await this.dataPackagesService.saveManyDataPackagesInDB(dataPackagesToSave);
   }
