@@ -46,15 +46,18 @@ export class DataPackagesController {
     const { dataServiceId, signerAddress } =
       await this.dataPackagesService.verifyRequester(body);
 
-    const dataPackagesToSave = body.dataPackages.map((receivedDataPackage) => ({
-      ...receivedDataPackage,
-      dataServiceId,
-      signerAddress,
-      dataFeedId:
-        receivedDataPackage.dataPoints.length === 1
-          ? receivedDataPackage.dataPoints[0].dataFeedId
-          : undefined,
-    }));
+    const dataPackagesToSave = body.dataPackages.map((receivedDataPackage) => {
+      const cachedDataPackage: CachedDataPackage = {
+        ...receivedDataPackage,
+        dataServiceId,
+        signerAddress,
+      };
+      if (receivedDataPackage.dataPoints.length === 1) {
+        cachedDataPackage.dataFeedId =
+          receivedDataPackage.dataPoints[0].dataFeedId;
+      }
+      return cachedDataPackage;
+    });
 
     await this.dataPackagesService.saveManyDataPackagesInDB(dataPackagesToSave);
   }

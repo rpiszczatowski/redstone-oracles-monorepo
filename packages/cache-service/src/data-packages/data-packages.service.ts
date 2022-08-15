@@ -1,9 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { keccak256, recoverAddress, toUtf8Bytes } from "ethers/lib/utils";
+import {
+  computeAddress,
+  keccak256,
+  recoverPublicKey,
+  toUtf8Bytes,
+} from "ethers/lib/utils";
 import { RedstoneOraclesState } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
 import {
   DataPackagesRequestParams,
-  getDataServiceIdForSignerAddress,
+  // getDataServiceIdForSigner,
   getOracleRegistryState,
 } from "redstone-sdk";
 import {
@@ -12,6 +17,20 @@ import {
 } from "./data-packages.controller";
 import { CachedDataPackage } from "./data-packages.interface";
 import { DataPackage } from "./data-packages.model";
+
+// TODO: switch to the version from redstone-sdk
+// And remove the implementation below
+const getDataServiceIdForSigner = (
+  oracleState: RedstoneOraclesState,
+  signerAddress: string
+) => {
+  for (const nodeDetails of Object.values(oracleState.nodes)) {
+    if (nodeDetails.evmAddress.toLowerCase() === signerAddress.toLowerCase()) {
+      return nodeDetails.dataServiceId;
+    }
+  }
+  throw new Error(`Data service not found for ${signerAddress}`);
+};
 
 @Injectable()
 export class DataPackagesService {
@@ -40,7 +59,7 @@ export class DataPackagesService {
         },
         {
           $group: {
-            _id: { signerAddress: "$signerAddress" },
+            _id: "$signerAddress",
             timestampMilliseconds: { $first: "$timestampMilliseconds" },
             signature: { $first: "$signature" },
             dataPoints: { $first: "$dataPoints" },
@@ -50,15 +69,17 @@ export class DataPackagesService {
           },
         },
         {
-          $limit: requestConfig.uniqueSignersCount,
+          $limit: Number(requestConfig.uniqueSignersCount),
         },
       ]);
 
-      // TODO: remove this console.log
-      console.log(`Grouped data packages for ${dataFeedId}`);
-      console.log(groupedDataPackages);
-
-      fetchedPackagesPerDataFeed[dataFeedId] = groupedDataPackages;
+      fetchedPackagesPerDataFeed[dataFeedId] = groupedDataPackages.map((dp) => {
+        const { _id, __v, ...rest } = dp;
+        return {
+          ...rest,
+          signerAddress: _id,
+        };
+      });
     };
 
     // Fetching data packages for each data feed
@@ -79,7 +100,7 @@ export class DataPackagesService {
       body.requestSignature
     );
     const dataServicesRegistry = await this.loadDataServicesRegistry();
-    const dataServiceId = getDataServiceIdForSignerAddress(
+    const dataServiceId = getDataServiceIdForSigner(
       dataServicesRegistry,
       signerAddress
     );
@@ -92,6 +113,7 @@ export class DataPackagesService {
   // TODO: maybe move this logic to a shared module (e.g. redstone-sdk)
   recoverSigner(message: string, signature: string): string {
     const digest = keccak256(toUtf8Bytes(message));
-    return recoverAddress(digest, signature);
+    const publicKey = recoverPublicKey(digest, signature);
+    return computeAddress(publicKey);
   }
 }
