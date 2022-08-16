@@ -1,50 +1,25 @@
+import "../common/set-test-envs";
+import { signByMockSigner } from "../common/test-utils";
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
 import {
+  mockDataPackages,
   mockOracleRegistryState,
   mockSigner,
-  MOCK_PRIVATE_KEY,
 } from "../common/mock-values";
 import { connectToTestDB, dropTestDatabase } from "../common/test-db";
 import { DataPackage } from "../../src/data-packages/data-packages.model";
-import {
-  joinSignature,
-  keccak256,
-  SigningKey,
-  toUtf8Bytes,
-} from "ethers/lib/utils";
 
-jest.mock("redstone-sdk", () => {
-  const originalModule = jest.requireActual("redstone-sdk");
-  return {
-    __esModule: true,
-    ...originalModule,
-    getOracleRegistryState: jest.fn(() => mockOracleRegistryState),
-  };
-});
-
-const signByMockSigner = (message: string): string => {
-  const digest = keccak256(toUtf8Bytes(message));
-  const signingKey = new SigningKey(MOCK_PRIVATE_KEY);
-  const fullSignature = signingKey.signDigest(digest);
-  return joinSignature(fullSignature);
-};
+jest.mock("redstone-sdk", () => ({
+  __esModule: true,
+  ...jest.requireActual("redstone-sdk"),
+  getOracleRegistryState: jest.fn(() => mockOracleRegistryState),
+}));
 
 describe("Data packages (e2e)", () => {
   let app: INestApplication, httpServer: any;
-
-  const testDataPackages = [
-    {
-      timestampMilliseconds: 1654353400000,
-      signature: "mock-signature",
-      dataPoints: [
-        { dataFeedId: "mock-data-feed-id-1", value: 42 },
-        { dataFeedId: "mock-data-feed-id-2", value: 123 },
-      ],
-    },
-  ];
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -62,12 +37,12 @@ describe("Data packages (e2e)", () => {
   afterEach(async () => await dropTestDatabase());
 
   it("/data-packages/bulk (POST)", async () => {
-    const requestSignature = signByMockSigner(JSON.stringify(testDataPackages));
+    const requestSignature = signByMockSigner(JSON.stringify(mockDataPackages));
     await request(httpServer)
       .post("/data-packages/bulk")
       .send({
         requestSignature,
-        dataPackages: testDataPackages,
+        dataPackages: mockDataPackages,
       })
       .expect(201);
 
@@ -79,7 +54,7 @@ describe("Data packages (e2e)", () => {
       return rest;
     });
     expect(dataPackagesInDBCleaned).toEqual(
-      testDataPackages.map((dataPackage) => ({
+      mockDataPackages.map((dataPackage) => ({
         ...dataPackage,
         signerAddress: mockSigner.address,
         dataServiceId: "mock-data-service-1",
@@ -88,14 +63,14 @@ describe("Data packages (e2e)", () => {
   });
 
   it("/data-packages/bulk (POST) - should fail for invalid signature", async () => {
-    const requestSignature = signByMockSigner(JSON.stringify(testDataPackages));
-    const newDataPackages = [...testDataPackages];
+    const requestSignature = signByMockSigner(JSON.stringify(mockDataPackages));
+    const newDataPackages = [...mockDataPackages];
     newDataPackages[0].dataPoints[0].value = 43;
     await request(httpServer)
       .post("/data-packages/bulk")
       .send({
         requestSignature,
-        testDataPackages,
+        mockDataPackages,
       })
       .expect(500);
 
@@ -108,7 +83,7 @@ describe("Data packages (e2e)", () => {
       for (const dataFeedId of [undefined, "ETH", "AAVE", "BTC"]) {
         for (const signerAddress of ["0x1", "0x2", "0x3", "0x4", "0x5"]) {
           dataPackagesToInsert.push({
-            ...testDataPackages[0],
+            ...mockDataPackages[0],
             dataFeedId,
             dataServiceId,
             signerAddress,

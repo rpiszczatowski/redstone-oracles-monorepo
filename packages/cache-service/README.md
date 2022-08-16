@@ -1,5 +1,11 @@
 # redstone-cache-service
 
+## Run mongodb locally
+
+Don't forget to replace alex with your username
+
+- mongod --dbpath=/Users/alex/data/db
+
 This is a NestJS web app, which serves as a gateway to the data in the RedStone ecosystem.
 
 - New name ideas:

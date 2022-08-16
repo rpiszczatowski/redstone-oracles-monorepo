@@ -1,18 +1,15 @@
+import "../common/set-test-envs";
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
-import redstoneSDK from "redstone-sdk";
 import { mockOracleRegistryState } from "../common/mock-values";
 
-jest.mock("redstone-sdk", () => {
-  const originalModule = jest.requireActual("redstone-sdk");
-  return {
-    __esModule: true,
-    ...originalModule,
-    getOracleRegistryState: jest.fn(() => mockOracleRegistryState),
-  };
-});
+jest.mock("redstone-sdk", () => ({
+  __esModule: true,
+  ...jest.requireActual("redstone-sdk"),
+  getOracleRegistryState: jest.fn(() => mockOracleRegistryState),
+}));
 
 describe("Oracle registry state (e2e)", () => {
   let app: INestApplication;

@@ -1,18 +1,29 @@
-import { Module } from "@nestjs/common";
+import { Module, Provider } from "@nestjs/common";
+import { ScheduleModule } from "@nestjs/schedule";
 import { AppController } from "./app.controller";
 import { DataPackagesController } from "./data-packages/data-packages.controller";
 import { DataPackagesService } from "./data-packages/data-packages.service";
 import { OracleRegistryStateController } from "./oracle-registry-state/oracle-registry-state.controller";
 import { DataFeedsMetadataController } from "./data-feeds-metadata/data-feeds-metadata.controller";
+import config from "./config";
+import { StreamrListenerService } from "./streamr-listener/streamr-listener.service";
+
+const providers: Provider[] = [DataPackagesService];
+const imports = [];
+
+if (config.enableStreamrListening) {
+  providers.push(StreamrListenerService);
+  imports.push(ScheduleModule.forRoot());
+}
 
 @Module({
-  imports: [],
+  imports,
   controllers: [
     AppController,
     DataPackagesController,
     OracleRegistryStateController,
     DataFeedsMetadataController,
   ],
-  providers: [DataPackagesService],
+  providers,
 })
 export class AppModule {}

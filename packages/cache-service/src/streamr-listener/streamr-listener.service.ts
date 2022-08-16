@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
+import { Cron } from "@nestjs/schedule";
 import { getOracleRegistryState } from "redstone-sdk";
+import config from "../config";
 import { StreamrClient, Subscription } from "streamr-client";
 import { DataPackage } from "../data-packages/data-packages.model";
 import { DataPackagesService } from "../data-packages/data-packages.service";
@@ -8,15 +10,22 @@ interface StreamrSubscriptions {
   [nodeEvmAddress: string]: Subscription;
 }
 
+const CRON_EXPRESSION_EVERY_1_MINUTE = "*/1 * * * *";
+
 @Injectable()
 export class StreamrListenerService {
-  constructor(
-    private dataPackageService: DataPackagesService,
-    private streamrClient: StreamrClient = new StreamrClient(),
-    private subscriptionsState: StreamrSubscriptions = {}
-  ) {}
+  private subscriptionsState: StreamrSubscriptions = {};
+  private streamrClient: StreamrClient = new StreamrClient();
+
+  constructor(private dataPackageService: DataPackagesService) {}
+
+  @Cron(CRON_EXPRESSION_EVERY_1_MINUTE)
+  handleCron() {
+    this.syncStreamrListening();
+  }
 
   async syncStreamrListening() {
+    console.log(`Syncing streamr listening`);
     const oracleRegistryState = await getOracleRegistryState();
     const nodeEvmAddresses = Object.values(oracleRegistryState.nodes).map(
       ({ evmAddress }) => evmAddress
@@ -69,11 +78,14 @@ export class StreamrListenerService {
     this.subscriptionsState[nodeEvmAddress] = subscription;
   }
 
-  async cancelListeningToNodeStream(nodeEvmAddress: string) {
+  cancelListeningToNodeStream(nodeEvmAddress: string) {
     const subscription = this.subscriptionsState[nodeEvmAddress];
     if (!!subscription) {
-      await this.streamrClient.unsubscribe(subscription);
       delete this.subscriptionsState[nodeEvmAddress];
+      setTimeout(
+        () => this.streamrClient.unsubscribe(subscription),
+        config.streamrUnsubscribeDelayMilliseconds
+      );
     }
   }
 }

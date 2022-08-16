@@ -32,3 +32,14 @@ export const mockOracleRegistryState: RedstoneOraclesState = {
   canEvolve: true,
   evolve: null,
 };
+
+export const mockDataPackages = [
+  {
+    timestampMilliseconds: 1654353400000,
+    signature: "mock-signature",
+    dataPoints: [
+      { dataFeedId: "mock-data-feed-id-1", value: 42 },
+      { dataFeedId: "mock-data-feed-id-2", value: 123 },
+    ],
+  },
+];

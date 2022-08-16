@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import config from "../config";
 
 export const connectToMongo = async () => {
+  console.log("Connecting to MongoDB");
   await mongoose.connect(config.mongoDbUrl);
   setupExitHandlers();
   console.log("Connected to MongoDB");
