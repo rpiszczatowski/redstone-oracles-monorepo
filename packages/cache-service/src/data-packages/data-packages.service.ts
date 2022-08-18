@@ -14,11 +14,8 @@ import {
   BulkPostRequestBody,
   DataPackagesResponse,
 } from "./data-packages.controller";
-import {
-  CachedDataPackage,
-  ReceivedDataPackage,
-} from "./data-packages.interface";
-import { DataPackage } from "./data-packages.model";
+import { ReceivedDataPackage } from "./data-packages.interface";
+import { CachedDataPackage, DataPackage } from "./data-packages.model";
 
 @Injectable()
 export class DataPackagesService {

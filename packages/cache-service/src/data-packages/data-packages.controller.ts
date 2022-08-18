@@ -9,11 +9,9 @@ import {
 } from "@nestjs/common";
 import { DataPackagesRequestParams } from "redstone-sdk";
 import config from "../config";
-import {
-  CachedDataPackage,
-  ReceivedDataPackage,
-} from "./data-packages.interface";
+import { ReceivedDataPackage } from "./data-packages.interface";
 import { DataPackagesService } from "./data-packages.service";
+import { CachedDataPackage } from "./data-packages.model";
 
 export interface BulkPostRequestBody {
   requestSignature: string;

@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
 import { getOracleRegistryState } from "redstone-sdk";
-import config from "../config";
 import { StreamrClient, Subscription } from "streamr-client";
 import { DataPackage } from "../data-packages/data-packages.model";
 import { DataPackagesService } from "../data-packages/data-packages.service";
@@ -82,10 +81,7 @@ export class StreamrListenerService {
     const subscription = this.subscriptionsState[nodeEvmAddress];
     if (!!subscription) {
       delete this.subscriptionsState[nodeEvmAddress];
-      setTimeout(
-        () => this.streamrClient.unsubscribe(subscription),
-        config.streamrUnsubscribeDelayMilliseconds
-      );
+      this.streamrClient.unsubscribe(subscription);
     }
   }
 }

@@ -1,6 +1,7 @@
 import { Module, Provider } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
 import { AppController } from "./app.controller";
+import { MongooseModule } from "@nestjs/mongoose";
 import { DataPackagesController } from "./data-packages/data-packages.controller";
 import { DataPackagesService } from "./data-packages/data-packages.service";
 import { OracleRegistryStateController } from "./oracle-registry-state/oracle-registry-state.controller";
@@ -14,6 +15,10 @@ const imports = [];
 if (config.enableStreamrListening) {
   providers.push(StreamrListenerService);
   imports.push(ScheduleModule.forRoot());
+}
+
+if (config.mongoDbUrl) {
+  imports.push(MongooseModule.forRoot(config.mongoDbUrl));
 }
 
 @Module({

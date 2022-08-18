@@ -1,38 +1,36 @@
-import mongoose from "mongoose";
-import { CachedDataPackage } from "./data-packages.interface";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose, { Document } from "mongoose";
+import { DataPointPlainObj } from "redstone-protocol";
 
 const { Types } = mongoose.Schema;
 
-const DataPackageSchema = new mongoose.Schema<CachedDataPackage>({
-  timestampMilliseconds: {
-    type: Types.Number,
-    required: true,
-  },
-  signature: {
-    type: Types.String,
-    required: true,
-  },
-  dataPoints: {
-    type: Types.Mixed,
-    required: true,
-  },
+export type DataPackageDocument = CachedDataPackage & Document;
 
-  dataServiceId: {
-    type: Types.String,
-    required: true,
-  },
-  signerAddress: {
-    type: Types.String,
-    required: true,
-  },
-  dataFeedId: {
-    type: Types.String,
-    required: false,
-  },
-  sources: {
-    type: Types.Mixed,
-    required: false,
-  },
-});
+@Schema()
+export class CachedDataPackage {
+  @Prop({ required: true })
+  timestampMilliseconds: number;
+
+  @Prop({ required: true })
+  signature: string;
+
+  @Prop({ type: Types.Mixed, required: true })
+  dataPoints: DataPointPlainObj[];
+
+  @Prop({ required: true })
+  dataServiceId: string;
+
+  @Prop({ required: true })
+  signerAddress: string;
+
+  @Prop({ required: false })
+  dataFeedId?: string;
+
+  @Prop({ type: Types.Mixed, required: false })
+  sources?: object;
+}
+
+export const DataPackageSchema =
+  SchemaFactory.createForClass(CachedDataPackage);
 
 export const DataPackage = mongoose.model("DataPackage", DataPackageSchema);
