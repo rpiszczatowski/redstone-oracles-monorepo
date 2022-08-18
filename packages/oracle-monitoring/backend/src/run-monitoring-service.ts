@@ -1,30 +1,23 @@
 import schedule from "node-schedule";
-import consola from "consola";
 import redstone from "redstone-api-extended";
-import { dataFeedsToCheck } from "./config";
-import { connectToRemoteMongo } from "./helpers/db-connector";
-import { execute as executeDataFeedCheckerJob } from "./jobs/data-feed-checker-job";
-import { execute as executeSingleSourceCheckerJob } from "./jobs/single-source-checker-job";
 import { DataFeedId } from "redstone-api-extended/lib/oracle/redstone-data-feed";
-import { startApi } from "./api/api";
+import { Logger } from "@nestjs/common";
+import { execute as executeDataFeedCheckerJob } from "./modules/jobs/data-feed-checker-job";
+import { execute as executeSingleSourceCheckerJob } from "./modules/jobs/single-source-checker-job";
+import { connectToRemoteMongo } from "./shared/db-connector";
+import { dataFeedsToCheck } from "./config";
 
-const logger = consola.withTag("run-monitoring-service");
-
-runMonitoringService();
-
-async function runMonitoringService() {
+export function runMonitoringService() {
   // Connect to mongoDB
-  logger.info("Connecting to MongoDB");
-  await connectToRemoteMongo();
-
-  startApi();
+  Logger.log("Connecting to MongoDB");
+  connectToRemoteMongo();
 
   // Starting data feed checker jobs
   for (const dataFeed of dataFeedsToCheck) {
     // Starting job for checking whole data package fetching
     // (without specified symbol)
     if (dataFeed.checkWithoutSymbol) {
-      logger.info(`Starting data feed checker job for: ${dataFeed.id}`);
+      Logger.log(`Starting data feed checker job for: ${dataFeed.id}`);
       schedule.scheduleJob(dataFeed.schedule, () =>
         executeDataFeedCheckerJob({
           dataFeedId: dataFeed.id as DataFeedId,
@@ -35,7 +28,7 @@ async function runMonitoringService() {
     // Starting jobs for each symbol checking
     if (dataFeed.symbolsToCheck && dataFeed.symbolsToCheck.length > 0) {
       for (const symbol of dataFeed.symbolsToCheck) {
-        logger.info(
+        Logger.log(
           `Starting data feed checker job for: ${dataFeed.id} with symbol: ${symbol}`
         );
         schedule.scheduleJob(dataFeed.schedule, () =>
@@ -53,7 +46,7 @@ async function runMonitoringService() {
         dataFeed.id as DataFeedId
       );
       for (const source of dataFeedSourcesConfig.sources) {
-        logger.info(`Starting single source checker job for: ${dataFeed.id}`);
+        Logger.log(`Starting single source checker job for: ${dataFeed.id}`);
         schedule.scheduleJob(dataFeed.schedule, () =>
           executeSingleSourceCheckerJob({
             dataFeedId: dataFeed.id as DataFeedId,

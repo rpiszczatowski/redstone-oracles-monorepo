@@ -18,6 +18,8 @@ services:
     depends_on:
       - mongodb
     restart: on-failure
+    environment:
+      - UPTIME_KUMA_URL=http://localhost:3001/api/push/fQSBMkcFZ7?status=up
   uptime-kuma:
     image: louislam/uptime-kuma:1
     container_name: uptime-kuma

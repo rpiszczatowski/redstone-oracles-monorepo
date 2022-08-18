@@ -2211,6 +2211,14 @@
     "@types/keygrip" "*"
     "@types/node" "*"
 
+"@types/cron@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/cron/-/cron-2.0.0.tgz#4fe75f2720a3b69a1f7b80e656749f4c2c96d727"
+  integrity sha512-xZM08fqvwIXgghtPVkSPKNgC+JoMQ2OHazEvyTKnNf7aWu1aB6/4lBbQFrb03Td2cUGG7ITzMv3mFYnMu6xRaQ==
+  dependencies:
+    "@types/luxon" "*"
+    "@types/node" "*"
+
 "@types/debug@^4.1.7":
   version "4.1.7"
   resolved "https://registry.yarnpkg.com/@types/debug/-/debug-4.1.7.tgz#7cc0ea761509124709b8b2d1090d8f6c17aadb82"
@@ -2450,6 +2458,11 @@
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@types/lru-cache/-/lru-cache-5.1.1.tgz#c48c2e27b65d2a153b19bfc1a317e30872e01eef"
   integrity sha512-ssE3Vlrys7sdIzs5LOxCzTVMsU7i9oa/IaW92wF32JFb3CVczqOkru2xspuKczHEbG3nvmPY7IFqVmGGHdNbYw==
+
+"@types/luxon@*":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-3.0.0.tgz#47fb7891e41875fce7018a8bd3d09b204c5621f5"
+  integrity sha512-Lx+EZoJxUKw4dp8uei9XiUVNlgkYmax5+ovqt6Xf3LzJOnWhlfJw/jLBmqfGVwOP/pDr4HT8bI1WtxK0IChMLw==
 
 "@types/mime@*":
   version "3.0.1"
