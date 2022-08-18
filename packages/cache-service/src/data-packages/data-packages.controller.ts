@@ -1,5 +1,14 @@
-import { Body, Controller, Get, Post, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Post,
+  Query,
+} from "@nestjs/common";
 import { DataPackagesRequestParams } from "redstone-sdk";
+import config from "../config";
 import {
   CachedDataPackage,
   ReceivedDataPackage,
@@ -41,6 +50,16 @@ export class DataPackagesController {
 
   @Post("bulk")
   async addBulk(@Body() body: BulkPostRequestBody) {
+    if (!config.enableDirectPostingRoutes) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: "Data package posting routes are disabled",
+        },
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
     // TODO: implement request validation
 
     const signerAddress = await this.dataPackagesService.verifyRequester(body);
