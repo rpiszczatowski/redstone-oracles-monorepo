@@ -3,23 +3,23 @@
     "strict": true,
     "target": "es6",
     "declaration": true,
-    "declarationMap": true,
     "outDir": "./dist",
     "module": "commonjs",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "lib": ["es2021"],
-    "allowJs": true,
-    "incremental": true
+    "allowJs": true
   },
   "ts-node": {
     "files": true
   },
-  "include": ["./src", "./test"],
-  "references": [
-    {
-      "path": "../protocol"
-    }
-  ]
+  "include": [
+    "src/**/*",
+    "src/**/*.json",
+    "./package.json",
+    "manifests/**/*.json",
+    "index.ts"
+  ],
+  "exclude": ["node_modules", "tools", "test"]
 }

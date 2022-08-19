@@ -1,8 +1,8 @@
 import axios from "axios";
 import { Broadcaster } from "../Broadcaster";
+import { PriceDataSigned, SignedPricePackage } from "../../types";
 import { Consola } from "consola";
 import { stringifyError } from "../../utils/error-stringifier";
-import { ExtendedSignedDataPackagePlainObj } from "../../types";
 
 const logger = require("../../utils/logger")("HttpBroadcaster") as Consola;
 
@@ -11,7 +11,7 @@ const logger = require("../../utils/logger")("HttpBroadcaster") as Consola;
 export class HttpBroadcaster implements Broadcaster {
   constructor(private readonly broadcasterURLs: string[]) {}
 
-  async broadcast(prices: ExtendedSignedDataPackagePlainObj[]): Promise<void> {
+  async broadcast(prices: PriceDataSigned[]): Promise<void> {
     const promises = this.broadcasterURLs.map((url) => {
       logger.info(`Posting prices to ${url}`);
       return axios
@@ -26,12 +26,20 @@ export class HttpBroadcaster implements Broadcaster {
   }
 
   async broadcastPricePackage(
-    signedData: ExtendedSignedDataPackagePlainObj
+    signedData: SignedPricePackage,
+    providerAddress: string
   ): Promise<void> {
+    const body = {
+      signerAddress: signedData.signerAddress,
+      liteSignature: signedData.liteSignature,
+      provider: providerAddress,
+      ...signedData.pricePackage, // unpacking prices and timestamp
+    };
+
     const promises = this.broadcasterURLs.map((url) => {
       logger.info(`Posting pacakages to ${url}`);
       return axios
-        .post(url + "/packages", signedData)
+        .post(url + "/packages", body)
         .then(() => logger.info(`Broadcasting package to ${url} completed`))
         .catch((e) =>
           logger.error(

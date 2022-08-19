@@ -1,5 +1,4 @@
 import { JWKInterface } from "arweave/node/lib/wallet";
-import { SignedDataPackagePlainObj } from "redstone-protocol";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
@@ -56,6 +55,14 @@ export interface Aggregator {
   ) => PriceDataAfterAggregation;
 }
 
+export interface Broadcaster {
+  broadcast: (prices: PriceDataSigned[]) => Promise<void>;
+  broadcastPricePackage: (
+    pricePackage: SignedPricePackage,
+    providerAddress: string
+  ) => Promise<void>;
+}
+
 export interface PricesObj {
   [symbol: string]: number;
 }
@@ -77,6 +84,16 @@ export interface PriceDataAfterAggregation extends PriceDataBeforeAggregation {
   value: number;
 }
 
+export interface PriceDataBeforeSigning extends PriceDataAfterAggregation {
+  permawebTx: string;
+  provider: string;
+}
+
+export interface PriceDataSigned extends PriceDataBeforeSigning {
+  evmSignature?: string;
+  liteEvmSignature?: string;
+}
+
 export interface ShortSinglePrice {
   symbol: string;
   value: any;
@@ -86,6 +103,13 @@ export interface PricePackage {
   prices: ShortSinglePrice[];
   timestamp: number;
 }
+
+export interface SignedPricePackage {
+  pricePackage: PricePackage;
+  signerAddress: string;
+  liteSignature: string;
+}
+
 export interface SerializedPriceData {
   symbols: string[];
   values: any[];
@@ -111,40 +135,6 @@ export interface NodeConfig {
   overrideManifestUsingFile?: Manifest;
 }
 
-interface EvolveState {
-  canEvolve: boolean;
-  evolve: string | null;
-}
-
-export interface RedstoneOraclesState extends EvolveState {
-  contractAdmins: string[];
-  nodes: Nodes;
-  dataFeeds: DataFeeds;
-}
-
-type Nodes = { [key in string]: Node };
-type DataFeeds = { [key in string]: DataFeed };
-
-interface Node {
-  name: string;
-  logo: string;
-  description: string;
-  dataFeedId: string;
-  evmAddress: string;
-  ipAddress: string;
-  ecdsaPublicKey: string;
-  arweavePublicKey: string;
-  url?: string;
-}
-
-interface DataFeed {
-  name: string;
-  manifestTxId: string;
-  logo: string;
-  description: string;
-  admin: string;
-}
-
 export interface MulticallRequest {
   address: string;
   data: string;
@@ -154,12 +144,3 @@ export interface MulticallRequest {
 export type MulticallParsedResponses = {
   [x in string]: { success: boolean; value: string };
 };
-
-export interface ExtendedSignedDataPackagePlainObj
-  extends SignedDataPackagePlainObj {
-  id: string;
-  version: string;
-  source?: {
-    [sourceName: string]: any;
-  };
-}

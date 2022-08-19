@@ -3,18 +3,20 @@ import { Consola } from "consola";
 import { ethers } from "ethers";
 import axios from "axios";
 import jp from "jsonpath";
-import { utils } from "redstone-protocol";
-import { DataPackage, NumericDataPoint } from "redstone-protocol";
+
 import { fromBase64 } from "../utils/base64";
+import EvmPriceSigner from "../signers/EvmPriceSigner";
 import { NodeConfig } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
-import { base64 } from "ethers/lib/utils";
 
+const EVM_CHAIN_ID = 1;
 const QUERY_PARAM_NAME = "custom-url-request-config-base64";
 const DEFAULT_TIMEOUT_MILLISECONDS = 10000;
+const EVM_SIGNER_VERSION = "0.4";
 const logger = require("../utils/logger")(
   "custom-url-requests-route"
 ) as Consola;
+const evmSigner = new EvmPriceSigner(EVM_SIGNER_VERSION, EVM_CHAIN_ID);
 
 export default function (app: express.Application, nodeConfig: NodeConfig) {
   app.get("/custom-url-requests", async (req, res) => {
@@ -49,23 +51,23 @@ export default function (app: express.Application, nodeConfig: NodeConfig) {
       // Preparing a signed data package
       const timestamp = Date.now();
       const symbol = getSymbol({ url, jsonpath });
-      const dataPoint = new NumericDataPoint({
-        symbol,
-        value: extractedValue,
-      });
-      const dataPackage = new DataPackage([dataPoint], timestamp);
-      const signedDataPackage = dataPackage.sign(
+      const dataPackage = {
+        timestamp,
+        prices: [{ symbol, value: extractedValue }],
+      };
+      const signedPackage = evmSigner.signPricePackage(
+        dataPackage,
         nodeConfig.privateKeys.ethereumPrivateKey
       );
-      const parsedSignedDataPackage = signedDataPackage.toObj();
-
-      const dataPackageToBroadcast = {
-        ...parsedSignedDataPackage,
-        customRequestConfig,
-      };
 
       // Sending response
-      return res.json(dataPackageToBroadcast);
+      return res.json({
+        signerAddress: signedPackage.signerAddress,
+        liteSignature: signedPackage.liteSignature,
+        prices: dataPackage.prices,
+        customRequestConfig,
+        timestamp,
+      });
     } catch (e) {
       const errText = stringifyError(e);
       // TODO: improve error catching later:

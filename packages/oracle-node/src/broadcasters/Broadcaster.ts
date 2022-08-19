@@ -1,7 +1,10 @@
-import { SignedDataPackagePlainObj } from "redstone-protocol";
+import { PriceDataSigned, SignedPricePackage } from "../types";
 
 export interface Broadcaster {
-  broadcast(prices: SignedDataPackagePlainObj[]): Promise<void>;
+  broadcast(prices: PriceDataSigned[]): Promise<void>;
 
-  broadcastPricePackage(signedData: SignedDataPackagePlainObj): Promise<void>;
+  broadcastPricePackage(
+    signedData: SignedPricePackage,
+    providerAddress: string
+  ): Promise<void>;
 }

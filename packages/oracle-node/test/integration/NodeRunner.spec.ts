@@ -1,5 +1,7 @@
 import NodeRunner from "../../src/NodeRunner";
 import { JWKInterface } from "arweave/node/lib/wallet";
+import { mocked } from "ts-jest/utils";
+import ArweaveProxy from "../../src/arweave/ArweaveProxy";
 import fetchers from "../../src/fetchers";
 import axios from "axios";
 import ArweaveService from "../../src/arweave/ArweaveService";
@@ -15,19 +17,6 @@ jest.mock("../../src/arweave/ArweaveProxy", () => {
   return jest.fn().mockImplementation(() => mockArProxy);
 });
 
-const mockStreamrBroadcaster = {
-  broadcast: () => Promise.resolve(),
-  broadcastPricePackage: () => Promise.resolve(),
-};
-
-jest.mock("../../src/broadcasters/streamr/StreamrBroadcaster", () => {
-  return {
-    StreamrBroadcaster: jest
-      .fn()
-      .mockImplementation(() => mockStreamrBroadcaster),
-  };
-});
-
 const mockBundlrProxy = {
   getBalance: jest.fn(),
   prepareSignedTrasaction: jest.fn().mockResolvedValue({
@@ -37,6 +26,18 @@ const mockBundlrProxy = {
 };
 jest.mock("../../src/arweave/BundlrProxy", () => {
   return jest.fn().mockImplementation(() => mockBundlrProxy);
+});
+
+jest.mock("../../src/signers/EvmPriceSigner", () => {
+  return jest.fn().mockImplementation(() => {
+    return {
+      signPricePackage: (pricePackage: any) => ({
+        liteSignature: "mock_evm_signed_lite",
+        signerAddress: "mock_evm_signer_address",
+        pricePackage,
+      }),
+    };
+  });
 });
 
 jest.mock("../../src/fetchers/coingecko/CoingeckoFetcher");
@@ -113,6 +114,8 @@ describe("NodeRunner", () => {
 
   it("should create node instance", async () => {
     // given
+    const mockedArProxy = mocked(ArweaveProxy, true);
+
     const sut = await NodeRunner.create({
       ...nodeConfig,
       overrideManifestUsingFile: manifest,
@@ -120,6 +123,7 @@ describe("NodeRunner", () => {
 
     // then
     expect(sut).not.toBeNull();
+    expect(mockedArProxy).toHaveBeenCalledWith(jwk);
   });
 
   it("should throw if no maxDeviationPercent configured for token", async () => {
@@ -230,20 +234,23 @@ describe("NodeRunner", () => {
 
     expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/prices", [
       {
+        liteEvmSignature: "mock_evm_signed_lite",
         id: "00000000-0000-0000-0000-000000000000",
-        dataPoints: [{ symbol: "BTC", value: 444.5 }],
+        permawebTx: "mockBundlrTransactionId",
+        provider: "mockArAddress",
         source: { coingecko: 444, uniswap: 445 },
-        timestampMilliseconds: 111111111,
+        symbol: "BTC",
+        timestamp: 111111111,
+        value: 444.5,
         version: "0.4",
-        signature:
-          "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
       },
     ]);
     expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/packages", {
-      timestampMilliseconds: 111111111,
-      dataPoints: [{ symbol: "BTC", value: 444.5 }],
-      signature:
-        "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
+      timestamp: 111111111,
+      liteSignature: "mock_evm_signed_lite",
+      signerAddress: "mock_evm_signer_address",
+      provider: "mockArAddress",
+      prices: [{ symbol: "BTC", value: 444.5 }],
     });
     expect(mockBundlrProxy.uploadBundlrTransaction).not.toHaveBeenCalled();
     // TODO: cannot spy on setInterval after upgrade to jest 27.
@@ -283,15 +290,17 @@ describe("NodeRunner", () => {
     expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/prices", [
       {
         id: "00000000-0000-0000-0000-000000000000",
-        dataPoints: [{ symbol: "BTC", value: 444.5 }],
         source: {
           coingecko: 444,
           uniswap: 445,
         },
-        timestampMilliseconds: 111111111,
+        symbol: "BTC",
+        timestamp: 111111111,
         version: "0.4",
-        signature:
-          "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
+        value: 444.5,
+        permawebTx: "mockBundlrTransactionId",
+        provider: "mockArAddress",
+        liteEvmSignature: "mock_evm_signed_lite",
       },
     ]);
 
