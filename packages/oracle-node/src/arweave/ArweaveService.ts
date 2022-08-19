@@ -1,9 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 import { Consola } from "consola";
+import { Manifest } from "../types";
 import ArweaveProxy from "./ArweaveProxy";
 import contracts from "../../src/config/contracts.json";
+import { RedstoneOraclesState } from "../contracts/redstone-oracle-registry/types";
 import { promiseTimeout } from "../utils/promise-timeout";
-import { Manifest, RedstoneOraclesState } from "../types";
 
 const logger = require("../utils/logger")("ArweaveService") as Consola;
 

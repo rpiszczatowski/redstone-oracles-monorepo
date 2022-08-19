@@ -1,6 +1,7 @@
-import Arweave from "arweave";
+import Arweave from "arweave/node";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { Consola } from "consola";
+import _ from "lodash";
 import ArweaveMultihost from "arweave-multihost";
 import {
   SmartWeave,

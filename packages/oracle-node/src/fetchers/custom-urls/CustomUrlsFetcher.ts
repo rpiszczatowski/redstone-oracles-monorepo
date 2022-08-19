@@ -1,4 +1,5 @@
 import axios from "axios";
+import _ from "lodash";
 import jp from "jsonpath";
 import { FetcherOpts, PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
@@ -49,8 +50,24 @@ export class CustomUrlsFetcher extends BaseFetcher {
     const pricesObj: PricesObj = {};
     for (const [id, response] of Object.entries(responses)) {
       const jsonpath = opts.manifest.tokens[id].customUrlDetails!.jsonpath;
-      const extractedValue = jp.query(response, jsonpath);
-      pricesObj[id] = extractedValue[0];
+      const [extractedValue] = jp.query(response, jsonpath);
+      let valueWithoutCommas = extractedValue;
+      if (typeof extractedValue === "string") {
+        valueWithoutCommas = extractedValue.replace(/,/g, "");
+      }
+      const extractedValueAsNumber = Number(valueWithoutCommas);
+      const isEmptyString =
+        typeof valueWithoutCommas === "string" &&
+        valueWithoutCommas.length === 0;
+      if (isNaN(extractedValueAsNumber) || isEmptyString) {
+        this.logger.error(
+          `Request to ${
+            opts.manifest.tokens[id].customUrlDetails!.url
+          } returned non-numeric value`
+        );
+      } else {
+        pricesObj[id] = extractedValue;
+      }
     }
     return pricesObj;
   }

@@ -4,13 +4,13 @@ import { deployContract, MockProvider } from "ethereum-waffle";
 import { EvmMulticallService } from "../../src/fetchers/evm-chain/EvmMulticallService";
 import Multicall2 from "../../src/fetchers/evm-chain/contracts-details/common/Multicall2.json";
 
-jest.setTimeout(50000);
+jest.setTimeout(10000);
 
 describe("EVM chain multicall service", () => {
   let multicallService: EvmMulticallService;
   let multicallContract: Contract;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const provider = new MockProvider();
     const [wallet] = provider.getWallets();
     multicallContract = await deployContract(wallet, {

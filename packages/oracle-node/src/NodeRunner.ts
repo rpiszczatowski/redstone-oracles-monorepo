@@ -1,7 +1,6 @@
 import BundlrTransaction from "@bundlr-network/client/build/common/transaction";
 import git from "git-last-commit";
 import { ethers } from "ethers";
-import { SignedDataPackagePlainObj } from "redstone-protocol";
 import { Consola } from "consola";
 import aggregators from "./aggregators";
 import ArweaveProxy from "./arweave/ArweaveProxy";
@@ -26,13 +25,14 @@ import {
   HttpBroadcaster,
   StreamrBroadcaster,
 } from "./broadcasters";
-import { fetchIp } from "./utils/ip-fetcher";
 import {
   Manifest,
   NodeConfig,
   PriceDataAfterAggregation,
-  ExtendedSignedDataPackagePlainObj,
+  PriceDataSigned,
+  SignedPricePackage,
 } from "./types";
+import { fetchIp } from "./utils/ip-fetcher";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -213,15 +213,19 @@ export default class NodeRunner {
       await this.fetchPrices();
     const bundlrTx: BundlrTransaction =
       await this.bundlrService.prepareBundlrTransaction(aggregatedPrices);
+    const pricesReadyForSigning = this.pricesService!.preparePricesForSigning(
+      aggregatedPrices,
+      bundlrTx.id,
+      this.providerAddress
+    );
 
     // Signing
-    const signedPrices = this.priceSignerService!.signPrices(aggregatedPrices);
-    const singedPricesPackage =
-      this.priceSignerService!.signPricePackage(aggregatedPrices);
+    const signedPrices: PriceDataSigned[] =
+      await this.priceSignerService!.signPrices(pricesReadyForSigning);
 
     // Broadcasting
     await this.broadcastPrices(signedPrices);
-    await this.broadcastEvmPricePackage(singedPricesPackage);
+    await this.broadcastEvmPricePackage(signedPrices);
 
     if (this.shouldBackupOnArweave()) {
       await this.bundlrService.uploadBundlrTransaction(bundlrTx);
@@ -251,7 +255,7 @@ export default class NodeRunner {
 
     const aggregatedPrices: PriceDataAfterAggregation[] =
       this.pricesService!.calculateAggregatedValues(
-        Object.values(pricesBeforeAggregation),
+        Object.values(pricesBeforeAggregation), // what is the advantage of using lodash.values?
         aggregators[this.currentManifest!.priceAggregator]
       );
     NodeRunner.printAggregatedPrices(aggregatedPrices);
@@ -259,9 +263,7 @@ export default class NodeRunner {
     return aggregatedPrices;
   }
 
-  private async broadcastPrices(
-    signedPrices: ExtendedSignedDataPackagePlainObj[]
-  ) {
+  private async broadcastPrices(signedPrices: PriceDataSigned[]) {
     logger.info("Broadcasting prices");
     const broadcastingTrackingId = trackStart("broadcasting");
     try {
@@ -310,13 +312,13 @@ export default class NodeRunner {
     }
   }
 
-  private async broadcastEvmPricePackage(
-    singedPricesPackage: SignedDataPackagePlainObj
-  ) {
+  private async broadcastEvmPricePackage(signedPrices: PriceDataSigned[]) {
     logger.info("Broadcasting price package");
     const packageBroadcastingTrackingId = trackStart("package-broadcasting");
     try {
-      await this.broadcastSignedPricePackage(singedPricesPackage);
+      const signedPackage =
+        this.priceSignerService!.signPricePackage(signedPrices);
+      await this.broadcastSignedPricePackage(signedPackage);
       logger.info("Package broadcasting completed");
     } catch (e: any) {
       logger.error("Package broadcasting failed", e.stack);
@@ -325,20 +327,26 @@ export default class NodeRunner {
     }
   }
 
-  private async broadcastSignedPricePackage(
-    signedPackage: SignedDataPackagePlainObj
-  ) {
+  private async broadcastSignedPricePackage(signedPackage: SignedPricePackage) {
     const signedPackageBroadcastingTrackingId = trackStart(
       "signed-package-broadcasting"
     );
     try {
       const promises = [];
-      promises.push(this.httpBroadcaster.broadcastPricePackage(signedPackage));
+      promises.push(
+        this.httpBroadcaster.broadcastPricePackage(
+          signedPackage,
+          this.providerAddress
+        )
+      );
       const enableStreamrBroadcaster =
         this.currentManifest?.enableStreamrBroadcaster ?? false;
       if (enableStreamrBroadcaster) {
         promises.push(
-          this.streamrBroadcaster.broadcastPricePackage(signedPackage)
+          this.streamrBroadcaster.broadcastPricePackage(
+            signedPackage,
+            this.providerAddress
+          )
         );
       }
       await Promise.all(promises);

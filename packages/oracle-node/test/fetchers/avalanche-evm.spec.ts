@@ -6,7 +6,7 @@ import Multicall2 from "../../src/fetchers/evm-chain/contracts-details/common/Mu
 import YYMock from "./mocks/YYMock.json";
 import { yieldYakContractDetails } from "../../src/fetchers/evm-chain/contracts-details/yield-yak";
 
-jest.setTimeout(50000);
+jest.setTimeout(15000);
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -41,9 +41,7 @@ describe("Avalanche EVM fetcher", () => {
     mockedAxios.get.mockResolvedValueOnce({
       data: [{ value: 16.942986798458783 }],
     });
-    const result = await fetcher.fetchAll(["$YYAV3SA1"]);
-    expect(result).toEqual([
-      { symbol: "$YYAV3SA1", value: 17.227932764426185 },
-    ]);
+    const result = await fetcher.fetchAll(["YYAV3SA1"]);
+    expect(result).toEqual([{ symbol: "YYAV3SA1", value: 17.227932764426185 }]);
   });
 });

@@ -1,4 +1,5 @@
 import axios from "axios";
+import _ from "lodash";
 import { PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
 

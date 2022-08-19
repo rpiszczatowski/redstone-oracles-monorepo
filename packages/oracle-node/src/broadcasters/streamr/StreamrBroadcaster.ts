@@ -1,8 +1,8 @@
 import _ from "lodash";
 import { Broadcaster } from "../Broadcaster";
+import { PriceDataSigned, SignedPricePackage } from "../../types";
 import { Consola } from "consola";
 import { StreamrProxy } from "./StreamrProxy";
-import { ExtendedSignedDataPackagePlainObj } from "../../types";
 
 const logger = require("../../utils/logger")("StreamrBroadcaster") as Consola;
 
@@ -12,8 +12,8 @@ const PRICES_STREAM_NAME = "prices";
 
 export class StreamrBroadcaster implements Broadcaster {
   private streamrProxy: StreamrProxy;
-  private pricesToBroadcast: Partial<ExtendedSignedDataPackagePlainObj>[] = [];
-  private packageToBroadcast: ExtendedSignedDataPackagePlainObj | undefined;
+  private pricesToBroadcast: Partial<PriceDataSigned>[] = [];
+  private packageToBroadcast: SignedPricePackage | undefined;
   private timer?: NodeJS.Timer;
 
   constructor(ethereumPrivateKey: string) {
@@ -54,13 +54,14 @@ export class StreamrBroadcaster implements Broadcaster {
     await Promise.all(promises);
   }
 
-  async broadcast(prices: ExtendedSignedDataPackagePlainObj[]): Promise<void> {
+  async broadcast(prices: PriceDataSigned[]): Promise<void> {
     this.pricesToBroadcast = prices.map((p) => _.omit(p, ["source"]));
     this.lazyEnableTimer();
   }
 
   async broadcastPricePackage(
-    signedData: ExtendedSignedDataPackagePlainObj
+    signedData: SignedPricePackage,
+    _providerAddress: string
   ): Promise<void> {
     this.packageToBroadcast = signedData;
     this.lazyEnableTimer();

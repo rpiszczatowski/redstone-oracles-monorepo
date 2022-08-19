@@ -1,14 +1,12 @@
-import {
-  DataPackage,
-  NumericDataPoint,
-  SignedDataPackagePlainObj,
-} from "redstone-protocol";
 import { Consola } from "consola";
-import { trackStart, trackEnd } from "../utils/performance-tracker";
+import _ from "lodash";
+import EvmPriceSigner from "./EvmPriceSigner";
 import {
-  ExtendedSignedDataPackagePlainObj,
-  PriceDataAfterAggregation,
+  PriceDataBeforeSigning,
+  PriceDataSigned,
+  SignedPricePackage,
 } from "../types";
+import { trackStart, trackEnd } from "../utils/performance-tracker";
 
 const logger = require("../utils/logger")("ArweaveService") as Consola;
 
@@ -20,65 +18,64 @@ interface PriceSignerConfig {
 
 // Business service that supplies signing operations required by Redstone-Node
 export default class PriceSignerService {
+  private evmSigner: EvmPriceSigner;
   private ethereumPrivateKey: string;
 
   constructor(config: PriceSignerConfig) {
+    this.evmSigner = new EvmPriceSigner(config.version, config.evmChainId);
     this.ethereumPrivateKey = config.ethereumPrivateKey;
   }
 
-  signPrices(
-    prices: PriceDataAfterAggregation[]
-  ): ExtendedSignedDataPackagePlainObj[] {
+  async signPrices(
+    prices: PriceDataBeforeSigning[]
+  ): Promise<PriceDataSigned[]> {
     const signingTrackingId = trackStart("signing");
-    const signedPrices: ExtendedSignedDataPackagePlainObj[] = [];
-    for (const price of prices) {
-      logger.info(`Signing price: ${price.id}`);
-      const signedPrice = this.signSinglePrice(price);
-      signedPrices.push(signedPrice);
+    const signedPrices: PriceDataSigned[] = [];
+
+    try {
+      for (const price of prices) {
+        logger.info(`Signing price: ${price.id}`);
+        const signedPrice = await this.signSinglePrice(price);
+        signedPrices.push(signedPrice);
+      }
+      return signedPrices;
+    } finally {
+      trackEnd(signingTrackingId);
     }
-    trackEnd(signingTrackingId);
-    return signedPrices;
   }
 
-  signSinglePrice(
-    price: PriceDataAfterAggregation
-  ): ExtendedSignedDataPackagePlainObj {
+  async signSinglePrice(
+    price: PriceDataBeforeSigning
+  ): Promise<PriceDataSigned> {
     logger.info(`Signing price with evm signer: ${price.id}`);
-    const { symbol, value, timestamp, ...restParams } = price;
-    const dataPoint = new NumericDataPoint({
-      symbol,
-      value,
-    });
-    const dataPackage = new DataPackage([dataPoint], timestamp);
-    const signedDataPackage = dataPackage.sign(this.ethereumPrivateKey);
-    const parsedSignedDataPackage = signedDataPackage.toObj();
+    const packageWithSinglePrice = this.evmSigner.signPricePackage(
+      {
+        prices: [_.pick(price, ["symbol", "value"])],
+        timestamp: price.timestamp,
+      },
+      this.ethereumPrivateKey
+    );
 
     return {
-      ...parsedSignedDataPackage,
-      ...restParams,
+      ...price,
+      // evmSignature: packageWithSinglePrice.signature,
+      liteEvmSignature: packageWithSinglePrice.liteSignature,
     };
   }
 
-  signPricePackage(
-    prices: PriceDataAfterAggregation[]
-  ): SignedDataPackagePlainObj {
-    const signingTrackingId = trackStart("signing");
-    const dataPoints: NumericDataPoint[] = [];
-
-    for (const price of prices) {
-      logger.info(`Signing price: ${price.id}`);
-      const dataPoint = new NumericDataPoint({
-        symbol: price.symbol,
-        value: price.value,
-      });
-      dataPoints.push(dataPoint);
+  signPricePackage(prices: PriceDataSigned[]): SignedPricePackage {
+    if (prices.length === 0) {
+      throw new Error("Price package should contain at least one price");
     }
-    const { timestamp } = prices[0];
-    const dataPackage = new DataPackage(dataPoints, timestamp);
-    const signedDataPackage = dataPackage.sign(this.ethereumPrivateKey);
-    trackEnd(signingTrackingId);
-    const parsedSignedDataPackage = signedDataPackage.toObj();
 
-    return parsedSignedDataPackage;
+    const pricePackage = {
+      timestamp: prices[0].timestamp,
+      prices: prices.map((p) => _.pick(p, ["symbol", "value"])),
+    };
+
+    return this.evmSigner.signPricePackage(
+      pricePackage,
+      this.ethereumPrivateKey
+    );
   }
 }

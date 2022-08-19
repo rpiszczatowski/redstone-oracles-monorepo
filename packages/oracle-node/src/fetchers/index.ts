@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { Fetcher } from "../types";
 import ccxtFetchers from "./ccxt/all-ccxt-fetchers";
 import pangolinFetchers from "./pangolin/all-pangolin-fetchers";
 import { YfUnofficialFetcher } from "./yf-unofficial/YfUnofficialFetcher";
@@ -14,7 +15,6 @@ import { DrandFetcher } from "./drand/DrandFetcher";
 import twapFetchers from "./twap/all-twap-fetchers";
 import { TwelveDataFetcher } from "./twelve-data/TwelveDataFetcher";
 import { AvalancheEvmFetcher } from "./evm-chain/AvalancheEvmFetcher";
-import { Fetcher } from "../types";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -33,7 +33,6 @@ export default {
       "https://api.avax.network/ext/bc/C/rpc"
     )
   ),
-
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...twapFetchers,
