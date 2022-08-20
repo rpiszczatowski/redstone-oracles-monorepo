@@ -68,6 +68,10 @@ export const getArweaveWallet = (): JWKInterface => {
   }
 };
 
+const ethereumPrivateKey = parserFromString.hex(
+  getFromEnv("ECDSA_PRIVATE_KEY")
+);
+
 export const config: NodeConfig = Object.freeze({
   enableJsonLogs: parserFromString.boolean(
     getFromEnv("ENABLE_JSON_LOGS", DEFAULT_ENABLE_JSON_LOGS)
@@ -93,6 +97,7 @@ export const config: NodeConfig = Object.freeze({
   },
   privateKeys: {
     arweaveJwk: getArweaveWallet(),
-    ethereumPrivateKey: parserFromString.hex(getFromEnv("ECDSA_PRIVATE_KEY")),
+    ethereumPrivateKey,
   },
+  ethereumAddress: new ethers.Wallet(ethereumPrivateKey).address,
 });

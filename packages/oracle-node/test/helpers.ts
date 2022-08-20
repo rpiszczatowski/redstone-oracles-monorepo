@@ -1,3 +1,5 @@
+import { ethers } from "ethers";
+
 const baseManifest = {
   interval: 2000,
   priceAggregator: "median",
@@ -25,6 +27,9 @@ export const MOCK_MANIFEST = {
   },
 };
 
+const MOCK_ETH_PRIV_KEY =
+  "0x1111111111111111111111111111111111111111111111111111111111111111";
+
 export const MOCK_NODE_CONFIG = {
   enableJsonLogs: false,
   enablePerformanceTracking: false,
@@ -33,8 +38,8 @@ export const MOCK_NODE_CONFIG = {
   overrideManifestUsingFile: MOCK_MANIFEST,
   privateKeys: {
     arweaveJwk: { e: "e", kty: "kty", n: "n" },
-    ethereumPrivateKey:
-      "0x1111111111111111111111111111111111111111111111111111111111111111",
+    ethereumPrivateKey: MOCK_ETH_PRIV_KEY,
   },
+  ethereumAddress: new ethers.Wallet(MOCK_ETH_PRIV_KEY).address,
   credentials: {},
 };

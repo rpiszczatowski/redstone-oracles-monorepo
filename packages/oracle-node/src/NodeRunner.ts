@@ -3,10 +3,8 @@ import git from "git-last-commit";
 import { ethers } from "ethers";
 import { Consola } from "consola";
 import aggregators from "./aggregators";
-import ArweaveProxy from "./arweave/ArweaveProxy";
 import ManifestHelper, { TokensBySource } from "./manifest/ManifestParser";
 import ArweaveService from "./arweave/ArweaveService";
-import { BundlrService } from "./arweave/BundlrService";
 import { promiseTimeout, TimeoutError } from "./utils/promise-timeout";
 import { mergeObjects } from "./utils/objects";
 import PriceSignerService from "./signers/PriceSignerService";
@@ -33,6 +31,7 @@ import {
   SignedPricePackage,
 } from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
+import { ArweaveProxy } from "./arweave/ArweaveProxy";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -61,7 +60,6 @@ export default class NodeRunner {
 
   private constructor(
     private readonly arweaveService: ArweaveService,
-    private readonly bundlrService: BundlrService,
     private readonly providerAddress: string,
     private readonly nodeConfig: NodeConfig,
     initialManifest: Manifest
@@ -90,8 +88,7 @@ export default class NodeRunner {
 
     const arweave = new ArweaveProxy(nodeConfig.privateKeys.arweaveJwk);
     const providerAddress = await arweave.getAddress();
-    const arweaveService = new ArweaveService(arweave);
-    const bundlrService = new BundlrService(nodeConfig.privateKeys.arweaveJwk);
+    const arweaveService = new ArweaveService();
 
     let manifestData = null;
     if (nodeConfig.overrideManifestUsingFile) {
@@ -113,7 +110,6 @@ export default class NodeRunner {
 
     return new NodeRunner(
       arweaveService,
-      bundlrService,
       providerAddress,
       nodeConfig,
       manifestData
@@ -211,11 +207,9 @@ export default class NodeRunner {
     // Fetching and aggregating
     const aggregatedPrices: PriceDataAfterAggregation[] =
       await this.fetchPrices();
-    const bundlrTx: BundlrTransaction =
-      await this.bundlrService.prepareBundlrTransaction(aggregatedPrices);
     const pricesReadyForSigning = this.pricesService!.preparePricesForSigning(
       aggregatedPrices,
-      bundlrTx.id,
+      "",
       this.providerAddress
     );
 
@@ -226,16 +220,6 @@ export default class NodeRunner {
     // Broadcasting
     await this.broadcastPrices(signedPrices);
     await this.broadcastEvmPricePackage(signedPrices);
-
-    if (this.shouldBackupOnArweave()) {
-      await this.bundlrService.uploadBundlrTransaction(bundlrTx);
-    } else {
-      logger.info(`Arweave (bundlr) tx posting skipped: ${bundlrTx.id}`);
-    }
-  }
-
-  private shouldBackupOnArweave() {
-    return this.currentManifest?.enableArweaveBackup ?? false;
   }
 
   private async fetchPrices(): Promise<PriceDataAfterAggregation[]> {
