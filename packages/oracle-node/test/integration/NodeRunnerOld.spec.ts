@@ -1,4 +1,4 @@
-import NodeRunner from "../../src/NodeRunner";
+import NodeRunnerOld from "../../src/NodeRunnerOld";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { mocked } from "ts-jest/utils";
 import { ArweaveProxy } from "../../src/arweave/ArweaveProxy";
@@ -57,17 +57,14 @@ jest.mock("../../src/utils/objects", () => ({
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 /****** MOCKS END ******/
 
-describe("NodeRunner", () => {
+describe("NodeRunnerOld", () => {
   const jwk: JWKInterface = {
     e: "e",
     kty: "kty",
     n: "n",
   };
 
-  const nodeConfig: NodeConfig = {
-    ...MOCK_NODE_CONFIG,
-    useNewSigningAndBroadcasting: true,
-  };
+  const nodeConfig: NodeConfig = { ...MOCK_NODE_CONFIG };
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -108,7 +105,7 @@ describe("NodeRunner", () => {
     // given
     const mockedArProxy = mocked(ArweaveProxy, true);
 
-    const sut = await NodeRunner.create({
+    const sut = await NodeRunnerOld.create({
       ...nodeConfig,
       overrideManifestUsingFile: manifest,
     });
@@ -133,7 +130,7 @@ describe("NodeRunner", () => {
         }
       }`);
 
-    const sut = await NodeRunner.create({
+    const sut = await NodeRunnerOld.create({
       ...nodeConfig,
       overrideManifestUsingFile: manifest,
     });
@@ -158,7 +155,7 @@ describe("NodeRunner", () => {
           "ETH": {}
         }
       }`);
-    const sut = await NodeRunner.create({
+    const sut = await NodeRunnerOld.create({
       ...nodeConfig,
       overrideManifestUsingFile: manifest,
     });
@@ -167,7 +164,7 @@ describe("NodeRunner", () => {
   });
 
   it("should broadcast fetched and signed prices", async () => {
-    const sut = await NodeRunner.create({
+    const sut = await NodeRunnerOld.create({
       ...nodeConfig,
       overrideManifestUsingFile: {
         ...manifest,
@@ -177,26 +174,26 @@ describe("NodeRunner", () => {
 
     await sut.run();
 
-    expect(axios.post).toHaveBeenCalledWith(
-      "http://localhost:9000/data-packages/bulk",
+    expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/prices", [
       {
-        requestSignature:
-          "0xf7b4a1a86ff606dc5551e32c9397770c841c544311ae8d8d6351b9459e629469136ccc33db7fdbffcf0abb7993685e52771c99a15030f982f4388c4303ab47ef1c",
-        dataPackages: [
-          {
-            signature:
-              "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
-            timestampMilliseconds: 111111111,
-            dataPoints: [
-              {
-                dataFeedId: "BTC",
-                value: 444.5,
-              },
-            ],
-          },
-        ],
-      }
-    );
+        liteEvmSignature: "mock_evm_signed_lite",
+        id: "00000000-0000-0000-0000-000000000000",
+        permawebTx: "",
+        provider: "mockArAddress",
+        source: { coingecko: 444, uniswap: 445 },
+        symbol: "BTC",
+        timestamp: 111111111,
+        value: 444.5,
+        version: "0.4",
+      },
+    ]);
+    expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/packages", {
+      timestamp: 111111111,
+      liteSignature: "mock_evm_signed_lite",
+      signerAddress: "mock_evm_signer_address",
+      provider: "mockArAddress",
+      prices: [{ symbol: "BTC", value: 444.5 }],
+    });
   });
 
   it("should not broadcast fetched and signed prices if values deviates too much", async () => {
@@ -205,7 +202,7 @@ describe("NodeRunner", () => {
       maxPriceDeviationPercent: 0,
     };
 
-    const sut = await NodeRunner.create({
+    const sut = await NodeRunnerOld.create({
       ...nodeConfig,
       overrideManifestUsingFile: manifest,
     });
@@ -229,7 +226,7 @@ describe("NodeRunner", () => {
         .spyOn(ArweaveService.prototype, "getCurrentManifest")
         .mockImplementation(() => Promise.resolve(manifest));
 
-      const sut = await NodeRunner.create(nodeConfigManifestFromAr);
+      const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
 
       await sut.run();
 
@@ -238,7 +235,7 @@ describe("NodeRunner", () => {
       arServiceSpy.mockClear();
     });
 
-    it("should not create NodeRunner instance until manifest is available", async () => {
+    it("should not create NodeRunnerOld instance until manifest is available", async () => {
       // given
       jest.useRealTimers();
       let arServiceSpy = jest
@@ -255,7 +252,7 @@ describe("NodeRunner", () => {
           .spyOn(ArweaveService.prototype, "getCurrentManifest")
           .mockImplementation(() => Promise.resolve(manifest));
       }, 100);
-      const sut = await NodeRunner.create(nodeConfigManifestFromAr);
+      const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
       expect(sut).not.toBeNull();
       expect(ArweaveService.prototype.getCurrentManifest).toHaveBeenCalledTimes(
         2
@@ -272,7 +269,7 @@ describe("NodeRunner", () => {
         .mockResolvedValueOnce(manifest)
         .mockRejectedValue("timeout");
 
-      const sut = await NodeRunner.create(nodeConfigManifestFromAr);
+      const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
 
       await sut.run();
 

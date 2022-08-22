@@ -509,7 +509,7 @@ We track performance for the following processes:
 
 We use the [jest](https://jestjs.io/) framework for automated testing. Test files are located in the `test` folder. We test each fetcher separately (fetchers tests are located in the `test/fetchers` folder). We also have integration tests in the `test/integration` folder and tests for separate modules:
 
-- EvmPriceSigner.spec.ts
+- EvmPriceSignerOld.spec.ts
 - ManifestParser.spec.ts
 - median-aggregator.spec.ts
 - PricesService.spec.ts

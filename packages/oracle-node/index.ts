@@ -1,6 +1,7 @@
 import { Consola } from "consola";
-import NodeRunner from "./src/NodeRunner";
+import NodeRunnerOld from "./src/NodeRunnerOld";
 import { config } from "./src/config";
+import NodeRunner from "./src/NodeRunner";
 
 const logger = require("./src/utils/logger")("index") as Consola;
 
@@ -16,8 +17,10 @@ async function start() {
 }
 
 async function main(): Promise<void> {
-  // Running RedStone node with manifest
-  const runner = await NodeRunner.create(config);
+  const SelectedNodeRunner = config.useNewSigningAndBroadcasting
+    ? NodeRunner
+    : NodeRunnerOld;
+  const runner = await SelectedNodeRunner.create(config);
   await runner.run();
 }
 

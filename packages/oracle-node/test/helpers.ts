@@ -42,4 +42,5 @@ export const MOCK_NODE_CONFIG = {
   },
   ethereumAddress: new ethers.Wallet(MOCK_ETH_PRIV_KEY).address,
   credentials: {},
+  useNewSigningAndBroadcasting: false,
 };

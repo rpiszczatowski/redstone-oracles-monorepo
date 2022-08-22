@@ -684,7 +684,7 @@ We use the [jest](https://jestjs.io/) framework for automated testing. Test file
 
 我们使用 [jest](https://jestjs.io/) 框架进行自动测试。测试文件位于 `test` 文件夹中。我们分别测试每个 获取器（获取器测试位于 `test/fetchers` 文件夹中）。我们还在 `test/integration` 文件夹中进行了集成测试，并对单独的模块进行了测试：
 
-- EvmPriceSigner.spec.ts
+- EvmPriceSignerOld.spec.ts
 - ManifestParser.spec.ts
 - median-aggregator.spec.ts
 - PricesService.spec.ts

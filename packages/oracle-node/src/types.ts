@@ -133,6 +133,7 @@ export interface NodeConfig {
   privateKeys: PrivateKeys;
   overrideManifestUsingFile?: Manifest;
   ethereumAddress: string;
+  useNewSigningAndBroadcasting: boolean;
 }
 
 export interface MulticallRequest {

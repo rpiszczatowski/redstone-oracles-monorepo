@@ -2,7 +2,7 @@ import axios from "axios";
 import _ from "lodash";
 import { PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
-import EvmPriceSigner from "../../signers/EvmPriceSigner";
+import EvmPriceSignerOld from "../../signers/EvmPriceSignerOld";
 
 const PRICES_URL = "https://api.redstone.finance/prices";
 const MAX_LIMIT = 1000;
@@ -80,7 +80,7 @@ export class TwapFetcher extends BaseFetcher {
   }
 
   async verifySignature(price: HistoricalPrice) {
-    const evmSigner = new EvmPriceSigner(price.version, EVM_CHAIN_ID);
+    const evmSigner = new EvmPriceSignerOld(price.version, EVM_CHAIN_ID);
     const isSignatureValid = evmSigner.verifyLiteSignature({
       pricePackage: {
         prices: [
