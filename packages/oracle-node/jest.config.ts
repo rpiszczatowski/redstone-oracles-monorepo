@@ -1,4 +1,6 @@
-module.exports = {
+import type { Config } from "@jest/types";
+
+const config: Config.InitialOptions = {
   roots: ["<rootDir>/"],
   testMatch: ["**/test/**/?(*.)+(spec).+(ts)"],
   transform: {
@@ -7,3 +9,5 @@ module.exports = {
   testEnvironment: "node",
   setupFiles: ["<rootDir>/.jest/setEnvVars.js"],
 };
+
+export default config;
