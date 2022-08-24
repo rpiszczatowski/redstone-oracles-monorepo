@@ -5020,10 +5020,10 @@ caseless@^0.12.0, caseless@~0.12.0:
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha512-4tYFyifaFfGacoiObjJegolkwSU4xQNGbVgUiNYVUxbQ2x2lUsFvY4hVgVzGiIe6WLOPqycWXA40l+PWsxthUw==
 
-ccxt@^1.85.3:
-  version "1.91.92"
-  resolved "https://registry.yarnpkg.com/ccxt/-/ccxt-1.91.92.tgz#de2077437e99e1822dc26429ba67d1e0f53aa8e7"
-  integrity sha512-M7VnPC00FjAQzFajvEpjvdSdp3tX8k0q04JyHwLQaD9YraqjUGiE3uyy2nU6ZKRTBL6TbQuTXGC94LZoKhc/vQ==
+ccxt@1.92.65:
+  version "1.92.65"
+  resolved "https://registry.yarnpkg.com/ccxt/-/ccxt-1.92.65.tgz#13f61382d71a03b466dca970603354fa6da23993"
+  integrity sha512-HJZ7lGUCigZn8QJ5H34qB3O3E3Kmu1RBvdi7k3aGPDCKil70hdrprHsz2U7ukaEwirgI2NS0PLV/X4O1CBVcoA==
 
 chai@^4.3.6:
   version "4.3.6"
