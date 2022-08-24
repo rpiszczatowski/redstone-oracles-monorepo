@@ -7,7 +7,7 @@ import {
   toUtf8Bytes,
 } from "ethers/lib/utils";
 
-export class RequestSigner {
+export class UniversalSigner {
   static getDigestForData(data: any) {
     const message = JSON.stringify(data);
     const digest = keccak256(toUtf8Bytes(message));
@@ -15,14 +15,14 @@ export class RequestSigner {
   }
 
   static signStringifiableData(data: any, privateKey: string): string {
-    const digest = RequestSigner.getDigestForData(data);
+    const digest = UniversalSigner.getDigestForData(data);
     const signingKey = new SigningKey(privateKey);
     const fullSignature = signingKey.signDigest(digest);
     return joinSignature(fullSignature);
   }
 
   static recoverSigner(data: any, signature: string) {
-    const digest = RequestSigner.getDigestForData(data);
+    const digest = UniversalSigner.getDigestForData(data);
     const publicKey = recoverPublicKey(digest, signature);
     return computeAddress(publicKey);
   }

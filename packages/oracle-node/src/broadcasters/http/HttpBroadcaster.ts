@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Consola } from "consola";
-import { SignedDataPackage, RequestSigner } from "redstone-protocol";
+import { SignedDataPackage, UniversalSigner } from "redstone-protocol";
 import { stringifyError } from "../../utils/error-stringifier";
 import { Broadcaster } from "../Broadcaster";
 
@@ -14,7 +14,7 @@ export class HttpBroadcaster implements Broadcaster {
 
   async broadcast(dataPackages: SignedDataPackage[]): Promise<void> {
     const dataPackagesObjects = dataPackages.map((dp) => dp.toObj());
-    const requestSignature = RequestSigner.signStringifiableData(
+    const requestSignature = UniversalSigner.signStringifiableData(
       dataPackagesObjects,
       this.ethereumPrivateKey
     );

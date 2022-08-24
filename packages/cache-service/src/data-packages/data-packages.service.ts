@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { RequestSigner } from "redstone-protocol";
+import { UniversalSigner } from "redstone-protocol";
 import {
   DataPackagesRequestParams,
   getDataServiceIdForSigner,
@@ -70,7 +70,7 @@ export class DataPackagesService {
   }
 
   verifyRequester(body: BulkPostRequestBody) {
-    return RequestSigner.recoverSigner(
+    return UniversalSigner.recoverSigner(
       body.dataPackages,
       body.requestSignature
     );
