@@ -31,6 +31,7 @@ import { fetchIp } from "./utils/ip-fetcher";
 import { ArweaveProxy } from "./arweave/ArweaveProxy";
 import {
   DataPackage,
+  DataPoint,
   NumericDataPoint,
   SignedDataPackage,
 } from "redstone-protocol";
@@ -217,27 +218,42 @@ export default class NodeRunner {
     );
 
     // Signing
-    const signedDataPackages = this.signPrices(pricesReadyForSigning);
+    const signedDataPackages = this.signPrices(
+      pricesReadyForSigning,
+      pricesReadyForSigning[0].timestamp
+    );
 
     // Broadcasting
     await this.broadcastDataPackages(signedDataPackages);
   }
 
-  private signPrices(prices: PriceDataBeforeSigning[]): SignedDataPackage[] {
+  private signPrices(
+    prices: PriceDataBeforeSigning[],
+    timestamp: number
+  ): SignedDataPackage[] {
     const ethPrivKey = this.nodeConfig.privateKeys.ethereumPrivateKey;
 
+    // Prepare data points
+    const dataPoints: DataPoint[] = [];
+    for (const price of prices) {
+      try {
+        const dataPoint = priceToDataPoint(price);
+        dataPoints.push(dataPoint);
+      } catch (e) {
+        logger.error(
+          `Failed to convert price object to data point for ${price.symbol} (${price.value})`
+        );
+      }
+    }
+
     // Prepare signed data packages with single data point
-    const signedDataPackages = prices.map((price) => {
-      const dataPackage = new DataPackage(
-        [priceToDataPoint(price)],
-        price.timestamp
-      );
+    const signedDataPackages = dataPoints.map((dataPoint) => {
+      const dataPackage = new DataPackage([dataPoint], timestamp);
       return dataPackage.sign(ethPrivKey);
     });
 
     // Adding a data package with all data points
-    const allDataPoints = prices.map(priceToDataPoint);
-    const bigDataPackage = new DataPackage(allDataPoints, prices[0].timestamp);
+    const bigDataPackage = new DataPackage(dataPoints, timestamp);
     const signedBigDataPackage = bigDataPackage.sign(ethPrivKey);
     signedDataPackages.push(signedBigDataPackage);
 
