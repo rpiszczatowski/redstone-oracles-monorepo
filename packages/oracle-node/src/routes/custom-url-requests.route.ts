@@ -5,7 +5,7 @@ import axios from "axios";
 import jp from "jsonpath";
 
 import { fromBase64 } from "../utils/base64";
-import EvmPriceSigner from "../signers/EvmPriceSigner";
+import EvmPriceSignerOld from "../signers/EvmPriceSignerOld";
 import { NodeConfig } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 
@@ -16,7 +16,7 @@ const EVM_SIGNER_VERSION = "0.4";
 const logger = require("../utils/logger")(
   "custom-url-requests-route"
 ) as Consola;
-const evmSigner = new EvmPriceSigner(EVM_SIGNER_VERSION, EVM_CHAIN_ID);
+const evmSigner = new EvmPriceSignerOld(EVM_SIGNER_VERSION, EVM_CHAIN_ID);
 
 export default function (app: express.Application, nodeConfig: NodeConfig) {
   app.get("/custom-url-requests", async (req, res) => {

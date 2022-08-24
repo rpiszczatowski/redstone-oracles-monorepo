@@ -6,6 +6,7 @@ import ManifestHelper, { TokensBySource } from "./manifest/ManifestParser";
 import ArweaveService from "./arweave/ArweaveService";
 import { promiseTimeout, TimeoutError } from "./utils/promise-timeout";
 import { mergeObjects } from "./utils/objects";
+import PriceSignerService from "./signers/PriceSignerService";
 import { ExpressAppRunner } from "./ExpressAppRunner";
 import {
   printTrackingState,
@@ -16,25 +17,16 @@ import PricesService, {
   PricesBeforeAggregation,
   PricesDataFetched,
 } from "./fetchers/PricesService";
-import {
-  Broadcaster,
-  HttpBroadcaster,
-  StreamrBroadcaster,
-} from "./broadcasters";
+import { BroadcasterOld, HttpBroadcasterOld } from "./broadcasters";
 import {
   Manifest,
   NodeConfig,
   PriceDataAfterAggregation,
-  PriceDataBeforeSigning,
+  PriceDataSigned,
+  SignedPricePackage,
 } from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
 import { ArweaveProxy } from "./arweave/ArweaveProxy";
-import {
-  DataPackage,
-  DataPoint,
-  NumericDataPoint,
-  SignedDataPackage,
-} from "redstone-protocol";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -42,12 +34,12 @@ const pjson = require("../package.json") as any;
 const MANIFEST_LOAD_TIMEOUT_MS = 25 * 1000;
 const DIAGNOSTIC_INFO_PRINTING_INTERVAL = 60 * 1000;
 const DEFAULT_HTTP_BROADCASTER_URLS = [
-  "https://direct-1.cache-service.redstone.finance",
-  "https://direct-2.cache-service.redstone.finance",
-  "https://direct-3.cache-service.redstone.finance",
+  "https://api.redstone.finance",
+  "https://vwx3eni8c7.eu-west-1.awsapprunner.com",
+  "https://container-service-1.dv9sai71f4rsq.eu-central-1.cs.amazonlightsail.com",
 ];
 
-export default class NodeRunner {
+export default class NodeRunnerOld {
   private readonly version: string;
 
   private lastManifestLoadTimestamp?: number;
@@ -57,8 +49,10 @@ export default class NodeRunner {
   private pricesService?: PricesService;
   private tokensBySource?: TokensBySource;
   private newManifest: Manifest | null = null;
-  private httpBroadcaster: Broadcaster;
-  private streamrBroadcaster: Broadcaster;
+  private priceSignerService?: PriceSignerService;
+  private httpBroadcaster: BroadcasterOld;
+  // Streamr broadcasting disabled in the old version
+  // private streamrBroadcaster: Broadcaster;
 
   private constructor(
     private readonly arweaveService: ArweaveService,
@@ -66,17 +60,16 @@ export default class NodeRunner {
     private readonly nodeConfig: NodeConfig,
     initialManifest: Manifest
   ) {
-    const ethereumPrivKey = nodeConfig.privateKeys.ethereumPrivateKey;
     this.version = getVersionFromPackageJSON();
     this.useNewManifest(initialManifest);
     this.lastManifestLoadTimestamp = Date.now();
     const httpBroadcasterURLs =
       initialManifest?.httpBroadcasterURLs ?? DEFAULT_HTTP_BROADCASTER_URLS;
-    this.httpBroadcaster = new HttpBroadcaster(
-      httpBroadcasterURLs,
-      ethereumPrivKey
-    );
-    this.streamrBroadcaster = new StreamrBroadcaster(ethereumPrivKey);
+    this.httpBroadcaster = new HttpBroadcasterOld(httpBroadcasterURLs);
+    // Streamr broadcasting disabled in the old version
+    // this.streamrBroadcaster = new StreamrBroadcaster(
+    //   nodeConfig.privateKeys.ethereumPrivateKey
+    // );
 
     // https://www.freecodecamp.org/news/the-complete-guide-to-this-in-javascript/
     // alternatively use arrow functions...
@@ -84,7 +77,7 @@ export default class NodeRunner {
     this.handleLoadedManifest = this.handleLoadedManifest.bind(this);
   }
 
-  static async create(nodeConfig: NodeConfig): Promise<NodeRunner> {
+  static async create(nodeConfig: NodeConfig): Promise<NodeRunnerOld> {
     // Running a simple web server
     // It should be called as early as possible
     // Otherwise App Runner crashes ¯\_(ツ)_/¯
@@ -112,7 +105,7 @@ export default class NodeRunner {
       }
     }
 
-    return new NodeRunner(
+    return new NodeRunnerOld(
       arweaveService,
       providerAddress,
       nodeConfig,
@@ -128,7 +121,7 @@ export default class NodeRunner {
       await this.runIteration(); // Start immediately then repeat in manifest.interval
       setInterval(this.runIteration, this.currentManifest!.interval);
     } catch (e: any) {
-      NodeRunner.reThrowIfManifestConfigError(e);
+      NodeRunnerOld.reThrowIfManifestConfigError(e);
     }
   }
 
@@ -199,7 +192,7 @@ export default class NodeRunner {
     try {
       await this.doProcessTokens();
     } catch (e: any) {
-      NodeRunner.reThrowIfManifestConfigError(e);
+      NodeRunnerOld.reThrowIfManifestConfigError(e);
     } finally {
       trackEnd(processingAllTrackingId);
     }
@@ -218,46 +211,12 @@ export default class NodeRunner {
     );
 
     // Signing
-    const signedDataPackages = this.signPrices(
-      pricesReadyForSigning,
-      pricesReadyForSigning[0].timestamp
-    );
+    const signedPrices: PriceDataSigned[] =
+      await this.priceSignerService!.signPrices(pricesReadyForSigning);
 
     // Broadcasting
-    await this.broadcastDataPackages(signedDataPackages);
-  }
-
-  private signPrices(
-    prices: PriceDataBeforeSigning[],
-    timestamp: number
-  ): SignedDataPackage[] {
-    const ethPrivKey = this.nodeConfig.privateKeys.ethereumPrivateKey;
-
-    // Prepare data points
-    const dataPoints: DataPoint[] = [];
-    for (const price of prices) {
-      try {
-        const dataPoint = priceToDataPoint(price);
-        dataPoints.push(dataPoint);
-      } catch (e) {
-        logger.error(
-          `Failed to convert price object to data point for ${price.symbol} (${price.value})`
-        );
-      }
-    }
-
-    // Prepare signed data packages with single data point
-    const signedDataPackages = dataPoints.map((dataPoint) => {
-      const dataPackage = new DataPackage([dataPoint], timestamp);
-      return dataPackage.sign(ethPrivKey);
-    });
-
-    // Adding a data package with all data points
-    const bigDataPackage = new DataPackage(dataPoints, timestamp);
-    const signedBigDataPackage = bigDataPackage.sign(ethPrivKey);
-    signedDataPackages.push(signedBigDataPackage);
-
-    return signedDataPackages;
+    await this.broadcastPrices(signedPrices);
+    await this.broadcastEvmPricePackage(signedPrices);
   }
 
   private async fetchPrices(): Promise<PriceDataAfterAggregation[]> {
@@ -280,17 +239,17 @@ export default class NodeRunner {
         Object.values(pricesBeforeAggregation), // what is the advantage of using lodash.values?
         aggregators[this.currentManifest!.priceAggregator]
       );
-    NodeRunner.printAggregatedPrices(aggregatedPrices);
+    NodeRunnerOld.printAggregatedPrices(aggregatedPrices);
     trackEnd(fetchingAllTrackingId);
     return aggregatedPrices;
   }
 
-  private async broadcastDataPackages(signedDataPackages: SignedDataPackage[]) {
+  private async broadcastPrices(signedPrices: PriceDataSigned[]) {
     logger.info("Broadcasting prices");
     const broadcastingTrackingId = trackStart("broadcasting");
     try {
       const promises = [];
-      promises.push(this.httpBroadcaster.broadcast(signedDataPackages));
+      promises.push(this.httpBroadcaster.broadcast(signedPrices));
       const enableStreamrBroadcaster =
         this.currentManifest?.enableStreamrBroadcaster ?? false;
       const disableSinglePricesBroadcastingInStreamr =
@@ -300,7 +259,7 @@ export default class NodeRunner {
         !disableSinglePricesBroadcastingInStreamr
       ) {
         // Streamr broadcasting disabled in the old version
-        promises.push(this.streamrBroadcaster.broadcast(signedDataPackages));
+        // promises.push(this.streamrBroadcaster.broadcast(signedPrices));
       }
       const results = await Promise.allSettled(promises);
 
@@ -332,6 +291,59 @@ export default class NodeRunner {
       logger.info(
         `Fetched price : ${price.symbol} : ${price.value} | ${sourcesData}`
       );
+    }
+  }
+
+  private async broadcastEvmPricePackage(signedPrices: PriceDataSigned[]) {
+    logger.info("Broadcasting price package");
+    const packageBroadcastingTrackingId = trackStart("package-broadcasting");
+    try {
+      const signedPackage =
+        this.priceSignerService!.signPricePackage(signedPrices);
+      await this.broadcastSignedPricePackage(signedPackage);
+      logger.info("Package broadcasting completed");
+    } catch (e: any) {
+      logger.error("Package broadcasting failed", e.stack);
+    } finally {
+      trackEnd(packageBroadcastingTrackingId);
+    }
+  }
+
+  private async broadcastSignedPricePackage(signedPackage: SignedPricePackage) {
+    const signedPackageBroadcastingTrackingId = trackStart(
+      "signed-package-broadcasting"
+    );
+    try {
+      const promises = [];
+      promises.push(
+        this.httpBroadcaster.broadcastPricePackage(
+          signedPackage,
+          this.providerAddress
+        )
+      );
+      const enableStreamrBroadcaster =
+        this.currentManifest?.enableStreamrBroadcaster ?? false;
+      if (enableStreamrBroadcaster) {
+        // Streamr broadcasting disabled in the old version
+        // promises.push(
+        //   this.streamrBroadcaster.broadcastPricePackage(
+        //     signedPackage,
+        //     this.providerAddress
+        //   )
+        // );
+      }
+      await Promise.all(promises);
+    } catch (e: any) {
+      if (e.response !== undefined) {
+        logger.error(
+          "Signed package broadcasting failed: " + e.response.data,
+          e.stack
+        );
+      } else {
+        logger.error("Signed package broadcasting failed", e.stack);
+      }
+    } finally {
+      trackEnd(signedPackageBroadcastingTrackingId);
     }
   }
 
@@ -412,15 +424,13 @@ export default class NodeRunner {
       this.nodeConfig.credentials
     );
     this.tokensBySource = ManifestHelper.groupTokensBySource(newManifest);
+    this.priceSignerService = new PriceSignerService({
+      ethereumPrivateKey: this.nodeConfig.privateKeys.ethereumPrivateKey,
+      evmChainId: newManifest.evmChainId,
+      version: this.version,
+    });
     this.newManifest = null;
   }
-}
-
-function priceToDataPoint(price: PriceDataBeforeSigning): NumericDataPoint {
-  return new NumericDataPoint({
-    dataFeedId: price.symbol,
-    value: price.value,
-  });
 }
 
 function getVersionFromPackageJSON() {

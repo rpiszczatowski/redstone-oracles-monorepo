@@ -28,7 +28,6 @@ describe("custom URL fetcher", () => {
         priceAggregator: "median",
         sourceTimeout: 2000,
         evmChainId: 1,
-        enableArweaveBackup: false,
         tokens: {
           "0x8edd634f1bbd8320": {
             customUrlDetails: {
