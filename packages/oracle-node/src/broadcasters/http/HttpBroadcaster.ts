@@ -1,50 +1,36 @@
 import axios from "axios";
-import { Broadcaster } from "../Broadcaster";
-import { PriceDataSigned, SignedPricePackage } from "../../types";
 import { Consola } from "consola";
+import { SignedDataPackage, UniversalSigner } from "redstone-protocol";
 import { stringifyError } from "../../utils/error-stringifier";
+import { Broadcaster } from "../Broadcaster";
 
 const logger = require("../../utils/logger")("HttpBroadcaster") as Consola;
 
-// TODO: add timeout to broadcasting
-
 export class HttpBroadcaster implements Broadcaster {
-  constructor(private readonly broadcasterURLs: string[]) {}
+  constructor(
+    private readonly broadcasterURLs: string[],
+    private readonly ethereumPrivateKey: string
+  ) {}
 
-  async broadcast(prices: PriceDataSigned[]): Promise<void> {
-    const promises = this.broadcasterURLs.map((url) => {
-      logger.info(`Posting prices to ${url}`);
-      return axios
-        .post(url + "/prices", prices)
-        .then(() => logger.info(`Broadcasting to ${url} completed`))
-        .catch((e) =>
-          logger.error(`Broadcasting to ${url} failed: ${stringifyError(e)}`)
-        );
-    });
+  async broadcast(dataPackages: SignedDataPackage[]): Promise<void> {
+    const dataPackagesObjects = dataPackages.map((dp) => dp.toObj());
+    const requestSignature = UniversalSigner.signStringifiableData(
+      dataPackagesObjects,
+      this.ethereumPrivateKey
+    );
 
-    await Promise.allSettled(promises);
-  }
-
-  async broadcastPricePackage(
-    signedData: SignedPricePackage,
-    providerAddress: string
-  ): Promise<void> {
-    const body = {
-      signerAddress: signedData.signerAddress,
-      liteSignature: signedData.liteSignature,
-      provider: providerAddress,
-      ...signedData.pricePackage, // unpacking prices and timestamp
+    const signedDataPackagesPostReqBody = {
+      requestSignature,
+      dataPackages: dataPackagesObjects,
     };
 
     const promises = this.broadcasterURLs.map((url) => {
-      logger.info(`Posting pacakages to ${url}`);
+      logger.info(`Posting prices to ${url}`);
       return axios
-        .post(url + "/packages", body)
-        .then(() => logger.info(`Broadcasting package to ${url} completed`))
+        .post(url + "/data-packages/bulk", signedDataPackagesPostReqBody)
+        .then(() => logger.info(`Broadcasting to ${url} completed`))
         .catch((e) =>
-          logger.error(
-            `Broadcasting package to ${url} failed: ${stringifyError(e)}`
-          )
+          logger.error(`Broadcasting to ${url} failed: ${stringifyError(e)}`)
         );
     });
 

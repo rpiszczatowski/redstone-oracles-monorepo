@@ -1,6 +1,6 @@
 import { Consola } from "consola";
 import _ from "lodash";
-import EvmPriceSigner from "./EvmPriceSigner";
+import EvmPriceSignerOld from "./EvmPriceSignerOld";
 import {
   PriceDataBeforeSigning,
   PriceDataSigned,
@@ -18,11 +18,11 @@ interface PriceSignerConfig {
 
 // Business service that supplies signing operations required by Redstone-Node
 export default class PriceSignerService {
-  private evmSigner: EvmPriceSigner;
+  private evmSigner: EvmPriceSignerOld;
   private ethereumPrivateKey: string;
 
   constructor(config: PriceSignerConfig) {
-    this.evmSigner = new EvmPriceSigner(config.version, config.evmChainId);
+    this.evmSigner = new EvmPriceSignerOld(config.version, config.evmChainId);
     this.ethereumPrivateKey = config.ethereumPrivateKey;
   }
 

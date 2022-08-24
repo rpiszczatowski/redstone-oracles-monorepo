@@ -12,7 +12,6 @@ export interface Manifest {
   httpBroadcasterURLs?: string[];
   enableStreamrBroadcaster?: boolean;
   disableSinglePricesBroadcastingInStreamr?: boolean;
-  enableArweaveBackup?: boolean;
 }
 
 export interface SourceTimeout {
@@ -133,6 +132,8 @@ export interface NodeConfig {
   credentials: Credentials;
   privateKeys: PrivateKeys;
   overrideManifestUsingFile?: Manifest;
+  ethereumAddress: string;
+  useNewSigningAndBroadcasting: boolean;
 }
 
 export interface MulticallRequest {

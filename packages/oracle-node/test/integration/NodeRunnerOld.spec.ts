@@ -1,4 +1,4 @@
-import NodeRunner from "../../src/NodeRunner";
+import NodeRunnerOld from "../../src/NodeRunnerOld";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { mocked } from "ts-jest/utils";
 import { ArweaveProxy } from "../../src/arweave/ArweaveProxy";
@@ -57,17 +57,14 @@ jest.mock("../../src/utils/objects", () => ({
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 /****** MOCKS END ******/
 
-describe("NodeRunner", () => {
+describe("NodeRunnerOld", () => {
   const jwk: JWKInterface = {
     e: "e",
     kty: "kty",
     n: "n",
   };
 
-  const nodeConfig: NodeConfig = {
-    ...MOCK_NODE_CONFIG,
-    useNewSigningAndBroadcasting: true,
-  };
+  const nodeConfig: NodeConfig = { ...MOCK_NODE_CONFIG };
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -79,13 +76,7 @@ describe("NodeRunner", () => {
       fetchAll: jest.fn().mockResolvedValue([{ symbol: "BTC", value: 444 }]),
     };
     fetchers["uniswap"] = {
-      fetchAll: jest.fn().mockResolvedValue([
-        { symbol: "BTC", value: 445 },
-        {
-          symbol: "ETH",
-          value: 42,
-        },
-      ]),
+      fetchAll: jest.fn().mockResolvedValue([{ symbol: "BTC", value: 445 }]),
     };
 
     manifest = {
@@ -114,7 +105,7 @@ describe("NodeRunner", () => {
     // given
     const mockedArProxy = mocked(ArweaveProxy, true);
 
-    const sut = await NodeRunner.create({
+    const sut = await NodeRunnerOld.create({
       ...nodeConfig,
       overrideManifestUsingFile: manifest,
     });
@@ -139,7 +130,7 @@ describe("NodeRunner", () => {
         }
       }`);
 
-    const sut = await NodeRunner.create({
+    const sut = await NodeRunnerOld.create({
       ...nodeConfig,
       overrideManifestUsingFile: manifest,
     });
@@ -164,7 +155,7 @@ describe("NodeRunner", () => {
           "ETH": {}
         }
       }`);
-    const sut = await NodeRunner.create({
+    const sut = await NodeRunnerOld.create({
       ...nodeConfig,
       overrideManifestUsingFile: manifest,
     });
@@ -173,7 +164,7 @@ describe("NodeRunner", () => {
   });
 
   it("should broadcast fetched and signed prices", async () => {
-    const sut = await NodeRunner.create({
+    const sut = await NodeRunnerOld.create({
       ...nodeConfig,
       overrideManifestUsingFile: {
         ...manifest,
@@ -183,52 +174,26 @@ describe("NodeRunner", () => {
 
     await sut.run();
 
-    expect(axios.post).toHaveBeenCalledWith(
-      "http://localhost:9000/data-packages/bulk",
+    expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/prices", [
       {
-        requestSignature:
-          "0xdd8c162ee49b5a506cc6afbe5d0d9a7aabd1c0e8946900e3601a5eacd96439e56db8419660b4508c9f35db4b1d4716ec58011101c9744f6f812d7b742124a3ff1c",
-        dataPackages: [
-          {
-            signature:
-              "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
-            timestampMilliseconds: 111111111,
-            dataPoints: [
-              {
-                dataFeedId: "BTC",
-                value: 444.5,
-              },
-            ],
-          },
-          {
-            signature:
-              "WF1VFvLYv+Nd0PGAi3y1zPBp6fADtyUKREYEwuhl4k1hHZ+2MWnvztrxLK2NPeSryZXU9sgNLG5SJwhwqHV5ohs=",
-            timestampMilliseconds: 111111111,
-            dataPoints: [
-              {
-                dataFeedId: "ETH",
-                value: 42,
-              },
-            ],
-          },
-          {
-            signature:
-              "VjPF6m+SYKTv4gEBWEqRSR1Ppje0xrRg0gluaQB5vf96YLyHLVdaloSRcypaoHNCu0nSmlxlJWtye7EReGB7vhw=",
-            timestampMilliseconds: 111111111,
-            dataPoints: [
-              {
-                dataFeedId: "BTC",
-                value: 444.5,
-              },
-              {
-                dataFeedId: "ETH",
-                value: 42,
-              },
-            ],
-          },
-        ],
-      }
-    );
+        liteEvmSignature: "mock_evm_signed_lite",
+        id: "00000000-0000-0000-0000-000000000000",
+        permawebTx: "",
+        provider: "mockArAddress",
+        source: { coingecko: 444, uniswap: 445 },
+        symbol: "BTC",
+        timestamp: 111111111,
+        value: 444.5,
+        version: "0.4",
+      },
+    ]);
+    expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/packages", {
+      timestamp: 111111111,
+      liteSignature: "mock_evm_signed_lite",
+      signerAddress: "mock_evm_signer_address",
+      provider: "mockArAddress",
+      prices: [{ symbol: "BTC", value: 444.5 }],
+    });
   });
 
   it("should not broadcast fetched and signed prices if values deviates too much", async () => {
@@ -237,7 +202,7 @@ describe("NodeRunner", () => {
       maxPriceDeviationPercent: 0,
     };
 
-    const sut = await NodeRunner.create({
+    const sut = await NodeRunnerOld.create({
       ...nodeConfig,
       overrideManifestUsingFile: manifest,
     });
@@ -261,7 +226,7 @@ describe("NodeRunner", () => {
         .spyOn(ArweaveService.prototype, "getCurrentManifest")
         .mockImplementation(() => Promise.resolve(manifest));
 
-      const sut = await NodeRunner.create(nodeConfigManifestFromAr);
+      const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
 
       await sut.run();
 
@@ -270,7 +235,7 @@ describe("NodeRunner", () => {
       arServiceSpy.mockClear();
     });
 
-    it("should not create NodeRunner instance until manifest is available", async () => {
+    it("should not create NodeRunnerOld instance until manifest is available", async () => {
       // given
       jest.useRealTimers();
       let arServiceSpy = jest
@@ -287,7 +252,7 @@ describe("NodeRunner", () => {
           .spyOn(ArweaveService.prototype, "getCurrentManifest")
           .mockImplementation(() => Promise.resolve(manifest));
       }, 100);
-      const sut = await NodeRunner.create(nodeConfigManifestFromAr);
+      const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
       expect(sut).not.toBeNull();
       expect(ArweaveService.prototype.getCurrentManifest).toHaveBeenCalledTimes(
         2
@@ -304,7 +269,7 @@ describe("NodeRunner", () => {
         .mockResolvedValueOnce(manifest)
         .mockRejectedValue("timeout");
 
-      const sut = await NodeRunner.create(nodeConfigManifestFromAr);
+      const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
 
       await sut.run();
 

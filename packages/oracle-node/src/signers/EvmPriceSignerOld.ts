@@ -38,7 +38,7 @@ const EIP712Domain = [
 
 const serializePriceValue = (value: number) => Math.round(value * 10 ** 8);
 
-export default class EvmPriceSigner {
+export default class EvmPriceSignerOld {
   private _domainData: object;
 
   constructor(version: string = "0.4", chainId: number = 1) {
@@ -117,7 +117,7 @@ export default class EvmPriceSigner {
 
     return {
       symbols: sortedPrices.map((p: ShortSinglePrice) =>
-        EvmPriceSigner.convertStringToBytes32String(p.symbol)
+        EvmPriceSignerOld.convertStringToBytes32String(p.symbol)
       ),
       values: sortedPrices.map((p: ShortSinglePrice) =>
         serializePriceValue(p.value)

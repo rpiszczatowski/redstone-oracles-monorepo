@@ -9,6 +9,7 @@ const DEFAULT_ENABLE_JSON_LOGS = "true";
 const DEFAULT_PRINT_DIAGNOSTIC_INFO = "true";
 const DEFAULT_MANIFEST_REFRESH_INTERVAL = "120000";
 const DEFAULT_TWELVE_DATA_RAPID_API_KEY = "";
+const DEFAULT_USE_NEW_SIGNING_AND_BROADCASTING = "false";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -68,6 +69,10 @@ export const getArweaveWallet = (): JWKInterface => {
   }
 };
 
+const ethereumPrivateKey = parserFromString.hex(
+  getFromEnv("ECDSA_PRIVATE_KEY")
+);
+
 export const config: NodeConfig = Object.freeze({
   enableJsonLogs: parserFromString.boolean(
     getFromEnv("ENABLE_JSON_LOGS", DEFAULT_ENABLE_JSON_LOGS)
@@ -93,6 +98,13 @@ export const config: NodeConfig = Object.freeze({
   },
   privateKeys: {
     arweaveJwk: getArweaveWallet(),
-    ethereumPrivateKey: parserFromString.hex(getFromEnv("ECDSA_PRIVATE_KEY")),
+    ethereumPrivateKey,
   },
+  useNewSigningAndBroadcasting: parserFromString.boolean(
+    getFromEnv(
+      "USE_NEW_SIGNING_AND_BROADCASTING",
+      DEFAULT_USE_NEW_SIGNING_AND_BROADCASTING
+    )
+  ),
+  ethereumAddress: new ethers.Wallet(ethereumPrivateKey).address,
 });

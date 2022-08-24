@@ -1,107 +1,94 @@
-import ArweaveProxy from "../../src/arweave/ArweaveProxy";
+import { rest } from "msw";
+import { setupServer } from "msw/node";
 import ArweaveService from "../../src/arweave/ArweaveService";
-import {
-  validMockArProxy,
-  invalidMockArProxy,
-  oldManifestMock,
-  manifestUsingDenMock,
-  manifestUsingGatewayMock,
-} from "./mocks/mocks";
-import {
-  invalidArweaveHandlers,
-  invalidDenHandlers,
-  server,
-  timeoutArweaveHandlers,
-  timeoutDenHandlers,
-} from "./mocks/mockServer";
+import devManifest from "../../manifests/dev.json";
+import { Manifest } from "../../src/types";
 
-jest.mock("../../src/arweave/ArweaveProxy", () => {
-  return jest.fn().mockImplementation(() => validMockArProxy);
-});
+const mockOracleRegistryState = {
+  nodes: {
+    nodeId: {
+      dataServiceId: "testDataServiceId",
+      evmAddress: "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A",
+    },
+  },
+  dataServices: {
+    testDataServiceId: {
+      manifestTxId: "mockManifestTxId",
+    },
+  },
+};
+
+const devManifestWithTxId: Manifest = {
+  ...devManifest,
+  txId: "mockManifestTxId",
+};
+
+jest.mock("redstone-sdk", () => ({
+  ...jest.requireActual("redstone-sdk"),
+  getOracleRegistryState: jest.fn(() => mockOracleRegistryState),
+}));
+
+const validHandler = rest.get(
+  "https://arweave.net/mockManifestTxId",
+  (_, res, ctx) => res(ctx.json(devManifest))
+);
+
+const invalidHandler = rest.get(
+  "https://arweave.net/mockManifestTxId",
+  (_, res, ctx) => res(ctx.status(400))
+);
+
+const bigDelayHandler = rest.get(
+  "https://arweave.net/mockManifestTxId",
+  (_, res, ctx) => res(ctx.delay(10), ctx.json(devManifest))
+);
+
+export const server = setupServer(validHandler);
 
 const TEST_TIMEOUT_MS = 5;
 
 describe("ArweaveService - getCurrentManifest", () => {
+  let arweaveService: ArweaveService;
+
   beforeAll(() => server.listen());
   afterEach(() => server.resetHandlers());
   afterAll(() => server.close());
-
-  test("Oracle registry fetched by DEN, manifest by Arweave", async () => {
-    const arweaveService = new ArweaveService(validMockArProxy as ArweaveProxy);
-    const manifest = await arweaveService.getCurrentManifest();
-    expect(manifest).toEqual(manifestUsingDenMock);
+  beforeEach(() => {
+    arweaveService = new ArweaveService(TEST_TIMEOUT_MS);
   });
 
-  test("Oracle registry fetched by gateway - DEN error, manifest fetched by Arweave", async () => {
-    server.use(...invalidDenHandlers);
-    const arweaveService = new ArweaveService(validMockArProxy as ArweaveProxy);
+  test("Should fetch current manifest", async () => {
     const manifest = await arweaveService.getCurrentManifest();
-    expect(manifest).toEqual(manifestUsingGatewayMock);
+    expect(manifest).toEqual(devManifestWithTxId);
   });
 
-  test("Oracle registry fetched by gateway - DEN timeout, manifest fetched by Arweave", async () => {
-    server.use(...timeoutDenHandlers);
-    const arweaveService = new ArweaveService(
-      validMockArProxy as ArweaveProxy,
-      TEST_TIMEOUT_MS
-    );
-    const manifest = await arweaveService.getCurrentManifest();
-    expect(manifest).toEqual(manifestUsingGatewayMock);
-  });
-
-  test("Oracle registry fetching failed, old manifest doesn't exist", async () => {
-    jest.mock("../../src/arweave/ArweaveProxy", () => {
-      return jest.fn().mockImplementation(() => invalidMockArProxy);
-    });
-    server.use(...invalidDenHandlers);
-    const arweaveService = new ArweaveService(
-      invalidMockArProxy as unknown as ArweaveProxy
-    );
+  test("Fetching failed, old manifest doesn't exist", async () => {
+    server.use(invalidHandler);
     await expect(arweaveService.getCurrentManifest()).rejects.toThrowError(
       "Cannot fetch new manifest and old manifest doesn't exist"
     );
-    jest.mock("../../src/arweave/ArweaveProxy", () => {
-      return jest.fn().mockImplementation(() => validMockArProxy);
-    });
   });
 
-  test("Oracle registry fetching failed, old manifest exists", async () => {
-    jest.mock("../../src/arweave/ArweaveProxy", () => {
-      return jest.fn().mockImplementation(() => invalidMockArProxy);
-    });
-    server.use(...invalidDenHandlers);
-    const arweaveService = new ArweaveService(
-      invalidMockArProxy as unknown as ArweaveProxy
+  test("Fetching failed, old manifest exists", async () => {
+    server.use(invalidHandler);
+    const manifest = await arweaveService.getCurrentManifest(
+      devManifestWithTxId
     );
-    const manifest = await arweaveService.getCurrentManifest(oldManifestMock);
-    expect(manifest).toEqual(oldManifestMock);
-    jest.mock("../../src/arweave/ArweaveProxy", () => {
-      return jest.fn().mockImplementation(() => validMockArProxy);
-    });
+    expect(manifest).toEqual(devManifestWithTxId);
   });
 
-  test("Oracle registry fetched by DEN, fetching manifest failed, old manifest exists", async () => {
-    server.use(...invalidArweaveHandlers);
-    const arweaveService = new ArweaveService(validMockArProxy as ArweaveProxy);
-    const manifest = await arweaveService.getCurrentManifest(oldManifestMock);
-    expect(manifest).toEqual(oldManifestMock);
-  });
-
-  test("Oracle registry fetched by DEN, fetching manifest timeout, old manifest exists", async () => {
-    server.use(...timeoutArweaveHandlers);
-    const arweaveService = new ArweaveService(
-      validMockArProxy as ArweaveProxy,
-      TEST_TIMEOUT_MS
-    );
-    const manifest = await arweaveService.getCurrentManifest(oldManifestMock);
-    expect(manifest).toEqual(oldManifestMock);
-  });
-
-  test("Oracle registry fetched by DEN, fetching manifest failed, old manifest doesn't exist", async () => {
-    server.use(...invalidArweaveHandlers);
-    const arweaveService = new ArweaveService(validMockArProxy as ArweaveProxy);
+  test("Fetching failed with timeout, old manifest doesn't exist", async () => {
+    server.use(bigDelayHandler);
     await expect(arweaveService.getCurrentManifest()).rejects.toThrowError(
       "Cannot fetch new manifest and old manifest doesn't exist"
     );
+  });
+
+  test("Fetching failed with timeout, old manifest exists", async () => {
+    server.use(bigDelayHandler);
+    const manifest = await arweaveService.getCurrentManifest(
+      devManifestWithTxId
+    );
+    expect(manifest).toEqual(devManifestWithTxId);
   });
 });
