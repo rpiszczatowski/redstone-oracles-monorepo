@@ -79,7 +79,13 @@ describe("NodeRunner", () => {
       fetchAll: jest.fn().mockResolvedValue([{ symbol: "BTC", value: 444 }]),
     };
     fetchers["uniswap"] = {
-      fetchAll: jest.fn().mockResolvedValue([{ symbol: "BTC", value: 445 }]),
+      fetchAll: jest.fn().mockResolvedValue([
+        { symbol: "BTC", value: 445 },
+        {
+          symbol: "ETH",
+          value: 42,
+        },
+      ]),
     };
 
     manifest = {
@@ -181,7 +187,7 @@ describe("NodeRunner", () => {
       "http://localhost:9000/data-packages/bulk",
       {
         requestSignature:
-          "0xf7b4a1a86ff606dc5551e32c9397770c841c544311ae8d8d6351b9459e629469136ccc33db7fdbffcf0abb7993685e52771c99a15030f982f4388c4303ab47ef1c",
+          "0xdd8c162ee49b5a506cc6afbe5d0d9a7aabd1c0e8946900e3601a5eacd96439e56db8419660b4508c9f35db4b1d4716ec58011101c9744f6f812d7b742124a3ff1c",
         dataPackages: [
           {
             signature:
@@ -191,6 +197,32 @@ describe("NodeRunner", () => {
               {
                 dataFeedId: "BTC",
                 value: 444.5,
+              },
+            ],
+          },
+          {
+            signature:
+              "WF1VFvLYv+Nd0PGAi3y1zPBp6fADtyUKREYEwuhl4k1hHZ+2MWnvztrxLK2NPeSryZXU9sgNLG5SJwhwqHV5ohs=",
+            timestampMilliseconds: 111111111,
+            dataPoints: [
+              {
+                dataFeedId: "ETH",
+                value: 42,
+              },
+            ],
+          },
+          {
+            signature:
+              "VjPF6m+SYKTv4gEBWEqRSR1Ppje0xrRg0gluaQB5vf96YLyHLVdaloSRcypaoHNCu0nSmlxlJWtye7EReGB7vhw=",
+            timestampMilliseconds: 111111111,
+            dataPoints: [
+              {
+                dataFeedId: "BTC",
+                value: 444.5,
+              },
+              {
+                dataFeedId: "ETH",
+                value: 42,
               },
             ],
           },

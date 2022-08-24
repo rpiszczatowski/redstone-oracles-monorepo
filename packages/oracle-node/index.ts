@@ -11,7 +11,7 @@ async function start() {
   } catch (e: any) {
     logger.error(e.stack);
     logger.info(
-      "Please find details about the correct node running at https://github.com/redstone-finance/redstone-node/blob/main/docs/PREPARE_ENV_VARIABLES.md"
+      "Please find details about the correct node launching at https://github.com/redstone-finance/redstone-node/blob/main/docs/PREPARE_ENV_VARIABLES.md"
     );
   }
 }

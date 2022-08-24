@@ -21,11 +21,19 @@ import {
   HttpBroadcaster,
   StreamrBroadcaster,
 } from "./broadcasters";
-import { Manifest, NodeConfig, PriceDataAfterAggregation } from "./types";
+import {
+  Manifest,
+  NodeConfig,
+  PriceDataAfterAggregation,
+  PriceDataBeforeSigning,
+} from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
 import { ArweaveProxy } from "./arweave/ArweaveProxy";
-import { SignedDataPackage } from "redstone-protocol";
-import EvmPriceSigner from "./signers/EvmPriceSigner";
+import {
+  DataPackage,
+  NumericDataPoint,
+  SignedDataPackage,
+} from "redstone-protocol";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -48,7 +56,6 @@ export default class NodeRunner {
   private pricesService?: PricesService;
   private tokensBySource?: TokensBySource;
   private newManifest: Manifest | null = null;
-  private evmPriceSigner: EvmPriceSigner = new EvmPriceSigner();
   private httpBroadcaster: Broadcaster;
   private streamrBroadcaster: Broadcaster;
 
@@ -210,24 +217,31 @@ export default class NodeRunner {
     );
 
     // Signing
-    const signedPrices: SignedDataPackage[] = pricesReadyForSigning.map(
-      (price) =>
-        this.evmPriceSigner.signPricePackage(
-          {
-            timestamp: price.timestamp,
-            prices: [
-              {
-                symbol: price.symbol,
-                value: price.value,
-              },
-            ],
-          },
-          this.nodeConfig.privateKeys.ethereumPrivateKey
-        )
-    );
+    const signedDataPackages = this.signPrices(pricesReadyForSigning);
 
     // Broadcasting
-    await this.broadcastPrices(signedPrices);
+    await this.broadcastDataPackages(signedDataPackages);
+  }
+
+  private signPrices(prices: PriceDataBeforeSigning[]): SignedDataPackage[] {
+    const ethPrivKey = this.nodeConfig.privateKeys.ethereumPrivateKey;
+
+    // Prepare signed data packages with single data point
+    const signedDataPackages = prices.map((price) => {
+      const dataPackage = new DataPackage(
+        [priceToDataPoint(price)],
+        price.timestamp
+      );
+      return dataPackage.sign(ethPrivKey);
+    });
+
+    // Adding a data package with all data points
+    const allDataPoints = prices.map(priceToDataPoint);
+    const bigDataPackage = new DataPackage(allDataPoints, prices[0].timestamp);
+    const signedBigDataPackage = bigDataPackage.sign(ethPrivKey);
+    signedDataPackages.push(signedBigDataPackage);
+
+    return signedDataPackages;
   }
 
   private async fetchPrices(): Promise<PriceDataAfterAggregation[]> {
@@ -255,12 +269,12 @@ export default class NodeRunner {
     return aggregatedPrices;
   }
 
-  private async broadcastPrices(signedPrices: SignedDataPackage[]) {
+  private async broadcastDataPackages(signedDataPackages: SignedDataPackage[]) {
     logger.info("Broadcasting prices");
     const broadcastingTrackingId = trackStart("broadcasting");
     try {
       const promises = [];
-      promises.push(this.httpBroadcaster.broadcast(signedPrices));
+      promises.push(this.httpBroadcaster.broadcast(signedDataPackages));
       const enableStreamrBroadcaster =
         this.currentManifest?.enableStreamrBroadcaster ?? false;
       const disableSinglePricesBroadcastingInStreamr =
@@ -270,7 +284,7 @@ export default class NodeRunner {
         !disableSinglePricesBroadcastingInStreamr
       ) {
         // Streamr broadcasting disabled in the old version
-        promises.push(this.streamrBroadcaster.broadcast(signedPrices));
+        promises.push(this.streamrBroadcaster.broadcast(signedDataPackages));
       }
       const results = await Promise.allSettled(promises);
 
@@ -384,6 +398,13 @@ export default class NodeRunner {
     this.tokensBySource = ManifestHelper.groupTokensBySource(newManifest);
     this.newManifest = null;
   }
+}
+
+function priceToDataPoint(price: PriceDataBeforeSigning): NumericDataPoint {
+  return new NumericDataPoint({
+    dataFeedId: price.symbol,
+    value: price.value,
+  });
 }
 
 function getVersionFromPackageJSON() {
