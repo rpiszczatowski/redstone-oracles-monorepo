@@ -1,9 +1,8 @@
 {
-  "interval": 15000,
+  "interval": 60000,
   "priceAggregator": "median",
-  "defaultSource": ["coingecko"],
   "sourceTimeout": 50000,
-  "maxPriceDeviationPercent": 25,
+  "maxPriceDeviationPercent": 80,
   "evmChainId": 1,
   "httpBroadcasterURLs": [
     "https://api.redstone.finance",
@@ -12,7 +11,6 @@
   ],
   "enableStreamrBroadcaster": false,
   "disableSinglePricesBroadcastingInStreamr": true,
-  "enableArweaveBackup": false,
   "tokens": {
     "AR": {},
     "BTC": {},
