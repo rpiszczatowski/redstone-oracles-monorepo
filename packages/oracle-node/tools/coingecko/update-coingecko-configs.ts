@@ -18,7 +18,7 @@ main();
 async function main() {
   await updateSymbolToDetailsConfig();
   updateSymbolToIdConfig();
-  console.log("\n\nDone!");
+  console.log("\nDone!");
 }
 
 async function updateSymbolToDetailsConfig() {
