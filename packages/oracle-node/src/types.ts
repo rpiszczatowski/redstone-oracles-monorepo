@@ -8,10 +8,14 @@ export interface Manifest {
   sourceTimeout: number;
   maxPriceDeviationPercent: number;
   evmChainId: number;
-  tokens: { [symbol: string]: TokenConfig };
+  tokens: TokensConfig;
   httpBroadcasterURLs?: string[];
   enableStreamrBroadcaster?: boolean;
   disableSinglePricesBroadcastingInStreamr?: boolean;
+}
+
+export interface TokensConfig {
+  [symbol: string]: TokenConfig;
 }
 
 export interface SourceTimeout {
