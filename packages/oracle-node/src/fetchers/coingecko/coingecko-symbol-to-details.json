@@ -59848,5 +59848,11 @@
       "id": "evmos",
       "name": "Evmos"
     }
+  ],
+  "sAVAX": [
+    {
+      "id": "savax",
+      "name": "BENQI Liquid Staked AVAX"
+    }
   ]
 }
