@@ -3,8 +3,8 @@ import _ from "lodash";
 import graphProxy from "../../src/utils/graph-proxy";
 
 const SUBGRAPH_URL =
-  "https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex";
-const OUTPUT_FILE = "./src/fetchers/pangolin/pangolin-pairs.json";
+  "https://api.thegraph.com/subgraphs/name/pangolindex/exchange";
+const OUTPUT_FILE = "../../src/fetchers/pangolin/pangolin-pairs.json";
 const MIN_RESERVE_USD = 1;
 
 main();

@@ -15,6 +15,7 @@ import { DrandFetcher } from "./drand/DrandFetcher";
 import twapFetchers from "./twap/all-twap-fetchers";
 import { TwelveDataFetcher } from "./twelve-data/TwelveDataFetcher";
 import { AvalancheEvmFetcher } from "./evm-chain/AvalancheEvmFetcher";
+import { PlatypusFetcher } from "./platypus/PlatypusFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -33,6 +34,7 @@ export default {
       "https://api.avax.network/ext/bc/C/rpc"
     )
   ),
+  platypus: new PlatypusFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...twapFetchers,
