@@ -6,6 +6,8 @@ import { EvmMulticallService } from "./EvmMulticallService";
 import { yieldYakContractDetails } from "./contracts-details/yield-yak";
 import { MulticallParsedResponses, PricesObj } from "../../types";
 
+type YieldYakDetailsKeys = keyof typeof yieldYakContractDetails;
+
 const MUTLICALL_CONTRACT_ADDRESS = "0x8755b94F88D120AB2Cc13b1f6582329b067C760d";
 
 export class AvalancheEvmFetcher extends BaseFetcher {
@@ -22,13 +24,17 @@ export class AvalancheEvmFetcher extends BaseFetcher {
     );
   }
 
-  async fetchData() {
-    const requests = this.prepareYieldYakMulticallRequests();
+  async fetchData(ids: string[]) {
+    const requests = [];
+    for (const id of ids) {
+      const requestsPerId = this.prepareMulticallRequests(id);
+      requests.push(...requestsPerId);
+    }
     return await this.evmMulticallService.performMulticall(requests);
   }
 
-  prepareYieldYakMulticallRequests() {
-    const { abi, address } = yieldYakContractDetails;
+  prepareMulticallRequests(id: string) {
+    const { abi, address } = yieldYakContractDetails[id as YieldYakDetailsKeys];
     const totalDepositsData = new Interface(abi).encodeFunctionData(
       "totalDeposits"
     );
@@ -56,36 +62,57 @@ export class AvalancheEvmFetcher extends BaseFetcher {
   ): Promise<PricesObj> {
     const pricesObject: PricesObj = {};
     for (const id of ids) {
-      switch (id) {
-        case "YYAV3SA1": {
-          const price = await this.extractPriceForYieldYak(response);
-          pricesObject[id] = Number(price);
-          break;
-        }
-        default:
-          throw new Error("Invalid id for Avalanche EVM fetcher");
-      }
+      const price = await this.extractPriceForYieldYak(response, id);
+      pricesObject[id] = Number(price);
     }
     return pricesObject;
   }
 
-  async extractPriceForYieldYak(multicallResult: MulticallParsedResponses) {
-    const totalDeposits = BigNumber.from(multicallResult.totalDeposits.value);
-    const totalSupply = BigNumber.from(multicallResult.totalSupply.value);
+  async extractPriceForYieldYak(
+    multicallResult: MulticallParsedResponses,
+    id: string
+  ) {
+    const { address } = yieldYakContractDetails[id as YieldYakDetailsKeys];
+
+    const totalDeposits = BigNumber.from(
+      multicallResult[address].totalDeposits.value
+    );
+    const totalSupply = BigNumber.from(
+      multicallResult[address].totalSupply.value
+    );
     const tokenValue = totalDeposits
       .mul(ethers.utils.parseUnits("1.0", 8))
       .div(totalSupply);
 
-    const avaxPrice = await this.fetchAvaxPrice();
+    const tokenPrice = await this.fetchTokenPrice(id);
     const yieldYakPrice = tokenValue
-      .mul(avaxPrice)
+      .mul(tokenPrice)
       .div(ethers.utils.parseUnits("1.0", 8));
 
     return ethers.utils.formatEther(yieldYakPrice);
   }
 
-  async fetchAvaxPrice() {
+  async fetchTokenPrice(id: string) {
+    switch (id) {
+      case "YYAV3SA1": {
+        return this.fetchAVAXPrice();
+      }
+      case "SAV2": {
+        return this.fetchSAVAXPrice();
+      }
+      default:
+        throw new Error("Invalid id for Avalanche EVM fetcher");
+    }
+  }
+
+  async fetchAVAXPrice() {
     const avaxPriceObjectFromApi = await redstone.getPrice("AVAX");
+    const avaxPriceAsString = avaxPriceObjectFromApi.value.toString();
+    return ethers.utils.parseUnits(avaxPriceAsString, 18);
+  }
+
+  async fetchSAVAXPrice() {
+    const avaxPriceObjectFromApi = await redstone.getPrice("sAVAX");
     const avaxPriceAsString = avaxPriceObjectFromApi.value.toString();
     return ethers.utils.parseUnits(avaxPriceAsString, 18);
   }
