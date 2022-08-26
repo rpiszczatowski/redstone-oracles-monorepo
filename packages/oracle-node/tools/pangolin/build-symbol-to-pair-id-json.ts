@@ -1,7 +1,7 @@
 import graphProxy from "../../src/utils/graph-proxy";
 
 const SUBGRAPH_URL =
-  "https://api.thegraph.com/subgraphs/name/dasconnor/pangolin-dex";
+  "https://api.thegraph.com/subgraphs/name/pangolindex/exchange";
 const MIN_RESERVE_USD = 50;
 
 interface Pair {
