@@ -42,5 +42,6 @@ jobs:
           # TODO: add building cache-service here
 
           # Push images to ECR Public
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           docker push $ORACLE_NODE_DOCKER_NAME:$TAG
           # TODO: add pushing cache-service image here
