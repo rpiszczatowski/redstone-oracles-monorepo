@@ -178,7 +178,7 @@ describe("NodeRunnerOld", () => {
       {
         liteEvmSignature: "mock_evm_signed_lite",
         id: "00000000-0000-0000-0000-000000000000",
-        permawebTx: "",
+        permawebTx: "mock-permaweb-tx",
         provider: "mockArAddress",
         source: { coingecko: 444, uniswap: 445 },
         symbol: "BTC",
