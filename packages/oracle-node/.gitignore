@@ -24,7 +24,6 @@ yarn-error.log
 .clinic/
 
 # Private dockerfiles
-Dockerfile
 Dockerfile.redstone-dev
 
 .env*

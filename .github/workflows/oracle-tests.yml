@@ -1,10 +1,10 @@
-name: CI
+name: Oracle Node CI
 on:
   push:
     paths:
       - packages/oracle-node/**
       - .github/workflows/oracle-tests.yaml
-      - .github/workflows/oracle-deploy-to-ecr-public.yaml
+      - .github/workflows/deploy-to-ecr-public.yaml
 
 jobs:
   build:
