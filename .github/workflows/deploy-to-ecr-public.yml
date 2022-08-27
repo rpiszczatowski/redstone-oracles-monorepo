@@ -4,7 +4,7 @@
 
 # Learn more: https://github.com/pahud/ecr-public-action
 
-name: Deploy oracle-node to AWS ECR Public
+name: Deploy docker images to AWS ECR Public
 on:
   push:
     branches:
