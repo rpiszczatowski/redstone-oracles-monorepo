@@ -4,7 +4,7 @@
 
 # Learn more: https://github.com/pahud/ecr-public-action
 
-name: Deploy to Amazon ECR Public
+name: Deploy oracle-node to AWS ECR Public
 on:
   push:
     branches:
@@ -12,17 +12,15 @@ on:
       - push-docker-ecr-public
     paths:
       - packages/oracle-node/**
+      - packages/cache-service/**
       - .github/workflows/oracle-tests.yaml
-      - .github/workflows/oracle-deploy-to-ecr-public.yaml
+      - .github/workflows/deploy-to-ecr-public.yaml
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     name: ECR public action
     steps:
-      - name: Get short SHA
-        id: sha
-        run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
       - name: Checkout
         uses: actions/checkout@v2
       - name: Configure AWS credentials
@@ -31,13 +29,18 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - name: Build and Push to ECR public
+      - name: Build and Push Docker images to ECR public
         id: build-and-push
-        uses: pahud/ecr-public-action@8cd826db40befb59b0cd0b60b22a7ba72d06a7f7
-        with:
-          dockerfile: Dockerfile.public
-          context: .
-          create_repo: ecr_repo_name
-          tags: |
-            public.ecr.aws/y7v2w8b2/redstone-node-monorepo:latest
-            public.ecr.aws/y7v2w8b2/redstone-node-monorepo:${{ steps.sha.outputs.sha7 }}
+        run: |
+          # Build images (for node and cache-service)
+          ORACLE_NODE_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-oracle-node
+          TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
+          docker build -t "redstone-monorepo:$TAG" .
+          docker build -t "$ORACLE_NODE_DOCKER_NAME:$TAG" \
+            -f packages/oracle-node/Dockerfile \
+            --build-arg VERSION=$TAG .
+          # TODO: add building cache-service here
+
+          # Push images to ECR Public
+          docker push $ORACLE_NODE_DOCKER_NAME:$TAG
+          # TODO: add pushing cache-service image here

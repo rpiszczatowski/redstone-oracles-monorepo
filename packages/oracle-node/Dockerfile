@@ -3,20 +3,12 @@
 # But before running the container it must be configured to provide
 # the node config through environment variables
 
-FROM node:16
+ARG VERSION
+FROM redstone-monorepo:${VERSION}
 
-RUN mkdir /app
-WORKDIR /app
+WORKDIR /app/packages/oracle-node
 
-# Installing required npm packages
-COPY package.json package.json
-COPY yarn.lock yarn.lock
 RUN yarn
-
-# Copying all files
-COPY . .
-
-# Building app
 RUN yarn build
 
 # Setting production env variables
