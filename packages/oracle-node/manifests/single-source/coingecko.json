@@ -222,5 +222,6 @@
     "EVMOS": {},
     "XSGD": {},
     "sAVAX": {}
-  }
+  },
+  "defaultSource": ["coingecko"]
 }

@@ -77,16 +77,16 @@
       "name": "Lido Staked Ether"
     }
   ],
-  "AVAX": [
-    {
-      "id": "avalanche-2",
-      "name": "Avalanche"
-    }
-  ],
   "DAI": [
     {
       "id": "dai",
       "name": "Dai"
+    }
+  ],
+  "AVAX": [
+    {
+      "id": "avalanche-2",
+      "name": "Avalanche"
     }
   ],
   "MATIC": [
@@ -107,16 +107,16 @@
       "name": "Wrapped Bitcoin"
     }
   ],
-  "LEO": [
-    {
-      "id": "leo-token",
-      "name": "LEO Token"
-    }
-  ],
   "ETC": [
     {
       "id": "ethereum-classic",
       "name": "Ethereum Classic"
+    }
+  ],
+  "LEO": [
+    {
+      "id": "leo-token",
+      "name": "LEO Token"
     }
   ],
   "OKB": [
@@ -131,16 +131,22 @@
       "name": "Litecoin"
     }
   ],
+  "FTT": [
+    {
+      "id": "ftx-token",
+      "name": "FTX"
+    }
+  ],
   "ATOM": [
     {
       "id": "cosmos",
       "name": "Cosmos Hub"
     }
   ],
-  "FTT": [
+  "CRO": [
     {
-      "id": "ftx-token",
-      "name": "FTX"
+      "id": "crypto-com-chain",
+      "name": "Cronos"
     }
   ],
   "LINK": [
@@ -153,12 +159,6 @@
     {
       "id": "near",
       "name": "NEAR Protocol"
-    }
-  ],
-  "CRO": [
-    {
-      "id": "crypto-com-chain",
-      "name": "Cronos"
     }
   ],
   "UNI": [
@@ -275,22 +275,16 @@
       "name": "Axie Infinity"
     }
   ],
-  "CHZ": [
-    {
-      "id": "chiliz",
-      "name": "Chiliz"
-    }
-  ],
-  "LDO": [
-    {
-      "id": "lido-dao",
-      "name": "Lido DAO"
-    }
-  ],
   "EGLD": [
     {
       "id": "elrond-erd-2",
       "name": "Elrond"
+    }
+  ],
+  "THETA": [
+    {
+      "id": "theta-token",
+      "name": "Theta Network"
     }
   ],
   "AAVE": [
@@ -303,6 +297,12 @@
     {
       "id": "savax",
       "name": "BENQI Liquid Staked AVAX"
+    }
+  ],
+  "CHZ": [
+    {
+      "id": "chiliz",
+      "name": "Chiliz"
     }
   ]
 }
