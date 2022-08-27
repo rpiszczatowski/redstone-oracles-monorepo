@@ -15,7 +15,10 @@ export class HttpBroadcasterOld implements BroadcasterOld {
     const promises = this.broadcasterURLs.map((url) => {
       logger.info(`Posting prices to ${url}`);
       return axios
-        .post(url + "/prices", prices)
+        .post(
+          url + "/prices",
+          prices.map((p) => ({ ...p, permawebTx: "mock-permaweb-tx" }))
+        )
         .then(() => logger.info(`Broadcasting to ${url} completed`))
         .catch((e) =>
           logger.error(`Broadcasting to ${url} failed: ${stringifyError(e)}`)
