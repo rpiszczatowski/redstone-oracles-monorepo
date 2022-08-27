@@ -143,5 +143,7 @@ export interface MulticallRequest {
 }
 
 export type MulticallParsedResponses = {
-  [x in string]: { success: boolean; value: string };
+  [address in string]: {
+    [functionName in string]: { success: boolean; value: string };
+  };
 };

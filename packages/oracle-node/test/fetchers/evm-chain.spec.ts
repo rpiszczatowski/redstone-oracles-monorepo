@@ -36,10 +36,12 @@ describe("EVM chain multicall service", () => {
     ];
     const result = await multicallService.performMulticall(requests);
     expect(result).toEqual({
-      getBlockNumber: {
-        success: true,
-        value:
-          "0x0000000000000000000000000000000000000000000000000000000000000001",
+      [multicallContract.address]: {
+        getBlockNumber: {
+          success: true,
+          value:
+            "0x0000000000000000000000000000000000000000000000000000000000000001",
+        },
       },
     });
   });
