@@ -1,9 +1,15 @@
 import { Injectable } from "@nestjs/common";
+import { Model } from "mongoose";
+import { InjectModel } from "@nestjs/mongoose";
 import { parseArrayToObject } from "../../shared/parse-array-to-object";
-import { Issue, IssueType } from "./issues.model";
+import { Issue, IssueDocument } from "./issues.schema";
 
 @Injectable()
 export class IssuesService {
+  constructor(
+    @InjectModel(Issue.name) private issueModel: Model<IssueDocument>
+  ) {}
+
   getIssuesByTimeframe(timeframe: number) {
     const toTimestamp = Date.now();
     const fromTimestamp = toTimestamp - timeframe;
@@ -36,9 +42,9 @@ export class IssuesService {
 
   aggregateIssuesByAttribute = (
     fromTimestamp: number,
-    attributeName: keyof IssueType
+    attributeName: keyof IssueDocument
   ) => {
-    return Issue.aggregate([
+    return this.issueModel.aggregate([
       {
         $match: {
           timestamp: {

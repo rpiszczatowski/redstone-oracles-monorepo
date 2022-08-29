@@ -1,7 +1,9 @@
+import { Model } from "mongoose";
 import { log } from "console";
-import { askUserForTimeframe } from "src/shared/ask-user-timeframe";
-import { IssuesService } from "src/modules/issues/issues.service";
-import { connectToRemoteMongo } from "src/shared/db-connector";
+import { askUserForTimeframe } from "scripts/ask-user-timeframe";
+import { IssuesService } from "../src/modules/issues/issues.service";
+import { connectToRemoteMongo } from "scripts/db-connector";
+import { IssueDocument } from "../src/modules/issues/issues.schema";
 
 (async () => {
   await connectToRemoteMongo();
@@ -9,7 +11,8 @@ import { connectToRemoteMongo } from "src/shared/db-connector";
   const toTimestamp = Date.now();
   const { fromTimestamp } = await askUserForTimeframe(toTimestamp);
 
-  const issuesService = new IssuesService();
+  const issueModel = new Model<IssueDocument>();
+  const issuesService = new IssuesService(issueModel);
   const analysis = await issuesService.generateIssuesAnalysis(
     fromTimestamp,
     toTimestamp

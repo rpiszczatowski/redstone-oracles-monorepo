@@ -1,9 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { parseArrayToObject } from "src/shared/parse-array-to-object";
-import { Metric } from "./metrics.model";
+import { Model } from "mongoose";
+import { InjectModel } from "@nestjs/mongoose";
+import { parseArrayToObject } from "../../shared/parse-array-to-object";
+import { Metric, MetricDocument } from "./metrics.schema";
 
 @Injectable()
 export class MetricsService {
+  constructor(
+    @InjectModel(Metric.name) private metricModel: Model<MetricDocument>
+  ) {}
+
   getMetricsByTimeframe(timeframe: number, name: string) {
     const toTimestamp = Date.now();
     const fromTimestamp = toTimestamp - timeframe;
@@ -23,15 +29,15 @@ export class MetricsService {
         $eq: name,
       },
     };
-    return Metric.find(condition);
+    return this.metricModel.find(condition);
   }
 
   fetchMetricsNames() {
-    return Metric.distinct("name");
+    return this.metricModel.distinct("name");
   }
 
   aggregateMetricsQuery(fromTimestamp: number) {
-    return Metric.aggregate([
+    return this.metricModel.aggregate([
       {
         $match: {
           timestamp: {

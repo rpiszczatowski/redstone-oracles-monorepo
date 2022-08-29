@@ -1,17 +1,18 @@
-require("dotenv").config("../../../.env");
+import * as dotenv from "dotenv";
+import { join } from "path";
+
+dotenv.config({ path: join(__dirname, "../../../../.env") });
 
 function getFromEnv(envName: string) {
   const valueFromEnv = process.env[envName];
   if (!valueFromEnv) {
-    throw new Error(`Env ${envName} must be specified`);
+    throw new Error(`Missing ${envName} env variable`);
   }
   return valueFromEnv;
 }
 
 export const mongoDbUrl = getFromEnv("MONGO_DB_URL");
-export const metricsUrl = getFromEnv("METRICS_URL");
-export const dbTtlInDays = Number(getFromEnv("DB_DATA_TTL_DAYS"));
-export const uptimeKumaUrl = getFromEnv("UPTIME_KUMA_URL");
+
 export const dataFeedsToCheck = [
   {
     id: "redstone",

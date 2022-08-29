@@ -1,9 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { runMonitoringService } from "./run-monitoring-service";
 
-async function bootstrap() {
-  runMonitoringService();
+(async () => {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
     allowedHeaders: ["content-type"],
@@ -11,5 +9,4 @@ async function bootstrap() {
     credentials: true,
   });
   await app.listen(3000);
-}
-bootstrap();
+})();

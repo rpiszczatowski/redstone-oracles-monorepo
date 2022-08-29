@@ -1,11 +1,17 @@
 import mongoose from "mongoose";
 import { Logger } from "@nestjs/common";
-import { mongoDbUrl } from "../config";
+
+const MONGO_DB_URL =
+  "mongodb://mongodb:27017/redstone-oracle-monitoring?retryWrites=true&w=majority";
 
 export const connectToRemoteMongo = async () => {
-  await mongoose.connect(mongoDbUrl);
-  subscribeMonitoringExit();
-  Logger.log("Connected to MongoDB");
+  if (!!MONGO_DB_URL) {
+    await mongoose.connect(MONGO_DB_URL);
+    subscribeMonitoringExit();
+    Logger.log("Connected to MongoDB");
+  } else {
+    Logger.error("Empty MongoDB URL");
+  }
 };
 
 const subscribeMonitoringExit = () => {

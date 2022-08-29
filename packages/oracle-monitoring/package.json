@@ -3,8 +3,8 @@
   "name": "oracle-monitoring",
   "version": "0.1.1",
   "scripts": {
-    "backend:install": "cd backend && yarn",
-    "frontend:install": "cd frontend && yarn",
+    "backend:install": "cd backend && yarn install --frozen-lockfile",
+    "frontend:install": "cd frontend && yarn install --frozen-lockfile",
     "postinstall": "yarn backend:install && yarn frontend:install",
     "frontend:dev": "cd frontend && yarn dev",
     "frontend:build": "cd frontend && yarn build",
@@ -17,11 +17,5 @@
     "lint": "eslint",
     "dev": "yarn frontend:build && yarn backend:dev",
     "start": "yarn frontend:build && yarn backend:build && yarn backend:start"
-  },
-  "dependencies": {
-    "@nestjs/schedule": "^2.1.0"
-  },
-  "devDependencies": {
-    "@types/cron": "^2.0.0"
   }
 }

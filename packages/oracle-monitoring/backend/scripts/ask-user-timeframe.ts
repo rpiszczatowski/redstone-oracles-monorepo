@@ -4,7 +4,7 @@ import {
   HOUR_IN_MILLISECONDS,
   WEEK_IN_HOURS,
   TWO_WEEKS_IN_HOURS,
-} from "../../../shared/constants";
+} from "../../shared/constants";
 
 export const askUserForTimeframe = async (toTimestamp: number) => {
   const response = await prompts({
