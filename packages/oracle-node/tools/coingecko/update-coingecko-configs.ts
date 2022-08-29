@@ -1,11 +1,11 @@
-import CoingeckoApi from "coingecko-api";
 import _ from "lodash";
 import { readJSON, saveJSON } from "../common/fs-utils";
-import { SYMBOL_TO_DETAILS_PATH, SYMBOL_TO_ID_PATH } from "./coingecko-common";
-
-interface SymbolToDetails {
-  [symbol: string]: [{ id: string; name: string }];
-}
+import {
+  coingeckoClient,
+  SymbolToDetails,
+  SYMBOL_TO_DETAILS_PATH,
+  SYMBOL_TO_ID_PATH,
+} from "./coingecko-common";
 
 const HARDCODED_SYMBOLS = {
   QI: "benqi",
@@ -24,13 +24,12 @@ async function main() {
 async function updateSymbolToDetailsConfig() {
   console.log(`Updating symbol->details config...`);
 
-  const coingecko = new CoingeckoApi();
-
-  const coins = (await coingecko.coins.all()).data;
+  const coins = (await coingeckoClient.coins.list()).data;
 
   const symbolToDetails: SymbolToDetails = {};
 
   for (const coin of coins) {
+    console.log(coin);
     const symbol = coin.symbol.toUpperCase();
     const details = _.pick(coin, ["id", "name"]);
     if (symbolToDetails[symbol] === undefined) {

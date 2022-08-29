@@ -7,9 +7,17 @@ import {
   symbolArrToTokensConfig,
 } from "../common/manifest-utils";
 import { MAIN_MANIFEST_PATH } from "../common/paths";
-import { COINGECKO_MANIFEST_PATH, SYMBOL_TO_ID_PATH } from "./coingecko-common";
+import {
+  COINGECKO_MANIFEST_PATH,
+  getAllCoingeckoCoins,
+  SymbolToDetails,
+  SYMBOL_TO_DETAILS_PATH,
+} from "./coingecko-common";
 
 const mainManifest: Manifest = readJSON(MAIN_MANIFEST_PATH);
+const coingeckoSymbolToDetails: SymbolToDetails = readJSON(
+  SYMBOL_TO_DETAILS_PATH
+);
 
 main();
 
@@ -20,7 +28,7 @@ async function main() {
     message: "How many *new* tokens do you want to add with coingecko source?",
   });
 
-  const tokensToAdd = getNewTokensToAdd(numberOfTokensToAdd);
+  const tokensToAdd = await getNewTokensToAdd(numberOfTokensToAdd);
   console.log(
     `The following tokens will be added`,
     JSON.stringify(tokensToAdd)
@@ -48,13 +56,16 @@ async function main() {
   }
 }
 
-// Selecting new tokens, which can be added
+// Selecting new tokens with the highest market cap
 // Each new token symbol should not be included in the current main manifest
-function getNewTokensToAdd(numberOfTokensToAdd: number): string[] {
-  const coingeckoSymbolToId: { [symbol: string]: string } =
-    readJSON(SYMBOL_TO_ID_PATH);
+async function getNewTokensToAdd(
+  numberOfTokensToAdd: number
+): Promise<string[]> {
+  const coins = await getAllCoingeckoCoins();
+
   const newTokens: string[] = [];
-  for (const symbol of Object.keys(coingeckoSymbolToId)) {
+  for (const coin of coins) {
+    const symbol = coin.symbol.toUpperCase();
     if (newTokens.length >= numberOfTokensToAdd) {
       break;
     }
@@ -70,5 +81,11 @@ function shouldNewTokenBeAdded(symbol: string) {
   const notIncludedInMainManifest = !mainManifest.tokens[symbol];
   const hasMetadata = !!(tokens as any)[symbol];
   const tokenSymbolIsNotANumber = isNaN(Number(symbol));
-  return notIncludedInMainManifest && hasMetadata && tokenSymbolIsNotANumber;
+  const symbolIsUnambiguous = coingeckoSymbolToDetails[symbol].length === 1;
+  return (
+    notIncludedInMainManifest &&
+    hasMetadata &&
+    tokenSymbolIsNotANumber &&
+    symbolIsUnambiguous
+  );
 }
