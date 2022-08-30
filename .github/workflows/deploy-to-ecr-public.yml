@@ -6,10 +6,10 @@
 
 name: Deploy docker images to AWS ECR Public
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-      - push-docker-ecr-public
     paths:
       - packages/oracle-node/**
       - packages/cache-service/**
