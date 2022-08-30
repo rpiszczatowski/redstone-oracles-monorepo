@@ -1,7 +1,7 @@
 import { rest } from "msw";
 import { setupServer } from "msw/node";
 import ArweaveService from "../../src/arweave/ArweaveService";
-import devManifest from "../../manifests/dev.json";
+import devManifest from "../../manifests/dev/dev.json";
 import { Manifest } from "../../src/types";
 
 const mockOracleRegistryState = {

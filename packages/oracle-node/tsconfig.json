@@ -24,7 +24,7 @@
     "manifests/**/*.json",
     "index.ts"
   ],
-  "exclude": ["node_modules", "tools", "test"],
+  "exclude": ["node_modules", "test"],
   "references": [
     {
       "path": "../protocol"
