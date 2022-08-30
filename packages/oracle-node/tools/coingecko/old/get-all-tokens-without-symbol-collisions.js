@@ -1,4 +1,4 @@
-const mainManifest = require("../../manifests/main.json");
+const mainManifest = require("../../data-services/manifests/main.json");
 const coingeckoSymbolToDetails = require("../../src/fetchers/coingecko/coingecko-symbol-to-details.json");
 
 const EXCLUDE_SYMBOLS_FROM_MAIN_MANIFEST = true;
