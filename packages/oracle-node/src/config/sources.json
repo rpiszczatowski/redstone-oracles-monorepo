@@ -228,5 +228,10 @@
     "logoURI": "https://cdn.redstone.finance/sources/pangolin-usdt.png",
     "url": "https://pangolin.exchange/",
     "color": "#48a07c"
+  },
+  "platypus": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/platypus.png",
+    "url": "https://platypus.finance/",
+    "color": "#4CA6BB"
   }
 }
