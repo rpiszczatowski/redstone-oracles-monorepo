@@ -221,7 +221,7 @@
     "GNT": {},
     "EVMOS": {},
     "XSGD": {},
-    "SAVAX": {},
+    "sAVAX": {},
     "STETH": {},
     "CUSDC": {},
     "USDP": {},
@@ -293,7 +293,5 @@
     "IDEX": {},
     "KNCL": {}
   },
-  "defaultSource": [
-    "coingecko"
-  ]
+  "defaultSource": ["coingecko"]
 }
