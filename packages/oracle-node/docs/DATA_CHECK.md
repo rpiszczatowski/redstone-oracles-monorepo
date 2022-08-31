@@ -1,31 +1,24 @@
 # Data check steps
 
-1. Data check
-
-- Run main node with all sources and feeds (except custom ones) for few minutes, redirect output to local-node-run.log
-- Run script to analyze logs and print insights
-  - What sources failed
-  - What symbols failed (and why)
-
-2. Fix sources and check again
-
-- Fix sources
-  - CCXT sources
-    - Upgrade to the latest version of CCXT sources
-    - Run CCXT scripts to sync data feeds and data sources
-  - Remove sources that do not exist anymore or are not reliable
-    - Remove corresponding manifests
-    - Remove corresponding fetchers (for ccxt source - remove it from the ccxt sources list, for other - remove code)
-    - Regenerate all dependent data-services manifests
-
-3. Remove incorrect data feeds (symbols)
-
-- Run the step 1 (Data check again)
-- Fix symbols
-  - For symbol fetching failing on all sources - remo this symbol
-  - For deviation on the symbols or invalid values on some sources - manually remove this symbol from incorrect sources manifests
-- Regenerate all dependent data-services manifests
-
-4. Add more symbols
-
-- If the number of symbols drops below 1000, add new tokens from coingecko (TODO: add a link to the instruction)
+- Data check
+  - Run main node with all sources and feeds (except custom ones) for few minutes, redirect output to local-node-run.log
+  - Run script to analyze logs and print insights
+    - What sources failed
+    - What symbols failed (and why)
+- Fix sources and check again
+  - Fix sources
+    - CCXT sources
+      - Upgrade to the latest version of CCXT sources
+      - Run CCXT scripts to sync data feeds and data sources
+    - Remove sources that do not exist anymore or are not reliable
+      - Remove corresponding manifests
+      - Remove corresponding fetchers (for ccxt source - remove it from the ccxt sources list, for other - remove code)
+      - Regenerate all dependent data-services manifests
+- Remove incorrect data feeds (symbols)
+  - Run the step 1 (Data check again)
+  - Fix symbols
+    - For symbol fetching failing on all sources - remo this symbol
+    - For deviation on the symbols or invalid values on some sources - manually remove this symbol from incorrect sources manifests
+  - Regenerate all dependent data-services manifests
+- Add more symbols
+  - If the number of symbols drops below 1000, add new tokens from coingecko (TODO: add a link to the instruction)
