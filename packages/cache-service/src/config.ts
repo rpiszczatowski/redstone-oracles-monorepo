@@ -7,7 +7,10 @@ interface CacheServiceConfig {
   enableDirectPostingRoutes: boolean;
   enableArchivingOnArweave: boolean;
   arweaveJwkKey?: JWKInterface;
+  bundlrNodeUrl?: string;
 }
+
+const DEFAULT_BUNDLR_NODE_URL = "https://node2.bundlr.network";
 
 const getEnv = (envName: string, required: boolean = true): string => {
   if (!process.env[envName] && required) {
@@ -26,6 +29,7 @@ const config: CacheServiceConfig = {
   enableStreamrListening: getEnv("ENABLE_STREAMR_LISTENING") === "true",
   enableDirectPostingRoutes: getEnv("ENABLE_DIRECT_POSTING_ROUTES") === "true",
   enableArchivingOnArweave: !!arweaveJwkKeyForArchiving,
+  bundlrNodeUrl: getEnv("BUNDLR_NODE_URL", false) || DEFAULT_BUNDLR_NODE_URL,
 };
 
 if (config.enableArchivingOnArweave) {
