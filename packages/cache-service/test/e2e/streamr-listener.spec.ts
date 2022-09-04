@@ -26,6 +26,8 @@ jest.mock("streamr-client", () => ({
   })),
 }));
 
+jest.mock("../../src/bundlr/bundlr.service");
+
 describe("Streamr Listener (e2e)", () => {
   let streamrListenerService: StreamrListenerService;
 
@@ -44,17 +46,27 @@ describe("Streamr Listener (e2e)", () => {
   it("Should correctly listen to streamr streams", async () => {
     await streamrListenerService.syncStreamrListening();
     await sleep(1000);
-    const dataPackagesInDB = await DataPackage.find();
-    const dataPackagesInDBCleaned = dataPackagesInDB.map((dp) => {
-      const { _id, __v, ...rest } = dp.toJSON() as any;
-      return rest;
-    });
-    expect(dataPackagesInDBCleaned).toEqual([
+
+    const expectedSavedDataPackages = [
       {
         ...mockDataPackages[0],
         signerAddress: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
         dataServiceId: "mock-data-service-1",
       },
-    ]);
+    ];
+
+    // Should save in DB
+    const dataPackagesInDB = await DataPackage.find();
+    const dataPackagesInDBCleaned = dataPackagesInDB.map((dp) => {
+      const { _id, __v, ...rest } = dp.toJSON() as any;
+      return rest;
+    });
+    expect(dataPackagesInDBCleaned).toEqual(expectedSavedDataPackages);
+
+    // Should have been saved in Arweave
+    expect(BundlrService.prototype.saveDataPackages).toHaveBeenCalledTimes(1);
+    expect(BundlrService.prototype.saveDataPackages).toHaveBeenCalledWith(
+      expectedSavedDataPackages
+    );
   });
 });
