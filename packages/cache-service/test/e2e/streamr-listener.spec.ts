@@ -8,6 +8,7 @@ import { DataPackage } from "../../src/data-packages/data-packages.model";
 import { sleep } from "../common/test-utils";
 import { StreamrListenerService } from "../../src/streamr-listener/streamr-listener.service";
 import { DataPackagesService } from "../../src/data-packages/data-packages.service";
+import { BundlrService } from "../../src/bundlr/bundlr.service";
 
 jest.mock("redstone-sdk", () => ({
   __esModule: true,
@@ -33,7 +34,8 @@ describe("Streamr Listener (e2e)", () => {
     await connectToTestDB();
 
     streamrListenerService = new StreamrListenerService(
-      new DataPackagesService()
+      new DataPackagesService(),
+      new BundlrService()
     );
   });
 

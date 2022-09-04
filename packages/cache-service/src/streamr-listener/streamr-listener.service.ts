@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
 import { getOracleRegistryState } from "redstone-sdk";
-import config from "src/config";
+import config from "../config";
 import { StreamrClient, Subscription } from "streamr-client";
 import { DataPackage } from "../data-packages/data-packages.model";
 import { DataPackagesService } from "../data-packages/data-packages.service";
-import { BundlrService } from "src/bundlr/bundlr.service";
+import { BundlrService } from "../bundlr/bundlr.service";
 
 interface StreamrSubscriptions {
   [nodeEvmAddress: string]: Subscription;
