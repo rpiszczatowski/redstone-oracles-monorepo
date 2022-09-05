@@ -34,7 +34,7 @@ export class PlatypusFetcher extends BaseFetcher {
     const pricesObj: { [symbol: string]: number } = {};
     for (const token of response.data.tokens) {
       const { symbol, lastPriceUSD } = token;
-      pricesObj[symbol] = lastPriceUSD;
+      pricesObj[symbol] = Number(lastPriceUSD);
     }
     return pricesObj;
   }
