@@ -333,5 +333,10 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/platypus.png",
     "url": "https://platypus.finance/",
     "color": "#4CA6BB"
+  },
+  "lens": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/lens.png",
+    "url": "https://lens.xyz/",
+    "color": "#bdfc5a"
   }
 }
