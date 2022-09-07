@@ -12,9 +12,9 @@ export class BundlrService {
   constructor() {
     if (config.enableArchivingOnArweave) {
       this.bundlrClient = new Bundlr(
-        config.bundlrNodeUrl!,
+        config.bundlrNodeUrl,
         "arweave",
-        config.arweaveJwkKey!
+        config.arweaveJwkKey
       );
     }
   }

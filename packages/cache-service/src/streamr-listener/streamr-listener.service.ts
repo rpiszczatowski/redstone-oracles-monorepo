@@ -80,7 +80,7 @@ export class StreamrListenerService {
             await this.bundlrService.saveDataPackages(dataPackagesToSave);
           }
         } catch (e) {
-          console.error("Error occured ", e);
+          console.error("Error occured ", e.stack);
         }
       }
     );
