@@ -16,6 +16,7 @@ import twapFetchers from "./twap/all-twap-fetchers";
 import { TwelveDataFetcher } from "./twelve-data/TwelveDataFetcher";
 import { AvalancheEvmFetcher } from "./evm-chain/AvalancheEvmFetcher";
 import { PlatypusFetcher } from "./platypus/PlatypusFetcher";
+import { LensFetcher } from "./lens/LensFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -35,6 +36,7 @@ export default {
     )
   ),
   platypus: new PlatypusFetcher(),
+  lens: new LensFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...twapFetchers,
