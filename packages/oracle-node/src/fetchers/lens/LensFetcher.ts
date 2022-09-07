@@ -9,21 +9,33 @@ export class LensFetcher extends BaseFetcher {
     super("lens");
   }
 
-  // https://docs.lens.xyz/docs/recommended-profiles
   async fetchData() {
-    const query = `query Profile {
-      recommendedProfiles {
-        id
-        handle
-        stats {
-          totalFollowers
-          totalFollowing
-          totalPosts
-          totalComments
-          totalMirrors
-          totalPublications
-          totalCollects
-        } 
+    const query = `query Profiles {
+      profiles(request: { handles: [
+        "lensprotocol",
+        "aaveaave.lens",
+        "aavegrants.lens",
+        "letsraave.lens",
+        "stani.lens",
+        "wagmi.lens",
+        "wassim.lens",
+        "donosonaumczuk.lens",
+        "nicolo.lens",
+        "jouni.lens"
+      ], limit: 10 }) {
+        items {
+          id
+          handle
+          stats {
+            totalFollowers
+            totalFollowing
+            totalPosts
+            totalComments
+            totalMirrors
+            totalPublications
+            totalCollects
+          } 
+        }
       }
     }`;
 
@@ -37,7 +49,7 @@ export class LensFetcher extends BaseFetcher {
   async extractPrices(response: any): Promise<ReputationObject> {
     const reputationObject: { [symbol: string]: number } = {};
 
-    for (const profile of response.data.recommendedProfiles) {
+    for (const profile of response.data.profiles.items) {
       const symbol = profile.handle;
       const {
         totalFollowers,
