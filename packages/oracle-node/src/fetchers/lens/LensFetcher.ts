@@ -9,20 +9,9 @@ export class LensFetcher extends BaseFetcher {
     super("lens");
   }
 
-  async fetchData() {
+  async fetchData(ids: string[]) {
     const query = `query Profiles {
-      profiles(request: { handles: [
-        "lensprotocol",
-        "aaveaave.lens",
-        "aavegrants.lens",
-        "letsraave.lens",
-        "stani.lens",
-        "wagmi.lens",
-        "wassim.lens",
-        "donosonaumczuk.lens",
-        "nicolo.lens",
-        "jouni.lens"
-      ], limit: 10 }) {
+      profiles(request: { handles: ${JSON.stringify(ids)}, limit: 50 }) {
         items {
           id
           handle
