@@ -49,12 +49,12 @@ export class LensFetcher extends BaseFetcher {
         totalCollects,
       } = profile.stats;
       const reputation =
-        totalFollowers +
-        totalPosts +
-        totalComments +
-        totalMirrors +
-        totalPublications +
-        totalCollects;
+        totalFollowers * 0.75 +
+        totalPosts * 0.5 +
+        totalComments * 0.25 +
+        totalMirrors * 1 +
+        totalPublications * 0.5 +
+        totalCollects * 1;
       reputationObject[symbol] = reputation;
     }
 
