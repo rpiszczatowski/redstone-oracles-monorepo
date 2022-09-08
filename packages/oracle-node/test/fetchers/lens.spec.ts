@@ -1,5 +1,6 @@
 import fetchers from "../../src/fetchers/index";
 import { mockFetcherResponse } from "./_helpers";
+import response from "../../src/fetchers/lens/example-response.json";
 
 jest.mock("axios");
 
@@ -19,15 +20,15 @@ describe("lens fetcher", () => {
     expect(result).toEqual([
       {
         symbol: "aaveaave.lens",
-        value: 5890,
+        value: 4627,
       },
       {
         symbol: "wagmi.lens",
-        value: 2457,
+        value: 1878.5,
       },
       {
         symbol: "yoginth.lens",
-        value: 63328,
+        value: 57483.5,
       },
     ]);
   });
