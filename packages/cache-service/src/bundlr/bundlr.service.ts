@@ -19,9 +19,17 @@ export class BundlrService {
     }
   }
 
+  async safelySaveDataPackages(dataPackages: CachedDataPackage[]) {
+    try {
+      await this.saveDataPackages(dataPackages);
+    } catch (e) {
+      console.error("Error occured while saving to Bundlr", e.stack);
+    }
+  }
+
   async saveDataPackages(dataPackages: CachedDataPackage[]) {
     for (const dataPackage of dataPackages) {
-      this.saveOneDataPackage(dataPackage);
+      await this.saveOneDataPackage(dataPackage);
     }
   }
 

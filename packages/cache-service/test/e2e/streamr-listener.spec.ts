@@ -28,6 +28,14 @@ jest.mock("streamr-client", () => ({
 
 jest.mock("../../src/bundlr/bundlr.service");
 
+const expectedSavedDataPackages = [
+  {
+    ...mockDataPackages[0],
+    signerAddress: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    dataServiceId: "mock-data-service-1",
+  },
+];
+
 describe("Streamr Listener (e2e)", () => {
   let streamrListenerService: StreamrListenerService;
 
@@ -39,33 +47,33 @@ describe("Streamr Listener (e2e)", () => {
       new DataPackagesService(),
       new BundlrService()
     );
+
+    (BundlrService.prototype.safelySaveDataPackages as any).mockClear();
   });
 
   afterEach(async () => await dropTestDatabase());
 
-  it("Should correctly listen to streamr streams", async () => {
+  it("Should listen to streamr streams and save data in DB", async () => {
     await streamrListenerService.syncStreamrListening();
     await sleep(1000);
 
-    const expectedSavedDataPackages = [
-      {
-        ...mockDataPackages[0],
-        signerAddress: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-        dataServiceId: "mock-data-service-1",
-      },
-    ];
-
-    // Should save in DB
     const dataPackagesInDB = await DataPackage.find();
     const dataPackagesInDBCleaned = dataPackagesInDB.map((dp) => {
       const { _id, __v, ...rest } = dp.toJSON() as any;
       return rest;
     });
-    expect(dataPackagesInDBCleaned).toEqual(expectedSavedDataPackages);
 
-    // Should have been saved in Arweave
-    expect(BundlrService.prototype.saveDataPackages).toHaveBeenCalledTimes(1);
-    expect(BundlrService.prototype.saveDataPackages).toHaveBeenCalledWith(
+    expect(dataPackagesInDBCleaned).toEqual(expectedSavedDataPackages);
+  });
+
+  it("Should listen to streamr streams and save data on Bundlr", async () => {
+    await streamrListenerService.syncStreamrListening();
+    await sleep(1000);
+
+    expect(
+      BundlrService.prototype.safelySaveDataPackages
+    ).toHaveBeenCalledTimes(1);
+    expect(BundlrService.prototype.safelySaveDataPackages).toHaveBeenCalledWith(
       expectedSavedDataPackages
     );
   });

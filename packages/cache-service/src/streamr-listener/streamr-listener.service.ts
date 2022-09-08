@@ -77,7 +77,7 @@ export class StreamrListenerService {
           );
 
           if (config.enableArchivingOnArweave) {
-            await this.bundlrService.saveDataPackages(dataPackagesToSave);
+            await this.bundlrService.safelySaveDataPackages(dataPackagesToSave);
           }
         } catch (e) {
           console.error("Error occured ", e.stack);
