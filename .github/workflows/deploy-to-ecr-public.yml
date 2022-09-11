@@ -34,14 +34,17 @@ jobs:
         run: |
           # Build images (for node and cache-service)
           ORACLE_NODE_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-oracle-node
+          CACHE_SERVICE_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-cache-service
           TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
           docker build -t "redstone-monorepo:$TAG" .
           docker build -t "$ORACLE_NODE_DOCKER_NAME:$TAG" \
             -f packages/oracle-node/Dockerfile \
             --build-arg VERSION=$TAG .
-          # TODO: add building cache-service here
+          docker build -t "$CACHE_SERVICE_DOCKER_NAME:$TAG" \
+            -f packages/cache-service/Dockerfile \
+            --build-arg VERSION=$TAG .
 
           # Push images to ECR Public
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           docker push $ORACLE_NODE_DOCKER_NAME:$TAG
-          # TODO: add pushing cache-service image here
+          docker push $CACHE_SERVICE_DOCKER_NAME:$TAG
