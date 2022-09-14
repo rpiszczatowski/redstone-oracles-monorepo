@@ -2,9 +2,7 @@
 
 - Data check
   - Run main node with all sources and feeds (except custom ones) for few minutes, redirect output to local-node-run.log
-  - Run script to analyze logs and print insights
-    - What sources failed
-    - What symbols failed (and why)
+  - Run script to analyze logs and print insights (`yarn run-ts tools/data-check/analyze-logs.ts`)
 - Fix sources and check again
   - Fix sources
     - CCXT sources
