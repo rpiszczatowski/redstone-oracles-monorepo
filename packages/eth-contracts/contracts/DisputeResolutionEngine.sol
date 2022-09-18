@@ -12,6 +12,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
   uint256 constant PENALTY_AMOUNT = 2_000 * 10**18;
   uint256 constant COMMIT_PERIOD_SECONDS = 4 * 24 * 3600; // 4 days
   uint256 constant REVEAL_PERIOD_SECONDS = 3 * 24 * 3600; // 3 days
+  uint256 constant LOCK_PERIOD_FOR_UNSTAKING_SECONDS = 30 * 24 * 3600; // 30 days
 
   enum DisputeVerdict {
     UNKNOWN,
@@ -44,7 +45,11 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
   StakingRegistry public stakingRegistry;
 
   constructor(address _redstoneTokenAddress) {
-    stakingRegistry = new StakingRegistry(_redstoneTokenAddress, address(this));
+    stakingRegistry = new StakingRegistry(
+      _redstoneTokenAddress,
+      address(this),
+      LOCK_PERIOD_FOR_UNSTAKING_SECONDS
+    );
     redstoneToken = IERC20(_redstoneTokenAddress);
   }
 
@@ -68,10 +73,11 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     newDispute.arweaveUrlWithDisputeDetails = _arweaveUrlWithDisputeDetails;
     newDispute.verdict = DisputeVerdict.UNKNOWN;
 
-    // TODO: maybe remove setting to zeros below
-    newDispute.lockedTokensAndRevealedVoteForGuilty = 0;
-    newDispute.lockedTokensAndRevealedVoteForNotGuilty = 0;
-    newDispute.rewardPoolTokensAmount = 0;
+    // The code below commented to save gas, because these fields will be zero anyway
+    // But we left the comment to improve the code readability
+    // newDispute.lockedTokensAndRevealedVoteForGuilty = 0;
+    // newDispute.lockedTokensAndRevealedVoteForNotGuilty = 0;
+    // newDispute.rewardPoolTokensAmount = 0;
 
     _lockTokensAndCreateVote(newDispute, bytes32(0), _lockedTokensAmount);
   }

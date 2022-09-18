@@ -5,26 +5,29 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-// TODO: add events
 contract StakingRegistry is OwnableUpgradeable {
-  uint256 constant STAKE_AMOUNT = 120_000 * 10**18;
-  uint256 constant MAX_SLASHING_AMOUNT = 2_000 * 10**18;
-  uint256 constant LOCK_PERIOD_FOR_UNSTAKING_SECONDS = 30 * 24 * 3600; // 30 days
-
   struct UserStakingDetails {
     uint256 stakedAmount;
-    uint256 pendingUnstakingAmount;
-    uint256 lastUnstakeRequestTimestampSeconds;
+    uint256 pendingAmountToUnstake;
+    uint256 unstakeOpeningTimestampSeconds;
   }
 
+  event UnstakeRequested(address user, UserStakingDetails stakingDetails);
+  event UnstakeCompleted(address user, UserStakingDetails stakingDetails);
+
+  uint256 lockPeriodForUnstakingSeconds;
   IERC20 public stakingToken;
   address public authorisedStakeSlasher;
   mapping(address => UserStakingDetails) stakingDetailsForUsers;
-  mapping(address => uint256) stakingBalances;
 
-  constructor(address _stakingTokenAddress, address _authorisedStakeSlasher) {
+  constructor(
+    address _stakingTokenAddress,
+    address _authorisedStakeSlasher,
+    uint256 _lockPeriodForUnstakingSeconds
+  ) {
     stakingToken = IERC20(_stakingTokenAddress);
     authorisedStakeSlasher = _authorisedStakeSlasher;
+    lockPeriodForUnstakingSeconds = _lockPeriodForUnstakingSeconds;
   }
 
   // Before calling this function tx sender should allow spending
@@ -34,13 +37,37 @@ contract StakingRegistry is OwnableUpgradeable {
     stakingDetailsForUsers[msg.sender].stakedAmount += stakingAmount;
   }
 
-  // function requestUnstake(uint256 amount) external {
-  //   require(stakingDetailsForUsers[msg.sender] >= amount);
-  // }
+  function requestUnstake(uint256 amountToUnstake) external {
+    UserStakingDetails storage userStakingDetails = stakingDetailsForUsers[msg.sender];
+    require(amountToUnstake > 0, "Amount to unstake must be a positive number");
+    require(
+      userStakingDetails.stakedAmount >= amountToUnstake,
+      "Can not request to unstake more than staked"
+    );
 
-  // function unstake(uint256 amount) external {
+    userStakingDetails.pendingAmountToUnstake = amountToUnstake;
+    userStakingDetails.unstakeOpeningTimestampSeconds =
+      block.timestamp +
+      lockPeriodForUnstakingSeconds;
 
-  // }
+    emit UnstakeRequested(msg.sender, userStakingDetails);
+  }
+
+  function completeUnstake() external {
+    UserStakingDetails storage userStakingDetails = stakingDetailsForUsers[msg.sender];
+    require(
+      block.timestamp > userStakingDetails.unstakeOpeningTimestampSeconds,
+      "Unstaking is not opened yet"
+    );
+    require(userStakingDetails.pendingAmountToUnstake > 0, "User hasn't requested unstake before");
+
+    // Unstaking
+    userStakingDetails.stakedAmount -= userStakingDetails.pendingAmountToUnstake;
+    stakingToken.transfer(msg.sender, userStakingDetails.pendingAmountToUnstake);
+    userStakingDetails.pendingAmountToUnstake = 0;
+
+    emit UnstakeCompleted(msg.sender, userStakingDetails);
+  }
 
   function getStakedBalance(address addr) public view returns (uint256) {
     return stakingDetailsForUsers[addr].stakedAmount;
@@ -48,7 +75,6 @@ contract StakingRegistry is OwnableUpgradeable {
 
   function slashStake(address slashedAddress, uint256 slashedAmount) public {
     require(msg.sender == authorisedStakeSlasher, "Tx sender is not authorised to slash stakes");
-    require(slashedAmount >= MAX_SLASHING_AMOUNT, "Requested slashed amoun is too big");
     require(
       stakingDetailsForUsers[slashedAddress].stakedAmount >= slashedAmount,
       "Staking balance is lower than the requested slashed amount"
