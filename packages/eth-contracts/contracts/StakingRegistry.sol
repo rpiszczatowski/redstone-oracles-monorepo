@@ -15,30 +15,30 @@ contract StakingRegistry is OwnableUpgradeable {
   event UnstakeRequested(address user, UserStakingDetails stakingDetails);
   event UnstakeCompleted(address user, UserStakingDetails stakingDetails);
 
-  uint256 lockPeriodForUnstakingSeconds;
-  IERC20 public stakingToken;
-  address public authorisedStakeSlasher;
-  mapping(address => UserStakingDetails) stakingDetailsForUsers;
+  uint256 private _lockPeriodForUnstakingInSeconds;
+  IERC20 private _stakingToken;
+  address private _authorisedStakeSlasher;
+  mapping(address => UserStakingDetails) private _stakingDetailsForUsers;
 
   constructor(
-    address _stakingTokenAddress,
-    address _authorisedStakeSlasher,
-    uint256 _lockPeriodForUnstakingSeconds
+    address stakingTokenAddress,
+    address authorisedStakeSlasher,
+    uint256 lockPeriodForUnstakingInSeconds
   ) {
-    stakingToken = IERC20(_stakingTokenAddress);
-    authorisedStakeSlasher = _authorisedStakeSlasher;
-    lockPeriodForUnstakingSeconds = _lockPeriodForUnstakingSeconds;
+    _stakingToken = IERC20(stakingTokenAddress);
+    _authorisedStakeSlasher = authorisedStakeSlasher;
+    _lockPeriodForUnstakingInSeconds = lockPeriodForUnstakingInSeconds;
   }
 
   // Before calling this function tx sender should allow spending
   // the staking amount by this contract
   function stake(uint256 stakingAmount) external {
-    stakingToken.transferFrom(msg.sender, address(this), stakingAmount);
-    stakingDetailsForUsers[msg.sender].stakedAmount += stakingAmount;
+    _stakingToken.transferFrom(msg.sender, address(this), stakingAmount);
+    _stakingDetailsForUsers[msg.sender].stakedAmount += stakingAmount;
   }
 
   function requestUnstake(uint256 amountToUnstake) external {
-    UserStakingDetails storage userStakingDetails = stakingDetailsForUsers[msg.sender];
+    UserStakingDetails storage userStakingDetails = _stakingDetailsForUsers[msg.sender];
     require(amountToUnstake > 0, "Amount to unstake must be a positive number");
     require(
       userStakingDetails.stakedAmount >= amountToUnstake,
@@ -48,38 +48,46 @@ contract StakingRegistry is OwnableUpgradeable {
     userStakingDetails.pendingAmountToUnstake = amountToUnstake;
     userStakingDetails.unstakeOpeningTimestampSeconds =
       block.timestamp +
-      lockPeriodForUnstakingSeconds;
+      _lockPeriodForUnstakingInSeconds;
 
     emit UnstakeRequested(msg.sender, userStakingDetails);
   }
 
   function completeUnstake() external {
-    UserStakingDetails storage userStakingDetails = stakingDetailsForUsers[msg.sender];
+    UserStakingDetails storage userStakingDetails = _stakingDetailsForUsers[msg.sender];
+    uint256 amountToUnstake = userStakingDetails.pendingAmountToUnstake;
+
     require(
       block.timestamp > userStakingDetails.unstakeOpeningTimestampSeconds,
       "Unstaking is not opened yet"
     );
-    require(userStakingDetails.pendingAmountToUnstake > 0, "User hasn't requested unstake before");
+    require(amountToUnstake > 0, "User hasn't requested unstake before");
+    require(
+      amountToUnstake <= userStakingDetails.stakedAmount,
+      "Can not unstake more than staked"
+    );
 
-    // Unstaking
-    userStakingDetails.stakedAmount -= userStakingDetails.pendingAmountToUnstake;
-    stakingToken.transfer(msg.sender, userStakingDetails.pendingAmountToUnstake);
+    userStakingDetails.stakedAmount -= amountToUnstake;
+    _stakingToken.transfer(msg.sender, amountToUnstake);
     userStakingDetails.pendingAmountToUnstake = 0;
 
     emit UnstakeCompleted(msg.sender, userStakingDetails);
   }
 
   function getStakedBalance(address addr) public view returns (uint256) {
-    return stakingDetailsForUsers[addr].stakedAmount;
+    return _stakingDetailsForUsers[addr].stakedAmount;
   }
 
   function slashStake(address slashedAddress, uint256 slashedAmount) public {
-    require(msg.sender == authorisedStakeSlasher, "Tx sender is not authorised to slash stakes");
+    UserStakingDetails storage userStakingDetails = _stakingDetailsForUsers[slashedAddress];
+
+    require(msg.sender == _authorisedStakeSlasher, "Tx sender is not authorised to slash stakes");
     require(
-      stakingDetailsForUsers[slashedAddress].stakedAmount >= slashedAmount,
+      userStakingDetails.stakedAmount >= slashedAmount,
       "Staking balance is lower than the requested slashed amount"
     );
-    stakingDetailsForUsers[slashedAddress].stakedAmount -= slashedAmount;
-    stakingToken.transfer(msg.sender, slashedAmount);
+
+    userStakingDetails.stakedAmount -= slashedAmount;
+    _stakingToken.transfer(msg.sender, slashedAmount);
   }
 }
