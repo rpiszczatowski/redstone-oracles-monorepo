@@ -39,7 +39,7 @@ async function main() {
   const logs = fs.readFileSync(LOGS_FILE, "utf8");
   const logLines = logs.split("\n");
 
-  const levels: Counters = {};
+  const logLevels: Counters = {};
   const failedSources: Counters = {};
   const sourcesErrors: { [sourceName: string]: Counters } = {};
   const notIncludedInResponse: { [sourceName: string]: Counters } = {};
@@ -87,12 +87,12 @@ async function main() {
       }
 
       // Counting types
-      safelyIncrement(levels, parsedMessage.type);
+      safelyIncrement(logLevels, parsedMessage.type);
     } catch (e) {}
   }
 
   const finalReport = {
-    levels,
+    logLevels,
     failedSources,
     notIncludedInResponse,
     failedSourcesCount: Object.keys(failedSources).length,
