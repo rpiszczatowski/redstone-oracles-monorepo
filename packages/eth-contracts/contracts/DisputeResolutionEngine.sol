@@ -12,6 +12,10 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
   uint256 constant PENALTY_AMOUNT = 2_000 * 10**18;
   uint256 constant COMMIT_PERIOD_SECONDS = 4 * 24 * 3600; // 4 days
   uint256 constant REVEAL_PERIOD_SECONDS = 3 * 24 * 3600; // 3 days
+
+  // Note, that lock period for unstaking should be greater
+  // than the maximum voting period. Otherwise a guilty provider is able
+  // to unstake tokens before the dispute settlement
   uint256 constant LOCK_PERIOD_FOR_UNSTAKING_SECONDS = 30 * 24 * 3600; // 30 days
 
   enum DisputeVerdict {
