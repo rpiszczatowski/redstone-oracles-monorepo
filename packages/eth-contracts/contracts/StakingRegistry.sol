@@ -74,6 +74,10 @@ contract StakingRegistry is OwnableUpgradeable {
     emit UnstakeCompleted(msg.sender, userStakingDetails);
   }
 
+  function getUserStakingDetails(address addr) public view returns (UserStakingDetails memory) {
+    return _stakingDetailsForUsers[addr];
+  }
+
   function getStakedBalance(address addr) public view returns (uint256) {
     return _stakingDetailsForUsers[addr].stakedAmount;
   }
