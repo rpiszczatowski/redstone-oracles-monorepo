@@ -15,7 +15,7 @@ describe("Staking registry", () => {
     signers = await ethers.getSigners();
     authorisedStakeSlasher = signers[3];
 
-    // Deploy token
+    // Deploy token contract
     const TokenContractFactory = await ethers.getContractFactory(
       "RedstoneToken"
     );

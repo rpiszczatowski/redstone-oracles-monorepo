@@ -14,6 +14,6 @@
     "incremental": true,
     "composite": true
   },
-  "include": ["./test", "./typechain-types", "package.json"],
+  "include": ["./src", "./test", "./typechain-types", "package.json"],
   "files": ["./hardhat.config.ts"]
 }

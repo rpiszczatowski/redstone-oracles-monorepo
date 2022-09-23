@@ -40,12 +40,12 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     uint256 revealedForGuiltyAmount;
     uint256 revealedForNotGuiltyAmount;
     uint256 rewardPoolTokensAmount;
-    mapping(address => Vote) votes;
     DisputeVerdict verdict;
   }
 
   IERC20 private _redstoneToken;
   Dispute[] private _disputes;
+  mapping(uint256 => mapping(address => Vote)) private _votes; // disputeId => (address => Vote)
   StakingRegistry private _stakingRegistry;
 
   constructor(address redstoneTokenAddress) {
@@ -83,7 +83,8 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
 
     // Dispute creator automatically votes for guilty and their vote is
     // automatically revealed. That's why we pass a zero commit hash here
-    _lockTokensAndCreateVote(newDispute, bytes32(0), lockedTokensAmount);
+    uint256 createdDisputeId = _disputes.length;
+    _lockTokensAndCreateVote(createdDisputeId, bytes32(0), lockedTokensAmount);
   }
 
   function commitVote(
@@ -102,7 +103,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
       "Commit period ended"
     );
 
-    _lockTokensAndCreateVote(dispute, commitHash, lockedTokensAmount);
+    _lockTokensAndCreateVote(disputeId, commitHash, lockedTokensAmount);
   }
 
   function revealVote(
@@ -111,7 +112,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     bool votedForGuilty
   ) external {
     Dispute storage dispute = _disputes[disputeId];
-    Vote storage vote = dispute.votes[msg.sender];
+    Vote storage vote = _votes[disputeId][msg.sender];
 
     // Checking if the user can reveal their vote
     require(
@@ -170,7 +171,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
   // If a user has won a dispute, they need to manually claim reward
   function claimRewardForDispute(uint256 disputeId) external {
     uint256 rewardForUser = calculatePendingRewardForUser(disputeId, msg.sender);
-    _disputes[disputeId].votes[msg.sender].claimedReward = true;
+    _votes[disputeId][msg.sender].claimedReward = true;
     _redstoneToken.transfer(msg.sender, rewardForUser);
   }
 
@@ -180,7 +181,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     returns (uint256)
   {
     Dispute storage dispute = _disputes[disputeId];
-    Vote storage userVote = dispute.votes[userAddress];
+    Vote storage userVote = _votes[disputeId][userAddress];
 
     // Checking if the user is elgigble for the reward
     require(dispute.verdict != DisputeVerdict.Unknown, "Dispute has not been sttled yet");
@@ -205,10 +206,11 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
   // We strongly recommend voters to calculate salt off-chain using the
   // pseudo-algorithm below. It is not required by this smart contract,
   // but will allow users to unambiguously recover it for vote revealing
-  // bytes memory signableMessage = abi.encodePacked(disputeId, "REDSTONE_DISPUTE_SALT");
-  // bytes32 hashedMessage = keccak256(signableMessage);
-  // bytes memory signature = ECDSA.sign(hashedMessage, userPrivateKey);
-  // bytes32 salt = keccak256(signature);
+  // Note: `signMessage` function must produce deterministic signatures
+  // const seedMessage = toUtf8Bytes(disputeId + "REDSTONE_DISPUTE_SALT");
+  // const signature = await signer.signMessage(seedMessage);
+  // const salt = keccak256(signature);
+  // return salt;
   function calculateHashForVote(
     uint256 disputeId,
     bytes32 salt,
@@ -217,13 +219,22 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     return keccak256(abi.encodePacked(disputeId, salt, votedForGuilty));
   }
 
+  function getDisputeDetails(uint256 disputeId) public view returns (Dispute memory) {
+    return _disputes[disputeId];
+  }
+
+  function getUserVote(address user, uint256 disputeId) public view returns (Vote memory) {
+    return _votes[disputeId][user];
+  }
+
   function _lockTokensAndCreateVote(
-    Dispute storage dispute,
+    uint256 disputeId,
     bytes32 commitHash,
     uint256 lockedTokensAmount
   ) private {
+    Dispute storage dispute = _disputes[disputeId];
     require(
-      dispute.votes[msg.sender].lockedTokensAmount == 0,
+      _votes[disputeId][msg.sender].lockedTokensAmount == 0,
       "Already locked some tokens for this dispute"
     );
 
@@ -233,7 +244,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
 
     // Saving a new vote
     bool isDisputeCreator = dispute.creatorAddress == msg.sender;
-    dispute.votes[msg.sender] = Vote({
+    _votes[disputeId][msg.sender] = Vote({
       lockedTokensAmount: lockedTokensAmount,
       commitHash: commitHash,
       revealedVote: isDisputeCreator,
