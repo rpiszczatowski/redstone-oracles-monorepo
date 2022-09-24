@@ -83,7 +83,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
 
     // Dispute creator automatically votes for guilty and their vote is
     // automatically revealed. That's why we pass a zero commit hash here
-    uint256 createdDisputeId = _disputes.length;
+    uint256 createdDisputeId = _disputes.length - 1;
     _lockTokensAndCreateVote(createdDisputeId, bytes32(0), lockedTokensAmount);
   }
 
@@ -219,12 +219,20 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     return keccak256(abi.encodePacked(disputeId, salt, votedForGuilty));
   }
 
+  function getDisputesCount() public view returns (uint256) {
+    return _disputes.length;
+  }
+
   function getDisputeDetails(uint256 disputeId) public view returns (Dispute memory) {
     return _disputes[disputeId];
   }
 
   function getUserVote(address user, uint256 disputeId) public view returns (Vote memory) {
     return _votes[disputeId][user];
+  }
+
+  function getStakingRegistryAddress() public view returns (address) {
+    return address(_stakingRegistry);
   }
 
   function _lockTokensAndCreateVote(
@@ -243,14 +251,21 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     _redstoneToken.transferFrom(msg.sender, address(this), lockedTokensAmount);
 
     // Saving a new vote
-    bool isDisputeCreator = dispute.creatorAddress == msg.sender;
     _votes[disputeId][msg.sender] = Vote({
       lockedTokensAmount: lockedTokensAmount,
       commitHash: commitHash,
-      revealedVote: isDisputeCreator,
-      votedForGuilty: isDisputeCreator,
+      revealedVote: false,
+      votedForGuilty: false,
       claimedReward: false
     });
+
+    // Automatically reveal the vote created by the dispute creator
+    if (dispute.creatorAddress == msg.sender) {
+      Vote storage createdVote = _votes[disputeId][msg.sender];
+      createdVote.revealedVote = true;
+      createdVote.votedForGuilty = true;
+      dispute.revealedForGuiltyAmount += lockedTokensAmount;
+    }
 
     // Increasing reawrd pool for the dispute
     dispute.rewardPoolTokensAmount += lockedTokensAmount;
