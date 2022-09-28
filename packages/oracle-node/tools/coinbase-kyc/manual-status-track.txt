@@ -1,0 +1,11 @@
+coinbase-1: Synced
+coinbase-2: Synced
+coinbase-3: time yarn run-ts tools/coinbase-kyc/collect-eth-transfers-from-wallet.ts 0xddfabcdc4d8ffc6d5beaf154f18b778f892a0740
+coinbase-4: time yarn run-ts tools/coinbase-kyc/collect-eth-transfers-from-wallet.ts 0x3cd751e6b0078be393132286c442345e5dc49699
+coinbase-5: time yarn run-ts tools/coinbase-kyc/collect-eth-transfers-from-wallet.ts 0xb5d85cbf7cb3ee0d56b3bb207d5fc4b82f43f511
+coinbase-6: time yarn run-ts tools/coinbase-kyc/collect-eth-transfers-from-wallet.ts 0xeb2629a2734e272bcc07bda959863f316f4bd4cf
+coinbase-7: Synced (no transfers)
+coinbase-8: Synced (no transfers)
+coinbase-9: Synced (no transfers)
+coinbase-10: Synced (no transfers)
+coinbase-miscellaneous: time yarn run-ts tools/coinbase-kyc/collect-eth-transfers-from-wallet.ts 0xa090e606e30bd747d4e6245a1517ebe430f0057e

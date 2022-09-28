@@ -1,8 +1,16 @@
 import fs from "fs";
 
-export const readJSON = (path: string): any => {
-  const data = fs.readFileSync(path, { encoding: "utf8" });
-  return JSON.parse(data);
+export const readJSON = (path: string, defaultValue?: any): any => {
+  try {
+    const data = fs.readFileSync(path, { encoding: "utf8" });
+    return JSON.parse(data);
+  } catch (e) {
+    if (defaultValue === undefined) {
+      throw e;
+    } else {
+      return defaultValue;
+    }
+  }
 };
 
 export const saveJSON = (obj: any, path: string) => {
