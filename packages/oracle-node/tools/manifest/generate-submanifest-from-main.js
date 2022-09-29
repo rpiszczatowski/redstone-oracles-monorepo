@@ -1,5 +1,5 @@
 const fs = require("fs");
-const manifestForMainProvider = require("../../manifests/main.json");
+const manifestForMainProvider = require("../../manifests/data-services/main.json");
 
 module.exports = function (symbols, outputFilePath, predefinedManifest = {}) {
   const manifest = {
