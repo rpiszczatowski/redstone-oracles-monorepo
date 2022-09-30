@@ -12,6 +12,7 @@ const HARDCODED_SYMBOLS = {
   SOS: "opendao",
   ONE: "harmony",
 };
+const BLACKLISTED_SYMBOLS = ["BORING", "ZANTEPAY"];
 
 main();
 
@@ -30,12 +31,20 @@ async function updateSymbolToDetailsConfig() {
 
   for (const coin of coins) {
     console.log(coin);
-    const symbol = coin.symbol.toUpperCase();
+    let symbol = coin.symbol.toUpperCase();
+
+    // A small hack to work correctly with sAVAX token (I don't like it :()
+    if (symbol === "SAVAX") {
+      symbol = "sAVAX";
+    }
+
     const details = _.pick(coin, ["id", "name"]);
-    if (symbolToDetails[symbol] === undefined) {
-      symbolToDetails[symbol] = [details];
-    } else {
-      symbolToDetails[symbol].push(details);
+    if (!BLACKLISTED_SYMBOLS.includes(symbol)) {
+      if (symbolToDetails[symbol] === undefined) {
+        symbolToDetails[symbol] = [details];
+      } else {
+        symbolToDetails[symbol].push(details);
+      }
     }
   }
 
@@ -51,7 +60,12 @@ function updateSymbolToIdConfig() {
   const newSymbolToIdConfig = { ...symbolToIdConfig };
 
   for (const [symbol, details] of Object.entries(symbolToDetails)) {
-    if (!newSymbolToIdConfig[symbol] && details && details.length === 1) {
+    if (
+      !newSymbolToIdConfig[symbol] &&
+      details &&
+      details.length === 1 &&
+      !BLACKLISTED_SYMBOLS.includes(symbol)
+    ) {
       console.log(`Adding a new token: ${symbol}`);
       newSymbolToIdConfig[symbol] = details[0].id;
     }

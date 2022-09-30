@@ -1,13 +1,21 @@
 # Data check steps
 
 - Data check
-  - Run main node with all sources and feeds (except custom ones) for few minutes, redirect output to local-node-run.log
+  - Run main node with all sources and feeds (except custom ones) for few minutes, redirect output to tmp.out
+    - Prepare `.env` file
+      - `ENABLE_JSON_LOGS=true`
+      - `OVERRIDE_MANIFEST_USING_FILE=./manifests/data-services/main.json`
+      - `OVERRIDE_DIRECT_CACHE_SERVICE_URLS='["https://httpbin.org/anything"]'`
+    - Run `yarn start:dev`
+    - Inspect tmp.out and stop the node exection (ctrl+c) after few node iterations
   - Run script to analyze logs and print insights (`yarn run-ts tools/data-check/analyze-logs.ts`)
 - Fix sources and check again
   - Fix sources
-    - CCXT sources
-      - Upgrade to the latest version of CCXT sources
+    - CCXT sources (TODO: improve this part)
+      - Upgrade to the latest version of CCXT library
       - Run CCXT scripts to sync data feeds and data sources
+        - `node tools/ccxt/generate-manifests.js`
+        - `node tools/ccxt/generate-symbol-to-id-mappings-for-exchanges.js`
     - Remove sources that do not exist anymore or are not reliable
       - Remove corresponding manifests
       - Remove corresponding fetchers (for ccxt source - remove it from the ccxt sources list, for other - remove code)
