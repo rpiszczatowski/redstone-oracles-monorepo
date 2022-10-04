@@ -1,7 +1,7 @@
 import TraderJoeLpAbi from "./TraderJoeLP.abi.json";
 import PangolinLpAbi from "./PangolinLP.abi.json";
 
-export const lpTokensDetails = {
+export const lpTokensContractsDetails = {
   TJ_AVAX_USDC_LP: {
     address: "0xf4003f4efbe8691b60249e6afbd307abe7758adb",
     abi: TraderJoeLpAbi,

@@ -16,7 +16,8 @@
     "YYAV3SA1": {},
     "SAV2": {},
     "TJ_AVAX_USDC_LP": {},
-    "PNG_AVAX_USDC_LP": {}
+    "PNG_AVAX_USDC_LP": {},
+    "YY_TJ_AVAX_USDC_LP": {}
   },
   "defaultSource": ["avalanche-evm-fetcher"]
 }

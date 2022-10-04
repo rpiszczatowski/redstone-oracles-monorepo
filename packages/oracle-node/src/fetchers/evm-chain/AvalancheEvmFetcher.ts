@@ -3,16 +3,16 @@ import { BigNumber, ethers, providers } from "ethers";
 import { Interface } from "ethers/lib/utils";
 import { BaseFetcher } from "../BaseFetcher";
 import { EvmMulticallService } from "./EvmMulticallService";
-import { yieldYakContractDetails } from "./contracts-details/yield-yak";
-import { lpTokensDetails } from "./contracts-details/lp-tokens";
+import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
+import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { MulticallParsedResponses, PricesObj } from "../../types";
 
-type YieldYakDetailsKeys = keyof typeof yieldYakContractDetails;
-type LpTokensDetailsKeys = keyof typeof lpTokensDetails;
+type YieldYakDetailsKeys = keyof typeof yieldYakContractsDetails;
+type LpTokensDetailsKeys = keyof typeof lpTokensContractsDetails;
 
 const MUTLICALL_CONTRACT_ADDRESS = "0x8755b94F88D120AB2Cc13b1f6582329b067C760d";
 
-const tokenIds = ["YYAV3SA1", "SAV2"];
+const yyTokenIds = ["YYAV3SA1", "SAV2", "YY_TJ_AVAX_USDC_LP"];
 
 const lpTokensIds = ["TJ_AVAX_USDC_LP", "PNG_AVAX_USDC_LP"];
 
@@ -33,8 +33,8 @@ export class AvalancheEvmFetcher extends BaseFetcher {
   async fetchData(ids: string[]) {
     const requests = [];
     for (const id of ids) {
-      if (tokenIds.includes(id)) {
-        const requestsPerId = this.prepareMulticallRequests(id);
+      if (yyTokenIds.includes(id)) {
+        const requestsPerId = this.prepareYYMulticallRequests(id);
         requests.push(...requestsPerId);
       } else if (lpTokensIds.includes(id)) {
         const requestsPerId = this.prepareLpTokenMulticallRequests(id);
@@ -44,8 +44,9 @@ export class AvalancheEvmFetcher extends BaseFetcher {
     return await this.evmMulticallService.performMulticall(requests);
   }
 
-  prepareMulticallRequests(id: string) {
-    const { abi, address } = yieldYakContractDetails[id as YieldYakDetailsKeys];
+  prepareYYMulticallRequests(id: string) {
+    const { abi, address } =
+      yieldYakContractsDetails[id as YieldYakDetailsKeys];
     const totalDepositsData = new Interface(abi).encodeFunctionData(
       "totalDeposits"
     );
@@ -68,7 +69,8 @@ export class AvalancheEvmFetcher extends BaseFetcher {
   }
 
   prepareLpTokenMulticallRequests(id: string) {
-    const { abi, address } = lpTokensDetails[id as LpTokensDetailsKeys];
+    const { abi, address } =
+      lpTokensContractsDetails[id as LpTokensDetailsKeys];
     const getReservesData = new Interface(abi).encodeFunctionData(
       "getReserves"
     );
@@ -96,7 +98,7 @@ export class AvalancheEvmFetcher extends BaseFetcher {
   ): Promise<PricesObj> {
     const pricesObject: PricesObj = {};
     for (const id of ids) {
-      if (tokenIds.includes(id)) {
+      if (yyTokenIds.includes(id)) {
         const price = await this.extractPriceForYieldYak(response, id);
         pricesObject[id] = Number(price);
       } else if (lpTokensIds.includes(id)) {
@@ -111,7 +113,7 @@ export class AvalancheEvmFetcher extends BaseFetcher {
     multicallResult: MulticallParsedResponses,
     id: string
   ) {
-    const { address } = yieldYakContractDetails[id as YieldYakDetailsKeys];
+    const { address } = yieldYakContractsDetails[id as YieldYakDetailsKeys];
 
     const totalDeposits = BigNumber.from(
       multicallResult[address].totalDeposits.value
@@ -136,7 +138,7 @@ export class AvalancheEvmFetcher extends BaseFetcher {
     multicallResult: MulticallParsedResponses,
     id: string
   ) {
-    const { address } = lpTokensDetails[id as LpTokensDetailsKeys];
+    const { address } = lpTokensContractsDetails[id as LpTokensDetailsKeys];
 
     const reserves = multicallResult[address].getReserves.value;
     const wavaxReserve = BigNumber.from(reserves.slice(0, 66));
@@ -165,6 +167,9 @@ export class AvalancheEvmFetcher extends BaseFetcher {
       }
       case "SAV2": {
         return this.fetchPriceFromRedStone("sAVAX");
+      }
+      case "YY_TJ_AVAX_USDC_LP": {
+        return this.fetchPriceFromRedStone("TJ_AVAX_USDC_LP");
       }
       default:
         throw new Error("Invalid id for Avalanche EVM fetcher");

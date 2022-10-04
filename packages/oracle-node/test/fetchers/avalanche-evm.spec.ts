@@ -3,8 +3,8 @@ import { Contract } from "ethers";
 import { MockProvider, deployContract } from "ethereum-waffle";
 import { AvalancheEvmFetcher } from "../../src/fetchers/evm-chain/AvalancheEvmFetcher";
 import Multicall2 from "../../src/fetchers/evm-chain/contracts-details/common/Multicall2.json";
-import { yieldYakContractDetails } from "../../src/fetchers/evm-chain/contracts-details/yield-yak";
-import { lpTokensDetails } from "../../src/fetchers/evm-chain/contracts-details/lp-tokens";
+import { yieldYakContractsDetails } from "../../src/fetchers/evm-chain/contracts-details/yield-yak";
+import { lpTokensContractsDetails } from "../../src/fetchers/evm-chain/contracts-details/lp-tokens";
 import YYMock from "./mocks/YYMock.json";
 import LPTokenMock from "./mocks/LPTokenMock.json";
 
@@ -31,8 +31,8 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      yieldYakContractDetails.YYAV3SA1.abi = YYMock.abi;
-      yieldYakContractDetails.YYAV3SA1.address = Yycontract.address;
+      yieldYakContractsDetails.YYAV3SA1.abi = YYMock.abi;
+      yieldYakContractsDetails.YYAV3SA1.address = Yycontract.address;
     });
 
     test("Should properly fetch data", async () => {
@@ -63,8 +63,8 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      yieldYakContractDetails.SAV2.abi = YYMock.abi;
-      yieldYakContractDetails.SAV2.address = Yycontract.address;
+      yieldYakContractsDetails.SAV2.abi = YYMock.abi;
+      yieldYakContractsDetails.SAV2.address = Yycontract.address;
     });
 
     test("Should properly fetch data", async () => {
@@ -95,8 +95,9 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      lpTokensDetails.TJ_AVAX_USDC_LP.abi = LPTokenMock.abi;
-      lpTokensDetails.TJ_AVAX_USDC_LP.address = lpTokenContract.address;
+      lpTokensContractsDetails.TJ_AVAX_USDC_LP.abi = LPTokenMock.abi;
+      lpTokensContractsDetails.TJ_AVAX_USDC_LP.address =
+        lpTokenContract.address;
     });
 
     test("Should properly fetch data", async () => {
