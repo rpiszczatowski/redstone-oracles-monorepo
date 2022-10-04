@@ -14,6 +14,10 @@ const SYMBOLS = [
   "QI",
   "USDC",
   "YYAV3SA1",
+  "sAVAX",
+  "SAV2",
+  "TJ_AVAX_USDC_LP",
+  "PNG_AVAX_USDC_LP",
 ];
 
 generateSubManifest(SYMBOLS, OUTPUT_FILE_PATH);
