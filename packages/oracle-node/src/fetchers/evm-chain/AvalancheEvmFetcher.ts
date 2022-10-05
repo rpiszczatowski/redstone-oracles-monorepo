@@ -77,7 +77,7 @@ export class AvalancheEvmFetcher extends BaseFetcher {
     const totalSupplyData = new Interface(abi).encodeFunctionData(
       "totalSupply"
     );
-    const request = [
+    const requests = [
       {
         address,
         data: getReservesData,
@@ -89,7 +89,7 @@ export class AvalancheEvmFetcher extends BaseFetcher {
         name: "totalSupply",
       },
     ];
-    return request;
+    return requests;
   }
 
   async extractPrices(
