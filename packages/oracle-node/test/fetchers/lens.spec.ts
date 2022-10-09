@@ -1,6 +1,5 @@
 import fetchers from "../../src/fetchers/index";
 import { mockFetcherResponse } from "./_helpers";
-import response from "../../src/fetchers/lens/example-response.json";
 
 jest.mock("axios");
 
