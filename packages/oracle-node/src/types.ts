@@ -138,6 +138,7 @@ export interface NodeConfig {
   overrideManifestUsingFile?: Manifest;
   ethereumAddress: string;
   useNewSigningAndBroadcasting: boolean;
+  overrideDirectCacheServiceUrls?: string[];
 }
 
 export interface MulticallRequest {
