@@ -1,6 +1,6 @@
 const generateSubManifest = require("./generate-submanifest-from-main");
 
-const OUTPUT_FILE_PATH = "./manifests/stocks.json";
+const OUTPUT_FILE_PATH = "./manifests/data-services/stocks.json";
 const SYMBOLS = [
   // Crypto
   "BTC",
@@ -81,6 +81,49 @@ const SYMBOLS = [
   "PEN",
   "BRLUSD=X",
   "COPUSD=X",
+
+  // More stocks (requested by Moola)
+  "BBBY",
+  "UPST",
+  "BIG",
+  "MSTR",
+  "BYND",
+  "HRTX",
+  "EVGO",
+  "BGFV",
+  "FUBO",
+  "CVNA",
+  "NKLA",
+  "W",
+  "BLNK",
+  "SRG",
+  "HYZN",
+  "MVIS",
+  "PETS",
+  "IBRX",
+  "VUZI",
+  "SPCE",
+  "RIDE",
+  "FUV",
+  "WKHS",
+  "SWTX",
+  "ICPT",
+  "LCID",
+  "JWN",
+  "FFIE",
+  "SFT",
+  "OCGN",
+  "REI",
+  "BKKT",
+  "KPTI",
+  "SDC",
+  "DNMR",
+  "GDRX",
+  "IGMS",
+  "GME",
+  "AMC",
+  "APE",
+  "META",
 ];
 
 generateSubManifest(SYMBOLS, OUTPUT_FILE_PATH, {

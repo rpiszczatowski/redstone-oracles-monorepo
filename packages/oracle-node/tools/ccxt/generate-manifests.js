@@ -2,9 +2,9 @@ const fs = require("fs");
 const ccxt = require("ccxt");
 const redstone = require("redstone-api");
 const exchanges = require("../../src/fetchers/ccxt/all-supported-exchanges.json");
-const allSupportedTokensManifest = require("../../manifests/main.json");
+const allSupportedTokensManifest = require("../../manifests/data-services/main.json");
 
-const OUTPUT_DIR = "./manifests";
+const OUTPUT_DIR = "./manifests/single-source";
 const MIN_SIMILAR_VALUES_PERCENTAGE = 70; // %
 const MAX_DEVIATION_FOR_SIMILAR_PRICES = 25; // %
 const MIN_NUMBER_OF_SUPPORTED_EXCHANGES = 2;

@@ -35,6 +35,7 @@ import {
   NumericDataPoint,
   SignedDataPackage,
 } from "redstone-protocol";
+import { config } from "./config";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -71,7 +72,9 @@ export default class NodeRunner {
     this.useNewManifest(initialManifest);
     this.lastManifestLoadTimestamp = Date.now();
     const httpBroadcasterURLs =
-      initialManifest?.httpBroadcasterURLs ?? DEFAULT_HTTP_BROADCASTER_URLS;
+      config.overrideDirectCacheServiceUrls ??
+      initialManifest?.httpBroadcasterURLs ??
+      DEFAULT_HTTP_BROADCASTER_URLS;
     this.httpBroadcaster = new HttpBroadcaster(
       httpBroadcasterURLs,
       ethereumPrivKey
