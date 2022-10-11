@@ -5,7 +5,7 @@ RUN mkdir /app
 WORKDIR /app
 
 # Install git (as it's required by some NPM deps)
-RUN apk update && apk upgrade && apk add --no-cache bash git openssh
+RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make g++
 
 # Bundle app source
 COPY . .
