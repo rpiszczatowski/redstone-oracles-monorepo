@@ -41,8 +41,8 @@ jobs:
             -f packages/oracle-node/Dockerfile \
             --build-arg VERSION=$TAG .
           docker build -t "$CACHE_SERVICE_DOCKER_NAME:$TAG" \
-          -f packages/cache-service/Dockerfile \
-           --build-arg VERSION=$TAG .
+            -f packages/cache-service/Dockerfile \
+            --build-arg VERSION=$TAG .
 
           # Push images to ECR Public
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
