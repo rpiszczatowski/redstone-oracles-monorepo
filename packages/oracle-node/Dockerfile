@@ -8,6 +8,9 @@ FROM redstone-monorepo:${VERSION}
 
 WORKDIR /app/packages/oracle-node
 
+# Install git (as it's required by some NPM deps)
+RUN apk update && apk upgrade && apk add --no-cache bash git openssh
+
 RUN yarn
 RUN yarn build
 
