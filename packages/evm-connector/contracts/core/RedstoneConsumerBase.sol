@@ -154,10 +154,6 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
 
         function initByteArray(bytesCount) -> ptr {
           ptr := mload(FREE_MEMORY_PTR)
-          // TODO: check why this condition is added in the official yul documentation
-          // if iszero(ptr) {
-          //   ptr := 0x60
-          // }
           mstore(ptr, bytesCount)
           ptr := add(ptr, BYTES_ARR_LEN_VAR_BS)
           mstore(FREE_MEMORY_PTR, add(ptr, bytesCount))
