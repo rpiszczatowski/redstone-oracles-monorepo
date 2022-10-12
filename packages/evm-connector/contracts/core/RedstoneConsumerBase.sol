@@ -167,7 +167,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
           // }
           mstore(ptr, bytesCount)
           ptr := add(ptr, BYTES_ARR_LEN_VAR_BS)
-          mstore(FREE_MEMORY_PTR, add(ptr, add(BYTES_ARR_LEN_VAR_BS, bytesCount)))
+          mstore(FREE_MEMORY_PTR, add(ptr, bytesCount))
         }
 
         function extractBytesFromCalldata(offset, bytesCount) -> extractedBytes {
