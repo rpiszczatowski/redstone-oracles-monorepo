@@ -1,13 +1,12 @@
-FROM node:current-alpine3.16
+FROM node:16
 
 # Create app directory
 RUN mkdir /app
 WORKDIR /app
 
-# Install git (as it's required by some NPM deps)
-RUN apk update && apk upgrade && apk add --no-cache bash git openssh python make g++
-
 # Bundle app source
 COPY . .
+
+# RUN rm yarn.lock
 
 RUN yarn
