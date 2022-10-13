@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "bluebird": "^3.7.2",
     "redstone-oracles-smartweave-contracts": "1.0.0",
     "redstone-protocol": "1.0.0"
   },
   "devDependencies": {
+    "@types/bluebird": "^3.5.37",
     "@types/jest": "^27.5.2",
     "jest": "^28.1.0",
     "ts-jest": "^28.0.3"

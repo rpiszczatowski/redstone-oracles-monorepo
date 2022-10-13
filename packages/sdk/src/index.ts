@@ -1,6 +1,8 @@
-import { RedstoneOraclesState } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
-import { SignedDataPackage } from "redstone-protocol";
 import axios from "axios";
+import bluebird from "bluebird";
+import { RedstoneOraclesState } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
+import redstoneOraclesInitialState from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/initial-state.json";
+import { SignedDataPackage } from "redstone-protocol";
 
 export const DEFAULT_CACHE_SERVICE_URLS = [
   "https://cache-1.redstone.finance",
@@ -16,22 +18,11 @@ export interface DataPackagesRequestParams {
   dataFeeds: string[];
 }
 
-// TODO: implement:
-// - fetching from difffrent sources
-// - fallback mechanism
-// - state comparison in diffrent sources
 export const getOracleRegistryState =
   async (): Promise<RedstoneOraclesState> => {
-    return {
-      dataServices: {},
-      nodes: {},
-      contractAdmins: ["hahah2"],
-      canEvolve: true,
-      evolve: null,
-    };
+    return redstoneOraclesInitialState;
   };
 
-// TODO: maybe implement lowerification of addresses
 export const getDataServiceIdForSigner = (
   oracleState: RedstoneOraclesState,
   signerAddress: string
@@ -44,23 +35,21 @@ export const getDataServiceIdForSigner = (
   throw new Error(`Data service not found for ${signerAddress}`);
 };
 
-// TODO: implement
-// This function will simply proxy requests to
-// the requested cache services (given urls)
-// And will return the first valid response
 export const requestDataPackages = async (
   reqParams: DataPackagesRequestParams,
   urls: string[] = DEFAULT_CACHE_SERVICE_URLS
 ): Promise<SignedDataPackage[]> => {
-  const response = await axios.get(urls[0], {
-    params: {
-      ...reqParams,
-      "data-feeds": reqParams.dataFeeds.join(","),
-    },
-  });
-  const serializedDataPackages: any[] = response.data;
-  throw "TODO";
-  // return serializedDataPackages.map((dp) => SignedDataPackage.fromObj(dp));
+  const promises = urls.map((url) =>
+    axios
+      .get(url, {
+        params: {
+          ...reqParams,
+          "data-feeds": reqParams.dataFeeds.join(","),
+        },
+      })
+      .then((response) => response.data)
+  );
+  return await bluebird.Promise.any(promises);
 };
 
 export default {
