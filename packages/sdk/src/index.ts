@@ -2,7 +2,10 @@ import axios from "axios";
 import bluebird from "bluebird";
 import { RedstoneOraclesState } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
 import redstoneOraclesInitialState from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/initial-state.json";
-import { SignedDataPackage } from "redstone-protocol";
+import {
+  SignedDataPackage,
+  SignedDataPackagePlainObj,
+} from "redstone-protocol";
 
 export const DEFAULT_CACHE_SERVICE_URLS = [
   "https://cache-1.redstone.finance",
@@ -40,14 +43,16 @@ export const requestDataPackages = async (
   urls: string[] = DEFAULT_CACHE_SERVICE_URLS
 ): Promise<SignedDataPackage[]> => {
   const promises = urls.map((url) =>
-    axios
-      .get(url, {
+    (async () => {
+      const response = await axios.get(url, {
         params: {
           ...reqParams,
           "data-feeds": reqParams.dataFeeds.join(","),
         },
-      })
-      .then((response) => response.data)
+      });
+      const serializedDataPackages: SignedDataPackagePlainObj[] = response.data;
+      return serializedDataPackages.map((dp) => SignedDataPackage.fromObj(dp));
+    })()
   );
   return await bluebird.Promise.any(promises);
 };
