@@ -1,5 +1,5 @@
 import axios from "axios";
-import bluebird from "bluebird";
+import bluebird, { AggregateError } from "bluebird";
 import { RedstoneOraclesState } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
 import redstoneOraclesInitialState from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/initial-state.json";
 import {
@@ -21,6 +21,10 @@ export interface DataPackagesRequestParams {
   dataFeeds: string[];
 }
 
+export interface DataPackagesResponse {
+  [dataFeedId: string]: SignedDataPackage[];
+}
+
 export const getOracleRegistryState =
   async (): Promise<RedstoneOraclesState> => {
     return redstoneOraclesInitialState;
@@ -38,23 +42,56 @@ export const getDataServiceIdForSigner = (
   throw new Error(`Data service not found for ${signerAddress}`);
 };
 
+const parseDataPackagesResponse = (dpResponse: {
+  [dataFeedId: string]: SignedDataPackagePlainObj[];
+}): DataPackagesResponse => {
+  const parsedResponse: DataPackagesResponse = {};
+  for (const dataFeedId of Object.keys(dpResponse)) {
+    parsedResponse[dataFeedId] = dpResponse[dataFeedId].map(
+      (dataPackage: SignedDataPackagePlainObj) =>
+        SignedDataPackage.fromObj(dataPackage)
+    );
+  }
+  return parsedResponse;
+};
+
+const errToString = (e: any): string => {
+  if (e instanceof AggregateError) {
+    let errMessage = "";
+    errMessage += "Aggregate error: ";
+    e.forEach((oneOfErrors, index) => {
+      errMessage += `${index}: ${oneOfErrors.message}, `;
+    });
+    return errMessage;
+  } else {
+    return e.message;
+  }
+};
+
 export const requestDataPackages = async (
   reqParams: DataPackagesRequestParams,
   urls: string[] = DEFAULT_CACHE_SERVICE_URLS
-): Promise<SignedDataPackage[]> => {
+): Promise<DataPackagesResponse> => {
   const promises = urls.map((url) =>
-    (async () => {
-      const response = await axios.get(url, {
-        params: {
-          ...reqParams,
-          "data-feeds": reqParams.dataFeeds.join(","),
-        },
-      });
-      const serializedDataPackages: SignedDataPackagePlainObj[] = response.data;
-      return serializedDataPackages.map((dp) => SignedDataPackage.fromObj(dp));
-    })()
+    axios.get(url + "/data-packages/latest", {
+      params: {
+        "data-service-id": reqParams.dataServiceId,
+        "unique-signers-count": reqParams.uniqueSignersCount,
+        "data-feeds": reqParams.dataFeeds.join(","),
+      },
+    })
   );
-  return await bluebird.Promise.any(promises);
+
+  try {
+    const response = await bluebird.Promise.any(promises);
+    return parseDataPackagesResponse(response.data);
+  } catch (e: any) {
+    const errMessage = `Request failed ${JSON.stringify({
+      reqParams,
+      urls,
+    })}, Original error: ${errToString(e)}`;
+    throw new Error(errMessage);
+  }
 };
 
 export default {
