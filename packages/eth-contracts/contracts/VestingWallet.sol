@@ -86,4 +86,12 @@ contract VestingWallet {
         stakingRegistry.stake(amount);
     }
 
+    function requestUnstake(uint256 amount) external {
+        stakingRegistry.requestUnstake(amount);
+    }
+
+    function completeUnstake() external {
+        stakingRegistry.completeUnstake();
+    }
+
 }

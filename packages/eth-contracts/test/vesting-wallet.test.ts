@@ -4,6 +4,8 @@ import { ethers } from "hardhat";
 import { RedstoneToken, StakingRegistry, VestingWallet } from "../typechain-types";
 import { time } from "../src/utils";
 
+
+
 describe("Vesting Wallet", () => {
   let token: RedstoneToken,
     wallet: VestingWallet,
@@ -11,10 +13,10 @@ describe("Vesting Wallet", () => {
     signers: SignerWithAddress[],
     authorisedStakeSlasher: SignerWithAddress,
     beneficiary: SignerWithAddress,
-    now: number = Math.floor(new Date().getTime() / 1000);
+    now: number = Math.floor(new Date().getTime() / 1000) + 100000000;
 
   const deployContracts = async (
-    lockPeriodForUnstakingInSeconds: number = 100000, 
+    lockPeriodForUnstakingInSeconds: number = 10, 
     allocation:number = 100, start:number = 0, cliffDuration:number = 100, vestingDuration:number = 100
   ) => {
     signers = await ethers.getSigners();
@@ -55,8 +57,9 @@ describe("Vesting Wallet", () => {
     await token.transfer(wallet.address, allocation);
   };
 
-  beforeEach(() =>{
+  beforeEach(async () =>{
     now += 1000;
+    await time.setTimeAndMine(now);    
   });
 
   describe("No external funding", () => {
@@ -78,7 +81,6 @@ describe("Vesting Wallet", () => {
     });
 
     it("Should release in the 1/4 of vesting", async () => {
-        await time.setTimeAndMine(now);
         await deployContracts(100, 100, now + 10, 100, 100);
 
         expect(await token.balanceOf(beneficiary.address)).to.eq(0);
@@ -91,7 +93,6 @@ describe("Vesting Wallet", () => {
     });
 
     it("Should release in the 1/2 of vesting", async () => {
-        await time.setTimeAndMine(now);
         await deployContracts(100, 100, now + 10, 100, 100);
 
         expect(await token.balanceOf(beneficiary.address)).to.eq(0);
@@ -104,7 +105,6 @@ describe("Vesting Wallet", () => {
     });
 
     it("Should release in the 3/4 of vesting", async () => {
-        await time.setTime(now);
         await deployContracts(100, 100, now + 10, 100, 100);
 
         expect(await token.balanceOf(beneficiary.address)).to.eq(0);
@@ -118,7 +118,6 @@ describe("Vesting Wallet", () => {
     });
 
     it("Should release in the all of vesting at the end of vesting period", async () => {
-        await time.setTime(now);
         await deployContracts(100, 100, now + 10, 100, 100);
 
         expect(await token.balanceOf(beneficiary.address)).to.eq(0);
@@ -132,7 +131,6 @@ describe("Vesting Wallet", () => {
     });
 
     it("Should release in the all of vesting after the vesting period", async () => {
-        await time.setTime(now);
         await deployContracts(100, 100, now + 10, 100, 100);
 
         expect(await token.balanceOf(beneficiary.address)).to.eq(0);
@@ -171,7 +169,6 @@ describe("Vesting Wallet", () => {
     });
 
     it("Should allow moving funds to approved contracts", async () => {
-        await time.setTimeAndMine(now);
         await deployContracts(100, 100, now + 10, 100, 100);
 
         await wallet.stake(20);
@@ -184,6 +181,22 @@ describe("Vesting Wallet", () => {
         expect(await token.balanceOf(beneficiary.address)).to.eq(30);
 
         expect(await wallet.getReleasable()).to.eq(0);
+    });
+
+    it("Should allow staking and unstaking", async () => {
+        await deployContracts(10, 100, now + 10, 100, 100);
+        expect(await wallet.getReleasable()).to.eq(0);
+
+        await wallet.stake(20);
+
+        expect(await staking.getStakedBalance(wallet.address)).to.eq(20);
+
+        await wallet.requestUnstake(10);
+        await time.setTime(now + 20);
+        await wallet.completeUnstake();
+        expect(await staking.getStakedBalance(wallet.address)).to.eq(10);
+
+        await time.setTime(now + 10 + 100 + 50);
     });
 
   });
