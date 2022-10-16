@@ -37,9 +37,12 @@ contract StocksDemoConsumerBase is RedstoneConsumerNumericBase {
       (block.timestamp + MAX_DATA_TIMESTAMP_AHEAD_IN_SECONDS) > _receivedTimestamp,
       "Data with future timestamps is not allowed"
     );
-
-    return
+    require(
       block.timestamp < _receivedTimestamp ||
-      block.timestamp - _receivedTimestamp < MAX_DATA_TIMESTAMP_DELAY_IN_SECONDS;
+        block.timestamp - _receivedTimestamp < MAX_DATA_TIMESTAMP_DELAY_IN_SECONDS,
+      "Data is too old"
+    );
+
+    return true;
   }
 }
