@@ -1,5 +1,4 @@
 import axios from "axios";
-import bluebird, { AggregateError } from "bluebird";
 import { RedstoneOraclesState } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
 import redstoneOraclesInitialState from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/initial-state.json";
 import {
@@ -57,15 +56,24 @@ const parseDataPackagesResponse = (dpResponse: {
 
 const errToString = (e: any): string => {
   if (e instanceof AggregateError) {
-    let errMessage = "";
-    errMessage += "Aggregate error: ";
-    e.forEach((oneOfErrors, index) => {
-      errMessage += `${index}: ${oneOfErrors.message}, `;
-    });
-    return errMessage;
+    const stringifiedErrors = e.errors.reduce(
+      (prev, oneOfErrors, curIndex) =>
+        (prev += `${curIndex}: ${oneOfErrors.message}, `),
+      ""
+    );
+    return `${e.message}: ${stringifiedErrors}`;
   } else {
     return e.message;
   }
+  //   let errMessage = "";
+  //   errMessage += "Aggregate error: ";
+  //   e.forEach((oneOfErrors, index) => {
+  //     errMessage += `${index}: ${oneOfErrors.message}, `;
+  //   });
+  //   return errMessage;
+  // } else {
+  //   return e.message;
+  // }
 };
 
 export const requestDataPackages = async (
@@ -83,7 +91,7 @@ export const requestDataPackages = async (
   );
 
   try {
-    const response = await bluebird.Promise.any(promises);
+    const response = await Promise.any(promises);
     return parseDataPackagesResponse(response.data);
   } catch (e: any) {
     const errMessage = `Request failed ${JSON.stringify({

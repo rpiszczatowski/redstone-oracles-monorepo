@@ -47,7 +47,7 @@ describe("SDK tests", () => {
       ])
     ).rejects.toEqual(
       new Error(
-        `Request failed {"reqParams":{"dataFeeds":["BTC","ETH"],"dataServiceId":"mock-data-service-id","uniqueSignersCount":4},"urls":["https://bad-url-1.com","https://bad-url-2.com"]}, Original error: Aggregate error: 0: Request failed with status code 400, 1: Request failed with status code 400, `
+        `Request failed {"reqParams":{"dataFeeds":["BTC","ETH"],"dataServiceId":"mock-data-service-id","uniqueSignersCount":4},"urls":["https://bad-url-1.com","https://bad-url-2.com"]}, Original error: All promises were rejected: 0: Request failed with status code 400, 1: Request failed with status code 400, `
       )
     );
   });
