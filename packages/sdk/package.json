@@ -1,13 +1,16 @@
 {
   "name": "redstone-sdk",
   "prettier": "redstone-prettier-config",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "license": "MIT",
   "scripts": {
     "test": "NODE_ENV=test jest",
-    "build": "rm -rf dist && tsc --build"
+    "build": "rm -rf dist && tsc --build",
+    "preversion": "yarn build",
+    "version": "git add -A ./",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "axios": "^0.27.2",
