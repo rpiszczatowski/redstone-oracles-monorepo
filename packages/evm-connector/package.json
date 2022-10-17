@@ -1,6 +1,6 @@
 {
   "name": "redstone-evm-connector-exp",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A tool to inject RedStone data into EVM compatible smart contracts",
   "main": "dist/src/index.js",
   "license": "MIT",
