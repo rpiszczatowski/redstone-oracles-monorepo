@@ -46,8 +46,8 @@ const parseDataPackagesResponse = (dpResponse: {
   [dataFeedId: string]: SignedDataPackagePlainObj[];
 }): DataPackagesResponse => {
   const parsedResponse: DataPackagesResponse = {};
-  for (const dataFeedId of Object.keys(dpResponse)) {
-    parsedResponse[dataFeedId] = dpResponse[dataFeedId].map(
+  for (const [dataFeedId, dataFeedPackages] of Object.entries(dpResponse)) {
+    parsedResponse[dataFeedId] = dataFeedPackages.map(
       (dataPackage: SignedDataPackagePlainObj) =>
         SignedDataPackage.fromObj(dataPackage)
     );
