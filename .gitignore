@@ -106,3 +106,6 @@ dist
 typechain-types
 
 .DS_Store
+
+# IDE
+.idea
