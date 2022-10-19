@@ -1,7 +1,7 @@
 import { Signer } from "ethers";
-import {network, waffle} from "hardhat";
+import { network, waffle } from "hardhat";
 import { keccak256, toUtf8Bytes } from "ethers/lib/utils";
-const {provider} = waffle;
+const { provider } = waffle;
 
 // Note!: It's quite important to have the deterministic version of ECDSA
 // Signatures here. Looks like ethereum uses the deterministic version of
@@ -25,13 +25,13 @@ export const time = {
     await network.provider.send("evm_increaseTime", [duration]);
     await network.provider.send("evm_mine");
   },
-  setTime: async(timestamp:number) => {
+  setTime: async (timestamp: number) => {
     //const now = Math.ceil(new Date().getTime() / 1000);
-    await provider.send('evm_setNextBlockTimestamp', [timestamp]); 
+    await provider.send("evm_setNextBlockTimestamp", [timestamp]);
   },
-  setTimeAndMine: async(timestamp:number) => {
+  setTimeAndMine: async (timestamp: number) => {
     //const now = Math.ceil(new Date().getTime() / 1000);
-    await provider.send('evm_setNextBlockTimestamp', [timestamp]);   
+    await provider.send("evm_setNextBlockTimestamp", [timestamp]);
     await network.provider.send("evm_mine");
   },
   duration: {
@@ -49,7 +49,6 @@ export const time = {
     },
     minutes: (minutes: number): Second => {
       return 60 * minutes;
-    }
-  }
-}
-
+    },
+  },
+};
