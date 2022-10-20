@@ -2,21 +2,25 @@
 
 pragma solidity ^0.8.4;
 
+import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "./StakingRegistry.sol";
+import "./LockingRegistry.sol";
 
-contract DisputeResolutionEngine is OwnableUpgradeable {
-  uint256 constant MIN_LOCK_AMOUNT_FOR_DISPUTE_CREATION = 10_000 * 10**18;
-  uint256 constant MIN_LOCK_AMOUNT_FOR_VOTING = 5_000 * 10**18;
-  uint256 constant PENALTY_AMOUNT = 2_000 * 10**18;
-  uint256 constant COMMIT_PERIOD_SECONDS = 4 * 24 * 3600; // 4 days
-  uint256 constant REVEAL_PERIOD_SECONDS = 3 * 24 * 3600; // 3 days
+/**
+ * @title DisputeResolutionEngine
+ * @dev Implementation of basic dispute resolution protocol
+ */
+contract DisputeResolutionEngine {
+  uint256 constant MIN_LOCK_AMOUNT_FOR_DISPUTE_CREATION = 10_000 * 1e18;
+  uint256 constant MIN_LOCK_AMOUNT_FOR_VOTING = 5_000 * 1e18;
+  uint256 constant PENALTY_AMOUNT = 2_000 * 1e18;
+  uint256 constant COMMIT_PERIOD_SECONDS = 4 days;
+  uint256 constant REVEAL_PERIOD_SECONDS = 3 days;
 
-  // Note, that lock period for unstaking should be greater
+  // Note, that lock period for unlocking should be greater
   // than the maximum voting period. Otherwise a guilty provider is able
-  // to unstake tokens before the dispute settlement
-  uint256 constant LOCK_PERIOD_FOR_UNSTAKING_SECONDS = 30 * 24 * 3600; // 30 days
+  // to unlock tokens before the dispute settlement
+  uint256 constant UNLOCK_DELAY_SECONDS = 30 days;
 
   enum DisputeVerdict {
     Unknown,
@@ -46,14 +50,11 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
   IERC20 private _redstoneToken;
   Dispute[] private _disputes;
   mapping(uint256 => mapping(address => Vote)) private _votes; // disputeId => (address => Vote)
-  StakingRegistry private _stakingRegistry;
+  LockingRegistry private _lockingRegistry;
 
   constructor(address redstoneTokenAddress) {
-    _stakingRegistry = new StakingRegistry(
-      redstoneTokenAddress,
-      address(this),
-      LOCK_PERIOD_FOR_UNSTAKING_SECONDS
-    );
+    _lockingRegistry = new LockingRegistry();
+    _lockingRegistry.initialize(redstoneTokenAddress, address(this), UNLOCK_DELAY_SECONDS);
     _redstoneToken = IERC20(redstoneTokenAddress);
   }
 
@@ -116,6 +117,10 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
 
     // Checking if the user can reveal their vote
     require(
+      block.timestamp > dispute.creationTimestampSeconds + COMMIT_PERIOD_SECONDS,
+      "Reveal period hasn't started yet"
+    );
+    require(
       block.timestamp <
         dispute.creationTimestampSeconds + COMMIT_PERIOD_SECONDS + REVEAL_PERIOD_SECONDS,
       "Reveal period ended"
@@ -147,7 +152,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     // Checking if the dispute can be settled
     require(dispute.verdict == DisputeVerdict.Unknown, "Dispute has already been settled");
     require(
-      block.timestamp >
+      block.timestamp >=
         dispute.creationTimestampSeconds + COMMIT_PERIOD_SECONDS + REVEAL_PERIOD_SECONDS,
       "Settlement period hasn't started yet"
     );
@@ -156,12 +161,13 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     if (dispute.revealedForGuiltyAmount > dispute.revealedForNotGuiltyAmount) {
       dispute.verdict = DisputeVerdict.Guilty;
 
-      // Safely slashing stake from the guilty provider
+      // Safely slashing lock from the guilty provider
       // And adding it to the dispute reward pool
-      uint256 availableStakedBalance = _stakingRegistry.getStakedBalance(dispute.accusedAddress);
-      if (availableStakedBalance >= PENALTY_AMOUNT) {
-        _stakingRegistry.slashStake(dispute.accusedAddress, PENALTY_AMOUNT);
-        dispute.rewardPoolTokensAmount += PENALTY_AMOUNT;
+      uint256 maxSlashableAmount = _lockingRegistry.getMaxSlashableAmount(dispute.accusedAddress);
+      if (maxSlashableAmount > 0) {
+        uint256 amountToSlash = Math.min(PENALTY_AMOUNT, maxSlashableAmount);
+        _lockingRegistry.slash(dispute.accusedAddress, amountToSlash);
+        dispute.rewardPoolTokensAmount += amountToSlash;
       }
     } else {
       dispute.verdict = DisputeVerdict.NotGuilty;
@@ -184,7 +190,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     Vote storage userVote = _votes[disputeId][userAddress];
 
     // Checking if the user is elgigble for the reward
-    require(dispute.verdict != DisputeVerdict.Unknown, "Dispute has not been sttled yet");
+    require(dispute.verdict != DisputeVerdict.Unknown, "Dispute has not been settled yet");
     require(userVote.revealedVote, "User didn't reveal vote");
     require(
       userVote.votedForGuilty || dispute.verdict == DisputeVerdict.NotGuilty,
@@ -193,7 +199,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     require(!userVote.claimedReward, "User already claimed reward for this dispute");
 
     // Calculaing reward amount for the user
-    uint256 totalLockedTokenOfAllWinners = _max(
+    uint256 totalLockedTokenOfAllWinners = Math.max(
       dispute.revealedForGuiltyAmount,
       dispute.revealedForNotGuiltyAmount
     );
@@ -216,7 +222,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     bytes32 salt,
     bool votedForGuilty
   ) public pure returns (bytes32) {
-    return keccak256(abi.encodePacked(disputeId, salt, votedForGuilty));
+    return keccak256(abi.encode(disputeId, salt, votedForGuilty, "Redstone dispute"));
   }
 
   function getDisputesCount() public view returns (uint256) {
@@ -231,8 +237,8 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
     return _votes[disputeId][user];
   }
 
-  function getStakingRegistryAddress() public view returns (address) {
-    return address(_stakingRegistry);
+  function getLockingRegistryAddress() public view returns (address) {
+    return address(_lockingRegistry);
   }
 
   function _lockTokensAndCreateVote(
@@ -245,6 +251,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
       _votes[disputeId][msg.sender].lockedTokensAmount == 0,
       "Already locked some tokens for this dispute"
     );
+    require(lockedTokensAmount > 0, "Amount of locked tokens should be greater than 0");
 
     // Locking tokens on this contract. It will fail if user hasn't approved
     // tokens spending by this contract
@@ -267,12 +274,7 @@ contract DisputeResolutionEngine is OwnableUpgradeable {
       dispute.revealedForGuiltyAmount += lockedTokensAmount;
     }
 
-    // Increasing reawrd pool for the dispute
+    // Increasing reward pool for the dispute
     dispute.rewardPoolTokensAmount += lockedTokensAmount;
-  }
-
-  // Helpful function to get the maximum value of two numbers
-  function _max(uint256 a, uint256 b) internal pure returns (uint256) {
-    return a >= b ? a : b;
   }
 }

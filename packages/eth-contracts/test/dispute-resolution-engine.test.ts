@@ -7,7 +7,7 @@ import { generateSaltForVote } from "../src/utils";
 import {
   DisputeResolutionEngine,
   RedstoneToken,
-  StakingRegistry,
+  LockingRegistry,
 } from "../typechain-types";
 
 interface ExpectedVote {
@@ -21,7 +21,7 @@ interface ExpectedDispute {
   rewardPoolTokensAmount: number;
 }
 
-const STAKING_AMOUNT = 100_000;
+const AMOUNT_TO_LOCK = 100_000;
 const TOTAL_SUPPLY = 10_000_000;
 const TEST_VOTER_BALANCE = 20_000;
 const MIN_LOCK_AMOUNT_FOR_VOTING = 5000;
@@ -46,7 +46,7 @@ describe("Dispute resolution engine", () => {
     disputeCreator: SignerWithAddress,
     voters: SignerWithAddress[],
     token: RedstoneToken,
-    staking: StakingRegistry,
+    locking: LockingRegistry,
     disputeResolutionEngine: DisputeResolutionEngine;
   const disputeId = 0; // Will be used for majority of tests
 
@@ -58,10 +58,10 @@ describe("Dispute resolution engine", () => {
     voters = [signers[2], signers[3], signers[4]];
     disputeCreator = signers[5];
 
-    // Deploy `token`, and `disputeResolutionEngine`, initialize `staking`
+    // Deploy `token`, and `disputeResolutionEngine`, initialize `locking`
     await deployContracts();
 
-    // Allocate tokens and stake tokens by the test data provider
+    // Allocate tokens and lock tokens by the test data provider
     await prepareContracts();
   });
 
@@ -84,7 +84,7 @@ describe("Dispute resolution engine", () => {
     });
   });
 
-  it("Should not create dispute if not enough tokens staked", async () => {
+  it("Should not create dispute if not enough tokens locked", async () => {
     await expect(createDispute(dataProvider.address, 9999)).to.be.revertedWith(
       "Insufficient locked tokens amount for dispute creation"
     );
@@ -125,6 +125,17 @@ describe("Dispute resolution engine", () => {
     await expect(
       commitVote(disputeId, MIN_LOCK_AMOUNT_FOR_VOTING, true, voters[0])
     ).to.be.revertedWith("Already locked some tokens for this dispute");
+  });
+
+  it("Should not reveal too early", async () => {
+    await createDispute(
+      dataProvider.address,
+      LOCKED_AMOUNT_FOR_DISPUTE_CREATION
+    );
+    await commitVote(disputeId, MIN_LOCK_AMOUNT_FOR_VOTING, true, voters[0]);
+    await expect(revealVote(disputeId, true, voters[0])).to.be.revertedWith(
+      "Reveal period hasn't started yet"
+    );
   });
 
   it("Should commit and reveal vote", async () => {
@@ -225,13 +236,13 @@ describe("Dispute resolution engine", () => {
       token.address
     );
 
-    // Attachig staking registry (which was created by dispute resolution engine)
-    const stakingRegistryAddress =
-      await disputeResolutionEngine.getStakingRegistryAddress();
-    const StakingRegistryFactory = await ethers.getContractFactory(
-      "StakingRegistry"
+    // Attachig locking registry (which was created by dispute resolution engine)
+    const lockingRegistryAddress =
+      await disputeResolutionEngine.getLockingRegistryAddress();
+    const LockingRegistryFactory = await ethers.getContractFactory(
+      "LockingRegistry"
     );
-    staking = StakingRegistryFactory.attach(stakingRegistryAddress);
+    locking = LockingRegistryFactory.attach(lockingRegistryAddress);
   };
 
   const sendTokensFromAdmin = async (recipient: string, amount: number) => {
@@ -252,18 +263,18 @@ describe("Dispute resolution engine", () => {
 
   const prepareContracts = async () => {
     // Allocate tokens
-    await sendTokensFromAdmin(dataProvider.address, STAKING_AMOUNT);
+    await sendTokensFromAdmin(dataProvider.address, AMOUNT_TO_LOCK);
     await sendTokensFromAdmin(disputeCreator.address, TEST_VOTER_BALANCE);
     for (const voter of voters) {
       await sendTokensFromAdmin(voter.address, TEST_VOTER_BALANCE);
     }
 
-    // Stake tokens by the dataProvider
-    await approveTokens(staking.address, STAKING_AMOUNT, dataProvider);
-    const stakingTx = await staking
+    // Lock tokens by the dataProvider
+    await approveTokens(locking.address, AMOUNT_TO_LOCK, dataProvider);
+    const lockingTx = await locking
       .connect(dataProvider)
-      .stake(toBigNum(STAKING_AMOUNT));
-    await stakingTx.wait();
+      .lock(toBigNum(AMOUNT_TO_LOCK));
+    await lockingTx.wait();
   };
 
   const createDispute = async (

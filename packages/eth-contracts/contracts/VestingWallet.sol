@@ -2,7 +2,8 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "./StakingRegistry.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "./LockingRegistry.sol";
 
 /**
  * @title VestingWallet
@@ -11,33 +12,33 @@ import "./StakingRegistry.sol";
  * The wallet specifies the cliff period during which the release of tokens is paused
  * and the vesting period which lineary unlocks deposited tokens.
  */
-contract VestingWallet {
+contract VestingWallet is Initializable {
   event TokensReleased(uint256 amount);
 
   ERC20 public token;
   address public beneficiary;
-  StakingRegistry public stakingRegistry;
+  LockingRegistry public lockingRegistry;
   uint256 public allocation;
   uint64 public start;
   uint64 public cliffDuration;
   uint64 public vestingDuration;
 
-  constructor(
+  function initialize(
     address vestingToken_,
     address beneficiaryAddress_,
-    address stakingRegistry_,
+    address lockingRegistry_,
     uint256 allocation_,
     uint64 startTimestamp_,
     uint64 cliffDurationSeconds_,
     uint64 vestingDurationSeconds_
-  ) payable {
+  ) public initializer {
     require(vestingToken_ != address(0), "VestingWallet: vesting token is zero address");
     require(beneficiaryAddress_ != address(0), "VestingWallet: beneficiary is zero address");
     require(allocation_ > 0, "VestingWallet: allocation is zero");
 
     token = ERC20(vestingToken_);
     beneficiary = beneficiaryAddress_;
-    stakingRegistry = StakingRegistry(stakingRegistry_);
+    lockingRegistry = LockingRegistry(lockingRegistry_);
     allocation = allocation_;
     start = startTimestamp_;
     cliffDuration = cliffDurationSeconds_;
@@ -81,20 +82,20 @@ contract VestingWallet {
     emit TokensReleased(amount);
   }
 
-  function stake(uint256 amount) external {
+  function lock(uint256 amount) external {
     require(
       token.balanceOf(address(this)) >= amount,
-      "VestingWallet: there is not enough tokens to stake"
+      "VestingWallet: there is not enough tokens to lock"
     );
-    token.approve(address(stakingRegistry), amount);
-    stakingRegistry.stake(amount);
+    token.approve(address(lockingRegistry), amount);
+    lockingRegistry.lock(amount);
   }
 
-  function requestUnstake(uint256 amount) external {
-    stakingRegistry.requestUnstake(amount);
+  function requestUnlock(uint256 amount) external {
+    lockingRegistry.requestUnlock(amount);
   }
 
-  function completeUnstake() external {
-    stakingRegistry.completeUnstake();
+  function completeUnlock() external {
+    lockingRegistry.completeUnlock();
   }
 }

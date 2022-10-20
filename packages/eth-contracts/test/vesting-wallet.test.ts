@@ -1,24 +1,21 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
-import { ethers } from "hardhat";
-import {
-  RedstoneToken,
-  StakingRegistry,
-  VestingWallet,
-} from "../typechain-types";
+import { ethers, upgrades } from "hardhat";
+import { RedstoneToken } from "../typechain-types";
 import { time } from "../src/utils";
+import { Contract } from "ethers";
 
 describe("Vesting Wallet", () => {
   let token: RedstoneToken,
-    wallet: VestingWallet,
-    staking: StakingRegistry,
+    wallet: Contract,
+    locking: Contract,
     signers: SignerWithAddress[],
-    authorisedStakeSlasher: SignerWithAddress,
+    authorisedSlasher: SignerWithAddress,
     beneficiary: SignerWithAddress,
     now: number = Math.floor(new Date().getTime() / 1000) + 100000000;
 
   const deployContracts = async (
-    lockPeriodForUnstakingInSeconds: number = 10,
+    delayForUnlockingInSeconds: number = 10,
     allocation: number = 100,
     start: number = 0,
     cliffDuration: number = 100,
@@ -26,7 +23,7 @@ describe("Vesting Wallet", () => {
   ) => {
     signers = await ethers.getSigners();
     beneficiary = signers[1];
-    authorisedStakeSlasher = signers[2];
+    authorisedSlasher = signers[2];
 
     // Deploy token contract
     const TokenContractFactory = await ethers.getContractFactory(
@@ -35,31 +32,29 @@ describe("Vesting Wallet", () => {
     token = await TokenContractFactory.deploy(1000);
     await token.deployed();
 
-    // Deploy staking contract
-    const StakingRegistryFactory = await ethers.getContractFactory(
-      "StakingRegistry"
+    // Deploy locking contract
+    const LockingRegistryFactory = await ethers.getContractFactory(
+      "LockingRegistry"
     );
-    staking = await StakingRegistryFactory.deploy(
+    locking = await upgrades.deployProxy(LockingRegistryFactory, [
       token.address,
-      await authorisedStakeSlasher.getAddress(),
-      lockPeriodForUnstakingInSeconds
-    );
-    await staking.deployed();
+      await authorisedSlasher.getAddress(),
+      delayForUnlockingInSeconds,
+    ]);
 
     // Deploy wallet
     const VestingWalletFactory = await ethers.getContractFactory(
       "VestingWallet"
     );
-    wallet = await VestingWalletFactory.deploy(
+    wallet = await upgrades.deployProxy(VestingWalletFactory, [
       token.address,
       beneficiary.address,
-      staking.address,
+      locking.address,
       allocation,
       start,
       cliffDuration,
-      vestingDuration
-    );
-    await wallet.deployed();
+      vestingDuration,
+    ]);
 
     await token.transfer(wallet.address, allocation);
   };
@@ -169,16 +164,16 @@ describe("Vesting Wallet", () => {
       await deployContracts(100, 100, now + 10, 100, 100);
       expect(await wallet.getReleasable()).to.eq(0);
 
-      await wallet.stake(20);
+      await wallet.lock(20);
 
-      expect(await staking.getStakedBalance(wallet.address)).to.eq(20);
+      expect(await locking.getMaxSlashableAmount(wallet.address)).to.eq(20);
     });
 
     it("Should allow moving funds to approved contracts", async () => {
       await deployContracts(100, 100, now + 10, 100, 100);
 
-      await wallet.stake(20);
-      //expect(await staking.getStakedBalance(wallet.address)).to.eq(20);
+      await wallet.lock(20);
+      //expect(await locking.getMaxSlashableAmount(wallet.address)).to.eq(20);
 
       expect(await token.balanceOf(beneficiary.address)).to.eq(0);
 
@@ -189,18 +184,18 @@ describe("Vesting Wallet", () => {
       expect(await wallet.getReleasable()).to.eq(0);
     });
 
-    it("Should allow staking and unstaking", async () => {
+    it("Should allow locking and unlocking", async () => {
       await deployContracts(10, 100, now + 10, 100, 100);
       expect(await wallet.getReleasable()).to.eq(0);
 
-      await wallet.stake(20);
+      await wallet.lock(20);
 
-      expect(await staking.getStakedBalance(wallet.address)).to.eq(20);
+      expect(await locking.getMaxSlashableAmount(wallet.address)).to.eq(20);
 
-      await wallet.requestUnstake(10);
+      await wallet.requestUnlock(10);
       await time.setTime(now + 20);
-      await wallet.completeUnstake();
-      expect(await staking.getStakedBalance(wallet.address)).to.eq(10);
+      await wallet.completeUnlock();
+      expect(await locking.getMaxSlashableAmount(wallet.address)).to.eq(10);
 
       await time.setTime(now + 10 + 100 + 50);
     });

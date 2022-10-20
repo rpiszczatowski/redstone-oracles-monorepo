@@ -10,3 +10,6 @@ artifacts
 # Typechain
 typechain
 typechain-types
+
+# OpenZeppelin
+.openzeppelin/unknown-*.json
