@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv";
 import { join } from "path";
+import { readFileSync } from "fs";
 
 dotenv.config({ path: join(__dirname, "../../../../.env") });
 
@@ -13,53 +14,18 @@ function getFromEnv(envName: string) {
 
 export const mongoDbUrl = getFromEnv("MONGO_DB_URL");
 
-export const dataFeedsToCheck = [
-  {
-    id: "redstone",
-    checkWithoutSymbol: true,
-    symbolsToCheck: ["ETH", "STX"],
-    checkEachSingleSource: false,
-    minTimestampDiffForWarning: 120000,
-    schedule: "0 * * * *", // Every hour at 0th minute, e.g. 15:00, 16:00, 17:00, ...
-  },
-  {
-    id: "redstone-stocks",
-    checkWithoutSymbol: true,
-    symbolsToCheck: ["AAPL"],
-    checkEachSingleSource: true,
-    minTimestampDiffForWarning: 120000,
-    schedule: "5 * * * *", // Every hour at 5th minute, e.g. 15:05, 16:05
-  },
-  {
-    id: "redstone-rapid",
-    checkWithoutSymbol: true,
-    symbolsToCheck: ["ETH"],
-    checkEachSingleSource: true,
-    minTimestampDiffForWarning: 20000,
-    schedule: "*/10 * * * *", // Every 10 minutes
-  },
-  {
-    id: "redstone-avalanche",
-    checkWithoutSymbol: true,
-    checkEachSingleSource: true,
-    symbolsToCheck: ["AVAX"],
-    minTimestampDiffForWarning: 20000,
-    schedule: "15 * * * *", // Every hour at 15th minute
-  },
-  {
-    id: "redstone-custom-urls-demo",
-    checkWithoutSymbol: true,
-    symbolsToCheck: [],
-    checkEachSingleSource: true,
-    minTimestampDiffForWarning: 120000,
-    schedule: "20 * * * *", // Every hour at 20th minute
-  },
-  {
-    id: "redstone-avalanche-prod",
-    checkWithoutSymbol: true,
-    symbolsToCheck: ["AVAX", "QI", "YAK"],
-    checkEachSingleSource: true,
-    minTimestampDiffForWarning: 20000,
-    schedule: "*/10 * * * * *", // Every 10 seconds
-  },
-];
+export const dataServicesToCheck = readConfigJSON(
+  getFromEnv("DATA_SERVICES_CONFIG")
+);
+
+function readConfigJSON(filePath: string): any {
+  const content = readFileSync(
+    `${join(`${__dirname}/../../${filePath}`)}`,
+    "utf-8"
+  );
+  try {
+    return JSON.parse(content);
+  } catch (e: any) {
+    throw new Error(`File "${filePath}" does not contain a valid JSON`);
+  }
+}
