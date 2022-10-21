@@ -5163,10 +5163,6 @@
   ],
   "APT": [
     {
-      "id": "apidae",
-      "name": "Apidae"
-    },
-    {
       "id": "aptos",
       "name": "Aptos"
     }
