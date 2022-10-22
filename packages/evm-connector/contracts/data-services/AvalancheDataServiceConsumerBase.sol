@@ -5,9 +5,6 @@ pragma solidity ^0.8.4;
 import "../core/RedstoneConsumerNumericBase.sol";
 
 contract AvalancheDataServiceConsumerBase is RedstoneConsumerNumericBase {
-  uint256 constant MAX_DATA_TIMESTAMP_DELAY_IN_SECONDS = 3 * 60;
-  uint256 constant MAX_DATA_TIMESTAMP_AHEAD_IN_SECONDS = 60;
-
   constructor() {
     uniqueSignersThreshold = 10;
   }
@@ -46,22 +43,5 @@ contract AvalancheDataServiceConsumerBase is RedstoneConsumerNumericBase {
     } else {
       revert("Signer is not authorised");
     }
-  }
-
-  function isTimestampValid(uint256 _receivedTimestamp)
-    public
-    view
-    virtual
-    override
-    returns (bool)
-  {
-    require(
-      (block.timestamp + MAX_DATA_TIMESTAMP_AHEAD_IN_SECONDS) > _receivedTimestamp,
-      "Data with future timestamps is not allowed"
-    );
-
-    return
-      block.timestamp < _receivedTimestamp ||
-      block.timestamp - _receivedTimestamp < MAX_DATA_TIMESTAMP_DELAY_IN_SECONDS;
   }
 }

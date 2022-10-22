@@ -25,8 +25,8 @@ library RedstoneDefaultsLib {
     );
 
     return
-      block.timestamp < receivedTimestamp ||
-      block.timestamp - receivedTimestamp < DEFAULT_MAX_DATA_TIMESTAMP_DELAY_IN_SECONDS;
+      block.timestamp * 1000 < receivedTimestamp ||
+      block.timestamp * 1000 - receivedTimestamp < DEFAULT_MAX_DATA_TIMESTAMP_DELAY_IN_SECONDS;
   }
 
   function aggregateValues(uint256[] memory values) internal pure returns (uint256) {

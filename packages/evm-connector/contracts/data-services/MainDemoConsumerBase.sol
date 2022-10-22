@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 
 import "../core/RedstoneConsumerNumericBase.sol";
 
-contract StocksDemoConsumerBase is RedstoneConsumerNumericBase {
+contract MainDemoConsumerBase is RedstoneConsumerNumericBase {
   constructor() {
     uniqueSignersThreshold = 1;
   }
@@ -16,7 +16,7 @@ contract StocksDemoConsumerBase is RedstoneConsumerNumericBase {
     override
     returns (uint256)
   {
-    if (_signerAddress == 0x926E370fD53c23f8B71ad2B3217b227E41A92b12) {
+    if (_signerAddress == 0x0C39486f770B26F5527BBBf942726537986Cd7eb) {
       return 0;
     } else {
       revert("Signer is not authorised");
