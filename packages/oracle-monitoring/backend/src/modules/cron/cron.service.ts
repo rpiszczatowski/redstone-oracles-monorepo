@@ -5,34 +5,31 @@ import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { HttpService } from "@nestjs/axios";
 import { CronJob } from "cron";
-import * as redstone from "redstone-api-extended";
-import {
-  DataFeedId,
-  DataSourcesConfig,
-} from "redstone-api-extended/lib/oracle/redstone-data-feed";
-import { dataFeedsToCheck } from "../../config";
+import { requestDataPackages } from "redstone-sdk";
+import { dataServicesToCheck } from "../../config";
 import { stringifyError } from "../../shared/error-stringifier";
 import { Issue, IssueDocument } from "../issues/issues.schema";
 import { Metric, MetricDocument } from "../metrics/metrics.schema";
-import { SourceConfig } from "redstone-api-extended/lib/oracle/fetchers/Fetcher";
 
 interface CheckDataFeedInput {
-  dataFeedId: DataFeedId;
+  dataServiceId: string;
   symbol?: string;
+  urls?: string[];
 }
 
 interface Input {
-  dataFeedId: DataFeedId;
+  dataServiceId: string;
   minTimestampDiffForWarning: number;
-  sourcesConfig: DataSourcesConfig;
+  url: string;
+  dataFeeds: string[];
 }
 
 interface SaveMetricInput {
   metricName: string;
   timestampDiff: number;
   timestamp: number;
-  dataFeedId: DataFeedId;
-  singleSourceConfig: SourceConfig;
+  dataServiceId: string;
+  url: string;
 }
 
 @Injectable()
@@ -47,63 +44,60 @@ export class CronService {
 
   addCronJobs() {
     // Starting data feed checker jobs
-    for (const dataFeed of dataFeedsToCheck) {
+    for (const dataService of dataServicesToCheck) {
       // Starting job for checking whole data package fetching
       // (without specified symbol)
-      if (dataFeed.checkWithoutSymbol) {
-        Logger.log(`Starting data feed checker job for: ${dataFeed.id}`);
-        const job = new CronJob(dataFeed.schedule, () => {
+      if (dataService.checkWithoutSymbol) {
+        Logger.log(`Starting data feed checker job for: ${dataService.id}`);
+        const job = new CronJob(dataService.schedule, () => {
           this.checkDataFeed({
-            dataFeedId: dataFeed.id as DataFeedId,
+            dataServiceId: dataService.id,
+            urls: dataService.urls,
           });
         });
         this.schedulerRegistry.addCronJob(
-          `date-feed-checker-${dataFeed.id}`,
+          `date-feed-checker-${dataService.id}`,
           job
         );
         job.start();
       }
 
       // Starting jobs for each symbol checking
-      if (dataFeed.symbolsToCheck && dataFeed.symbolsToCheck.length > 0) {
-        for (const symbol of dataFeed.symbolsToCheck) {
+      if (dataService.symbolsToCheck && dataService.symbolsToCheck.length > 0) {
+        for (const symbol of dataService.symbolsToCheck) {
           Logger.log(
-            `Starting data feed checker job for: ${dataFeed.id} with symbol: ${symbol}`
+            `Starting data feed checker job for: ${dataService.id} with symbol: ${symbol}`
           );
-          const job = new CronJob(dataFeed.schedule, () => {
+          const job = new CronJob(dataService.schedule, () => {
             this.checkDataFeed({
-              dataFeedId: dataFeed.id as DataFeedId,
+              dataServiceId: dataService.id,
               symbol,
+              urls: dataService.urls,
             });
           });
           this.schedulerRegistry.addCronJob(
-            `date-feed-checker-${dataFeed.id}-symbol-${symbol}`,
+            `date-feed-checker-${dataService.id}-symbol-${symbol}`,
             job
           );
           job.start();
         }
       }
 
-      // Starting jobs for each single source
-      if (dataFeed.checkEachSingleSource) {
-        const dataFeedSourcesConfig =
-          redstone.oracle.getDefaultDataSourcesConfig(
-            dataFeed.id as DataFeedId
-          );
-        for (const source of dataFeedSourcesConfig.sources) {
-          Logger.log(`Starting single source checker job for: ${dataFeed.id}`);
-          const job = new CronJob(dataFeed.schedule, () => {
-            this.checkSingleSource({
-              dataFeedId: dataFeed.id as DataFeedId,
-              minTimestampDiffForWarning: dataFeed.minTimestampDiffForWarning,
-              sourcesConfig: {
-                ...dataFeedSourcesConfig,
-                sources: [source],
-              },
+      // Starting jobs for each single url
+      if (dataService.checkEachSingleUrl) {
+        for (const url of dataService.urls) {
+          Logger.log(`Starting single url checker job for: ${dataService.id}`);
+          const job = new CronJob(dataService.schedule, () => {
+            this.checkSingleUrl({
+              dataServiceId: dataService.id,
+              minTimestampDiffForWarning:
+                dataService.minTimestampDiffForWarning,
+              url,
+              dataFeeds: dataService.symbolsToCheck,
             });
           });
           this.schedulerRegistry.addCronJob(
-            `source-checker-${dataFeed.id}-${JSON.stringify(source)}`,
+            `url-checker-${dataService.id}-${JSON.stringify(url)}`,
             job
           );
           job.start();
@@ -112,21 +106,34 @@ export class CronService {
     }
   }
 
-  checkDataFeed = async ({ dataFeedId, symbol }: CheckDataFeedInput) => {
+  checkDataFeed = async ({
+    dataServiceId,
+    symbol,
+    urls,
+  }: CheckDataFeedInput) => {
     Logger.log(
-      `Checking data feed: ${dataFeedId}${
+      `Checking data feed: ${dataServiceId}${
         symbol ? " with symbol " + symbol : ""
       }`
     );
     const currentTimestamp = Date.now();
 
     try {
-      await redstone.oracle.getFromDataFeed(dataFeedId, symbol);
+      if (symbol) {
+        await requestDataPackages(
+          {
+            dataServiceId: dataServiceId,
+            uniqueSignersCount: 1,
+            dataFeeds: [symbol],
+          },
+          urls
+        );
+      }
     } catch (e) {
       const errStr = stringifyError(e);
       Logger.error(
         `Error occured in data feed checker-job ` +
-          `(${dataFeedId}-${symbol}). ` +
+          `(${dataServiceId}-${symbol}). ` +
           `Saving issue in DB: ${errStr}`
       );
       await new this.issueModel({
@@ -134,71 +141,90 @@ export class CronService {
         type: "data-feed-failed",
         symbol,
         level: "ERROR",
-        dataFeedId,
+        dataServiceId,
         comment: errStr,
       }).save();
       const uptimeKumaUrl = this.configService.get("UPTIME_KUMA_URL");
-      const uptimeKumaUrlWithMessage = `${uptimeKumaUrl}&msg=(${dataFeedId}-${symbol}): ${errStr}`;
-      await this.httpService.axiosRef.get(uptimeKumaUrlWithMessage);
+      const uptimeKumaUrlWithMessage = `${uptimeKumaUrl}&msg=(${dataServiceId}-${symbol}): ${errStr}`;
+      if (uptimeKumaUrl) {
+        await this.httpService.axiosRef.get(uptimeKumaUrlWithMessage);
+      }
     }
   };
 
-  checkSingleSource = async ({
-    dataFeedId,
+  checkSingleUrl = async ({
+    dataServiceId,
     minTimestampDiffForWarning,
-    sourcesConfig,
+    url,
+    dataFeeds,
   }: Input) => {
     const currentTimestamp = Date.now();
-    const singleSourceConfig = sourcesConfig.sources[0];
-    const { type, url, evmSignerAddress } = singleSourceConfig;
-    const dataSourceName = `${dataFeedId}-${type}-${url}-${evmSignerAddress}`;
     Logger.log(
-      `Checking a single source in data feed: ${dataFeedId}. ` +
-        `Source config: ${JSON.stringify(singleSourceConfig)}`
+      `Checking a single url in data feed: ${dataServiceId}. ` +
+        `Url: ${JSON.stringify(url)}`
     );
 
     try {
       // Trying to fetch from redstone
-      const response = await redstone.oracle.get({
-        ...sourcesConfig,
-        maxTimestampDiffMilliseconds: 28 * 24 * 3600 * 1000, // 28 days - we don't want to raise error if data is too old
-      });
+      const response = await requestDataPackages(
+        {
+          dataServiceId,
+          uniqueSignersCount: 1,
+          dataFeeds,
+        },
+        [url]
+      );
 
-      const timestampDiff = currentTimestamp - response.priceData.timestamp;
+      for (const dataFeedId of Object.keys(response)) {
+        const dataPackage = response[dataFeedId as any][0]?.dataPackage;
+        if (dataPackage) {
+          const { timestampMilliseconds } = dataPackage;
+          const timestampDiff = currentTimestamp - timestampMilliseconds;
 
-      // Saving metric to DB
-      this.safelySaveMetricInDB({
-        metricName: `timestamp-diff-${dataSourceName}`,
-        timestampDiff,
-        timestamp: response.priceData.timestamp,
-        dataFeedId,
-        singleSourceConfig,
-      });
-
-      if (timestampDiff > minTimestampDiffForWarning) {
-        Logger.warn(
-          `Timestamp diff is quite big: ${timestampDiff}. Saving issue in DB`
-        );
-        await new this.issueModel({
-          timestamp: currentTimestamp,
-          type: "timestamp-diff",
-          level: "WARNING",
-          dataFeedId,
-          evmSignerAddress: singleSourceConfig.evmSignerAddress,
-          url: singleSourceConfig.url,
-          timestampDiffMilliseconds: timestampDiff,
-        }).save();
+          // Saving metric to DB
+          this.safelySaveMetricInDB({
+            metricName: `timestamp-diff-${dataFeedId}`,
+            timestampDiff,
+            timestamp: timestampMilliseconds,
+            dataServiceId,
+            url,
+          });
+          if (timestampDiff > minTimestampDiffForWarning) {
+            Logger.warn(
+              `Timestamp diff is quite big: ${timestampDiff}. Saving issue in DB`
+            );
+            await new this.issueModel({
+              timestamp: currentTimestamp,
+              type: "timestamp-diff",
+              level: "WARNING",
+              dataServiceId,
+              url,
+              timestampDiffMilliseconds: timestampDiff,
+            }).save();
+          }
+        } else {
+          Logger.error(
+            `Error occurred: no data package for ${dataFeedId}. Saving issue in DB`
+          );
+          await new this.issueModel({
+            timestamp: currentTimestamp,
+            type: "no-data-package",
+            level: "WARNING",
+            dataServiceId,
+            url,
+            comment: `No data package for ${dataFeedId}`,
+          }).save();
+        }
       }
     } catch (e) {
       const errStr = stringifyError(e);
       Logger.error(`Error occurred: ${errStr}. Saving issue in DB`);
       await new this.issueModel({
         timestamp: currentTimestamp,
-        type: "one-source-failed",
+        type: "one-url-failed",
         level: "WARNING",
-        dataFeedId,
-        evmSignerAddress: singleSourceConfig.evmSignerAddress,
-        url: singleSourceConfig.url,
+        dataServiceId,
+        url,
         comment: errStr,
       }).save();
     }
@@ -208,8 +234,8 @@ export class CronService {
     metricName,
     timestampDiff,
     timestamp,
-    dataFeedId,
-    singleSourceConfig,
+    dataServiceId,
+    url,
   }: SaveMetricInput) => {
     try {
       Logger.log(
@@ -220,8 +246,8 @@ export class CronService {
         value: timestampDiff,
         timestamp,
         tags: {
-          dataFeedId,
-          evmSignerAddress: singleSourceConfig.evmSignerAddress,
+          dataServiceId,
+          url,
         },
       }).save();
     } catch (e) {

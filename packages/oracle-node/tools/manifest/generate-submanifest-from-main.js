@@ -1,5 +1,5 @@
 const fs = require("fs");
-const manifestForMainProvider = require("../../manifests/main.json");
+const manifestForMainProvider = require("../../manifests/data-services/main.json");
 
 module.exports = function (symbols, outputFilePath, predefinedManifest = {}) {
   const manifest = {
@@ -15,7 +15,6 @@ module.exports = function (symbols, outputFilePath, predefinedManifest = {}) {
       "https://container-service-1.dv9sai71f4rsq.eu-central-1.cs.amazonlightsail.com",
     ],
     enableStreamrBroadcaster: false,
-    disableSinglePricesBroadcastingInStreamr: true,
     enableArweaveBackup: false,
     tokens: {},
     ...predefinedManifest,

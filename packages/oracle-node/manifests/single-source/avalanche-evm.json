@@ -10,11 +10,13 @@
     "https://container-service-1.dv9sai71f4rsq.eu-central-1.cs.amazonlightsail.com"
   ],
   "enableStreamrBroadcaster": false,
-  "disableSinglePricesBroadcastingInStreamr": true,
   "enableArweaveBackup": false,
   "tokens": {
     "YYAV3SA1": {},
-    "SAV2": {}
+    "SAV2": {},
+    "TJ_AVAX_USDC_LP": {},
+    "PNG_AVAX_USDC_LP": {},
+    "YY_TJ_AVAX_USDC_LP": {}
   },
   "defaultSource": ["avalanche-evm-fetcher"]
 }

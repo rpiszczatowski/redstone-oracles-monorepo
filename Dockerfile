@@ -7,4 +7,6 @@ WORKDIR /app
 # Bundle app source
 COPY . .
 
+# RUN rm yarn.lock
+
 RUN yarn

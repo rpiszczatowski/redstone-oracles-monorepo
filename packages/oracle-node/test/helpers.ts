@@ -8,7 +8,6 @@ const baseManifest = {
   evmChainId: 1,
   httpBroadcasterURLs: ["http://localhost:9000"],
   enableStreamrBroadcaster: true,
-  disableSinglePricesBroadcastingInStreamr: false,
   enableArweaveBackup: false,
 };
 

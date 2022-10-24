@@ -11,7 +11,6 @@
     "https://container-service-1.dv9sai71f4rsq.eu-central-1.cs.amazonlightsail.com"
   ],
   "enableStreamrBroadcaster": false,
-  "disableSinglePricesBroadcastingInStreamr": true,
   "enableArweaveBackup": false,
   "tokens": {
     "ETH": {
@@ -217,6 +216,18 @@
       "maxPriceDeviationPercent": 80
     },
     "SAV2": {
+      "source": ["avalanche-evm-fetcher"],
+      "maxPriceDeviationPercent": 80
+    },
+    "TJ_AVAX_USDC_LP": {
+      "source": ["avalanche-evm-fetcher"],
+      "maxPriceDeviationPercent": 80
+    },
+    "PNG_AVAX_USDC_LP": {
+      "source": ["avalanche-evm-fetcher"],
+      "maxPriceDeviationPercent": 80
+    },
+    "YY_TJ_AVAX_USDC_LP": {
       "source": ["avalanche-evm-fetcher"],
       "maxPriceDeviationPercent": 80
     }

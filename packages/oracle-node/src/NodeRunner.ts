@@ -35,6 +35,7 @@ import {
   NumericDataPoint,
   SignedDataPackage,
 } from "redstone-protocol";
+import { config } from "./config";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -71,7 +72,9 @@ export default class NodeRunner {
     this.useNewManifest(initialManifest);
     this.lastManifestLoadTimestamp = Date.now();
     const httpBroadcasterURLs =
-      initialManifest?.httpBroadcasterURLs ?? DEFAULT_HTTP_BROADCASTER_URLS;
+      config.overrideDirectCacheServiceUrls ??
+      initialManifest?.httpBroadcasterURLs ??
+      DEFAULT_HTTP_BROADCASTER_URLS;
     this.httpBroadcaster = new HttpBroadcaster(
       httpBroadcasterURLs,
       ethereumPrivKey
@@ -292,14 +295,8 @@ export default class NodeRunner {
       const promises = [];
       promises.push(this.httpBroadcaster.broadcast(signedDataPackages));
       const enableStreamrBroadcaster =
-        this.currentManifest?.enableStreamrBroadcaster ?? false;
-      const disableSinglePricesBroadcastingInStreamr =
-        this.currentManifest?.disableSinglePricesBroadcastingInStreamr ?? true;
-      if (
-        enableStreamrBroadcaster &&
-        !disableSinglePricesBroadcastingInStreamr
-      ) {
-        // Streamr broadcasting disabled in the old version
+        !!this.currentManifest?.enableStreamrBroadcaster;
+      if (enableStreamrBroadcaster) {
         promises.push(this.streamrBroadcaster.broadcast(signedDataPackages));
       }
       const results = await Promise.allSettled(promises);

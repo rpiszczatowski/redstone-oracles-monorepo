@@ -11,7 +11,6 @@ export interface Manifest {
   tokens: TokensConfig;
   httpBroadcasterURLs?: string[];
   enableStreamrBroadcaster?: boolean;
-  disableSinglePricesBroadcastingInStreamr?: boolean;
 }
 
 export interface TokensConfig {
@@ -138,6 +137,7 @@ export interface NodeConfig {
   overrideManifestUsingFile?: Manifest;
   ethereumAddress: string;
   useNewSigningAndBroadcasting: boolean;
+  overrideDirectCacheServiceUrls?: string[];
 }
 
 export interface MulticallRequest {

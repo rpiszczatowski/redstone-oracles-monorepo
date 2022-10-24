@@ -1,7 +1,8 @@
 {
   "license": "MIT",
   "name": "oracle-monitoring",
-  "version": "0.1.1",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
     "backend:install": "cd backend && yarn install --frozen-lockfile",
     "frontend:install": "cd frontend && yarn install --frozen-lockfile",
@@ -17,5 +18,14 @@
     "lint": "eslint",
     "dev": "yarn frontend:build && yarn backend:dev",
     "start": "yarn frontend:build && yarn backend:build && yarn backend:start"
+  },
+  "dependencies": {
+    "redstone-sdk": "1.0.0"
+  },
+  "workspaces": {
+    "packages": [
+      "./backend",
+      "./frontend"
+    ]
   }
 }

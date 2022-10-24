@@ -55,6 +55,16 @@ const getOptionallyManifestData = () => {
   }
 };
 
+const getOptionallyCacheServiceUrls = () => {
+  const overrideDirectCacheServiceUrls = getFromEnv(
+    "OVERRIDE_DIRECT_CACHE_SERVICE_URLS",
+    ""
+  );
+  if (!!overrideDirectCacheServiceUrls) {
+    return JSON.parse(overrideDirectCacheServiceUrls) as string[];
+  }
+};
+
 export const getArweaveWallet = (): JWKInterface => {
   const arweaveKeysFile = process.env.ARWEAVE_KEYS_FILE_PATH;
   const arweaveKeysJWK = process.env.ARWEAVE_KEYS_JWK;
@@ -90,6 +100,7 @@ export const config: NodeConfig = Object.freeze({
     getFromEnv("MANIFEST_REFRESH_INTERVAL", DEFAULT_MANIFEST_REFRESH_INTERVAL)
   ),
   overrideManifestUsingFile: getOptionallyManifestData(),
+  overrideDirectCacheServiceUrls: getOptionallyCacheServiceUrls(),
   credentials: {
     twelveDataRapidApiKey: getFromEnv(
       "TWELVE_DATA_RAPID_API_KEY",

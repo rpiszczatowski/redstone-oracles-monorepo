@@ -22,7 +22,7 @@ export class IssuesService {
   ) => {
     const groupedByDataFeed = await this.aggregateIssuesByAttribute(
       fromTimestamp,
-      "dataFeedId"
+      "dataServiceId"
     );
     const groupedByUrls = await this.aggregateIssuesByAttribute(
       fromTimestamp,
