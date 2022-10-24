@@ -166,7 +166,6 @@ export class CronService {
 
     try {
       // Trying to fetch from redstone
-      console.log(url);
       const response = await requestDataPackages(
         {
           dataServiceId,
