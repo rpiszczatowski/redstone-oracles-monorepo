@@ -1,4 +1,3 @@
-import _ from "lodash";
 import { Broadcaster } from "../Broadcaster";
 import { Consola } from "consola";
 import { StreamrProxy } from "./StreamrProxy";

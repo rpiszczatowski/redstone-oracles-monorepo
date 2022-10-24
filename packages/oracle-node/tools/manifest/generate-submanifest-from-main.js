@@ -15,7 +15,6 @@ module.exports = function (symbols, outputFilePath, predefinedManifest = {}) {
       "https://container-service-1.dv9sai71f4rsq.eu-central-1.cs.amazonlightsail.com",
     ],
     enableStreamrBroadcaster: false,
-    disableSinglePricesBroadcastingInStreamr: true,
     enableArweaveBackup: false,
     tokens: {},
     ...predefinedManifest,
