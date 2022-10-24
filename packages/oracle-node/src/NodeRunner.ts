@@ -295,14 +295,8 @@ export default class NodeRunner {
       const promises = [];
       promises.push(this.httpBroadcaster.broadcast(signedDataPackages));
       const enableStreamrBroadcaster =
-        this.currentManifest?.enableStreamrBroadcaster ?? false;
-      const disableSinglePricesBroadcastingInStreamr =
-        this.currentManifest?.disableSinglePricesBroadcastingInStreamr ?? true;
-      if (
-        enableStreamrBroadcaster &&
-        !disableSinglePricesBroadcastingInStreamr
-      ) {
-        // Streamr broadcasting disabled in the old version
+        !!this.currentManifest?.enableStreamrBroadcaster;
+      if (enableStreamrBroadcaster) {
         promises.push(this.streamrBroadcaster.broadcast(signedDataPackages));
       }
       const results = await Promise.allSettled(promises);

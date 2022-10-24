@@ -11,7 +11,6 @@ export interface Manifest {
   tokens: TokensConfig;
   httpBroadcasterURLs?: string[];
   enableStreamrBroadcaster?: boolean;
-  disableSinglePricesBroadcastingInStreamr?: boolean;
 }
 
 export interface TokensConfig {
