@@ -30,7 +30,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "mongoose": "^6.5.2",
-    "redstone-sdk": "1.0.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.4.0"
