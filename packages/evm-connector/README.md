@@ -1,11 +1,11 @@
-# 🔗 redstone-evm-connector
+# 🔗 @redstone-finance/evm-connector
 
 [![License](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
 [![Discord](https://img.shields.io/discord/786251205008949258?logo=discord)](https://discord.gg/2CT6hN6C)
-[![NPM](https://img.shields.io/npm/v/redstone-evm-connector)](https://www.npmjs.com/package/redstone-evm-connector)
+[![NPM](https://img.shields.io/npm/v/@redstone-finance/evm-connector)](https://www.npmjs.com/package/@redstone-finance/evm-connector)
 [![Twitter](https://img.shields.io/twitter/follow/redstone_defi?style=flat&logo=twitter)](https://twitter.com/intent/follow?screen_name=limestone_defi)
 
-The redstone-evm-connector module implements an alternative design of providing oracle data to smart contracts. Instead of constantly persisting data on EVM storage (by data providers), the information is brought on-chain only when needed (by end users). Until that moment data remains in the decentralised cache layer, which is powered by RedStone light cache gateways and streamr data broadcasting protocol. Data is transferred to the EVM by end users, who should attach signed data packages to their transaction calldata. The information integrity is verified on-chain through signature checking.
+The @redstone-finance/evm-connector module implements an alternative design of providing oracle data to smart contracts. Instead of constantly persisting data on EVM storage (by data providers), the information is brought on-chain only when needed (by end users). Until that moment data remains in the decentralised cache layer, which is powered by RedStone light cache gateways and streamr data broadcasting protocol. Data is transferred to the EVM by end users, who should attach signed data packages to their transaction calldata. The information integrity is verified on-chain through signature checking.
 
 - [🚀 Working demo](#---working-demo)
 - [📦 Installation](#---installation)
@@ -36,18 +36,18 @@ The redstone-evm-connector module implements an alternative design of providing 
 
 - Try it directly in CodeSandbox: [demo link](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
-- See a bunch of smart contract examples that use `redstone-evm-connector` in our [dedicated repo with examples](https://github.com/redstone-finance/redstone-evm-connector-examples)
+- See a bunch of smart contract examples that use the evm-connector in our [dedicated repo with examples](https://github.com/redstone-finance/redstone-evm-examples)
 
 ## 📦 Installation
 
-Install [redstone-evm-connector](https://www.npmjs.com/package/redstone-evm-connector) from NPM registry
+Install [@redstone-finance/evm-connector](https://www.npmjs.com/package/@redstone-finance/evm-connector) from NPM registry
 
 ```bash
 # Using yarn
-yarn add redstone-evm-connector
+yarn add @redstone-finance/evm-connector
 
 # Using NPM
-npm install redstone-evm-connector
+npm install @redstone-finance/evm-connector
 ```
 
 ## 🔥 Getting started
@@ -59,7 +59,7 @@ You need to apply a minium change to the source code to enable smart contract to
 We strongly recommend you to have some upgradability mechanism for your contracts (it can be based on multisig, DAO, or anything else). This way, you can quickly swtich to the latest trusted data providers in case of changes or problems with the current providers.
 
 ```js
-import "redstone-evm-connector/lib/contracts/data-services/AvalancheDataServiceConsumerBase.sol";
+import "@redstone-finance/evm-connector/lib/contracts/data-services/AvalancheDataServiceConsumerBase.sol";
 
 contract YourContractName is AvalancheDataServiceConsumerBase {
   ...
@@ -99,10 +99,10 @@ First, you need to import the wrapper code to your project
 
 ```ts
 // Typescript
-import { WrapperBuilder } from "redstone-evm-connector";
+import { WrapperBuilder } from "@redstone-finance/evm-connector";
 
 // Javascript
-const { WrapperBuilder } = require("redstone-evm-connector");
+const { WrapperBuilder } = require("@redstone-finance/evm-connector");
 ```
 
 Then you can wrap your ethers contract pointing to the selected [redstone data service](https://app.redstone.finance) and requested data feeds.
