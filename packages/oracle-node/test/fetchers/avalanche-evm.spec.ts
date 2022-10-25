@@ -1,4 +1,5 @@
-import axios from "axios";
+import redstone from "redstone-api";
+import { PriceData } from "redstone-api/lib/types";
 import { Contract } from "ethers";
 import { MockProvider, deployContract } from "ethereum-waffle";
 import { AvalancheEvmFetcher } from "../../src/fetchers/evm-chain/AvalancheEvmFetcher";
@@ -7,11 +8,9 @@ import { yieldYakContractsDetails } from "../../src/fetchers/evm-chain/contracts
 import { lpTokensContractsDetails } from "../../src/fetchers/evm-chain/contracts-details/lp-tokens";
 import YYMock from "./mocks/YYMock.json";
 import LPTokenMock from "./mocks/LPTokenMock.json";
+import { mockRedstoneApiPrice } from "./_helpers";
 
 jest.setTimeout(15000);
-
-jest.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("Avalanche EVM fetcher", () => {
   let provider: MockProvider;
@@ -41,9 +40,8 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockedAxios.get.mockResolvedValueOnce({
-        data: [{ value: 17 }],
-      });
+      mockRedstoneApiPrice(17, "AVAX");
+
       const result = await fetcher.fetchAll(["YYAV3SA1"]);
       expect(result).toEqual([{ symbol: "YYAV3SA1", value: 17.28590481 }]);
     });
@@ -73,9 +71,8 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockedAxios.get.mockResolvedValueOnce({
-        data: [{ value: 23 }],
-      });
+      mockRedstoneApiPrice(23, "SAV2");
+
       const result = await fetcher.fetchAll(["SAV2"]);
       expect(result).toEqual([{ symbol: "SAV2", value: 23.38681239 }]);
     });
@@ -106,9 +103,8 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockedAxios.get.mockResolvedValue({
-        data: [{ value: 17 }],
-      });
+      mockRedstoneApiPrice(17, "TJ_AVAX_USDC_LP");
+
       const result = await fetcher.fetchAll(["TJ_AVAX_USDC_LP"]);
       expect(result).toEqual([
         { symbol: "TJ_AVAX_USDC_LP", value: 98663550.92399499 },

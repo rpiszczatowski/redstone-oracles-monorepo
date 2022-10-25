@@ -22,10 +22,7 @@ export class Issue {
   level: "ERROR" | "WARNING";
 
   @Prop({ required: true })
-  dataFeedId: string;
-
-  @Prop()
-  evmSignerAddress: string;
+  dataServiceId: string;
 
   @Prop()
   url: string;
