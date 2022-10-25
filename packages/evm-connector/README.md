@@ -59,7 +59,7 @@ You need to apply a minium change to the source code to enable smart contract to
 We strongly recommend you to have some upgradability mechanism for your contracts (it can be based on multisig, DAO, or anything else). This way, you can quickly swtich to the latest trusted data providers in case of changes or problems with the current providers.
 
 ```js
-import "@redstone-finance/evm-connector/lib/contracts/data-services/AvalancheDataServiceConsumerBase.sol";
+import "@redstone-finance/evm-connector/dist/contracts/data-services/AvalancheDataServiceConsumerBase.sol";
 
 contract YourContractName is AvalancheDataServiceConsumerBase {
   ...
