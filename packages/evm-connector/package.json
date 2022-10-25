@@ -10,7 +10,7 @@
     "benchmark": "hardhat test benchmarks/run-benchmarks.ts",
     "compile": "hardhat compile",
     "preversion": "yarn build",
-    "postversion": "git add -A ./ && git commit -m \"build: $npm_package_version\" && git push",
+    "postversion": "git commit -a -m \"build: $npm_package_name@$npm_package_version\" && git push",
     "postbuild": "cp -r contracts ./dist"
   },
   "dependencies": {
