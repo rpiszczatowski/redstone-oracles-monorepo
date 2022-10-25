@@ -11,8 +11,7 @@
     "outDir": "dist",
     "declaration": true,
     "declarationMap": true,
-    "incremental": true,
-    "composite": true
+    "incremental": true
   },
   "include": ["./src", "./test", "./typechain-types", "package.json", "./contracts"],
   "files": ["./hardhat.config.ts"],

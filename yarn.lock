@@ -16922,6 +16922,11 @@ redstone-prettier-config@^1.0.0:
   resolved "https://registry.yarnpkg.com/redstone-prettier-config/-/redstone-prettier-config-1.0.0.tgz#154b28bf79f41826a4b47421db653d867aa3c241"
   integrity sha512-39BBmwrw+5L4MgV1TLGAlIwmRFvAzZ4iq8xshHdBhiiAgl0J6PeIYrkUkU5l6nMIilua4zkWoEz+58enT0pbhw==
 
+"redstone-protocol@file:packages/protocol":
+  version "1.0.0"
+  dependencies:
+    ethers "^5.6.8"
+
 redstone-sdk@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/redstone-sdk/-/redstone-sdk-1.0.0.tgz#a2173d7c72a13fc662f4adc8da55eca7e325bbfb"
@@ -16930,6 +16935,11 @@ redstone-sdk@1.0.0:
     axios "^0.27.2"
     redstone-oracles-smartweave-contracts "1.0.0"
     redstone-protocol "1.0.0"
+
+"redstone-sdk@file:packages/sdk":
+  version "1.0.1"
+  dependencies:
+    axios "^0.27.2"
 
 redstone-smartweave@0.4.84, redstone-smartweave@^0.4.40:
   version "0.4.84"
