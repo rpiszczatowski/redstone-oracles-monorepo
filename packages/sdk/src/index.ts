@@ -26,7 +26,6 @@ export interface DataPackagesResponse {
 
 export const getOracleRegistryState =
   async (): Promise<RedstoneOraclesState> => {
-    console.log("Hehehehehehehe");
     return redstoneOraclesInitialState;
   };
 

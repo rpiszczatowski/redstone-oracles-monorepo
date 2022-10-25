@@ -9,11 +9,12 @@
     "test": "NODE_ENV=test jest",
     "build": "rm -rf dist && tsc --build",
     "preversion": "yarn build",
-    "version": "git add -A ./",
-    "postversion": "git push && git push --tags"
+    "postversion": "git commit -a -m \"build: $npm_package_name@$npm_package_version\" && git push"
   },
   "dependencies": {
-    "axios": "^0.27.2"
+    "axios": "^0.27.2",
+    "redstone-oracles-smartweave-contracts": "latest",
+    "redstone-protocol": "latest"
   },
   "devDependencies": {
     "@types/jest": "^27.5.2",
