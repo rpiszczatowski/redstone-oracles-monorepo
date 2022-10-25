@@ -1,6 +1,6 @@
 {
   "name": "redstone-evm-connector-exp",
-  "version": "3.0.11",
+  "version": "3.0.13",
   "description": "A tool to inject RedStone data into EVM compatible smart contracts",
   "main": "dist/src/index.js",
   "license": "MIT",
@@ -10,7 +10,7 @@
     "benchmark": "hardhat test benchmarks/run-benchmarks.ts",
     "compile": "hardhat compile",
     "preversion": "yarn build",
-    "postversion": "git add -A ./ && git push",
+    "postversion": "git add -A ./ && git commit -m \"build: $npm_package_version\" && git push",
     "postbuild": "cp -r contracts ./dist"
   },
   "dependencies": {
