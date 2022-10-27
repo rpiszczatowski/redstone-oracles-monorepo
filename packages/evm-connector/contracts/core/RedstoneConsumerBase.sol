@@ -24,7 +24,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
    * @param receviedSigner The address of a signer, recovered from ECDSA signature
    * @return Unique index for a signer in the range [0..255]
    */
-  function getAuthorisedSignerIndex(address receviedSigner) public view virtual returns (uint256);
+  function getAuthorisedSignerIndex(address receviedSigner) public view virtual returns (uint8);
 
   /**
    * @dev This function may be overriden by the child consumer contract.
@@ -40,7 +40,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
    * @dev This function should be overriden by the child consumer contract.
    * @return The minimum required value of unique authorised signers
    */
-  function getUniqueSignersThreshold() public view virtual returns (uint256) {
+  function getUniqueSignersThreshold() public view virtual returns (uint8) {
     return 1;
   }
 

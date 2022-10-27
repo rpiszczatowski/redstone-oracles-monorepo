@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import "../core/RedstoneConsumerNumericBase.sol";
 
 contract TwapsDemoConsumerBase is RedstoneConsumerNumericBase {
-  function getUniqueSignersThreshold() public view virtual override returns (uint256) {
+  function getUniqueSignersThreshold() public view virtual override returns (uint8) {
     return 1;
   }
 
@@ -14,7 +14,7 @@ contract TwapsDemoConsumerBase is RedstoneConsumerNumericBase {
     view
     virtual
     override
-    returns (uint256)
+    returns (uint8)
   {
     if (_signerAddress == 0xAAb9568f7165E66AcaFF50B705C3f3e964cbD24f) {
       return 0;
