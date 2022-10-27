@@ -18,7 +18,14 @@ contract CalldataExtractor is RedstoneConstants {
       let calldataOffset := sub(calldatasize(), REDSTONE_MARKER_BS)
       unsignedMetadataByteSize := calldataload(sub(calldataOffset, STANDARD_SLOT_BS))
     }
-    return unsignedMetadataByteSize + UNSGINED_METADATA_BYTE_SIZE_BS + REDSTONE_MARKER_BS;
+    uint256 calldataNegativeOffset = unsignedMetadataByteSize
+      + UNSGINED_METADATA_BYTE_SIZE_BS
+      + REDSTONE_MARKER_BS;
+    require(
+      calldataNegativeOffset + DATA_PACKAGES_COUNT_BS <= msg.data.length,
+      "Unsigned metadata byte size is incorrect"
+    );
+    return calldataNegativeOffset;
   }
 
   function _extractDataPackagesCountFromCalldata(uint256 calldataNegativeOffset)
