@@ -11,7 +11,7 @@
 
 // TODO: maybe remove this library
 
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.0;
 
 library BytesLib {
   function concat(bytes memory _preBytes, bytes memory _postBytes)
