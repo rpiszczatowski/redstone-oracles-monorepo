@@ -118,7 +118,10 @@ describe("SampleProxyConnector", function () {
       ...mockNumericPackageConfigs[1],
       timestampMilliseconds: DEFAULT_TIMESTAMP_FOR_TESTS - 1,
     });
-    await testShouldRevertWith(newMockPackages, "Timestamp is not valid");
+    await testShouldRevertWith(
+      newMockPackages,
+      "Proxy calldata failed with err: Timestamp is not valid"
+    );
   });
 
   it("Should fail with correct message (insufficient number of unique signers)", async () => {
@@ -128,7 +131,7 @@ describe("SampleProxyConnector", function () {
     );
     await testShouldRevertWith(
       newMockPackages,
-      "Insufficient number of unique signers"
+      "Proxy calldata failed with err: Insufficient number of unique signers"
     );
   });
 
@@ -138,6 +141,9 @@ describe("SampleProxyConnector", function () {
       ...mockNumericPackageConfigs[1],
       mockSignerIndex: UNAUTHORISED_SIGNER_INDEX,
     });
-    await testShouldRevertWith(newMockPackages, "Signer is not authorised");
+    await testShouldRevertWith(
+      newMockPackages,
+      "Proxy calldata failed with err: Signer is not authorised"
+    );
   });
 });
