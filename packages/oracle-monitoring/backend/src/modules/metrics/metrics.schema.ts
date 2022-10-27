@@ -9,7 +9,7 @@ class Tag extends Document {
   dataFeedId: string;
 
   @Prop()
-  evmSignerAddress: string[];
+  url: string;
 }
 
 @Schema()

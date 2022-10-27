@@ -3,7 +3,7 @@ import { getApp } from "./_helpers";
 
 const app = getApp();
 
-describe("Custom url requests route", () => {
+describe("Home url requests route", () => {
   test("Should send correct response ", async () => {
     const response = await request(app).get("/").expect(200);
 

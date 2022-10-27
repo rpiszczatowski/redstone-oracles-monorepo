@@ -1,5 +1,6 @@
 import { StreamrClient, StorageNode, StreamOperation } from "streamr-client";
 import { Consola } from "consola";
+import pako from "pako";
 
 const logger = require("../../utils/logger")("StreamrProxy") as Consola;
 
@@ -26,7 +27,13 @@ export class StreamrProxy {
 
   public async publishToStreamByName(data: any, streamName: string) {
     const streamId = await this.getStreamIdForStreamName(streamName);
-    return await this.publish(data, streamId);
+    const dataCompressed = this.compressData(data);
+    return await this.publish(dataCompressed, streamId);
+  }
+
+  public async compressData(data: any) {
+    const dataAsString = JSON.stringify(data);
+    return pako.deflate(dataAsString);
   }
 
   // Publishes data to the stream

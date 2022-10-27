@@ -393,7 +393,6 @@ Here is the structure of the manifest file:
 | evmChainId | required | Number | EVM chain id, that will be used during EVM price signing. Pass `1` if you're not sure, it will point to the Ethereum Mainnet. |
 | httpBroadcasterURLs | optional | ["http://localhost:9000"] | array of urls for broadcasters to which prices should be sent |
 | enableStreamrBroadcaster | optional | false | if set to true, single prices and prices packages will be sent to Streamr |
-| disableSinglePricesBroadcastingInStreamr | optional | true | if set to true, single prices will not be sent to Streamr |
 | tokens | required | Object | Object with tokens in the following format: `{ "TOKEN_SYMBOL": { "source": ["source-name-1", "source-name-2", ...], "maxPriceDeviationPercent": 25 }, ... }`. Note that `source` and `maxPriceDeviationPercent` params per token are optional. This is also a correct tokens configuration: `{ "TOKEN_SYMBOL_1": {}, "TOKEN_SYMBOL_2": {} }` |
 
 You can find a list of available sources along with its stability details in the RedStone Web app: [app.redstone.finance/#/app/sources.](https://app.redstone.finance/#/app/sources)

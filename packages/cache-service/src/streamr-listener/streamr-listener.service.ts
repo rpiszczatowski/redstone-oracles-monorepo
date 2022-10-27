@@ -1,6 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
 import { getOracleRegistryState } from "redstone-sdk";
+import * as pako from "pako";
 import config from "../config";
 import { StreamrClient, Subscription } from "streamr-client";
 import { DataPackage } from "../data-packages/data-packages.model";
@@ -15,8 +16,9 @@ const CRON_EXPRESSION_EVERY_1_MINUTE = "*/1 * * * *";
 
 @Injectable()
 export class StreamrListenerService {
+  private readonly logger = new Logger(StreamrListenerService.name);
+  private readonly streamrClient: StreamrClient = new StreamrClient();
   private subscriptionsState: StreamrSubscriptions = {};
-  private streamrClient: StreamrClient = new StreamrClient();
 
   constructor(
     private dataPackageService: DataPackagesService,
@@ -29,7 +31,7 @@ export class StreamrListenerService {
   }
 
   async syncStreamrListening() {
-    console.log(`Syncing streamr listening`);
+    this.logger.log(`Syncing streamr listening`);
     const oracleRegistryState = await getOracleRegistryState();
     const nodeEvmAddresses = Object.values(oracleRegistryState.nodes).map(
       ({ evmAddress }) => evmAddress
@@ -62,17 +64,20 @@ export class StreamrListenerService {
 
     const subscription = await this.streamrClient.subscribe(
       streamId,
-      async (message: string) => {
+      async (message: Uint8Array) => {
         try {
+          const dataPackagesAsString = pako.inflate(message, {
+            to: "string",
+          });
           const dataPackagesToSave =
             await this.dataPackageService.prepareReceivedDataPackagesForBulkSaving(
-              JSON.parse(message),
+              JSON.parse(dataPackagesAsString),
               nodeEvmAddress
             );
-          console.log(`Data packages parsed for node: ${nodeEvmAddress}`);
+          this.logger.log(`Data packages parsed for node: ${nodeEvmAddress}`);
 
           await DataPackage.insertMany(dataPackagesToSave);
-          console.log(
+          this.logger.log(
             `Saved ${dataPackagesToSave.length} data packages for node: ${nodeEvmAddress}`
           );
 
@@ -80,7 +85,7 @@ export class StreamrListenerService {
             await this.bundlrService.safelySaveDataPackages(dataPackagesToSave);
           }
         } catch (e) {
-          console.error("Error occured ", e.stack);
+          this.logger.error("Error occured ", e.stack);
         }
       }
     );

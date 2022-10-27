@@ -250,17 +250,12 @@ export default class NodeRunnerOld {
     try {
       const promises = [];
       promises.push(this.httpBroadcaster.broadcast(signedPrices));
-      const enableStreamrBroadcaster =
-        this.currentManifest?.enableStreamrBroadcaster ?? false;
-      const disableSinglePricesBroadcastingInStreamr =
-        this.currentManifest?.disableSinglePricesBroadcastingInStreamr ?? true;
-      if (
-        enableStreamrBroadcaster &&
-        !disableSinglePricesBroadcastingInStreamr
-      ) {
-        // Streamr broadcasting disabled in the old version
-        // promises.push(this.streamrBroadcaster.broadcast(signedPrices));
-      }
+      // Streamr broadcasting disabled in the old version
+      // const enableStreamrBroadcaster =
+      //   this.currentManifest?.enableStreamrBroadcaster ?? false;
+      // if (enableStreamrBroadcaster) {
+      //   promises.push(this.streamrBroadcaster.broadcast(signedPrices));
+      // }
       const results = await Promise.allSettled(promises);
 
       // Check if all promises resolved
@@ -321,17 +316,17 @@ export default class NodeRunnerOld {
           this.providerAddress
         )
       );
-      const enableStreamrBroadcaster =
-        this.currentManifest?.enableStreamrBroadcaster ?? false;
-      if (enableStreamrBroadcaster) {
-        // Streamr broadcasting disabled in the old version
-        // promises.push(
-        //   this.streamrBroadcaster.broadcastPricePackage(
-        //     signedPackage,
-        //     this.providerAddress
-        //   )
-        // );
-      }
+      // const enableStreamrBroadcaster =
+      //   !!this.currentManifest?.enableStreamrBroadcaster;
+      // if (enableStreamrBroadcaster) {
+      // Streamr broadcasting disabled in the old version
+      // promises.push(
+      //   this.streamrBroadcaster.broadcastPricePackage(
+      //     signedPackage,
+      //     this.providerAddress
+      //   )
+      // );
+      // }
       await Promise.all(promises);
     } catch (e: any) {
       if (e.response !== undefined) {
