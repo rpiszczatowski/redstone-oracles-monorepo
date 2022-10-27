@@ -15,15 +15,11 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
     bytes memory encodedFunction,
     bool forwardValue
   ) internal returns (bytes memory) {
-    bool success;
-    bytes memory result;
     bytes memory message = _prepareMessage(encodedFunction);
 
-    if (forwardValue == true) {
-      (success, result) = contractAddress.call{value: msg.value}(message);
-    } else {
-      (success, result) = contractAddress.call(message);
-    }
+    (bool success, bytes memory result) =
+      contractAddress.call{value: forwardValue ? msg.value : 0}(message);
+
     return _prepareReturnValue(success, result);
   }
 
