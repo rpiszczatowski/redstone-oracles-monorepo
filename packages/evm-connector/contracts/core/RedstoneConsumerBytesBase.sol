@@ -54,6 +54,7 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
     returns (bytes memory)
   {
     // Check if all byte arrays are identical
+    require(calldataPointersForValues.length > 0, "Calldata pointers array must not be empty");
     bytes calldata firstValue = getCalldataBytesFromCalldataPointer(calldataPointersForValues[0]);
     bytes32 expectedHash = keccak256(firstValue);
 
