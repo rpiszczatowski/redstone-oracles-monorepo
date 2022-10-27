@@ -15,9 +15,6 @@ import "../libs/SignatureLib.sol";
  * look at `RedstoneConsumerNumericBase` and `RedstoneConsumerBytesBase` instead
  */
 abstract contract RedstoneConsumerBase is CalldataExtractor {
-  // This variable should be updated in child consumer contracts
-  uint256 public uniqueSignersThreshold = 1;
-
   /* ========== VIRTUAL FUNCTIONS (MAY BE OVERRIDEN IN CHILD CONTRACTS) ========== */
 
   /**
@@ -37,6 +34,14 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
    */
   function isTimestampValid(uint256 receivedTimestamp) public view virtual returns (bool) {
     return RedstoneDefaultsLib.isTimestampValid(receivedTimestamp);
+  }
+
+  /**
+   * @dev This function should be overriden by the child consumer contract.
+   * @return The minimum required value of unique authorised signers
+   */
+  function getUniqueSignersThreshold() public view virtual returns (uint256) {
+    return 1;
   }
 
   /**
@@ -77,7 +82,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
     uint256[][] memory valuesForDataFeeds = new uint256[][](dataFeedIds.length);
     for (uint256 i = 0; i < dataFeedIds.length; i++) {
       signersBitmapForDataFeedIds[i] = BitmapLib.EMPTY_BITMAP;
-      valuesForDataFeeds[i] = new uint256[](uniqueSignersThreshold);
+      valuesForDataFeeds[i] = new uint256[](getUniqueSignersThreshold());
     }
 
     // Extracting the number of data packages from calldata
@@ -197,7 +202,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
 
             if (
               !BitmapLib.getBitFromBitmap(bitmapSignersForDataFeedId, signerIndex) && /* current signer was not counted for current dataFeedId */
-              uniqueSignerCountForDataFeedIds[dataFeedIdIndex] < uniqueSignersThreshold
+              uniqueSignerCountForDataFeedIds[dataFeedIdIndex] < getUniqueSignersThreshold()
             ) {
               // Increase unique signer counter
               uniqueSignerCountForDataFeedIds[dataFeedIdIndex]++;
@@ -237,6 +242,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
     uint256[] memory uniqueSignerCountForDataFeedIds
   ) private view returns (uint256[] memory) {
     uint256[] memory aggregatedValues = new uint256[](valuesForDataFeeds.length);
+    uint256 uniqueSignersThreshold = getUniqueSignersThreshold();
 
     for (uint256 dataFeedIndex = 0; dataFeedIndex < valuesForDataFeeds.length; dataFeedIndex++) {
       require(
