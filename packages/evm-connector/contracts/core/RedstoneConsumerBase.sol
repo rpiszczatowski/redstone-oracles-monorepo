@@ -29,11 +29,11 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
   /**
    * @dev This function may be overriden by the child consumer contract.
    * It should validate the timestamp against the current time (block.timestamp)
-   * @param receivedTimestamp Timestamp extracted from calldata
-   * @return Boolean value indicating if the received timestamp is valid
+   * It should revert with a helpful message if the timestamp is not valid
+   * @param receivedTimestampMilliseconds Timestamp extracted from calldata
    */
-  function isTimestampValid(uint256 receivedTimestamp) public view virtual returns (bool) {
-    return RedstoneDefaultsLib.isTimestampValid(receivedTimestamp);
+  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view virtual {
+    RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
   }
 
   /**
@@ -189,7 +189,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       }
 
       // Validating timestamp
-      require(isTimestampValid(extractedTimestamp), "Timestamp is not valid");
+      validateTimestamp(extractedTimestamp);
 
       // Verifying the off-chain signature against on-chain hashed data
       signerAddress = SignatureLib.recoverSignerAddress(

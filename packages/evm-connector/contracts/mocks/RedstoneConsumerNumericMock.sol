@@ -20,13 +20,7 @@ contract RedstoneConsumerNumericMock is RedstoneConsumerNumericBase, AuthorisedM
     return getAuthorisedMockSignerIndex(_signerAddress);
   }
 
-  function isTimestampValid(uint256 _receivedTimestamp)
-    public
-    view
-    virtual
-    override
-    returns (bool)
-  {
-    return _receivedTimestamp >= 1654353400000;
+  function validateTimestamp(uint256 _receivedTimestamp) public view virtual override {
+    require(_receivedTimestamp >= 1654353400000, "Timestamp is not valid");
   }
 }

@@ -68,7 +68,7 @@ contract YourContractName is AvalancheDataServiceConsumerBase {
 
 💡 Note: You can also override the following functions (do it on your own risk):
 
-- `isTimestampValid(uint256 receivedTimestamp) returns (bool)` - to enable custom logic of timestamp validation
+- `validateTimestamp(uint256 receivedTimestampMilliseconds)` - to enable custom logic of timestamp validation
 - `aggregateValues(uint256[] memory values) returns (uint256)` - to enable custom logic of aggregating values from different providers (by default this function takes the median value)
 - `getAuthorisedSignerIndex(address _signerAddress) returns (uint256)` function and `getUniqueSignersThreshold() returns (uint256)` function - to enable custom logic of signers authorisation
 
