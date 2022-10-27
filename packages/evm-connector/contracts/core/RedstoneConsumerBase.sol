@@ -235,6 +235,9 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
                 signerIndex
               );
             }
+
+            // Breaking, as there couldn't be several indexes for the same feed ID
+            break;
           }
         }
       }
