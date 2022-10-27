@@ -6,8 +6,8 @@ import "../core/RedstoneConsumerBytesBase.sol";
 import "./AuthorisedMockSignersBase.sol";
 
 contract RedstoneConsumerBytesMock is RedstoneConsumerBytesBase, AuthorisedMockSignersBase {
-  constructor() {
-    uniqueSignersThreshold = 3;
+  function getUniqueSignersThreshold() public view virtual override returns (uint256) {
+    return 3;
   }
 
   function getAuthorisedSignerIndex(address _signerAddress)

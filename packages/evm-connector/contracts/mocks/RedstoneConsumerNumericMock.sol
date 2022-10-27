@@ -6,8 +6,8 @@ import "../core/RedstoneConsumerNumericBase.sol";
 import "./AuthorisedMockSignersBase.sol";
 
 contract RedstoneConsumerNumericMock is RedstoneConsumerNumericBase, AuthorisedMockSignersBase {
-  constructor() {
-    uniqueSignersThreshold = 10;
+  function getUniqueSignersThreshold() public view virtual override returns (uint256) {
+    return 10;
   }
 
   function getAuthorisedSignerIndex(address _signerAddress)

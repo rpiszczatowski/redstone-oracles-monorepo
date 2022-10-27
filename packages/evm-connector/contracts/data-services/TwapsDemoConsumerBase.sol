@@ -5,8 +5,8 @@ pragma solidity ^0.8.4;
 import "../core/RedstoneConsumerNumericBase.sol";
 
 contract TwapsDemoConsumerBase is RedstoneConsumerNumericBase {
-  constructor() {
-    uniqueSignersThreshold = 1;
+  function getUniqueSignersThreshold() public view virtual override returns (uint256) {
+    return 1;
   }
 
   function getAuthorisedSignerIndex(address _signerAddress)
