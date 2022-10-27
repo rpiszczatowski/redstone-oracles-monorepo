@@ -81,7 +81,9 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
     uint256[] memory signersBitmapForDataFeedIds = new uint256[](dataFeedIds.length);
     uint256[][] memory valuesForDataFeeds = new uint256[][](dataFeedIds.length);
     for (uint256 i = 0; i < dataFeedIds.length; i++) {
-      signersBitmapForDataFeedIds[i] = BitmapLib.EMPTY_BITMAP;
+      // The line below is commented because newly allocated arrays are filled with zeros
+      // But we left it for better readability
+      // signersBitmapForDataFeedIds[i] = 0; // <- setting to an empty bitmap
       valuesForDataFeeds[i] = new uint256[](getUniqueSignersThreshold());
     }
 
