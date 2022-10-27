@@ -198,7 +198,7 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
       )
 
       function prepareTrickyCalldataPointer(calldataOffsetArg, valueByteSize) -> calldataPtr {
-        calldataPtr := add(shl(BITS_COUNT_IN_16_BYTES, calldataOffsetArg), valueByteSize)
+        calldataPtr := or(shl(BITS_COUNT_IN_16_BYTES, calldataOffsetArg), valueByteSize)
       }
     }
   }
