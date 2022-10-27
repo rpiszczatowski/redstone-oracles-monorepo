@@ -70,7 +70,7 @@ contract YourContractName is AvalancheDataServiceConsumerBase {
 
 - `validateTimestamp(uint256 receivedTimestampMilliseconds)` - to enable custom logic of timestamp validation
 - `aggregateValues(uint256[] memory values) returns (uint256)` - to enable custom logic of aggregating values from different providers (by default this function takes the median value)
-- `getAuthorisedSignerIndex(address _signerAddress) returns (uint256)` function and `getUniqueSignersThreshold() returns (uint256)` function - to enable custom logic of signers authorisation
+- `getAuthorisedSignerIndex(address _signerAddress) returns (uint8)` function and `getUniqueSignersThreshold() returns (uint8)` function - to enable custom logic of signers authorisation
 
 After applying the mentioned change you will be able to access the data calling the local `getOracleNumericValueFromTxMsg` function. You should pass the data feed id converted to `bytes32`.
 

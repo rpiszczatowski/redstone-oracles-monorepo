@@ -7,7 +7,7 @@ contract AuthorisedMockSignersBase {
     public
     view
     virtual
-    returns (uint256)
+    returns (uint8)
   {
     return getAllMockExceptLastOneAuthorised(_signerAddress);
   }
@@ -16,7 +16,7 @@ contract AuthorisedMockSignersBase {
     public
     view
     virtual
-    returns (uint256)
+    returns (uint8)
   {
     if (_signerAddress == 0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199) {
       revert("Signer is not authorised");
@@ -25,7 +25,7 @@ contract AuthorisedMockSignersBase {
     }
   }
 
-  function getAllMockAuthorised(address _signerAddress) public view virtual returns (uint256) {
+  function getAllMockAuthorised(address _signerAddress) public view virtual returns (uint8) {
     // Looks like an array but consumes less gas
     if (_signerAddress == 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266) {
       return 0;

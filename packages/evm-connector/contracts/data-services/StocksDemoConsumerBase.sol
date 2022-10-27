@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import "../core/RedstoneConsumerNumericBase.sol";
 
 contract StocksDemoConsumerBase is RedstoneConsumerNumericBase {
-  function getUniqueSignersThreshold() public view virtual override returns (uint256) {
+  function getUniqueSignersThreshold() public view virtual override returns (uint8) {
     return 1;
   }
 
@@ -14,7 +14,7 @@ contract StocksDemoConsumerBase is RedstoneConsumerNumericBase {
     view
     virtual
     override
-    returns (uint256)
+    returns (uint8)
   {
     if (_signerAddress == 0x926E370fD53c23f8B71ad2B3217b227E41A92b12) {
       return 0;

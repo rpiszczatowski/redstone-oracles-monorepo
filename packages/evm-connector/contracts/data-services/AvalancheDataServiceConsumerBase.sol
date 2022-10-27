@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import "../core/RedstoneConsumerNumericBase.sol";
 
 contract AvalancheDataServiceConsumerBase is RedstoneConsumerNumericBase {
-  function getUniqueSignersThreshold() public view virtual override returns (uint256) {
+  function getUniqueSignersThreshold() public view virtual override returns (uint8) {
     return 10;
   }
 
@@ -14,7 +14,7 @@ contract AvalancheDataServiceConsumerBase is RedstoneConsumerNumericBase {
     view
     virtual
     override
-    returns (uint256)
+    returns (uint8)
   {
     if (_signerAddress == 0x981bdA8276ae93F567922497153de7A5683708d3) {
       return 0;
