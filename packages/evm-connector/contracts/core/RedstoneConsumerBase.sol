@@ -60,7 +60,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
   /**
    * @dev This is an internal helpful function for secure extraction oracle values
    * from the tx calldata. Security is achieved by signatures verification, timestamp
-   * validation, and aggregating values from from different authorised signers into a
+   * validation, and aggregating values from different authorised signers into a
    * single numeric value. If any of the required conditions (e.g. too old timestamp or
    * insufficient number of autorised signers) do not match, the function will revert.
    *
