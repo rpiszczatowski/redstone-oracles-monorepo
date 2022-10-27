@@ -210,6 +210,6 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
 
   /// @dev This is a helpful function for "tricky" calldata pointers
   function _getNumberFromLast128Bits(uint256 number) internal pure returns (uint256) {
-    return uint256((number << 128) >> 128);
+    return uint128(number);
   }
 }
