@@ -14,20 +14,17 @@ const PORT = 8080;
 // This class will be extended in future and will be used for
 // communication between nodes
 export class ExpressAppRunner {
-  private app: express.Application;
-
-  constructor(private nodeConfig: NodeConfig) {
-    this.app = express();
-    setExpressRoutes(this.app, this.nodeConfig);
-  }
+  constructor(private nodeConfig: NodeConfig) {}
 
   run() {
     if (process.env.NODE_ENV === "test") {
       logger.info(`Express server running skipped in test environment`);
       return;
     }
+    const app = express();
+    setExpressRoutes(app, this.nodeConfig);
     logger.info(`Running express server on port: ${PORT}`);
-    this.app.listen(PORT, () => {
+    app.listen(PORT, () => {
       logger.info(`Server started at http://localhost:${PORT}`);
     });
   }
