@@ -90,7 +90,7 @@ contract CalldataExtractor is RedstoneConstants {
     }
 
     // Prepare returned values
-    dataPointsCount = uint256(_dataPointsCount);
-    eachDataPointValueByteSize = uint256(_eachDataPointValueByteSize);
+    dataPointsCount = _dataPointsCount;
+    eachDataPointValueByteSize = _eachDataPointValueByteSize;
   }
 }
