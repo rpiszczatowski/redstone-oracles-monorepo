@@ -117,6 +117,7 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
       DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
   }
 
+
   function _prepareReturnValue(bool success, bytes memory result)
     internal
     pure
@@ -124,12 +125,15 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
   {
     if (!success) {
       if (result.length > 0) {
+        string memory receivedErrMsg;
         assembly {
-          let result_size := mload(result)
-          revert(add(32, result), result_size)
+          receivedErrMsg := add(result, REVERT_MSG_OFFSET)
         }
+        revert(string(
+          abi.encodePacked("Proxy calldata failed with err: ", receivedErrMsg)
+        ));
       } else {
-        revert("Proxy calldata failed");
+        revert("Proxy calldata failed without error message");
       }
     }
 
