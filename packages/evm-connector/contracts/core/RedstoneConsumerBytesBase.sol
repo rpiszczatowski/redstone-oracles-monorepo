@@ -75,18 +75,19 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
    * calldata bytes array. You may find it useful while overriding the
    * `aggregateByteValues` function
    *
-   * @param byteValueCalldataPtr A "tricky" calldata pointer, 128 first bits of which
+   * @param trickyCalldataPtr A "tricky" calldata pointer, 128 first bits of which
    * represent the offset, and the last 128 bits - the byte length of the value
    *
    * @return bytesValueInCalldata The corresponding calldata bytes array
    */
-  function getCalldataBytesFromCalldataPointer(uint256 byteValueCalldataPtr)
+  function getCalldataBytesFromCalldataPointer(uint256 trickyCalldataPtr)
     internal
     pure
     returns (bytes calldata bytesValueInCalldata)
   {
-    uint256 calldataOfffset = _getNumberFromFirst128Bits(byteValueCalldataPtr);
-    uint256 valueByteSize = _getNumberFromLast128Bits(byteValueCalldataPtr);
+    uint256 calldataOfffset = _getNumberFromFirst128Bits(trickyCalldataPtr);
+    uint256 valueByteSize = _getNumberFromLast128Bits(trickyCalldataPtr);
+    require(calldataOfffset + valueByteSize <= msg.data.length, "Calldata pointer out of bounds");
 
     assembly {
       bytesValueInCalldata.offset := calldataOfffset
