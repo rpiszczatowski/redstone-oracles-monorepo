@@ -47,7 +47,6 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
     uint256 redstonePayloadByteSize = _getRedstonePayloadByteSize();
     uint256 resultMessageByteSize = encodedFunctionBytesCount + redstonePayloadByteSize;
 
-    uint256 encodedFunctionOffset;
     bytes memory message;
 
     assembly {
@@ -58,15 +57,15 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
 
       // Copying function and its arguments
       for {
-        encodedFunctionOffset := 0
-      } lt(encodedFunctionOffset, encodedFunctionBytesCount) {
-        encodedFunctionOffset := add(encodedFunctionOffset, STANDARD_SLOT_BS) // going with 32 bytes steps
+        let from := add(BYTES_ARR_LEN_VAR_BS, encodedFunction)
+        let fromEnd := add(from, encodedFunctionBytesCount)
+        let to := add(BYTES_ARR_LEN_VAR_BS, message)
+      } lt (from, fromEnd) {
+        from := add(from, STANDARD_SLOT_BS)
+        to := add(to, STANDARD_SLOT_BS)
       } {
-        // Copying data from encodedFunction to message 32 bytes at a time
-        mstore(
-          add(add(BYTES_ARR_LEN_VAR_BS, message), encodedFunctionOffset), // address in memory
-          mload(add(add(BYTES_ARR_LEN_VAR_BS, encodedFunction), encodedFunctionOffset)) // 32 bytes to copy
-        )
+        // Copying data from encodedFunction to message (32 bytes at a time)
+        mstore(to, mload(from))
       }
 
       // Copying redstone payload to the message bytes
