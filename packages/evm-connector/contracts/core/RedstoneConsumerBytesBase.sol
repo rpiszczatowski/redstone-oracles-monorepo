@@ -181,17 +181,14 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
     uint256 dataPointValueByteSize,
     uint256 dataPointIndex
   ) internal pure override returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
+    uint256 calldataSize = msg.data.length;
+    uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
+    uint256 dataPointNegativeOffset = negativeOffsetToDataPoints + (1 + dataPointIndex) * (dataPointValueByteSize + DATA_POINT_SYMBOL_BS);
+    require(dataPointNegativeOffset <= calldataSize, "Calldata size is not big enough");
     assembly {
-      let negativeOffsetToDataPoints := add(
-        calldataNegativeOffsetForDataPackage,
-        DATA_PACKAGE_WITHOUT_DATA_POINTS_BS
-      )
       let dataPointCalldataOffset := sub(
-        calldatasize(),
-        add(
-          negativeOffsetToDataPoints,
-          mul(add(1, dataPointIndex), add(dataPointValueByteSize, DATA_POINT_SYMBOL_BS))
-        )
+        calldataSize,
+        dataPointNegativeOffset
       )
       dataPointDataFeedId := calldataload(dataPointCalldataOffset)
       dataPointValue := prepareTrickyCalldataPointer(

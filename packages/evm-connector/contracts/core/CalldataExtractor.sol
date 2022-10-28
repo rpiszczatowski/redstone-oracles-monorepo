@@ -39,6 +39,8 @@ contract CalldataExtractor is RedstoneConstants {
     pure
     returns (uint16 dataPackagesCount)
   {
+    require(calldataNegativeOffset + STANDARD_SLOT_BS <= msg.data.length,
+      "Calldata size is not big enough");
     assembly {
       let calldataOffset := sub(calldatasize(), calldataNegativeOffset)
       dataPackagesCount := calldataload(sub(calldataOffset, STANDARD_SLOT_BS))
@@ -51,17 +53,15 @@ contract CalldataExtractor is RedstoneConstants {
     uint256 defaultDataPointValueByteSize,
     uint256 dataPointIndex
   ) internal pure virtual returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
+    uint256 calldataSize = msg.data.length;
+    uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
+    uint256 dataPointNegativeOffset = negativeOffsetToDataPoints + (1 + dataPointIndex)
+      * (defaultDataPointValueByteSize + DATA_POINT_SYMBOL_BS);
+    require(dataPointNegativeOffset <= calldataSize, "Calldata size is not big enough");
     assembly {
-      let negativeOffsetToDataPoints := add(
-        calldataNegativeOffsetForDataPackage,
-        DATA_PACKAGE_WITHOUT_DATA_POINTS_BS
-      )
       let dataPointCalldataOffset := sub(
-        calldatasize(),
-        add(
-          negativeOffsetToDataPoints,
-          mul(add(1, dataPointIndex), add(defaultDataPointValueByteSize, DATA_POINT_SYMBOL_BS))
-        )
+        calldataSize,
+        dataPointNegativeOffset
       )
       dataPointDataFeedId := calldataload(dataPointCalldataOffset)
       dataPointValue := calldataload(add(dataPointCalldataOffset, DATA_POINT_SYMBOL_BS))
