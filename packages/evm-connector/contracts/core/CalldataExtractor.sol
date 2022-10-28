@@ -20,8 +20,9 @@ contract CalldataExtractor is RedstoneConstants {
       "Calldata size is not big enough"
     );
     assembly {
-      let calldataOffset := sub(calldataSize, REDSTONE_MARKER_BS)
-      unsignedMetadataByteSize := calldataload(sub(calldataOffset, STANDARD_SLOT_BS))
+      unsignedMetadataByteSize := calldataload(
+        sub(calldataSize, REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS)
+      )
     }
     uint256 calldataNegativeOffset = unsignedMetadataByteSize
       + UNSGINED_METADATA_BYTE_SIZE_BS
