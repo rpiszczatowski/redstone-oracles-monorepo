@@ -33,7 +33,7 @@ contract CalldataExtractor is RedstoneConstants {
       + REDSTONE_MARKER_BS;
     require(
       calldataNegativeOffset + DATA_PACKAGES_COUNT_BS <= calldataSize,
-      "Unsigned metadata byte size is incorrect"
+      ERR_INCORRECT_UNSIGNED_METADATA_BYTE_SIZE
     );
     return calldataNegativeOffset;
   }
@@ -63,13 +63,8 @@ contract CalldataExtractor is RedstoneConstants {
     uint256 dataPointNegativeOffset = negativeOffsetToDataPoints.add(
       (1 + dataPointIndex).mul((defaultDataPointValueByteSize + DATA_POINT_SYMBOL_BS))
     );
-    // require(dataPointNegativeOffset <= calldataSize, ERR_CALLDATA_OVER_OR_UNDER_FLOW);
     uint256 dataPointCalldataOffset = calldataSize.sub(dataPointNegativeOffset, ERR_CALLDATA_OVER_OR_UNDER_FLOW);
     assembly {
-      // let dataPointCalldataOffset := sub(
-      //   calldataSize,
-        
-      // )
       dataPointDataFeedId := calldataload(dataPointCalldataOffset)
       dataPointValue := calldataload(add(dataPointCalldataOffset, DATA_POINT_SYMBOL_BS))
     }

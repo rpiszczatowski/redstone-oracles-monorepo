@@ -58,7 +58,7 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
     returns (bytes memory)
   {
     // Check if all byte arrays are identical
-    require(calldataPointersForValues.length > 0, "Calldata pointers array must not be empty");
+    require(calldataPointersForValues.length > 0, ERR_EMPTY_CALLDATA_POINTERS_ARR);
     bytes calldata firstValue = getCalldataBytesFromCalldataPointer(calldataPointersForValues[0]);
     bytes32 expectedHash = keccak256(firstValue);
 
@@ -68,7 +68,7 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
       );
       require(
         keccak256(currentValue) == expectedHash,
-        "Each authorised signer must provide exactly the same bytes value"
+        ERR_EACH_SIGNER_MUST_PROVIDE_THE_SAME_VALUE
       );
     }
 
@@ -92,7 +92,7 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
   {
     uint256 calldataOfffset = _getNumberFromFirst128Bits(trickyCalldataPtr);
     uint256 valueByteSize = _getNumberFromLast128Bits(trickyCalldataPtr);
-    require(calldataOfffset + valueByteSize <= msg.data.length, "Calldata pointer out of bounds");
+    require(calldataOfffset + valueByteSize <= msg.data.length, ERR_INVALID_CALLDATA_POINTER);
 
     assembly {
       bytesValueInCalldata.offset := calldataOfffset

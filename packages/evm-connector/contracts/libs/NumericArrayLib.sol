@@ -14,9 +14,11 @@ library NumericArrayLib {
   uint256 constant BYTES_ARR_LEN_VAR_BS = 32;
   uint256 constant UINT256_VALUE_BS = 32;
 
+  string internal constant ERR_MEDIAN_IN_EMPTY_ARRAY = "Can't pick a median of an empty array";
+
   // This functions modifies the array
   function pickMedian(uint256[] memory arr) internal pure returns (uint256) {
-    require(arr.length > 0, "Can't pick a median of an empty array");
+    require(arr.length > 0, ERR_MEDIAN_IN_EMPTY_ARRAY);
     sort(arr);
     uint256 middleIndex = arr.length / 2;
     if (arr.length % 2 == 0) {

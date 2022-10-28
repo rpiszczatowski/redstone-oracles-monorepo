@@ -12,6 +12,9 @@ library RedstoneDefaultsLib {
   uint256 constant DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS = 3 minutes;
   uint256 constant DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS = 1 minutes;
 
+  string internal constant ERR_TIMESTAMP_FROM_TOO_LONG_FUTURE = "Data with too future timestamps not allowed";
+  string internal constant ERR_TIMESTAMP_IS_TOO_OLD = "Timestamp is too old";
+
   function validateTimestamp(uint256 receivedTimestampMilliseconds) internal view {
     // Getting data timestamp from future seems quite unlikely
     // But we've already spent too much time with different cases
@@ -25,11 +28,11 @@ library RedstoneDefaultsLib {
 
     require(
       (block.timestamp + DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS) > receivedTimestampSeconds,
-      "Data with too future timestamps not allowed"
+      ERR_TIMESTAMP_FROM_TOO_LONG_FUTURE
     );
     require(
       isFromFuture || timestampDiffSeconds < DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS,
-      "Timestamp is too old"
+      ERR_TIMESTAMP_IS_TOO_OLD
     );
   }
 

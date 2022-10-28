@@ -40,4 +40,9 @@ contract RedstoneConstants {
 
   // Error messages
   string internal constant ERR_CALLDATA_OVER_OR_UNDER_FLOW = "Calldata overflow or underflow";
+  string internal constant ERR_INCORRECT_UNSIGNED_METADATA_BYTE_SIZE = "Unsigned metadata byte size is incorrect";
+  string internal constant ERR_INSUFFICIENT_NUMBER_OF_UNIQUE_SIGNERS = "Insufficient number of unique signers";
+  string internal constant ERR_EACH_SIGNER_MUST_PROVIDE_THE_SAME_VALUE = "Each authorised signer must provide exactly the same bytes value";
+  string internal constant ERR_EMPTY_CALLDATA_POINTERS_ARR = "Calldata pointers array must not be empty";
+  string internal constant ERR_INVALID_CALLDATA_POINTER = "Invalid calldata pointer";
 }
