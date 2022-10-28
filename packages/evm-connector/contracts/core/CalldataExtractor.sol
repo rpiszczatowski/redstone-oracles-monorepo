@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
 import "./RedstoneConstants.sol";
 
 /**
@@ -11,13 +13,15 @@ import "./RedstoneConstants.sol";
  * and the ProxyConnector contracts
  */
 contract CalldataExtractor is RedstoneConstants {
+  using SafeMath for uint256;
+
   function _extractByteSizeOfUnsignedMetadata() internal pure returns (uint256) {
     // Using uint24, because unsigned metadata byte size number has 3 bytes
     uint24 unsignedMetadataByteSize;
     uint256 calldataSize = msg.data.length;
     require(
       REDSTONE_MARKER_BS + STANDARD_SLOT_BS <= calldataSize,
-      "Calldata size is not big enough"
+      ERR_CALLDATA_OVERFLOW
     );
     assembly {
       unsignedMetadataByteSize := calldataload(
@@ -41,7 +45,7 @@ contract CalldataExtractor is RedstoneConstants {
     returns (uint16 dataPackagesCount)
   {
     require(calldataNegativeOffset + STANDARD_SLOT_BS <= msg.data.length,
-      "Calldata size is not big enough");
+      ERR_CALLDATA_OVERFLOW);
     assembly {
       let calldataOffset := sub(calldatasize(), calldataNegativeOffset)
       dataPackagesCount := calldataload(sub(calldataOffset, STANDARD_SLOT_BS))
@@ -58,7 +62,7 @@ contract CalldataExtractor is RedstoneConstants {
     uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
     uint256 dataPointNegativeOffset = negativeOffsetToDataPoints + (1 + dataPointIndex)
       * (defaultDataPointValueByteSize + DATA_POINT_SYMBOL_BS);
-    require(dataPointNegativeOffset <= calldataSize, "Calldata size is not big enough");
+    require(dataPointNegativeOffset <= calldataSize, ERR_CALLDATA_OVERFLOW);
     assembly {
       let dataPointCalldataOffset := sub(
         calldataSize,
@@ -80,18 +84,18 @@ contract CalldataExtractor is RedstoneConstants {
     // Using uint32, because data point value byte size has 4 bytes
     uint32 _eachDataPointValueByteSize;
 
+    // Extract data points count
+    uint256 negativeCalldataOffset = calldataNegativeOffsetForDataPackage + SIG_BS;
+    uint256 calldataOffset = msg.data.length.sub(negativeCalldataOffset + STANDARD_SLOT_BS,
+      ERR_CALLDATA_OVERFLOW);
     assembly {
-      // Extract data points count
-      let negativeCalldataOffset := add(calldataNegativeOffsetForDataPackage, SIG_BS)
-      _dataPointsCount := extractFromCalldata(negativeCalldataOffset)
+      _dataPointsCount := calldataload(calldataOffset)
+    }
 
-      // Extract each data point value size
-      negativeCalldataOffset := add(negativeCalldataOffset, DATA_POINTS_COUNT_BS)
-      _eachDataPointValueByteSize := extractFromCalldata(negativeCalldataOffset)
-
-      function extractFromCalldata(negativeOffset) -> extractedValue {
-        extractedValue := calldataload(sub(calldatasize(), add(negativeOffset, STANDARD_SLOT_BS)))
-      }
+    // Extract each data point value size
+    calldataOffset = calldataOffset.sub(DATA_POINTS_COUNT_BS, ERR_CALLDATA_OVERFLOW);
+    assembly {
+      _eachDataPointValueByteSize := calldataload(calldataOffset)
     }
 
     // Prepare returned values
