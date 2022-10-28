@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
 import "./RedstoneConstants.sol";
 import "./RedstoneDefaultsLib.sol";
 import "./CalldataExtractor.sol";
@@ -15,6 +17,8 @@ import "../libs/SignatureLib.sol";
  * look at `RedstoneConsumerNumericBase` and `RedstoneConsumerBytesBase` instead
  */
 abstract contract RedstoneConsumerBase is CalldataExtractor {
+  using SafeMath for uint256;
+
   /* ========== VIRTUAL FUNCTIONS (MAY BE OVERRIDEN IN CHILD CONTRACTS) ========== */
 
   /**
@@ -151,6 +155,10 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
         (eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS) +
         DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS;
 
+      uint256 timestampCalldataOffset = msg.data.length.sub(
+        calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS,
+        ERR_CALLDATA_OVER_OR_UNDER_FLOW);
+
       assembly {
         // Extracting the signed message
         signedMessage := extractBytesFromCalldata(
@@ -162,9 +170,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
         signedHash := keccak256(add(signedMessage, BYTES_ARR_LEN_VAR_BS), signedMessageBytesCount)
 
         // Extracting timestamp
-        extractedTimestamp := extractValueFromCalldata(
-          add(calldataNegativeOffset, TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE)
-        )
+        extractedTimestamp := calldataload(timestampCalldataOffset)
 
         function initByteArray(bytesCount) -> ptr {
           ptr := mload(FREE_MEMORY_PTR)
@@ -181,10 +187,6 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
             bytesCount
           )
           extractedBytes := sub(extractedBytesStartPtr, BYTES_ARR_LEN_VAR_BS)
-        }
-
-        function extractValueFromCalldata(offset) -> valueFromCalldata {
-          valueFromCalldata := calldataload(sub(calldatasize(), add(offset, STANDARD_SLOT_BS)))
         }
       }
 
