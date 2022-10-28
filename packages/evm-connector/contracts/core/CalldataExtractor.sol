@@ -76,27 +76,27 @@ contract CalldataExtractor is RedstoneConstants {
     returns (uint256 dataPointsCount, uint256 eachDataPointValueByteSize)
   {
     // Using uint24, because data points count byte size number has 3 bytes
-    uint24 _dataPointsCount;
+    uint24 dataPointsCount_;
 
     // Using uint32, because data point value byte size has 4 bytes
-    uint32 _eachDataPointValueByteSize;
+    uint32 eachDataPointValueByteSize_;
 
     // Extract data points count
     uint256 negativeCalldataOffset = calldataNegativeOffsetForDataPackage + SIG_BS;
     uint256 calldataOffset = msg.data.length.sub(negativeCalldataOffset + STANDARD_SLOT_BS,
       ERR_CALLDATA_OVER_OR_UNDER_FLOW);
     assembly {
-      _dataPointsCount := calldataload(calldataOffset)
+      dataPointsCount_ := calldataload(calldataOffset)
     }
 
     // Extract each data point value size
     calldataOffset = calldataOffset.sub(DATA_POINTS_COUNT_BS, ERR_CALLDATA_OVER_OR_UNDER_FLOW);
     assembly {
-      _eachDataPointValueByteSize := calldataload(calldataOffset)
+      eachDataPointValueByteSize_ := calldataload(calldataOffset)
     }
 
     // Prepare returned values
-    dataPointsCount = _dataPointsCount;
-    eachDataPointValueByteSize = _eachDataPointValueByteSize;
+    dataPointsCount = dataPointsCount_;
+    eachDataPointValueByteSize = eachDataPointValueByteSize_;
   }
 }
