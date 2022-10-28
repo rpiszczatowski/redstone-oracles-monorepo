@@ -39,5 +39,5 @@ contract RedstoneConstants {
   uint256 internal constant REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS = 41; // REDSTONE_MARKER_BS + STANDARD_SLOT_BS
 
   // Error messages
-  string internal constant ERR_CALLDATA_OVERFLOW = "Calldata overflow";
+  string internal constant ERR_CALLDATA_OVER_OR_UNDER_FLOW = "Calldata overflow or underflow";
 }

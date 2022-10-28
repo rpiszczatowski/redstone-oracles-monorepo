@@ -48,7 +48,7 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
     uint256 resultMessageByteSize = encodedFunctionBytesCount + redstonePayloadByteSize;
     uint256 calldataSize = msg.data.length;
 
-    require(redstonePayloadByteSize <= calldataSize, ERR_CALLDATA_OVERFLOW);
+    require(redstonePayloadByteSize <= calldataSize, ERR_CALLDATA_OVER_OR_UNDER_FLOW);
 
     bytes memory message;
 
