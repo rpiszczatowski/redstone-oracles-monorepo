@@ -150,19 +150,20 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       bytes memory signedMessage;
       uint256 signedMessageBytesCount;
 
-      signedMessageBytesCount =
-        dataPointsCount *
-        (eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS) +
-        DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS;
+      signedMessageBytesCount = dataPointsCount.mul(eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS)
+        + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS;
 
       uint256 timestampCalldataOffset = msg.data.length.sub(
         calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS,
         ERR_CALLDATA_OVER_OR_UNDER_FLOW);
 
+      uint256 signedMessageCalldataOffset = msg.data.length.sub(
+        calldataNegativeOffset + SIG_BS + signedMessageBytesCount);
+
       assembly {
         // Extracting the signed message
         signedMessage := extractBytesFromCalldata(
-          add(calldataNegativeOffset, SIG_BS),
+          signedMessageCalldataOffset,
           signedMessageBytesCount
         )
 
@@ -183,7 +184,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
           let extractedBytesStartPtr := initByteArray(bytesCount)
           calldatacopy(
             extractedBytesStartPtr,
-            sub(calldatasize(), add(offset, bytesCount)),
+            offset,
             bytesCount
           )
           extractedBytes := sub(extractedBytesStartPtr, BYTES_ARR_LEN_VAR_BS)
