@@ -14,15 +14,20 @@ contract CalldataExtractor is RedstoneConstants {
   function _extractByteSizeOfUnsignedMetadata() internal pure returns (uint256) {
     // Using uint24, because unsigned metadata byte size number has 3 bytes
     uint24 unsignedMetadataByteSize;
+    uint256 calldataSize = msg.data.length;
+    require(
+      REDSTONE_MARKER_BS + STANDARD_SLOT_BS <= calldataSize,
+      "Calldata size is not big enough"
+    );
     assembly {
-      let calldataOffset := sub(calldatasize(), REDSTONE_MARKER_BS)
+      let calldataOffset := sub(calldataSize, REDSTONE_MARKER_BS)
       unsignedMetadataByteSize := calldataload(sub(calldataOffset, STANDARD_SLOT_BS))
     }
     uint256 calldataNegativeOffset = unsignedMetadataByteSize
       + UNSGINED_METADATA_BYTE_SIZE_BS
       + REDSTONE_MARKER_BS;
     require(
-      calldataNegativeOffset + DATA_PACKAGES_COUNT_BS <= msg.data.length,
+      calldataNegativeOffset + DATA_PACKAGES_COUNT_BS <= calldataSize,
       "Unsigned metadata byte size is incorrect"
     );
     return calldataNegativeOffset;
