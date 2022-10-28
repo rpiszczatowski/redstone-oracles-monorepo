@@ -184,7 +184,7 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
     uint256 calldataSize = msg.data.length;
     uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
     uint256 dataPointNegativeOffset = negativeOffsetToDataPoints + (1 + dataPointIndex) * (dataPointValueByteSize + DATA_POINT_SYMBOL_BS);
-    require(dataPointNegativeOffset <= calldataSize, ERR_CALLDATA_OVERFLOW);
+    require(dataPointNegativeOffset <= calldataSize, ERR_CALLDATA_OVER_OR_UNDER_FLOW);
     assembly {
       let dataPointCalldataOffset := sub(
         calldataSize,
