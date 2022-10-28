@@ -12,17 +12,17 @@ contract RedstoneConsumerBytesMock is RedstoneConsumerBytesBase, AuthorisedMockS
     return 3;
   }
 
-  function getAuthorisedSignerIndex(address _signerAddress)
+  function getAuthorisedSignerIndex(address signerAddress)
     public
     view
     virtual
     override
     returns (uint8)
   {
-    return getAuthorisedMockSignerIndex(_signerAddress);
+    return getAuthorisedMockSignerIndex(signerAddress);
   }
 
-  function validateTimestamp(uint256 _receivedTimestamp) public view virtual override {
-    require(_receivedTimestamp >= 1654353400000, ERR_TIMESTAMP_IS_NOT_VALID);
+  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view virtual override {
+    require(receivedTimestampMilliseconds >= 1654353400000, ERR_TIMESTAMP_IS_NOT_VALID);
   }
 }

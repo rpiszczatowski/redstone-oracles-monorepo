@@ -9,14 +9,14 @@ contract MainDemoConsumerBase is RedstoneConsumerNumericBase {
     return 1;
   }
 
-  function getAuthorisedSignerIndex(address _signerAddress)
+  function getAuthorisedSignerIndex(address signerAddress)
     public
     view
     virtual
     override
     returns (uint8)
   {
-    if (_signerAddress == 0x0C39486f770B26F5527BBBf942726537986Cd7eb) {
+    if (signerAddress == 0x0C39486f770B26F5527BBBf942726537986Cd7eb) {
       return 0;
     } else {
       revert("Signer is not authorised");
