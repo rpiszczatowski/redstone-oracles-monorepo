@@ -2,6 +2,8 @@
 
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+
 import "./RedstoneConsumerBase.sol";
 
 /**
@@ -33,6 +35,8 @@ import "./RedstoneConsumerBase.sol";
  * integration with the Redstone protocol
  */
 abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
+  using SafeMath for uint256;
+
   uint256 constant BITS_COUNT_IN_16_BYTES = 128;
 
   /**
@@ -183,13 +187,11 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
   ) internal pure override returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
     uint256 calldataSize = msg.data.length;
     uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
-    uint256 dataPointNegativeOffset = negativeOffsetToDataPoints + (1 + dataPointIndex) * (dataPointValueByteSize + DATA_POINT_SYMBOL_BS);
-    require(dataPointNegativeOffset <= calldataSize, ERR_CALLDATA_OVER_OR_UNDER_FLOW);
+    uint256 dataPointNegativeOffset = negativeOffsetToDataPoints
+      + (1 + dataPointIndex).mul(dataPointValueByteSize + DATA_POINT_SYMBOL_BS);
+    uint256 dataPointCalldataOffset = calldataSize.sub(dataPointNegativeOffset,
+      ERR_CALLDATA_OVER_OR_UNDER_FLOW);
     assembly {
-      let dataPointCalldataOffset := sub(
-        calldataSize,
-        dataPointNegativeOffset
-      )
       dataPointDataFeedId := calldataload(dataPointCalldataOffset)
       dataPointValue := prepareTrickyCalldataPointer(
         add(dataPointCalldataOffset, DATA_POINT_SYMBOL_BS),
