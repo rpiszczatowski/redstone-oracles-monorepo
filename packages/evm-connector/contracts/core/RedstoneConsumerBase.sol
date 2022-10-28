@@ -276,7 +276,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
     for (uint256 dataFeedIndex = 0; dataFeedIndex < valuesForDataFeeds.length; dataFeedIndex++) {
       require(
         uniqueSignerCountForDataFeedIds[dataFeedIndex] >= uniqueSignersThreshold,
-        "Insufficient number of unique signers"
+        ERR_INSUFFICIENT_NUMBER_OF_UNIQUE_SIGNERS
       );
       uint256 aggregatedValueForDataFeedId = aggregateValues(valuesForDataFeeds[dataFeedIndex]);
       aggregatedValues[dataFeedIndex] = aggregatedValueForDataFeedId;

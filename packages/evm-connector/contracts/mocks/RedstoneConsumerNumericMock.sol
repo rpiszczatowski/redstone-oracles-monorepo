@@ -6,6 +6,8 @@ import "../core/RedstoneConsumerNumericBase.sol";
 import "./AuthorisedMockSignersBase.sol";
 
 contract RedstoneConsumerNumericMock is RedstoneConsumerNumericBase, AuthorisedMockSignersBase {
+  string internal constant ERR_TIMESTAMP_IS_NOT_VALID = "Timestamp is not valid";
+
   function getUniqueSignersThreshold() public view virtual override returns (uint8) {
     return 10;
   }
@@ -21,6 +23,6 @@ contract RedstoneConsumerNumericMock is RedstoneConsumerNumericBase, AuthorisedM
   }
 
   function validateTimestamp(uint256 _receivedTimestamp) public view virtual override {
-    require(_receivedTimestamp >= 1654353400000, "Timestamp is not valid");
+    require(_receivedTimestamp >= 1654353400000, ERR_TIMESTAMP_IS_NOT_VALID);
   }
 }
