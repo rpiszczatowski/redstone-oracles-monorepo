@@ -1,8 +1,9 @@
 import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils";
-import { ethers, upgrades } from "hardhat";
+import { existsSync, readFileSync, writeFileSync } from "fs";
+import { ethers, upgrades, network } from "hardhat";
 
-const DEPLOYED_CONTRACT_ADDRESSES_FILE = "./deployed-contracts.json";
+const DEPLOYED_CONTRACT_ADDRESSES_FILE = `./${network.name}-deployed-contracts.json`;
 const INITIAL_SUPPLY = 1_000_000_000;
 const AUTHORISED_SLASHER = "0x0000000000000000000000000000000000000000";
 const DELAY_FOR_UNLOCKING_SECONDS = 30 * 24 * 3600; // 30 days
@@ -43,10 +44,12 @@ deployAll();
 async function deployAll() {
   console.log("Deploying token contract");
   const tokenAddress = await deployTokenContract();
+  saveDeployedAddress("token", tokenAddress);
   console.log(`Token deployed at: ${tokenAddress}`);
 
   console.log("\nDeploying locking contract");
   const lockingAddress = await deployLockingContract(tokenAddress);
+  saveDeployedAddress("locking", lockingAddress);
   console.log(`Locking contract deployed at: ${lockingAddress}`);
 
   console.log("\nDeploying vesting contracts");
@@ -77,17 +80,25 @@ async function prepareAllVestingContracts(
   tokenAddress: string,
   lockingContractAddress: string
 ) {
-  for (const [address, allocation] of Object.entries(VESTING_ALLOCATION)) {
+  for (const [beneficiaryAddress, allocation] of Object.entries(
+    VESTING_ALLOCATION
+  )) {
     // Deploying a vesting contract
-    console.log(`Deploying a vesting contract for address: ${address}`);
+    console.log(
+      `\nDeploying a vesting contract for address: ${beneficiaryAddress}`
+    );
     const vestingContractAddress = await deployVestingContract({
       tokenAddress,
       lockingContractAddress,
-      beneficiaryAddress: address,
+      beneficiaryAddress,
       allocation,
     });
+    saveDeployedAddress(
+      `vesting-${beneficiaryAddress}`,
+      vestingContractAddress
+    );
     console.log(
-      `Vesting contract for ${address} deployed at: ${vestingContractAddress}`
+      `Vesting contract for ${beneficiaryAddress} deployed at: ${vestingContractAddress}`
     );
 
     // Transfering tokens to the deployed vesting contract
@@ -125,4 +136,25 @@ async function deployVestingContract(vestingConfig: VestingContractConfig) {
 
 function toEthBN(amount: number): BigNumber {
   return parseEther(String(amount));
+}
+
+function saveDeployedAddress(contractName: string, address: string) {
+  const fileName = DEPLOYED_CONTRACT_ADDRESSES_FILE;
+  console.log(
+    `Saving ${address} as address for ${contractName} to ${fileName}`
+  );
+  const savedAddresses = existsSync(fileName)
+    ? JSON.parse(readFileSync(fileName, "utf-8"))
+    : {};
+  writeFileSync(
+    DEPLOYED_CONTRACT_ADDRESSES_FILE,
+    JSON.stringify(
+      {
+        ...savedAddresses,
+        [contractName]: address,
+      },
+      null,
+      2
+    ) + "\n"
+  );
 }
