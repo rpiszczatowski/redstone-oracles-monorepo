@@ -4,6 +4,10 @@ import { ScoreType } from "redstone-protocol";
 import { MockDataPackageConfig, MockWrapper } from "./wrappers/MockWrapper";
 import { DataServiceWrapper } from "./wrappers/DataServiceWrapper";
 import { OnDemandRequestWrapper } from "./wrappers/OnDemandRequestWrapper";
+import {
+  SimpleNumericMockConfig,
+  SimpleNumericMockWrapper,
+} from "./wrappers/SimpleMockNumericWrapper";
 
 export class WrapperBuilder {
   constructor(private baseContract: Contract) {}
@@ -22,7 +26,7 @@ export class WrapperBuilder {
     ).overwriteEthersContract(this.baseContract);
   }
 
-  usingMockData(mockDataPackages: MockDataPackageConfig[]) {
+  usingMockDataPackages(mockDataPackages: MockDataPackageConfig[]) {
     return new MockWrapper(mockDataPackages).overwriteEthersContract(
       this.baseContract
     );
@@ -35,6 +39,12 @@ export class WrapperBuilder {
         scoreType,
       },
       nodeUrls
+    ).overwriteEthersContract(this.baseContract);
+  }
+
+  usingSimpleNumericMock(simpleNumericMockConfig: SimpleNumericMockConfig) {
+    return new SimpleNumericMockWrapper(
+      simpleNumericMockConfig
     ).overwriteEthersContract(this.baseContract);
   }
 }

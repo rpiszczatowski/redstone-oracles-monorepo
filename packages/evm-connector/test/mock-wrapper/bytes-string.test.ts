@@ -25,7 +25,7 @@ describe("SampleRedstoneConsumerBytesMockStrings", function () {
 
   const testShouldPass = async (mockPackages: MockDataPackageConfig[]) => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockData(mockPackages);
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockPackages);
 
     const tx = await wrappedContract.saveLatestValueInStorage(
       DEFAULT_DATA_FEED_ID_BYTES_32
@@ -41,7 +41,7 @@ describe("SampleRedstoneConsumerBytesMockStrings", function () {
     revertMsg: string
   ) => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockData(mockPackages);
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockPackages);
 
     await expect(
       wrappedContract.saveLatestValueInStorage(DEFAULT_DATA_FEED_ID_BYTES_32)
