@@ -1,6 +1,6 @@
 import { ethers, providers } from "ethers";
 import { MulticallRequest, MulticallParsedResponses } from "../../types";
-import Multicall2 from "./contracts-details/common/Multicall2.json";
+import Multicall2 from "./avalanche/contracts-details/common/Multicall2.json";
 
 export class EvmMulticallService {
   constructor(
