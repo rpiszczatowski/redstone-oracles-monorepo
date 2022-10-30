@@ -26,7 +26,7 @@ describe("SampleRedstoneConsumerBytesMockManyDataFeeds", function () {
     dataFeedIds: ("ETH" | "BTC")[]
   ) => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockData(mockBytesPackages);
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockBytesPackages);
 
     const tx = await wrappedContract.save2ValuesInStorage([
       utils.convertStringToBytes32(dataFeedIds[0]),
@@ -51,7 +51,7 @@ describe("SampleRedstoneConsumerBytesMockManyDataFeeds", function () {
     revertMsg: string
   ) => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockData(mockBytesPackages);
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockBytesPackages);
 
     await expect(
       wrappedContract.save2ValuesInStorage(

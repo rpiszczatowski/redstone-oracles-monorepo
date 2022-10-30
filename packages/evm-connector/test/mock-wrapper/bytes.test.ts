@@ -38,7 +38,7 @@ describe("SampleRedstoneConsumerBytesMock", function () {
 
   const testShouldPass = async (mockPackages: MockDataPackageConfig[]) => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockData(mockPackages);
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockPackages);
 
     const tx = await wrappedContract.saveOracleValueInContractStorage(
       DEFAULT_DATA_FEED_ID_BYTES_32
@@ -56,7 +56,7 @@ describe("SampleRedstoneConsumerBytesMock", function () {
     revertMsg: string
   ) => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockData(mockPackages);
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockPackages);
     await expect(
       wrappedContract.saveOracleValueInContractStorage(
         DEFAULT_DATA_FEED_ID_BYTES_32
@@ -130,7 +130,7 @@ describe("SampleRedstoneConsumerBytesMock", function () {
 
   it("Should revert is data feed id not found", async () => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockData(mockBytesPackages);
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockBytesPackages);
     await expect(
       wrappedContract.saveOracleValueInContractStorage(
         convertStringToBytes32("ANOTHER_DATA_FEED_ID")
