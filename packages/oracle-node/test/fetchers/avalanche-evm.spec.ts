@@ -1,13 +1,13 @@
-import redstone from "redstone-api";
-import { PriceData } from "redstone-api/lib/types";
 import { Contract } from "ethers";
 import { MockProvider, deployContract } from "ethereum-waffle";
-import { AvalancheEvmFetcher } from "../../src/fetchers/evm-chain/AvalancheEvmFetcher";
-import Multicall2 from "../../src/fetchers/evm-chain/contracts-details/common/Multicall2.json";
-import { yieldYakContractsDetails } from "../../src/fetchers/evm-chain/contracts-details/yield-yak";
-import { lpTokensContractsDetails } from "../../src/fetchers/evm-chain/contracts-details/lp-tokens";
+import { AvalancheEvmFetcher } from "../../src/fetchers/evm-chain/avalanche/AvalancheEvmFetcher";
+import Multicall2 from "../../src/fetchers/evm-chain/avalanche/contracts-details/common/Multicall2.json";
+import { yieldYakContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/yield-yak";
+import { lpTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/lp-tokens";
+import { mooTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/moo-joe";
 import YYMock from "./mocks/YYMock.json";
 import LPTokenMock from "./mocks/LPTokenMock.json";
+import MooTokenMock from "./mocks/MooTokenMock.json";
 import { mockRedstoneApiPrice } from "./_helpers";
 
 jest.setTimeout(15000);
@@ -103,11 +103,43 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockRedstoneApiPrice(17, "TJ_AVAX_USDC_LP");
-
       const result = await fetcher.fetchAll(["TJ_AVAX_USDC_LP"]);
       expect(result).toEqual([
-        { symbol: "TJ_AVAX_USDC_LP", value: 98663550.92399499 },
+        { symbol: "TJ_AVAX_USDC_LP", value: 133485980.66187558 },
+      ]);
+    });
+  });
+
+  describe("Moo Token", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+      const mooTokenContract = await deployContract(wallet, {
+        bytecode: MooTokenMock.bytecode,
+        abi: MooTokenMock.abi,
+      });
+
+      multicallContract = await deployContract(wallet, {
+        bytecode: Multicall2.bytecode,
+        abi: Multicall2.abi,
+      });
+
+      mooTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.abi = MooTokenMock.abi;
+      mooTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.address =
+        mooTokenContract.address;
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new AvalancheEvmFetcher(
+        provider,
+        multicallContract.address
+      );
+
+      mockRedstoneApiPrice(11232453.706920957, "TJ_AVAX_USDC_LP");
+
+      const result = await fetcher.fetchAll(["MOO_TJ_AVAX_USDC_LP"]);
+      expect(result).toEqual([
+        { symbol: "MOO_TJ_AVAX_USDC_LP", value: 12566138.19921592 },
       ]);
     });
   });

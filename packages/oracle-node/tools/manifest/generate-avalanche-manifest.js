@@ -19,6 +19,7 @@ const SYMBOLS = [
   "TJ_AVAX_USDC_LP",
   "PNG_AVAX_USDC_LP",
   "YY_TJ_AVAX_USDC_LP",
+  "MOO_TJ_AVAX_USDC_LP",
 ];
 
 generateSubManifest(SYMBOLS, OUTPUT_FILE_PATH);

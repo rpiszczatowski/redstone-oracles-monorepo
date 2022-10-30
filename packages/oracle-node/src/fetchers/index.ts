@@ -14,7 +14,7 @@ import { EcbFetcher } from "./ecb/EcbFetcher";
 import { DrandFetcher } from "./drand/DrandFetcher";
 import twapFetchers from "./twap/all-twap-fetchers";
 import { TwelveDataFetcher } from "./twelve-data/TwelveDataFetcher";
-import { AvalancheEvmFetcher } from "./evm-chain/AvalancheEvmFetcher";
+import { AvalancheEvmFetcher } from "./evm-chain/avalanche/AvalancheEvmFetcher";
 import { PlatypusFetcher } from "./platypus/PlatypusFetcher";
 import { LensFetcher } from "./lens/LensFetcher";
 
