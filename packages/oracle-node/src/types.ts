@@ -138,6 +138,7 @@ export interface NodeConfig {
   ethereumAddress: string;
   useNewSigningAndBroadcasting: boolean;
   overrideDirectCacheServiceUrls?: string[];
+  coinbaseIndexerMongoDbUrl?: string;
 }
 
 export interface MulticallRequest {

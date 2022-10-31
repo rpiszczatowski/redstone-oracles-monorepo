@@ -1,24 +1,24 @@
 import express from "express";
-import axios from "axios";
 import { utils } from "ethers";
 import { Consola } from "consola";
-import { DataPackage, NumericDataPoint } from "redstone-protocol";
+import { ScoreType, signOnDemandDataPackage } from "redstone-protocol";
 import { NodeConfig } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 import {
   recordRequestSentByAddress,
   hasAddressReachedRateLimit,
 } from "./services/RateLimitingService";
+import { validateAddressByKyc } from "../on-demand/CoinbaseKyc";
+import * as ScoreByAddress from "./score-by-address";
 
 const logger = require("../utils/logger")("score-by-address") as Consola;
 
 interface Payload {
   signature: string;
   timestamp: string;
+  scoreType: ScoreType;
 }
 
-const URL = "";
-const DEFAULT_TIMEOUT_MILLISECONDS = 10000;
 const TEN_MINUTES_IN_MILLISECONDS = 10 * 60 * 1000;
 
 export const setScoreByAddressRoute = (
@@ -29,8 +29,8 @@ export const setScoreByAddressRoute = (
     try {
       logger.info("Requested score by address");
       const params = req.query as unknown as Payload;
-      const { timestamp, signature } = params;
-      verifyPayload(timestamp, signature);
+      const { timestamp, signature, scoreType } = params;
+      verifyPayload(timestamp, signature, scoreType);
       const address = recoverAddressFromSignature(timestamp, signature);
       const currentTimestamp = verifyTimestamp(Number(timestamp));
       verifyAddress(address);
@@ -39,7 +39,8 @@ export const setScoreByAddressRoute = (
       const signedDataPackage = await getSignedDataPackage(
         address,
         currentTimestamp,
-        nodeConfig.privateKeys.ethereumPrivateKey
+        nodeConfig.privateKeys.ethereumPrivateKey,
+        scoreType
       );
 
       return res.json(signedDataPackage.toObj());
@@ -52,8 +53,12 @@ export const setScoreByAddressRoute = (
   });
 };
 
-const verifyPayload = (timestamp: string, signature: string) => {
-  if (!(timestamp && signature)) {
+const verifyPayload = (
+  timestamp: string,
+  signature: string,
+  scoreType: ScoreType
+) => {
+  if (!(timestamp && signature && scoreType)) {
     throw new Error("Invalid request, missing parameter");
   }
 };
@@ -71,7 +76,6 @@ const verifyTimestamp = (timestamp: number) => {
   if (!isTimestampValid) {
     throw new Error("Invalid timestamp, it should be less than 10 minutes ago");
   }
-
   return currentTimestamp;
 };
 
@@ -84,30 +88,33 @@ const verifyAddress = (address: string) => {
   }
 };
 
-const fetchScoreForAddress = async (address: string): Promise<number> => {
+export const fetchScoreForAddress = async (
+  address: string,
+  scoreType: ScoreType
+): Promise<number> => {
   logger.info(`Fetching score data for address: ${address}`);
-  const response = await axios.get(URL, {
-    timeout: DEFAULT_TIMEOUT_MILLISECONDS,
-  });
-  const fetchedData = response.data;
+  let fetchedData: number | null = null;
+  switch (scoreType) {
+    case "coinbase-kyc": {
+      fetchedData = await validateAddressByKyc(address);
+      break;
+    }
+    default:
+      throw new Error("Invalid score type request");
+  }
   logger.info(
-    `Fetched score data for address: ${address}: ${JSON.stringify(fetchedData)}`
+    `Fetched score data for address ${address}: ${JSON.stringify(fetchedData)}`
   );
-  return fetchedData as number;
+  return fetchedData;
 };
 
 const getSignedDataPackage = async (
   address: string,
   timestamp: number,
-  privateKey: string
+  privateKey: string,
+  scoreType: ScoreType
 ) => {
-  const score = await fetchScoreForAddress(address);
+  const score = await ScoreByAddress.fetchScoreForAddress(address, scoreType);
 
-  const dataPoint = new NumericDataPoint({
-    dataFeedId: address,
-    value: score,
-  });
-
-  const dataPackage = new DataPackage([dataPoint], timestamp);
-  return dataPackage.sign(privateKey);
+  return signOnDemandDataPackage(address, score, timestamp, privateKey);
 };
