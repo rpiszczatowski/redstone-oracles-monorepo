@@ -72,7 +72,7 @@ export class DataPackagesService {
       const promises = requestConfig.dataFeeds.map(getDataPackagesForDataFeed);
       await Promise.all(promises);
     } else {
-      await getDataPackagesForDataFeed();
+      await getDataPackagesForDataFeed(ALL_FEEDS_KEY);
     }
 
     return fetchedPackagesPerDataFeed;
