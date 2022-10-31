@@ -32,7 +32,7 @@ const config: HardhatUserConfig = {
       blockGasLimit: 30_000_000,
     },
     goerli: {
-      url: `https://eth-goerli.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
+      url: process.env.GOERLI_URL,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined,
     },
   },

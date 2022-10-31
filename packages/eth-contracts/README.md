@@ -7,7 +7,7 @@ RedStone main business contracts
 
 ## Deployment
 
-- Create a `.env` file with your PRIVATE_KEY and ALCHEMY_API_KEY
+- Create a `.env` file with your PRIVATE_KEY and GOERLI_URL
 - Install dependencies using `yarn install`
 - Run `npx hardhat run src/deploy-all.ts --network goerli`
 

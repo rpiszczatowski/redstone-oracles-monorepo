@@ -84,52 +84,57 @@ async function prepareAllVestingContracts(
     VESTING_ALLOCATION
   )) {
     // Deploying a vesting contract
-    console.log(
-      `\nDeploying a vesting contract for address: ${beneficiaryAddress}`
-    );
     const vestingContractAddress = await deployVestingContract({
       tokenAddress,
       lockingContractAddress,
       beneficiaryAddress,
       allocation,
     });
-    saveDeployedAddress(
-      `vesting-${beneficiaryAddress}`,
-      vestingContractAddress
-    );
-    console.log(
-      `Vesting contract for ${beneficiaryAddress} deployed at: ${vestingContractAddress}`
-    );
 
     // Transfering tokens to the deployed vesting contract
-    console.log(
-      `Transfering ${allocation} Redstone tokens to the vesting contract`
-    );
-    const TokenContractFactory = await ethers.getContractFactory(
-      "RedstoneToken"
-    );
-    const token = TokenContractFactory.attach(tokenAddress);
-    const tx = await token.transfer(
+    await transferRedstoneTokens(
+      tokenAddress,
       vestingContractAddress,
-      toEthBN(allocation)
+      allocation
     );
-    console.log(`Tx sent. Waiting for confirmation`);
-    await tx.wait();
-    console.log(`Tx confirmed`);
   }
 }
 
+async function transferRedstoneTokens(
+  tokenAddress: string,
+  recipient: string,
+  amount: number
+) {
+  console.log(`Transfering ${amount} Redstone tokens to the vesting contract`);
+  const TokenContractFactory = await ethers.getContractFactory("RedstoneToken");
+  const token = TokenContractFactory.attach(tokenAddress);
+  const tx = await token.transfer(recipient, toEthBN(amount));
+  console.log(`Tx sent. Waiting for confirmation: ${tx.hash}`);
+  await tx.wait();
+  console.log(`Tx confirmed: ${tx.hash}`);
+}
+
 async function deployVestingContract(vestingConfig: VestingContractConfig) {
+  const { beneficiaryAddress } = vestingConfig;
+  console.log(
+    `\nDeploying a vesting contract for address: ${beneficiaryAddress}`
+  );
+
   const VestingWalletFactory = await ethers.getContractFactory("VestingWallet");
   const vestingContract = await upgrades.deployProxy(VestingWalletFactory, [
     vestingConfig.tokenAddress,
-    vestingConfig.beneficiaryAddress,
+    beneficiaryAddress,
     vestingConfig.lockingContractAddress,
     toEthBN(vestingConfig.allocation),
     VESTING_START_TIMESTAMP_SECONDS,
     VESTING_CLIFF_DURATION_SECONDS,
     VESTING_DURATION_SECONDS,
   ]);
+
+  saveDeployedAddress(`vesting-${beneficiaryAddress}`, vestingContract.address);
+  console.log(
+    `Vesting contract for ${beneficiaryAddress} deployed at: ${vestingContract.address}`
+  );
 
   return vestingContract.address;
 }
