@@ -18,21 +18,20 @@ contract CalldataExtractor is RedstoneConstants {
   function _extractByteSizeOfUnsignedMetadata() internal pure returns (uint256) {
     // Using uint24, because unsigned metadata byte size number has 3 bytes
     uint24 unsignedMetadataByteSize;
-    uint256 calldataSize = msg.data.length;
     require(
-      REDSTONE_MARKER_BS + STANDARD_SLOT_BS <= calldataSize,
+      REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS <= msg.data.length,
       ERR_CALLDATA_OVER_OR_UNDER_FLOW
     );
     assembly {
       unsignedMetadataByteSize := calldataload(
-        sub(calldataSize, REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS)
+        sub(calldatasize(), REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS)
       )
     }
     uint256 calldataNegativeOffset = unsignedMetadataByteSize
       + UNSGINED_METADATA_BYTE_SIZE_BS
       + REDSTONE_MARKER_BS;
     require(
-      calldataNegativeOffset + DATA_PACKAGES_COUNT_BS <= calldataSize,
+      calldataNegativeOffset + DATA_PACKAGES_COUNT_BS <= msg.data.length,
       ERR_INCORRECT_UNSIGNED_METADATA_BYTE_SIZE
     );
     return calldataNegativeOffset;
@@ -44,11 +43,13 @@ contract CalldataExtractor is RedstoneConstants {
     pure
     returns (uint16 dataPackagesCount)
   {
-    require(calldataNegativeOffset + STANDARD_SLOT_BS <= msg.data.length,
+    uint256 calldataNegativeOffsetWithStandardSlot = calldataNegativeOffset + STANDARD_SLOT_BS;
+    require(calldataNegativeOffsetWithStandardSlot <= msg.data.length,
       ERR_CALLDATA_OVER_OR_UNDER_FLOW);
     assembly {
-      let calldataOffset := sub(calldatasize(), calldataNegativeOffset)
-      dataPackagesCount := calldataload(sub(calldataOffset, STANDARD_SLOT_BS))
+      dataPackagesCount := calldataload(
+        sub(calldatasize(), calldataNegativeOffsetWithStandardSlot)
+      )
     }
     return dataPackagesCount;
   }
@@ -58,12 +59,11 @@ contract CalldataExtractor is RedstoneConstants {
     uint256 defaultDataPointValueByteSize,
     uint256 dataPointIndex
   ) internal pure virtual returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
-    uint256 calldataSize = msg.data.length;
     uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
     uint256 dataPointNegativeOffset = negativeOffsetToDataPoints.add(
       (1 + dataPointIndex).mul((defaultDataPointValueByteSize + DATA_POINT_SYMBOL_BS))
     );
-    uint256 dataPointCalldataOffset = calldataSize.sub(dataPointNegativeOffset, ERR_CALLDATA_OVER_OR_UNDER_FLOW);
+    uint256 dataPointCalldataOffset = msg.data.length.sub(dataPointNegativeOffset, ERR_CALLDATA_OVER_OR_UNDER_FLOW);
     assembly {
       dataPointDataFeedId := calldataload(dataPointCalldataOffset)
       dataPointValue := calldataload(add(dataPointCalldataOffset, DATA_POINT_SYMBOL_BS))
