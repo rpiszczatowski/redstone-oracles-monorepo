@@ -10,7 +10,7 @@ contract Benchmark is RedstoneConsumerNumericMock {
   uint256 someStorageVar = 0;
   uint8 uniqueSignersThreshold = 1;
 
-  function getUniqueSignersThreshold() public view virtual override returns (uint8) {
+  function getUniqueSignersThreshold() public view override returns (uint8) {
     return uniqueSignersThreshold;
   }
 

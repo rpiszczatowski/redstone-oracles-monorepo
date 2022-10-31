@@ -27,11 +27,6 @@ library NumericArrayLib {
   }
 
   function sort(uint256[] memory arr) internal pure {
-    // solidityBubbleSort(arr);
-    assemblyBubbleSort(arr);
-  }
-
-  function assemblyBubbleSort(uint256[] memory arr) internal pure {
     assembly {
       let arrLength := mload(arr)
       let valuesPtr := add(arr, BYTES_ARR_LEN_VAR_BS)
@@ -56,15 +51,4 @@ library NumericArrayLib {
       }
     }
   }
-
-  // We've commented the unused code below to optimise gas cost for deployment
-  // function solidityBubbleSort(uint256[] memory arr) internal pure {
-  //   for (uint256 i = 0; i < arr.length; i++) {
-  //     for (uint256 j = 0; j < i; j++) {
-  //       if (arr[i] < arr[j]) {
-  //         (arr[i], arr[j]) = (arr[j], arr[i]);
-  //       }
-  //     }
-  //   }
-  // }
 }
