@@ -36,6 +36,7 @@ import {
   SignedDataPackage,
 } from "redstone-protocol";
 import { config } from "./config";
+import { connectToDb } from "./db/db-connector";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -92,7 +93,7 @@ export default class NodeRunner {
     // It should be called as early as possible
     // Otherwise App Runner crashes ¯\_(ツ)_/¯
     new ExpressAppRunner(nodeConfig).run();
-
+    await connectToDb();
     const arweave = new ArweaveProxy(nodeConfig.privateKeys.arweaveJwk);
     const providerAddress = await arweave.getAddress();
     const arweaveService = new ArweaveService();
