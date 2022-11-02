@@ -221,14 +221,18 @@ export default class NodeRunner {
       this.providerAddress
     );
 
-    // Signing
-    const signedDataPackages = this.signPrices(
-      pricesReadyForSigning,
-      pricesReadyForSigning[0].timestamp
-    );
+    if (pricesReadyForSigning.length === 0) {
+      logger.info("No prices to sign");
+    } else {
+      // Signing
+      const signedDataPackages = this.signPrices(
+        pricesReadyForSigning,
+        pricesReadyForSigning[0].timestamp
+      );
 
-    // Broadcasting
-    await this.broadcastDataPackages(signedDataPackages);
+      // Broadcasting
+      await this.broadcastDataPackages(signedDataPackages);
+    }
   }
 
   private signPrices(
