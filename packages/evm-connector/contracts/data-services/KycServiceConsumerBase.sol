@@ -5,8 +5,8 @@ pragma solidity ^0.8.0;
 import "../core/RedstoneConsumerNumericBase.sol";
 
 contract KycServiceConsumerBase is RedstoneConsumerNumericBase {
-  constructor() {
-    uniqueSignersThreshold = 2;
+  function getUniqueSignersThreshold() public view virtual override returns (uint8) {
+    return 2;
   }
 
   function getAuthorisedSignerIndex(address _signerAddress)
@@ -14,7 +14,7 @@ contract KycServiceConsumerBase is RedstoneConsumerNumericBase {
     view
     virtual
     override
-    returns (uint256)
+    returns (uint8)
   {
     if (_signerAddress == 0x70997970C51812dc3A010C7d01b50e0d17dc79C8) {
       return 0;
