@@ -8,10 +8,6 @@ import {
   SimpleNumericMockWrapper,
 } from "./wrappers/SimpleMockNumericWrapper";
 import { OnDemandRequestWrapper } from "./wrappers/OnDemandRequestWrapper";
-import {
-  SimpleNumericMockConfig,
-  SimpleNumericMockWrapper,
-} from "./wrappers/SimpleMockNumericWrapper";
 
 export class WrapperBuilder {
   constructor(private baseContract: Contract) {}
@@ -49,12 +45,6 @@ export class WrapperBuilder {
         scoreType,
       },
       nodeUrls
-    ).overwriteEthersContract(this.baseContract);
-  }
-
-  usingSimpleNumericMock(simpleNumericMockConfig: SimpleNumericMockConfig) {
-    return new SimpleNumericMockWrapper(
-      simpleNumericMockConfig
     ).overwriteEthersContract(this.baseContract);
   }
 }
