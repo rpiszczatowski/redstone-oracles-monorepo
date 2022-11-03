@@ -1,5 +1,6 @@
 import { Consola } from "consola";
 import express from "express";
+import cors from "cors";
 import { setExpressRoutes } from "./routes/index";
 import { NodeConfig } from "./types";
 
@@ -22,6 +23,7 @@ export class ExpressAppRunner {
       return;
     }
     const app = express();
+    app.use(cors());
     setExpressRoutes(app, this.nodeConfig);
     logger.info(`Running express server on port: ${PORT}`);
     app.listen(PORT, () => {
