@@ -20,7 +20,7 @@
     "start": "yarn frontend:build && yarn backend:build && yarn backend:start"
   },
   "dependencies": {
-    "redstone-sdk": "1.0.0"
+    "redstone-sdk": "1.0.4"
   },
   "workspaces": {
     "packages": [
