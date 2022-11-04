@@ -31,6 +31,7 @@ contract RedstoneConstants {
   uint256 internal constant DEFAULT_DATA_POINT_VALUE_BS = 32;
   uint256 internal constant UNSGINED_METADATA_BYTE_SIZE_BS = 3;
   uint256 internal constant REDSTONE_MARKER_BS = 9; // byte size of 0x000002ed57011e0000
+  uint256 internal constant REDSTONE_MARKER_MASK = 0x0000000000000000000000000000000000000000000000000002ed57011e0000;
 
   // Derived values (based on consts)
   uint256 internal constant TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS = 104; // SIG_BS + DATA_POINTS_COUNT_BS + DATA_POINT_VALUE_BYTE_SIZE_BS + STANDARD_SLOT_BS
@@ -45,4 +46,5 @@ contract RedstoneConstants {
   string internal constant ERR_EACH_SIGNER_MUST_PROVIDE_THE_SAME_VALUE = "Each authorised signer must provide exactly the same bytes value";
   string internal constant ERR_EMPTY_CALLDATA_POINTERS_ARR = "Calldata pointers array must not be empty";
   string internal constant ERR_INVALID_CALLDATA_POINTER = "Invalid calldata pointer";
+  string internal constant ERR_CALLDATA_MUST_HAVE_VALID_PAYLOAD = "Calldata must end with a valid RedStone payload";
 }

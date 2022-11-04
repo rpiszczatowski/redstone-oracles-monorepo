@@ -16,6 +16,17 @@ contract CalldataExtractor is RedstoneConstants {
   using SafeMath for uint256;
 
   function _extractByteSizeOfUnsignedMetadata() internal pure returns (uint256) {
+    // Checking if the calldata ends with the RedStone marker
+    bool hasValidRedstoneMarker;
+    assembly {
+      let calldataLast32Bytes := calldataload(sub(calldatasize(), STANDARD_SLOT_BS))
+      hasValidRedstoneMarker := eq(
+        REDSTONE_MARKER_MASK,
+        and(calldataLast32Bytes, REDSTONE_MARKER_MASK)
+      )
+    }
+    require(hasValidRedstoneMarker, ERR_CALLDATA_MUST_HAVE_VALID_PAYLOAD);
+
     // Using uint24, because unsigned metadata byte size number has 3 bytes
     uint24 unsignedMetadataByteSize;
     require(
