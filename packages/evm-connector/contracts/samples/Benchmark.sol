@@ -18,7 +18,7 @@ contract Benchmark is RedstoneConsumerNumericMock {
     uniqueSignersThreshold = newUniqueSignersThreshold;
   }
 
-  function extractOracleValues(bytes32[] calldata dataFeedIds) external {
+  function extractOracleValues(bytes32[] calldata dataFeedIds) external virtual {
     uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedIds);
     values;
     someStorageVar = 0;
@@ -27,7 +27,7 @@ contract Benchmark is RedstoneConsumerNumericMock {
   // `emptyExtractOracleValues` is used to calculate gas costs for pure
   // calling the function and calculate the exact gas costs for getting
   // the oracle values
-  function emptyExtractOracleValues(bytes32[] calldata dataFeedIds) external {
+  function emptyExtractOracleValues(bytes32[] calldata dataFeedIds) external virtual {
     dataFeedIds;
     uint256[] memory values;
     values;

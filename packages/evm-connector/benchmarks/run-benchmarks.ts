@@ -23,9 +23,9 @@ interface GasReport {
 
 // Change this array to configure your custom benchmark test cases
 const TEST_CASES = {
-  requiredSignersCount: [1, 2, 10, 20, 30],
-  requestedSymbolsCount: [1, 2, 10, 20, 30, 50],
-  dataPointsCount: [1, 2, 10, 20, 50, 100],
+  requiredSignersCount: [1, 2, 3, 10],
+  requestedSymbolsCount: [1, 2, 3, 5, 10, 20],
+  dataPointsCount: [1, 2, 3, 5, 20],
 };
 
 describe("Benchmark", function () {
@@ -33,14 +33,17 @@ describe("Benchmark", function () {
   const fullGasReport: any = {};
 
   this.beforeEach(async () => {
-    const ContractFactory = await ethers.getContractFactory("Benchmark");
+    const benchmarkContractName = process.env.BENCHMARK_CONTRACT;
+    const ContractFactory = await ethers.getContractFactory(
+      benchmarkContractName
+    );
     contract = await ContractFactory.deploy();
     await contract.deployed();
   });
 
   this.afterAll(async () => {
     console.log("=== FINAL GAS REPORT ===");
-    console.log(fullGasReport);
+    console.log(JSON.stringify(fullGasReport, null, 2));
   });
 
   const prepareMockDataPackageConfig = (

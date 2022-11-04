@@ -8,6 +8,10 @@
     "test": "hardhat test",
     "build": "rm -rf dist && tsc -build",
     "benchmark": "hardhat test benchmarks/run-benchmarks.ts",
+    "benchmark-standard": "BENCHMARK_CONTRACT=Benchmark yarn benchmark",
+    "benchmark-with-memory-1": "BENCHMARK_CONTRACT=BenchmarkWith10KBMemoryExpansion yarn benchmark",
+    "benchmark-with-memory-2": "BENCHMARK_CONTRACT=BenchmarkWith300KBMemoryExpansion yarn benchmark",
+    "benchmark-with-memory-logging": "BENCHMARK_CONTRACT=BenchmarkWithMemUsedLogging yarn benchmark",
     "compile": "hardhat compile",
     "preversion": "yarn build",
     "postversion": "git commit -a -m \"build: $npm_package_name@$npm_package_version\" && git push"
