@@ -13,7 +13,7 @@ import { Metric, MetricDocument } from "../metrics/metrics.schema";
 
 interface CheckDataFeedInput {
   dataServiceId: string;
-  symbol?: string;
+  symbol: string;
   urls?: string[];
 }
 
@@ -53,6 +53,7 @@ export class CronService {
           this.checkDataFeed({
             dataServiceId: dataService.id,
             urls: dataService.urls,
+            symbol: "___ALL_FEEDS___",
           });
         });
         this.schedulerRegistry.addCronJob(
@@ -119,16 +120,14 @@ export class CronService {
     const currentTimestamp = Date.now();
 
     try {
-      if (symbol) {
-        await requestDataPackages(
-          {
-            dataServiceId: dataServiceId,
-            uniqueSignersCount: 1,
-            dataFeeds: [symbol],
-          },
-          urls
-        );
-      }
+      await requestDataPackages(
+        {
+          dataServiceId: dataServiceId,
+          uniqueSignersCount: 1,
+          dataFeeds: [symbol],
+        },
+        urls
+      );
     } catch (e) {
       const errStr = stringifyError(e);
       Logger.error(
@@ -145,7 +144,7 @@ export class CronService {
         comment: errStr,
       }).save();
       const uptimeKumaUrl = this.configService.get("UPTIME_KUMA_URL");
-      const uptimeKumaUrlWithMessage = `${uptimeKumaUrl}&msg=(${dataServiceId}-${symbol}): ${errStr}`;
+      const uptimeKumaUrlWithMessage = `${uptimeKumaUrl}&msg=${dataServiceId}-${symbol}`;
       if (uptimeKumaUrl) {
         await this.httpService.axiosRef.get(uptimeKumaUrlWithMessage);
       }
@@ -176,14 +175,14 @@ export class CronService {
       );
 
       for (const dataFeedId of Object.keys(response)) {
-        const dataPackage = response[dataFeedId as any][0]?.dataPackage;
+        const dataPackage = response[dataFeedId][0]?.dataPackage;
         if (dataPackage) {
           const { timestampMilliseconds } = dataPackage;
           const timestampDiff = currentTimestamp - timestampMilliseconds;
 
           // Saving metric to DB
           this.safelySaveMetricInDB({
-            metricName: `timestamp-diff-${dataFeedId}`,
+            metricName: `timestamp-diff-${dataServiceId}-${dataFeedId}`,
             timestampDiff,
             timestamp: timestampMilliseconds,
             dataServiceId,
