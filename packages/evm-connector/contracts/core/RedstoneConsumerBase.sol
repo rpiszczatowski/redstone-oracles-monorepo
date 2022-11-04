@@ -82,7 +82,6 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
   {
     // Initializing helpful variables and allocating memory
     uint256[] memory uniqueSignerCountForDataFeedIds = new uint256[](dataFeedIds.length);
-    uint256[] memory signersBitmapForDataFeedIds = new uint256[](dataFeedIds.length);
     uint256[][] memory valuesForDataFeeds = new uint256[][](dataFeedIds.length);
     for (uint256 i = 0; i < dataFeedIds.length; i++) {
       // The line below is commented because newly allocated arrays are filled with zeros
@@ -91,10 +90,18 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       valuesForDataFeeds[i] = new uint256[](getUniqueSignersThreshold());
     }
 
+    uint256[] memory signersBitmapForDataFeedIds = new uint256[](dataFeedIds.length);
+
     // Extracting the number of data packages from calldata
     uint256 calldataNegativeOffset = _extractByteSizeOfUnsignedMetadata();
     uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(calldataNegativeOffset);
     calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;
+
+    // Little hack to improve performance
+    uint256 originalMemPtr;
+    assembly {
+      originalMemPtr := mload(FREE_MEMORY_PTR)
+    }
 
     // Data packages extraction in a loop
     for (uint256 dataPackageIndex = 0; dataPackageIndex < dataPackagesCount; dataPackageIndex++) {
@@ -107,6 +114,11 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
         calldataNegativeOffset
       );
       calldataNegativeOffset += dataPackageByteSize;
+
+      // Little hack to improve performance
+      assembly {
+        mstore(FREE_MEMORY_PTR, originalMemPtr)
+      }
     }
 
     // Validating numbers of unique signers and calculating aggregated values for each dataFeedId
@@ -150,15 +162,18 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       bytes memory signedMessage;
       uint256 signedMessageBytesCount;
 
-      signedMessageBytesCount = dataPointsCount.mul(eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS)
-        + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS;
+      signedMessageBytesCount =
+        dataPointsCount.mul(eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS) +
+        DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS;
 
       uint256 timestampCalldataOffset = msg.data.length.sub(
         calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS,
-        ERR_CALLDATA_OVER_OR_UNDER_FLOW);
+        ERR_CALLDATA_OVER_OR_UNDER_FLOW
+      );
 
       uint256 signedMessageCalldataOffset = msg.data.length.sub(
-        calldataNegativeOffset + SIG_BS + signedMessageBytesCount);
+        calldataNegativeOffset + SIG_BS + signedMessageBytesCount
+      );
 
       assembly {
         // Extracting the signed message
@@ -182,11 +197,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
 
         function extractBytesFromCalldata(offset, bytesCount) -> extractedBytes {
           let extractedBytesStartPtr := initByteArray(bytesCount)
-          calldatacopy(
-            extractedBytesStartPtr,
-            offset,
-            bytesCount
-          )
+          calldatacopy(extractedBytesStartPtr, offset, bytesCount)
           extractedBytes := sub(extractedBytesStartPtr, BYTES_ARR_LEN_VAR_BS)
         }
       }
