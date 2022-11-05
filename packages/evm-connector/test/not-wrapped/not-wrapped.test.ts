@@ -19,6 +19,6 @@ describe("Not Wrapped Contract", function () {
       contract.saveOracleValueInContractStorage(
         utils.convertStringToBytes32("BTC")
       )
-    ).to.be.revertedWith("Calldata must end with a valid RedStone payload");
+    ).to.be.revertedWith("CalldataMustHaveValidPayload()");
   });
 });

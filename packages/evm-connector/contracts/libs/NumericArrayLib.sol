@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
@@ -11,11 +11,13 @@ library NumericArrayLib {
   uint256 constant BYTES_ARR_LEN_VAR_BS = 32;
   uint256 constant UINT256_VALUE_BS = 32;
 
-  string internal constant ERR_MEDIAN_IN_EMPTY_ARRAY = "Can't pick a median of an empty array";
+  error CanNotPickMedianOfEmptyArray();
 
   // This function modifies the array
   function pickMedian(uint256[] memory arr) internal pure returns (uint256) {
-    require(arr.length > 0, ERR_MEDIAN_IN_EMPTY_ARRAY);
+    if (arr.length == 0) {
+      revert CanNotPickMedianOfEmptyArray();
+    }
     sort(arr);
     uint256 middleIndex = arr.length / 2;
     if (arr.length % 2 == 0) {

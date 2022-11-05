@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
@@ -154,8 +154,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
         + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS;
 
       uint256 timestampCalldataOffset = msg.data.length.sub(
-        calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS,
-        ERR_CALLDATA_OVER_OR_UNDER_FLOW);
+        calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS);
 
       uint256 signedMessageCalldataOffset = msg.data.length.sub(
         calldataNegativeOffset + SIG_BS + signedMessageBytesCount);
@@ -274,10 +273,11 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
     uint256 uniqueSignersThreshold = getUniqueSignersThreshold();
 
     for (uint256 dataFeedIndex = 0; dataFeedIndex < valuesForDataFeeds.length; dataFeedIndex++) {
-      require(
-        uniqueSignerCountForDataFeedIds[dataFeedIndex] >= uniqueSignersThreshold,
-        ERR_INSUFFICIENT_NUMBER_OF_UNIQUE_SIGNERS
-      );
+      if (uniqueSignerCountForDataFeedIds[dataFeedIndex] < uniqueSignersThreshold) {
+        revert InsufficientNumberOfUniqueSigners(
+          uniqueSignerCountForDataFeedIds[dataFeedIndex],
+          uniqueSignersThreshold);
+      }
       uint256 aggregatedValueForDataFeedId = aggregateValues(valuesForDataFeeds[dataFeedIndex]);
       aggregatedValues[dataFeedIndex] = aggregatedValueForDataFeedId;
     }

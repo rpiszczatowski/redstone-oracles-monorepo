@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "../libs/NumericArrayLib.sol";
 
@@ -12,8 +12,8 @@ library RedstoneDefaultsLib {
   uint256 constant DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS = 3 minutes;
   uint256 constant DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS = 1 minutes;
 
-  string internal constant ERR_TIMESTAMP_FROM_TOO_LONG_FUTURE = "Data with too future timestamps not allowed";
-  string internal constant ERR_TIMESTAMP_IS_TOO_OLD = "Timestamp is too old";
+  error TimestampFromTooLongFuture(uint256 receivedTimestampSeconds, uint256 blockTimestamp);
+  error TimestampIsTooOld(uint256 receivedTimestampSeconds, uint256 blockTimestamp);
 
   function validateTimestamp(uint256 receivedTimestampMilliseconds) internal view {
     // Getting data timestamp from future seems quite unlikely
@@ -26,14 +26,12 @@ library RedstoneDefaultsLib {
     uint256 timestampDiffSeconds = block.timestamp - receivedTimestampSeconds;
     bool isFromFuture = block.timestamp < receivedTimestampSeconds;
 
-    require(
-      (block.timestamp + DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS) > receivedTimestampSeconds,
-      ERR_TIMESTAMP_FROM_TOO_LONG_FUTURE
-    );
-    require(
-      isFromFuture || timestampDiffSeconds < DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS,
-      ERR_TIMESTAMP_IS_TOO_OLD
-    );
+    if ((block.timestamp + DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS) < receivedTimestampSeconds) {
+      revert TimestampFromTooLongFuture(receivedTimestampSeconds, block.timestamp);
+    }
+    if (!isFromFuture && timestampDiffSeconds > DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS) {
+      revert TimestampIsTooOld(receivedTimestampSeconds, block.timestamp);
+    }
   }
 
   function aggregateValues(uint256[] memory values) internal pure returns (uint256) {

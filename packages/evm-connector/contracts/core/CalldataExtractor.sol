@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
@@ -25,14 +25,15 @@ contract CalldataExtractor is RedstoneConstants {
         and(calldataLast32Bytes, REDSTONE_MARKER_MASK)
       )
     }
-    require(hasValidRedstoneMarker, ERR_CALLDATA_MUST_HAVE_VALID_PAYLOAD);
+    if (!hasValidRedstoneMarker) {
+      revert CalldataMustHaveValidPayload();
+    }
 
     // Using uint24, because unsigned metadata byte size number has 3 bytes
     uint24 unsignedMetadataByteSize;
-    require(
-      REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS <= msg.data.length,
-      ERR_CALLDATA_OVER_OR_UNDER_FLOW
-    );
+    if (REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS > msg.data.length) {
+      revert CalldataOverOrUnderFlow();
+    }
     assembly {
       unsignedMetadataByteSize := calldataload(
         sub(calldatasize(), REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS)
@@ -41,10 +42,9 @@ contract CalldataExtractor is RedstoneConstants {
     uint256 calldataNegativeOffset = unsignedMetadataByteSize
       + UNSGINED_METADATA_BYTE_SIZE_BS
       + REDSTONE_MARKER_BS;
-    require(
-      calldataNegativeOffset + DATA_PACKAGES_COUNT_BS <= msg.data.length,
-      ERR_INCORRECT_UNSIGNED_METADATA_BYTE_SIZE
-    );
+    if (calldataNegativeOffset + DATA_PACKAGES_COUNT_BS > msg.data.length) {
+      revert IncorrectUnsignedMetadataSize();
+    }
     return calldataNegativeOffset;
   }
 
@@ -55,8 +55,9 @@ contract CalldataExtractor is RedstoneConstants {
     returns (uint16 dataPackagesCount)
   {
     uint256 calldataNegativeOffsetWithStandardSlot = calldataNegativeOffset + STANDARD_SLOT_BS;
-    require(calldataNegativeOffsetWithStandardSlot <= msg.data.length,
-      ERR_CALLDATA_OVER_OR_UNDER_FLOW);
+    if (calldataNegativeOffsetWithStandardSlot > msg.data.length) {
+      revert CalldataOverOrUnderFlow();
+    }
     assembly {
       dataPackagesCount := calldataload(
         sub(calldatasize(), calldataNegativeOffsetWithStandardSlot)
@@ -74,7 +75,7 @@ contract CalldataExtractor is RedstoneConstants {
     uint256 dataPointNegativeOffset = negativeOffsetToDataPoints.add(
       (1 + dataPointIndex).mul((defaultDataPointValueByteSize + DATA_POINT_SYMBOL_BS))
     );
-    uint256 dataPointCalldataOffset = msg.data.length.sub(dataPointNegativeOffset, ERR_CALLDATA_OVER_OR_UNDER_FLOW);
+    uint256 dataPointCalldataOffset = msg.data.length.sub(dataPointNegativeOffset);
     assembly {
       dataPointDataFeedId := calldataload(dataPointCalldataOffset)
       dataPointValue := calldataload(add(dataPointCalldataOffset, DATA_POINT_SYMBOL_BS))
@@ -94,14 +95,13 @@ contract CalldataExtractor is RedstoneConstants {
 
     // Extract data points count
     uint256 negativeCalldataOffset = calldataNegativeOffsetForDataPackage + SIG_BS;
-    uint256 calldataOffset = msg.data.length.sub(negativeCalldataOffset + STANDARD_SLOT_BS,
-      ERR_CALLDATA_OVER_OR_UNDER_FLOW);
+    uint256 calldataOffset = msg.data.length.sub(negativeCalldataOffset + STANDARD_SLOT_BS);
     assembly {
       dataPointsCount_ := calldataload(calldataOffset)
     }
 
     // Extract each data point value size
-    calldataOffset = calldataOffset.sub(DATA_POINTS_COUNT_BS, ERR_CALLDATA_OVER_OR_UNDER_FLOW);
+    calldataOffset = calldataOffset.sub(DATA_POINTS_COUNT_BS);
     assembly {
       eachDataPointValueByteSize_ := calldataload(calldataOffset)
     }

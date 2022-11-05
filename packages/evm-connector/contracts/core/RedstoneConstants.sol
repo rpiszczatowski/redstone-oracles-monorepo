@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 /**
  * @title The base contract with helpful constants
@@ -20,6 +20,7 @@ contract RedstoneConstants {
   uint256 internal constant BYTES_ARR_LEN_VAR_BS = 32;
   uint256 internal constant FUNCTION_SIGNATURE_BS = 4;
   uint256 internal constant REVERT_MSG_OFFSET = 68; // Revert message structure described here: https://ethereum.stackexchange.com/a/66173/106364
+  uint256 internal constant STRING_ERR_MESSAGE_MASK = 0x08c379a000000000000000000000000000000000000000000000000000000000;
 
   // RedStone protocol consts
   uint256 internal constant SIG_BS = 65;
@@ -40,11 +41,12 @@ contract RedstoneConstants {
   uint256 internal constant REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS = 41; // REDSTONE_MARKER_BS + STANDARD_SLOT_BS
 
   // Error messages
-  string internal constant ERR_CALLDATA_OVER_OR_UNDER_FLOW = "Calldata overflow or underflow";
-  string internal constant ERR_INCORRECT_UNSIGNED_METADATA_BYTE_SIZE = "Unsigned metadata byte size is incorrect";
-  string internal constant ERR_INSUFFICIENT_NUMBER_OF_UNIQUE_SIGNERS = "Insufficient number of unique signers";
-  string internal constant ERR_EACH_SIGNER_MUST_PROVIDE_THE_SAME_VALUE = "Each authorised signer must provide exactly the same bytes value";
-  string internal constant ERR_EMPTY_CALLDATA_POINTERS_ARR = "Calldata pointers array must not be empty";
-  string internal constant ERR_INVALID_CALLDATA_POINTER = "Invalid calldata pointer";
-  string internal constant ERR_CALLDATA_MUST_HAVE_VALID_PAYLOAD = "Calldata must end with a valid RedStone payload";
+  error CalldataOverOrUnderFlow();
+  error IncorrectUnsignedMetadataSize();
+  error InsufficientNumberOfUniqueSigners(uint256 receviedSignersCount, uint256 requiredSignersCount);
+  error EachSignerMustProvideTheSameValue();
+  error EmptyCalldataPointersArr();
+  error InvalidCalldataPointer();
+  error CalldataMustHaveValidPayload();
+  error SignerNotAuthorised(address receivedSigner);
 }

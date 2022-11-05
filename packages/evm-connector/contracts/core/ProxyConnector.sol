@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "./RedstoneConstants.sol";
 import "./CalldataExtractor.sol";
@@ -10,6 +10,10 @@ import "./CalldataExtractor.sol";
  * @author The Redstone Oracles team
  */
 contract ProxyConnector is RedstoneConstants, CalldataExtractor {
+  error ProxyCalldataFailedWithoutErrMsg();
+  error ProxyCalldataFailedWithStringMessage(string message);
+  error ProxyCalldataFailedWithCustomError(bytes result);
+
   function proxyCalldata(
     address contractAddress,
     bytes memory encodedFunction,
@@ -47,7 +51,9 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
     uint256 redstonePayloadByteSize = _getRedstonePayloadByteSize();
     uint256 resultMessageByteSize = encodedFunctionBytesCount + redstonePayloadByteSize;
 
-    require(redstonePayloadByteSize <= msg.data.length, ERR_CALLDATA_OVER_OR_UNDER_FLOW);
+    if (redstonePayloadByteSize > msg.data.length) {
+      revert CalldataOverOrUnderFlow();
+    }
 
     bytes memory message;
 
@@ -121,16 +127,25 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
     returns (bytes memory)
   {
     if (!success) {
-      if (result.length > 0) {
-        string memory receivedErrMsg;
-        assembly {
-          receivedErrMsg := add(result, REVERT_MSG_OFFSET)
-        }
-        revert(string(
-          abi.encodePacked("Proxy calldata failed with err: ", receivedErrMsg)
-        ));
+
+      if (result.length == 0) {
+        revert ProxyCalldataFailedWithoutErrMsg();
       } else {
-        revert("Proxy calldata failed without error message");
+        bool isStringErrorMessage;
+        assembly {
+          let first32BytesOfResult := mload(add(result, BYTES_ARR_LEN_VAR_BS))
+          isStringErrorMessage := eq(first32BytesOfResult, STRING_ERR_MESSAGE_MASK)
+        }
+
+        if (isStringErrorMessage) {
+          string memory receivedErrMsg;
+          assembly {
+            receivedErrMsg := add(result, REVERT_MSG_OFFSET)
+          }
+          revert ProxyCalldataFailedWithStringMessage(receivedErrMsg);
+        } else {
+          revert ProxyCalldataFailedWithCustomError(result);
+        }
       }
     }
 

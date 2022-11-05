@@ -109,7 +109,7 @@ describe("SampleProxyConnector", function () {
     ).not.to.be.reverted;
     await expect(
       wrappedContract.checkOracleValueLongEncodedFunction(ethDataFeedId, 9999)
-    ).to.be.revertedWith("Wrong value!");
+    ).to.be.revertedWith("WrongValue()");
   });
 
   it("Should fail with correct message (timestamp invalid)", async () => {
@@ -120,7 +120,7 @@ describe("SampleProxyConnector", function () {
     });
     await testShouldRevertWith(
       newMockPackages,
-      "Proxy calldata failed with err: Timestamp is not valid"
+      `errorArgs=["0x355b8743"], errorName="ProxyCalldataFailedWithCustomError"`
     );
   });
 
@@ -131,7 +131,7 @@ describe("SampleProxyConnector", function () {
     );
     await testShouldRevertWith(
       newMockPackages,
-      "Proxy calldata failed with err: Insufficient number of unique signers"
+      `errorArgs=["0x2b13aef50000000000000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000a"], errorName="ProxyCalldataFailedWithCustomError"`
     );
   });
 
@@ -143,7 +143,23 @@ describe("SampleProxyConnector", function () {
     });
     await testShouldRevertWith(
       newMockPackages,
-      "Proxy calldata failed with err: Signer is not authorised"
+      `errorArgs=["0xec459bc00000000000000000000000008626f6940e2eb28930efb4cef49b2d1f2c9c1199"], errorName="ProxyCalldataFailedWithCustomError"`
+    );
+  });
+
+  it("Should fail with correct message (no error message)", async () => {
+    const wrappedContract =
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
+    await expect(wrappedContract.proxyEmptyError()).to.be.revertedWith(
+      `errorName="ProxyCalldataFailedWithoutErrMsg"`
+    );
+  });
+
+  it("Should fail with correct message (string test message)", async () => {
+    const wrappedContract =
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
+    await expect(wrappedContract.proxyTestStringError()).to.be.revertedWith(
+      `errorArgs=["Test message"], errorName="ProxyCalldataFailedWithStringMessage"`
     );
   });
 });

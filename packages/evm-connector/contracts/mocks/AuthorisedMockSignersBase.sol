@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
-contract AuthorisedMockSignersBase {
+import "../core/RedstoneConstants.sol";
+
+abstract contract AuthorisedMockSignersBase is RedstoneConstants {
   function getAuthorisedMockSignerIndex(address signerAddress)
     public
     view
@@ -19,7 +21,7 @@ contract AuthorisedMockSignersBase {
     returns (uint8)
   {
     if (signerAddress == 0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199) {
-      revert("Signer is not authorised");
+      revert SignerNotAuthorised(signerAddress);
     } else {
       return getAllMockAuthorised(signerAddress);
     }
@@ -68,7 +70,7 @@ contract AuthorisedMockSignersBase {
     } else if (signerAddress == 0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199) {
       return 19;
     } else {
-      revert("Signer is not authorised");
+      revert SignerNotAuthorised(signerAddress);
     }
   }
 }

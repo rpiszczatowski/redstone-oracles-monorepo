@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
@@ -58,7 +58,9 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
     returns (bytes memory)
   {
     // Check if all byte arrays are identical
-    require(calldataPointersForValues.length > 0, ERR_EMPTY_CALLDATA_POINTERS_ARR);
+    if (calldataPointersForValues.length <= 0) {
+      revert EmptyCalldataPointersArr();
+    }
     bytes calldata firstValue = getCalldataBytesFromCalldataPointer(calldataPointersForValues[0]);
     bytes32 expectedHash = keccak256(firstValue);
 
@@ -66,10 +68,9 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
       bytes calldata currentValue = getCalldataBytesFromCalldataPointer(
         calldataPointersForValues[i]
       );
-      require(
-        keccak256(currentValue) == expectedHash,
-        ERR_EACH_SIGNER_MUST_PROVIDE_THE_SAME_VALUE
-      );
+      if (keccak256(currentValue) != expectedHash) {
+        revert EachSignerMustProvideTheSameValue();
+      }
     }
 
     return firstValue;
@@ -92,7 +93,9 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
   {
     uint256 calldataOfffset = _getNumberFromFirst128Bits(trickyCalldataPtr);
     uint256 valueByteSize = _getNumberFromLast128Bits(trickyCalldataPtr);
-    require(calldataOfffset + valueByteSize <= msg.data.length, ERR_INVALID_CALLDATA_POINTER);
+    if (calldataOfffset + valueByteSize > msg.data.length) {
+      revert InvalidCalldataPointer();
+    }
 
     assembly {
       bytesValueInCalldata.offset := calldataOfffset
@@ -188,8 +191,7 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
     uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
     uint256 dataPointNegativeOffset = negativeOffsetToDataPoints
       + (1 + dataPointIndex).mul(dataPointValueByteSize + DATA_POINT_SYMBOL_BS);
-    uint256 dataPointCalldataOffset = msg.data.length.sub(dataPointNegativeOffset,
-      ERR_CALLDATA_OVER_OR_UNDER_FLOW);
+    uint256 dataPointCalldataOffset = msg.data.length.sub(dataPointNegativeOffset);
     assembly {
       dataPointDataFeedId := calldataload(dataPointCalldataOffset)
       dataPointValue := prepareTrickyCalldataPointer(

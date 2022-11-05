@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "../core/RedstoneConsumerNumericBase.sol";
 import "./AuthorisedMockSignersBase.sol";
 
 contract RedstoneConsumerNumericMock is RedstoneConsumerNumericBase, AuthorisedMockSignersBase {
-  string internal constant ERR_TIMESTAMP_IS_NOT_VALID = "Timestamp is not valid";
   uint256 internal constant MIN_TIMESTAMP_MILLISECONDS = 1654353400000;
+
+  error TimestampIsNotValid();
 
   function getUniqueSignersThreshold() public view virtual override returns (uint8) {
     return 10;
@@ -24,9 +25,8 @@ contract RedstoneConsumerNumericMock is RedstoneConsumerNumericBase, AuthorisedM
   }
 
   function validateTimestamp(uint256 receivedTimestampMilliseconds) public view virtual override {
-    require(
-      receivedTimestampMilliseconds >= MIN_TIMESTAMP_MILLISECONDS,
-      ERR_TIMESTAMP_IS_NOT_VALID
-    );
+    if (receivedTimestampMilliseconds < MIN_TIMESTAMP_MILLISECONDS) {
+      revert TimestampIsNotValid();
+    }
   }
 }

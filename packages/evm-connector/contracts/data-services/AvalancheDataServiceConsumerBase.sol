@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 import "../core/RedstoneConsumerNumericBase.sol";
 
@@ -41,7 +41,7 @@ contract AvalancheDataServiceConsumerBase is RedstoneConsumerNumericBase {
     } else if (signerAddress == 0xAE9D49Ea64DF38B9fcbC238bc7004a1421f7eeE8) {
       return 11;
     } else {
-      revert("Signer is not authorised");
+      revert SignerNotAuthorised(signerAddress);
     }
   }
 }

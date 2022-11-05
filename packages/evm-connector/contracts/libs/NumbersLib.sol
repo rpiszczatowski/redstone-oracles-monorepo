@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 library NumbersLib {
   uint256 constant BITS_COUNT_IN_16_BYTES = 128;
