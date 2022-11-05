@@ -96,6 +96,12 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
     uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(calldataNegativeOffset);
     calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;
 
+    // Saving current free memory pointer
+    uint256 freeMemPtr;
+    assembly {
+      freeMemPtr := mload(FREE_MEMORY_PTR)
+    }
+
     // Data packages extraction in a loop
     for (uint256 dataPackageIndex = 0; dataPackageIndex < dataPackagesCount; dataPackageIndex++) {
       // Extract data package details and update calldata offset
@@ -107,6 +113,11 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
         calldataNegativeOffset
       );
       calldataNegativeOffset += dataPackageByteSize;
+
+      // Shifting memory pointer back to the "safe" value
+      assembly {
+        mstore(FREE_MEMORY_PTR, freeMemPtr)
+      }
     }
 
     // Validating numbers of unique signers and calculating aggregated values for each dataFeedId
