@@ -23,13 +23,12 @@ library RedstoneDefaultsLib {
     // That's why we add MAX_BLOCK_TIMESTAMP_DELAY
     // and allow data "from future" but with a small delay
     uint256 receivedTimestampSeconds = receivedTimestampMilliseconds / 1000;
-    uint256 timestampDiffSeconds = block.timestamp - receivedTimestampSeconds;
     bool isFromFuture = block.timestamp < receivedTimestampSeconds;
 
     if ((block.timestamp + DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS) < receivedTimestampSeconds) {
       revert TimestampFromTooLongFuture(receivedTimestampSeconds, block.timestamp);
     }
-    if (!isFromFuture && timestampDiffSeconds > DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS) {
+    if (!isFromFuture && (block.timestamp - receivedTimestampSeconds) > DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS) {
       revert TimestampIsTooOld(receivedTimestampSeconds, block.timestamp);
     }
   }
