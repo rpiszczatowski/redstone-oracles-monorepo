@@ -343,5 +343,10 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/lens.png",
     "url": "https://lens.xyz/",
     "color": "#bdfc5a"
+  },
+  "xt": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/xt.png",
+    "url": "https://www.xt.com/",
+    "color": "#f5c155"
   }
 }
