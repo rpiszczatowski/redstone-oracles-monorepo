@@ -3,5 +3,5 @@
 - Clone https://github.com/redstone-finance/redstone-oracles-monorepo
 - Install dependencies using `yarn install` command
 - Go to the oracle-node folder using `cd packages/oracle-node` command
-- Populate `.env.local` file with env variables from `.env.example`
+- Populate `.env` file with env variables (check `.env.example`)
 - Run `yarn start:dev`
