@@ -1,6 +1,6 @@
 const generateSubManifest = require("./generate-submanifest-from-main");
 
-const OUTPUT_FILE_PATH = "./manifests/avalanche.json";
+const OUTPUT_FILE_PATH = "./manifests/data-services/avalanche.json";
 const SYMBOLS = [
   "ETH",
   "USDT",
