@@ -73,7 +73,7 @@ abstract contract RedstoneConsumerNumericBase is RedstoneConsumerBase {
     for (uint256 indexWithDup = 0; indexWithDup < dataFeedIdsWithDuplicates.length; indexWithDup++) {
       // Checking if current element is already included in `dataFeedIdsWithoutDuplicates`
       alreadyIncluded = false;
-      for (uint256 indexWithoutDup = 0; indexWithoutDup < dataFeedIdsWithoutDuplicates.length; indexWithoutDup++) {
+      for (uint256 indexWithoutDup = 0; indexWithoutDup < uniqueDataFeedIdsCount; indexWithoutDup++) {
         if (dataFeedIdsWithoutDuplicates[indexWithoutDup] == dataFeedIdsWithDuplicates[indexWithDup]) {
           alreadyIncluded = true;
           break;
