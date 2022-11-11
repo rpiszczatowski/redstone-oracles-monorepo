@@ -28,10 +28,8 @@ library RedstoneDefaultsLib {
       if ((block.timestamp + DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS) < receivedTimestampSeconds) {
         revert TimestampFromTooLongFuture(receivedTimestampSeconds, block.timestamp);
       }
-    } else {
-      if ((block.timestamp - receivedTimestampSeconds) > DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS) {
-        revert TimestampIsTooOld(receivedTimestampSeconds, block.timestamp);
-      }
+    } else if ((block.timestamp - receivedTimestampSeconds) > DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS) {
+      revert TimestampIsTooOld(receivedTimestampSeconds, block.timestamp);
     }
   }
 
