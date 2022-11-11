@@ -25,15 +25,15 @@ describe("chainlink fetcher", () => {
     expect(result).toEqual([
       {
         symbol: "ETH",
-        value: 1271.86,
+        value: 1271.86299316,
       },
       {
         symbol: "AAVE",
-        value: 66.57,
+        value: 66.56718628,
       },
       {
         symbol: "UNI",
-        value: 5.72,
+        value: 5.72036243,
       },
     ]);
   });

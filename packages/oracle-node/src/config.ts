@@ -120,3 +120,5 @@ export const config: NodeConfig = Object.freeze({
   ethereumAddress: new ethers.Wallet(ethereumPrivateKey).address,
   coinbaseIndexerMongoDbUrl: getFromEnv("COINBASE_INDEXER_MONGODB_URL", ""),
 });
+
+export const ETH_MAIN_RPC_URL = "https://rpc.ankr.com/eth";
