@@ -92,8 +92,8 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      lpTokensContractsDetails.TJ_AVAX_USDC_LP.abi = LPTokenMock.abi;
-      lpTokensContractsDetails.TJ_AVAX_USDC_LP.address =
+      lpTokensContractsDetails.TJ_WAVAX_USDC_LP.abi = LPTokenMock.abi;
+      lpTokensContractsDetails.TJ_WAVAX_USDC_LP.address =
         lpTokenContract.address;
     });
 
@@ -103,9 +103,9 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      const result = await fetcher.fetchAll(["TJ_AVAX_USDC_LP"]);
+      const result = await fetcher.fetchAll(["TJ_WAVAX_USDC_LP"]);
       expect(result).toEqual([
-        { symbol: "TJ_AVAX_USDC_LP", value: 133485980.66187558 },
+        { symbol: "TJ_WAVAX_USDC_LP", value: 133485980.66187558 },
       ]);
     });
   });
@@ -124,8 +124,8 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      mooTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.abi = MooTokenMock.abi;
-      mooTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.address =
+      mooTokensContractsDetails.MOO_TJ_WAVAX_USDC_LP.abi = MooTokenMock.abi;
+      mooTokensContractsDetails.MOO_TJ_WAVAX_USDC_LP.address =
         mooTokenContract.address;
     });
 
@@ -135,11 +135,11 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockRedstoneApiPrice(11232453.706920957, "TJ_AVAX_USDC_LP");
+      mockRedstoneApiPrice(11232453.706920957, "TJ_WAVAX_USDC_LP");
 
-      const result = await fetcher.fetchAll(["MOO_TJ_AVAX_USDC_LP"]);
+      const result = await fetcher.fetchAll(["MOO_TJ_WAVAX_USDC_LP"]);
       expect(result).toEqual([
-        { symbol: "MOO_TJ_AVAX_USDC_LP", value: 12566138.19921592 },
+        { symbol: "MOO_TJ_WAVAX_USDC_LP", value: 12566138.19921592 },
       ]);
     });
   });

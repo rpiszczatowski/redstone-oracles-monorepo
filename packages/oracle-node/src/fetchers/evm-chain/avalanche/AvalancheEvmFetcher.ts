@@ -12,11 +12,11 @@ export type YieldYakDetailsKeys = keyof typeof yieldYakContractsDetails;
 export type LpTokensDetailsKeys = keyof typeof lpTokensContractsDetails;
 export type MooJoeTokensDetailsKeys = keyof typeof mooTokensContractsDetails;
 
-const MUTLICALL_CONTRACT_ADDRESS = "0x8755b94F88D120AB2Cc13b1f6582329b067C760d";
+export const yyTokenIds = Object.keys(yieldYakContractsDetails);
+export const lpTokensIds = Object.keys(lpTokensContractsDetails);
+export const mooTokens = Object.keys(mooTokensContractsDetails);
 
-export const yyTokenIds = ["YYAV3SA1", "SAV2", "YY_TJ_AVAX_USDC_LP"];
-export const lpTokensIds = ["TJ_AVAX_USDC_LP", "PNG_AVAX_USDC_LP"];
-export const mooTokens = ["MOO_TJ_AVAX_USDC_LP"];
+const MUTLICALL_CONTRACT_ADDRESS = "0x8755b94F88D120AB2Cc13b1f6582329b067C760d";
 
 export class AvalancheEvmFetcher extends BaseFetcher {
   private evmMulticallService: EvmMulticallService;

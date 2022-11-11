@@ -60,25 +60,40 @@ const extractPriceForLpTokens = async (
   id: string
 ) => {
   const { address } = lpTokensContractsDetails[id as LpTokensDetailsKeys];
-
   const reserves = multicallResult[address].getReserves.value;
-  const wavaxReserve = BigNumber.from(reserves.slice(0, 66));
-  const wavaxPrice = await fetchPriceFromRedStone("WAVAX");
-  const wavaxReservePrice = wavaxReserve.mul(wavaxPrice);
 
-  const usdcReserveInHex = `0x${reserves.slice(66, 130)}`;
-  const usdcReserveWith18Decimals = BigNumber.from(usdcReserveInHex).mul(
-    ethers.utils.parseUnits("1.0", 12)
+  const firstTokenReserve = BigNumber.from(reserves.slice(0, 66));
+  const firstToken = id.split("_")[1];
+  const firstTokenReservePrice = await calculateReserveTokenPrice(
+    firstToken,
+    firstTokenReserve
   );
-  const usdcPrice = await fetchPriceFromRedStone("USDC");
-  const usdcReservePrice = usdcReserveWith18Decimals.mul(usdcPrice);
 
-  const reservesPricesSum = wavaxReservePrice.add(usdcReservePrice);
+  const secondTokenReserve = BigNumber.from(`0x${reserves.slice(66, 130)}`);
+  const secondToken = id.split("_")[2];
+  const secondTokenReservePrice = await calculateReserveTokenPrice(
+    secondToken,
+    secondTokenReserve
+  );
+
+  const reservesPricesSum = firstTokenReservePrice.add(secondTokenReservePrice);
   const totalSupply = BigNumber.from(
     multicallResult[address].totalSupply.value
   );
   const lpTokenPrice = reservesPricesSum.div(totalSupply);
   return ethers.utils.formatEther(lpTokenPrice);
+};
+
+const calculateReserveTokenPrice = async (
+  tokenName: string,
+  tokenReserve: BigNumber
+) => {
+  const tokenReserveSerialized = serializeStableCoinsDecimals(
+    tokenName,
+    tokenReserve
+  );
+  const tokenPrice = await fetchPriceFromRedStone(tokenName);
+  return tokenReserveSerialized.mul(tokenPrice);
 };
 
 const fetchTokenPrice = async (id: string) => {
@@ -87,11 +102,11 @@ const fetchTokenPrice = async (id: string) => {
       return fetchPriceFromRedStone("AVAX");
     case "SAV2":
       return fetchPriceFromRedStone("sAVAX");
-    case "YY_TJ_AVAX_USDC_LP":
-    case "MOO_TJ_AVAX_USDC_LP":
-      return fetchPriceFromRedStone("TJ_AVAX_USDC_LP");
+    case "YY_TJ_WAVAX_USDC_LP":
+    case "MOO_TJ_WAVAX_USDC_LP":
+      return fetchPriceFromRedStone("TJ_WAVAX_USDC_LP");
     default:
-      throw new Error("Invalid id for Avalanche EVM fetcher");
+      throw new Error(`Invalid id ${id} for Avalanche EVM fetcher`);
   }
 };
 
@@ -99,4 +114,14 @@ const fetchPriceFromRedStone = async (token: string) => {
   const priceObjectFromApi = await redstone.getPrice(token);
   const priceAsString = priceObjectFromApi.value.toString();
   return ethers.utils.parseUnits(priceAsString, 18);
+};
+
+const serializeStableCoinsDecimals = (
+  tokenName: string,
+  tokenReserve: BigNumber
+) => {
+  if (!(tokenName === "USDC" || tokenName === "USDT")) {
+    return tokenReserve;
+  }
+  return tokenReserve.mul(ethers.utils.parseUnits("1.0", 12));
 };
