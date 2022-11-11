@@ -25,7 +25,7 @@ library RedstoneDefaultsLib {
     uint256 receivedTimestampSeconds = receivedTimestampMilliseconds / 1000;
 
     if (block.timestamp < receivedTimestampSeconds) {
-      if ((block.timestamp + DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS) < receivedTimestampSeconds) {
+      if ((receivedTimestampSeconds - block.timestamp) > DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS) {
         revert TimestampFromTooLongFuture(receivedTimestampSeconds, block.timestamp);
       }
     } else if ((block.timestamp - receivedTimestampSeconds) > DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS) {
