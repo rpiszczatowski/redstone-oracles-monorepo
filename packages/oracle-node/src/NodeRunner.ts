@@ -36,7 +36,7 @@ import {
   SignedDataPackage,
 } from "redstone-protocol";
 import { config } from "./config";
-import { connectToDb } from "./db/db-connector";
+import { connectToDb } from "./db/remote-mongo/db-connector";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;

@@ -29,3 +29,5 @@ Dockerfile.redstone-dev
 .env*
 
 tmp.patch
+
+oracle-node-level-db*
