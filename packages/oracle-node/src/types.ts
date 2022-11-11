@@ -139,6 +139,7 @@ export interface NodeConfig {
   useNewSigningAndBroadcasting: boolean;
   overrideDirectCacheServiceUrls?: string[];
   coinbaseIndexerMongoDbUrl?: string;
+  ethMainRpcUrl?: string;
 }
 
 export interface MulticallRequest {
