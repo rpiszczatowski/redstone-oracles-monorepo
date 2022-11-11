@@ -1,0 +1,5 @@
+{
+  "UNI": { "price": "572036243", "decimalPlaces": 8 },
+  "ETH": { "price": "127186299316", "decimalPlaces": 8 },
+  "AAVE": { "price": "6656718628", "decimalPlaces": 8 }
+}
