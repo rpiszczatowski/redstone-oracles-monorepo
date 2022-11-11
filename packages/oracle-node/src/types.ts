@@ -157,6 +157,7 @@ export interface NodeConfig {
   overrideDirectCacheServiceUrls?: string[];
   coinbaseIndexerMongoDbUrl?: string;
   ethMainRpcUrl?: string;
+  levelDbLocation: string;
 }
 
 export interface MulticallRequest {

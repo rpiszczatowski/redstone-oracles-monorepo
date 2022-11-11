@@ -1,5 +1,5 @@
 import { Consola } from "consola";
-import { Transaction } from "../db/models/Transaction";
+import { Transaction } from "../db/remote-mongo/models/Transaction";
 
 const logger = require("../utils/logger")("score-by-address") as Consola;
 

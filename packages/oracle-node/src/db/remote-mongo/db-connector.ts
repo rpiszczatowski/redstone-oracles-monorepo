@@ -1,8 +1,8 @@
 import { Consola } from "consola";
 import { connect } from "mongoose";
-import { config } from "../config";
+import { config } from "../../config";
 
-const logger = require("../utils/logger")("connect-to-db") as Consola;
+const logger = require("../../utils/logger")("connect-to-db") as Consola;
 
 export const connectToDb = async () => {
   const mongoDbUrl = config.coinbaseIndexerMongoDbUrl;

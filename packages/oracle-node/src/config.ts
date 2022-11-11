@@ -11,6 +11,7 @@ const DEFAULT_MANIFEST_REFRESH_INTERVAL = "120000";
 const DEFAULT_TWELVE_DATA_RAPID_API_KEY = "";
 const DEFAULT_USE_NEW_SIGNING_AND_BROADCASTING = "false";
 const DEFAULT_ETH_MAIN_RPC_URL = "https://rpc.ankr.com/eth";
+const DEFAULT_LEVEL_DB_LOCATION = "oracle-node-level-db";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -121,4 +122,5 @@ export const config: NodeConfig = Object.freeze({
   ethereumAddress: new ethers.Wallet(ethereumPrivateKey).address,
   coinbaseIndexerMongoDbUrl: getFromEnv("COINBASE_INDEXER_MONGODB_URL", ""),
   ethMainRpcUrl: getFromEnv("ETH_MAIN_RPC_URL", DEFAULT_ETH_MAIN_RPC_URL),
+  levelDbLocation: getFromEnv("LEVEL_DB_LOCATION", DEFAULT_LEVEL_DB_LOCATION),
 });
