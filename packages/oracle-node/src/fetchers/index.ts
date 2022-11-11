@@ -17,6 +17,7 @@ import { TwelveDataFetcher } from "./twelve-data/TwelveDataFetcher";
 import { AvalancheEvmFetcher } from "./evm-chain/avalanche/AvalancheEvmFetcher";
 import { PlatypusFetcher } from "./platypus/PlatypusFetcher";
 import { LensFetcher } from "./lens/LensFetcher";
+import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -36,6 +37,7 @@ export default {
     )
   ),
   platypus: new PlatypusFetcher(),
+  chainlink: new ChainlinkFetcher(),
   lens: new LensFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
