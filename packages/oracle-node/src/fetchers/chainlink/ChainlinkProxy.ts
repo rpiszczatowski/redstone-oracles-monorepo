@@ -8,7 +8,7 @@ interface contractAddressesInterface {
 }
 
 export default class ChainlinkProxy {
-  private priceFeeds!: { [name: string]: Contract };
+  private priceFeeds!: { [priceFeedId: string]: Contract };
   private addresses: contractAddressesInterface;
 
   constructor() {
