@@ -6,7 +6,6 @@ import "../core/RedstoneConsumerBytesBase.sol";
 import "./AuthorisedMockSignersBase.sol";
 
 contract RedstoneConsumerBytesMock is RedstoneConsumerBytesBase, AuthorisedMockSignersBase {
-  string internal constant ERR_TIMESTAMP_IS_NOT_VALID = "Timestamp is not valid";
   uint256 internal constant MIN_TIMESTAMP_MILLISECONDS = 1654353400000;
 
   error TimestampIsNotValid();
