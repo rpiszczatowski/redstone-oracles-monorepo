@@ -1,6 +1,5 @@
 import { Contract, ethers } from "ethers";
 import { config } from "../../config";
-
 import { getRequiredPropValue } from "../../utils/objects";
 import { contracts, abi } from "./constants";
 
