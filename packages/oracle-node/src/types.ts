@@ -29,6 +29,7 @@ export interface SourceTimeout {
 
 export interface Credentials {
   twelveDataRapidApiKey?: string;
+  coinmarketcapApiKey?: string;
 }
 
 export interface TokenConfig {

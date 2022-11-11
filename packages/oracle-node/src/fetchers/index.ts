@@ -19,6 +19,7 @@ import { PlatypusFetcher } from "./platypus/PlatypusFetcher";
 import { LensFetcher } from "./lens/LensFetcher";
 import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
 import { XtFetcher } from "./xt/XtFetcher";
+import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -41,6 +42,7 @@ export default {
   chainlink: new ChainlinkFetcher(),
   lens: new LensFetcher(),
   xt: new XtFetcher(),
+  coinmarketcap: new CoinMarketCapFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...twapFetchers,
