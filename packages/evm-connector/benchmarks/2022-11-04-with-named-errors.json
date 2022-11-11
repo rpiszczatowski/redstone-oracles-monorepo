@@ -35,10 +35,6 @@
     "forAttachingDataToCalldata": 15832,
     "forDataExtractionAndVerification": 101612
   },
-  "1 signers, 10 symbols, 2 points": {
-    "forAttachingDataToCalldata": 15832,
-    "forDataExtractionAndVerification": 101612
-  },
   "1 signers, 10 symbols, 10 points": {
     "forAttachingDataToCalldata": 5212,
     "forDataExtractionAndVerification": 49592
@@ -48,14 +44,6 @@
     "forDataExtractionAndVerification": 77373
   },
   "1 signers, 20 symbols, 1 points": {
-    "forAttachingDataToCalldata": 31556,
-    "forDataExtractionAndVerification": 218817
-  },
-  "1 signers, 20 symbols, 2 points": {
-    "forAttachingDataToCalldata": 31556,
-    "forDataExtractionAndVerification": 218817
-  },
-  "1 signers, 20 symbols, 10 points": {
     "forAttachingDataToCalldata": 31556,
     "forDataExtractionAndVerification": 218817
   },
@@ -99,10 +87,6 @@
     "forAttachingDataToCalldata": 47028,
     "forDataExtractionAndVerification": 273869
   },
-  "3 signers, 10 symbols, 2 points": {
-    "forAttachingDataToCalldata": 47028,
-    "forDataExtractionAndVerification": 273869
-  },
   "3 signers, 10 symbols, 10 points": {
     "forAttachingDataToCalldata": 15048,
     "forDataExtractionAndVerification": 116898
@@ -112,14 +96,6 @@
     "forDataExtractionAndVerification": 200263
   },
   "3 signers, 20 symbols, 1 points": {
-    "forAttachingDataToCalldata": 94176,
-    "forDataExtractionAndVerification": 602006
-  },
-  "3 signers, 20 symbols, 2 points": {
-    "forAttachingDataToCalldata": 94176,
-    "forDataExtractionAndVerification": 602006
-  },
-  "3 signers, 20 symbols, 10 points": {
     "forAttachingDataToCalldata": 94176,
     "forDataExtractionAndVerification": 602006
   },
