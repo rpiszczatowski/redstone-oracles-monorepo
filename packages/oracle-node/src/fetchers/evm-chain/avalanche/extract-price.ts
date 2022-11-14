@@ -1,4 +1,3 @@
-import redstone from "redstone-api";
 import { BigNumber, ethers } from "ethers";
 import { MulticallParsedResponses } from "../../../types";
 import {
@@ -9,9 +8,14 @@ import {
   yyTokenIds,
   MooJoeTokensDetailsKeys,
 } from "./AvalancheEvmFetcher";
+import { fetchTokenPrice, fetchTokensPrices } from "./fetch-token-price";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
+
+interface TokenReserve {
+  [name: string]: BigNumber;
+}
 
 export const extractPrice = async (
   response: MulticallParsedResponses,
@@ -61,21 +65,21 @@ const extractPriceForLpTokens = async (
 ) => {
   const { address } = lpTokensContractsDetails[id as LpTokensDetailsKeys];
   const reserves = multicallResult[address].getReserves.value;
+  const idParts = id.split("_");
 
   const firstTokenReserve = BigNumber.from(reserves.slice(0, 66));
-  const firstToken = id.split("_")[1];
-  const firstTokenReservePrice = await calculateReserveTokenPrice(
-    firstToken,
-    firstTokenReserve
-  );
-
+  const firstToken = idParts[1];
   const secondTokenReserve = BigNumber.from(`0x${reserves.slice(66, 130)}`);
-  const secondToken = id.split("_")[2];
-  const secondTokenReservePrice = await calculateReserveTokenPrice(
-    secondToken,
-    secondTokenReserve
+  const secondToken = idParts[2];
+  const tokenReserves = {
+    [firstToken]: firstTokenReserve,
+    [secondToken]: secondTokenReserve,
+  };
+  const tokensReservesPrices = await calculateReserveTokensPrices(
+    tokenReserves
   );
-
+  const firstTokenReservePrice = tokensReservesPrices[firstToken];
+  const secondTokenReservePrice = tokensReservesPrices[secondToken];
   const reservesPricesSum = firstTokenReservePrice.add(secondTokenReservePrice);
   const totalSupply = BigNumber.from(
     multicallResult[address].totalSupply.value
@@ -84,44 +88,31 @@ const extractPriceForLpTokens = async (
   return ethers.utils.formatEther(lpTokenPrice);
 };
 
-const calculateReserveTokenPrice = async (
-  tokenName: string,
-  tokenReserve: BigNumber
-) => {
-  const tokenReserveSerialized = serializeStableCoinsDecimals(
-    tokenName,
-    tokenReserve
-  );
-  const tokenPrice = await fetchPriceFromRedStone(tokenName);
-  return tokenReserveSerialized.mul(tokenPrice);
-};
-
-const fetchTokenPrice = async (id: string) => {
-  switch (id) {
-    case "YYAV3SA1":
-      return fetchPriceFromRedStone("AVAX");
-    case "SAV2":
-      return fetchPriceFromRedStone("sAVAX");
-    case "YY_TJ_WAVAX_USDC_LP":
-    case "MOO_TJ_WAVAX_USDC_LP":
-      return fetchPriceFromRedStone("TJ_WAVAX_USDC_LP");
-    default:
-      throw new Error(`Invalid id ${id} for Avalanche EVM fetcher`);
+const calculateReserveTokensPrices = async (tokenReserves: TokenReserve) => {
+  const tokenNames = Object.keys(tokenReserves);
+  const tokensPrices = await fetchTokensPrices(tokenNames);
+  const tokensReservesSerialized = serializeStableCoinsDecimals(tokenReserves);
+  const tokensReservesPrices = {} as TokenReserve;
+  for (const tokenName of Object.keys(tokenReserves)) {
+    const tokenReservePrice = tokensReservesSerialized[tokenName].mul(
+      tokensPrices[tokenName]
+    );
+    tokensReservesPrices[tokenName] = tokenReservePrice;
   }
+  return tokensReservesPrices;
 };
 
-const fetchPriceFromRedStone = async (token: string) => {
-  const priceObjectFromApi = await redstone.getPrice(token);
-  const priceAsString = priceObjectFromApi.value.toString();
-  return ethers.utils.parseUnits(priceAsString, 18);
-};
-
-const serializeStableCoinsDecimals = (
-  tokenName: string,
-  tokenReserve: BigNumber
-) => {
-  if (!(tokenName === "USDC" || tokenName === "USDT")) {
-    return tokenReserve;
+const serializeStableCoinsDecimals = (tokenReserves: TokenReserve) => {
+  const serializedTokenReserves = {} as TokenReserve;
+  for (const tokenName of Object.keys(tokenReserves)) {
+    if (!["USDC", "USDT"].includes(tokenName)) {
+      serializedTokenReserves[tokenName] = tokenReserves[tokenName];
+    } else {
+      const tokenReserveSerialized = tokenReserves[tokenName].mul(
+        ethers.utils.parseUnits("1.0", 12)
+      );
+      serializedTokenReserves[tokenName] = tokenReserveSerialized;
+    }
   }
-  return tokenReserve.mul(ethers.utils.parseUnits("1.0", 12));
+  return serializedTokenReserves;
 };

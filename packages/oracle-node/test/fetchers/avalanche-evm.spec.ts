@@ -8,7 +8,7 @@ import { mooTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanch
 import YYMock from "./mocks/YYMock.json";
 import LPTokenMock from "./mocks/LPTokenMock.json";
 import MooTokenMock from "./mocks/MooTokenMock.json";
-import { mockRedstoneApiPrice } from "./_helpers";
+import { mockRedstoneApiPrice, mockRedstoneApiPrices } from "./_helpers";
 
 jest.setTimeout(15000);
 
@@ -103,9 +103,11 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
+      mockRedstoneApiPrices([17, 1], ["WAVAX", "USDC"]);
+
       const result = await fetcher.fetchAll(["TJ_WAVAX_USDC_LP"]);
       expect(result).toEqual([
-        { symbol: "TJ_WAVAX_USDC_LP", value: 133485980.66187558 },
+        { symbol: "TJ_WAVAX_USDC_LP", value: 10864910.562549423 },
       ]);
     });
   });

@@ -1,12 +1,12 @@
 import { providers } from "ethers";
 import { BaseFetcher } from "../../BaseFetcher";
 import { EvmMulticallService } from "../EvmMulticallService";
-import { prepareMulticallRequests } from "./prepareMulticallRequest";
+import { prepareMulticallRequests } from "./prepare-multicall-request";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { MulticallParsedResponses, PricesObj } from "../../../types";
-import { extractPrice } from "./extractPrice";
+import { extractPrice } from "./extract-price";
 
 export type YieldYakDetailsKeys = keyof typeof yieldYakContractsDetails;
 export type LpTokensDetailsKeys = keyof typeof lpTokensContractsDetails;
