@@ -6,8 +6,7 @@ import { FetcherOpts, PricesObj } from "../../types";
 import symbolToId from "./symbol-to-id.json";
 const idToSymbol = _.invert(symbolToId);
 
-const url =
-  "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?id=";
+const url = "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest";
 
 export class CoinMarketCapFetcher extends BaseFetcher {
   constructor() {
@@ -23,12 +22,14 @@ export class CoinMarketCapFetcher extends BaseFetcher {
   }
 
   async fetchData(ids: string[], opts: FetcherOpts): Promise<any> {
-    const urlWithIDs = `${url}${ids.join(",")}`;
     const apiKey = opts.credentials.coinmarketcapApiKey;
     if (!apiKey) {
       throw new Error("Missing Coinmarketcap API Key");
     }
-    const response = await axios.get(urlWithIDs, {
+    const response = await axios.get(url, {
+      params: {
+        id: ids.join(","),
+      },
       headers: {
         "X-CMC_PRO_API_KEY": apiKey,
       },
