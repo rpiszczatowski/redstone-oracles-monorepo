@@ -57,9 +57,11 @@ export class CcxtFetcher extends BaseFetcher {
     const pricesObj: PricesObj = {};
 
     for (const ticker of Object.values(response) as Ticker[]) {
-      const pairSymbol = ticker.symbol;
+      let pairSymbol = ticker.symbol;
+      pairSymbol = this.serializePairSymbol(pairSymbol);
       const lastPrice = ticker.last as number;
-      const isSymbolInUsdt = pairSymbol.endsWith("/USDT");
+      const isSymbolInUsdt =
+        pairSymbol.endsWith("/USDT") || pairSymbol.endsWith("USDT");
       const isSymbolInBusd = pairSymbol.endsWith("/BUSD");
       if (pairSymbol.endsWith("/USD")) {
         pricesObj[pairSymbol] = lastPrice;
@@ -73,5 +75,12 @@ export class CcxtFetcher extends BaseFetcher {
       }
     }
     return pricesObj;
+  }
+
+  serializePairSymbol(pairSymbol: string) {
+    if (pairSymbol.endsWith("/USDT:USDT")) {
+      return pairSymbol.replace("/USDT:USDT", "USDT");
+    }
+    return pairSymbol;
   }
 }
