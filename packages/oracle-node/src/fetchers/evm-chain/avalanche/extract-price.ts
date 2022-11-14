@@ -12,6 +12,8 @@ import { fetchTokenPrice, fetchTokensPrices } from "./fetch-token-price";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
+import { getOptionalPropValue } from "../../../utils/objects";
+import overriddenIds from "./overridden-ids.json";
 
 interface TokenReserve {
   [name: string]: BigNumber;
@@ -65,7 +67,8 @@ const extractPriceForLpTokens = async (
 ) => {
   const { address } = lpTokensContractsDetails[id as LpTokensDetailsKeys];
   const reserves = multicallResult[address].getReserves.value;
-  const idParts = id.split("_");
+  const overriddenTokenId = overrideTokenId(id);
+  const idParts = overriddenTokenId.split("_");
 
   const firstTokenReserve = BigNumber.from(reserves.slice(0, 66));
   const firstToken = idParts[1];
@@ -116,3 +119,5 @@ const serializeStableCoinsDecimals = (tokenReserves: TokenReserve) => {
   }
   return serializedTokenReserves;
 };
+
+const overrideTokenId = (id: string) => getOptionalPropValue(overriddenIds, id);

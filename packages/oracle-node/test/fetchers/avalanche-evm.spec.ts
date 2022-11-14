@@ -103,7 +103,7 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockRedstoneApiPrices([17, 1], ["WAVAX", "USDC"]);
+      mockRedstoneApiPrices([17, 1], ["AVAX", "USDC"]);
 
       const result = await fetcher.fetchAll(["TJ_WAVAX_USDC_LP"]);
       expect(result).toEqual([

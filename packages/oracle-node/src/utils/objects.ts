@@ -23,3 +23,7 @@ export function getRequiredPropValue(obj: any, prop: string): any {
 
   return obj[prop];
 }
+
+export function getOptionalPropValue(obj: any, prop: string): any {
+  return !!obj[prop] ? obj[prop] : prop;
+}
