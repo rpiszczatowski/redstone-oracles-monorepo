@@ -11,7 +11,7 @@ export const yieldYakContractsDetails = {
     address: "0xd0F41b1C9338eB9d374c83cC76b684ba3BB71557",
     abi: YieldYakSAVAXAbi,
   },
-  YY_TJ_AVAX_USDC_LP: {
+  YY_TJ_WAVAX_USDC_LP: {
     address: "0xDEf94a13fF31FB6363f1e03bF18fe0F59Db83BBC",
     abi: YYTraderJoeLPTokenAbi,
   },

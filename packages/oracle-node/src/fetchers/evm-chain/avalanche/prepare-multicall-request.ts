@@ -28,7 +28,7 @@ export const prepareMulticallRequests = (id: string) => {
       mooTokensContractsDetails[id as MooJoeTokensDetailsKeys]);
     firstFunctionName = "balance";
   } else {
-    throw new Error("Asset ID not supported by Avalanche multicall builder");
+    throw new Error(`Asset ${id} not supported by Avalanche multicall builder`);
   }
 
   return buildMulticallRequests(abi, address, firstFunctionName);
