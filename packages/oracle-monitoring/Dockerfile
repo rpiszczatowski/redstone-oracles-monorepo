@@ -10,8 +10,8 @@ RUN yarn install
 
 COPY . .
 
+ENV BACKEND_URL=/api
 ENV MONGO_DB_URL=mongodb://mongodb:27017/redstone-oracle-monitoring?retryWrites=true&w=majority
-ENV BACKEND_URL=http://127.0.0.1:3000/api
 ENV DATA_SERVICES_CONFIG=./data-services-config.json
 ENV UPTIME_KUMA_URL=
 
