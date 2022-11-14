@@ -348,5 +348,10 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/xt.png",
     "url": "https://www.xt.com/",
     "color": "#f5c155"
+  },
+  "gate": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/gate.png",
+    "url": " https://www.gate.io/",
+    "color": "#3053de"
   }
 }
