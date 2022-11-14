@@ -1,4 +1,3 @@
-import redstone from "redstone-api";
 import { BigNumber, ethers } from "ethers";
 import { MulticallParsedResponses } from "../../../types";
 import {
@@ -9,9 +8,14 @@ import {
   yyTokenIds,
   MooJoeTokensDetailsKeys,
 } from "./AvalancheEvmFetcher";
+import { fetchTokenPrice, fetchTokensPrices } from "./fetch-token-price";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
+
+interface TokenReserve {
+  [name: string]: BigNumber;
+}
 
 export const extractPrice = async (
   response: MulticallParsedResponses,
@@ -60,20 +64,23 @@ const extractPriceForLpTokens = async (
   id: string
 ) => {
   const { address } = lpTokensContractsDetails[id as LpTokensDetailsKeys];
-
   const reserves = multicallResult[address].getReserves.value;
-  const wavaxReserve = BigNumber.from(reserves.slice(0, 66));
-  const wavaxPrice = await fetchPriceFromRedStone("WAVAX");
-  const wavaxReservePrice = wavaxReserve.mul(wavaxPrice);
+  const idParts = id.split("_");
 
-  const usdcReserveInHex = `0x${reserves.slice(66, 130)}`;
-  const usdcReserveWith18Decimals = BigNumber.from(usdcReserveInHex).mul(
-    ethers.utils.parseUnits("1.0", 12)
+  const firstTokenReserve = BigNumber.from(reserves.slice(0, 66));
+  const firstToken = idParts[1];
+  const secondTokenReserve = BigNumber.from(`0x${reserves.slice(66, 130)}`);
+  const secondToken = idParts[2];
+  const tokenReserves = {
+    [firstToken]: firstTokenReserve,
+    [secondToken]: secondTokenReserve,
+  };
+  const tokensReservesPrices = await calculateReserveTokensPrices(
+    tokenReserves
   );
-  const usdcPrice = await fetchPriceFromRedStone("USDC");
-  const usdcReservePrice = usdcReserveWith18Decimals.mul(usdcPrice);
-
-  const reservesPricesSum = wavaxReservePrice.add(usdcReservePrice);
+  const firstTokenReservePrice = tokensReservesPrices[firstToken];
+  const secondTokenReservePrice = tokensReservesPrices[secondToken];
+  const reservesPricesSum = firstTokenReservePrice.add(secondTokenReservePrice);
   const totalSupply = BigNumber.from(
     multicallResult[address].totalSupply.value
   );
@@ -81,22 +88,31 @@ const extractPriceForLpTokens = async (
   return ethers.utils.formatEther(lpTokenPrice);
 };
 
-const fetchTokenPrice = async (id: string) => {
-  switch (id) {
-    case "YYAV3SA1":
-      return fetchPriceFromRedStone("AVAX");
-    case "SAV2":
-      return fetchPriceFromRedStone("sAVAX");
-    case "YY_TJ_AVAX_USDC_LP":
-    case "MOO_TJ_AVAX_USDC_LP":
-      return fetchPriceFromRedStone("TJ_AVAX_USDC_LP");
-    default:
-      throw new Error("Invalid id for Avalanche EVM fetcher");
+const calculateReserveTokensPrices = async (tokenReserves: TokenReserve) => {
+  const tokenNames = Object.keys(tokenReserves);
+  const tokensPrices = await fetchTokensPrices(tokenNames);
+  const tokensReservesSerialized = serializeStableCoinsDecimals(tokenReserves);
+  const tokensReservesPrices = {} as TokenReserve;
+  for (const tokenName of Object.keys(tokenReserves)) {
+    const tokenReservePrice = tokensReservesSerialized[tokenName].mul(
+      tokensPrices[tokenName]
+    );
+    tokensReservesPrices[tokenName] = tokenReservePrice;
   }
+  return tokensReservesPrices;
 };
 
-const fetchPriceFromRedStone = async (token: string) => {
-  const priceObjectFromApi = await redstone.getPrice(token);
-  const priceAsString = priceObjectFromApi.value.toString();
-  return ethers.utils.parseUnits(priceAsString, 18);
+const serializeStableCoinsDecimals = (tokenReserves: TokenReserve) => {
+  const serializedTokenReserves = {} as TokenReserve;
+  for (const tokenName of Object.keys(tokenReserves)) {
+    if (!["USDC", "USDT"].includes(tokenName)) {
+      serializedTokenReserves[tokenName] = tokenReserves[tokenName];
+    } else {
+      const tokenReserveSerialized = tokenReserves[tokenName].mul(
+        ethers.utils.parseUnits("1.0", 12)
+      );
+      serializedTokenReserves[tokenName] = tokenReserveSerialized;
+    }
+  }
+  return serializedTokenReserves;
 };
