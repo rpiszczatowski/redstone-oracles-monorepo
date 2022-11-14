@@ -353,5 +353,10 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/gate.png",
     "url": " https://www.gate.io/",
     "color": "#3053de"
+  },
+  "bkex": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bkex.png",
+    "url": "https://h5.bkex.com/",
+    "color": "#e0552f"
   }
 }
