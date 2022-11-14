@@ -12,7 +12,6 @@ import { fetchTokenPrice, fetchTokensPrices } from "./fetch-token-price";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
-import { getOptionalPropValue } from "../../../utils/objects";
 import overriddenIds from "./overridden-ids.json";
 
 interface TokenReserve {
@@ -120,4 +119,7 @@ const serializeStableCoinsDecimals = (tokenReserves: TokenReserve) => {
   return serializedTokenReserves;
 };
 
-const overrideTokenId = (id: string) => getOptionalPropValue(overriddenIds, id);
+const overrideTokenId = (id: string) => {
+  const overriddenTokenId = overriddenIds[id as keyof typeof overriddenIds];
+  return !!overriddenTokenId ? overriddenTokenId : id;
+};
