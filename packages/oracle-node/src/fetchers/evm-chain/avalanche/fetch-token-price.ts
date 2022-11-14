@@ -1,18 +1,25 @@
 import { BigNumber, ethers } from "ethers";
 import redstone from "redstone-api";
 
+const tokensNameToSlice = [
+  "YY_TJ_WAVAX_USDC_LP",
+  "MOO_TJ_WAVAX_USDC_LP",
+  "YY_PNG_WAVAX_USDC_LP",
+  "YY_PNG_WETH_WAVAX_LP",
+  "YY_TJ_sAVAX_WAVAX_LP",
+  "YY_TJ_WETH_WAVAX_LP",
+];
+
 export const fetchTokenPrice = async (id: string) => {
-  switch (id) {
-    case "YYAV3SA1":
-      return fetchPriceFromRedStone("AVAX");
-    case "SAV2":
-      return fetchPriceFromRedStone("sAVAX");
-    case "YY_TJ_WAVAX_USDC_LP":
-    case "MOO_TJ_WAVAX_USDC_LP":
-      return fetchPriceFromRedStone("TJ_WAVAX_USDC_LP");
-    default:
-      throw new Error(`Invalid id ${id} for Avalanche EVM fetcher`);
+  if (id === "YYAV3SA1") {
+    return fetchPriceFromRedStone("AVAX");
+  } else if (id === "SAV2") {
+    return fetchPriceFromRedStone("sAVAX");
+  } else if (tokensNameToSlice.includes(id)) {
+    const tokenIdToFetch = id.split("_").slice(1).join("_");
+    return fetchPriceFromRedStone(tokenIdToFetch);
   }
+  throw new Error(`Invalid id ${id} for Avalanche EVM fetcher`);
 };
 
 export const fetchPriceFromRedStone = async (token: string) => {
