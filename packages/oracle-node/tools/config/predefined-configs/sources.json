@@ -214,14 +214,9 @@
     "url": "https://www.okcoin.com",
     "color": "#305ddc"
   },
-  "okex": {
-    "logoURI": "https://cryptologos.cc/logos/okb-okb-logo.svg",
-    "url": "https://www.okex.com",
-    "color": "#4071df"
-  },
-  "okex5": {
-    "logoURI": "https://cryptologos.cc/logos/okb-okb-logo.svg",
-    "url": "https://www.okex.com",
+  "okx": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/okx.png",
+    "url": "https://www.okx.com/",
     "color": "#4071df"
   },
   "poloniex": {

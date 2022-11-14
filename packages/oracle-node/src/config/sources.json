@@ -1,4 +1,9 @@
 {
+  "aax": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/aax.jpeg",
+    "url": "https://www.aax.com/en-US/",
+    "color": "#3b86f7"
+  },
   "api-dojo-rapid": {
     "logoURI": "https://cdn.redstone.finance/sources/api-dojo-rapid.png",
     "url": "https://rapidapi.com/apidojo/api/yahoo-finance1",
@@ -229,9 +234,9 @@
     "url": "https://www.okex.com",
     "color": "#4071df"
   },
-  "okex5": {
-    "logoURI": "https://cdn.redstone.finance/sources/okex5.svg",
-    "url": "https://www.okex.com",
+  "okx": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/okx.png",
+    "url": "https://www.okx.com",
     "color": "#4071df"
   },
   "poloniex": {
