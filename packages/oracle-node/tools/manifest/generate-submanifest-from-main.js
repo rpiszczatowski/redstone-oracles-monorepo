@@ -6,7 +6,7 @@ module.exports = function (symbols, outputFilePath, predefinedManifest = {}) {
     interval: 10000,
     priceAggregator: "median",
     defaultSource: ["coingecko"],
-    sourceTimeout: 7000,
+    sourceTimeout: 50000,
     maxPriceDeviationPercent: 25,
     evmChainId: 1,
     httpBroadcasterURLs: [
