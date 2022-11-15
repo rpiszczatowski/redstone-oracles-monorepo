@@ -5,6 +5,7 @@ const tokensToOverrideMap = {
   "BTC.b": "BTC",
   "LINK.e": "LINK",
   USDt: "USDT",
+  WAVAX: "AVAX",
 };
 
 export const filterTokenToOverride = (symbols: string[]) => {

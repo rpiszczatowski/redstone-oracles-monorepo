@@ -8,10 +8,6 @@ const pathToExampleResponse =
   "../../src/fetchers/trader-joe/example-response.json";
 const expectedResult = [
   {
-    symbol: "WAVAX",
-    value: 43.748689396873296,
-  },
-  {
     symbol: "PNG",
     value: 1.9297487513400018,
   },
@@ -48,7 +44,6 @@ describe("trader-joe fetcher", () => {
 
     // When
     const result = await sut.fetchAll([
-      "WAVAX",
       "PNG",
       "SNOB",
       "SPORE",
@@ -77,7 +72,6 @@ describe("trader-joe fetcher", () => {
 
     // When
     const result = await sut.fetchAll([
-      "WAVAX",
       "PNG",
       "SNOB",
       "SPORE",

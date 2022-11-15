@@ -98,13 +98,7 @@
       "maxPriceDeviationPercent": 25
     },
     "WAVAX": {
-      "source": [
-        "coingecko",
-        "pangolin-png",
-        "pangolin-qi",
-        "pangolin-usdt",
-        "trader-joe"
-      ],
+      "sources": [],
       "maxPriceDeviationPercent": 80
     },
     "LINK": {
