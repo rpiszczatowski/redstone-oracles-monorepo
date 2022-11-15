@@ -12,7 +12,6 @@ import { fetchTokenPrice, fetchTokensPrices } from "./fetch-token-price";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
-import overriddenIds from "./overridden-ids.json";
 
 interface TokenReserve {
   [name: string]: BigNumber;
@@ -64,15 +63,14 @@ const extractPriceForLpTokens = async (
   multicallResult: MulticallParsedResponses,
   id: string
 ) => {
-  const { address } = lpTokensContractsDetails[id as LpTokensDetailsKeys];
+  const { address, tokensToFetch } =
+    lpTokensContractsDetails[id as LpTokensDetailsKeys];
   const reserves = multicallResult[address].getReserves.value;
-  const overriddenTokenId = overrideTokenId(id);
-  const idParts = overriddenTokenId.split("_");
 
   const firstTokenReserve = BigNumber.from(reserves.slice(0, 66));
-  const firstToken = idParts[1];
+  const firstToken = tokensToFetch[0];
   const secondTokenReserve = BigNumber.from(`0x${reserves.slice(66, 130)}`);
-  const secondToken = idParts[2];
+  const secondToken = tokensToFetch[1];
   const tokenReserves = {
     [firstToken]: firstTokenReserve,
     [secondToken]: secondTokenReserve,
@@ -117,9 +115,4 @@ const serializeStableCoinsDecimals = (tokenReserves: TokenReserve) => {
     }
   }
   return serializedTokenReserves;
-};
-
-const overrideTokenId = (id: string) => {
-  const overriddenTokenId = overriddenIds[id as keyof typeof overriddenIds];
-  return !!overriddenTokenId ? overriddenTokenId : id;
 };
