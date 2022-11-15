@@ -4,12 +4,12 @@ import YYTraderJoeLPTokenAbi from "./YYTraderJoeLPToken.abi.json";
 import YYPangolinLPTokenAbi from "./YYPangolinLPToken.abi.json";
 
 export const yieldYakContractsDetails = {
-  YYAV3SA1: {
+  YY_AAVE_AVAX: {
     address: "0xaAc0F2d0630d1D09ab2B5A400412a4840B866d95",
     abi: YieldYakAaveAVAXAbi,
     tokenToFetch: "AVAX",
   },
-  YY_PTP_sAVAX_FT: {
+  YY_PTP_sAVAX: {
     address: "0xb8f531c0d3c53B1760bcb7F57d87762Fd25c4977",
     abi: YYPangolinSAVAXAbi,
     tokenToFetch: "sAVAX",
