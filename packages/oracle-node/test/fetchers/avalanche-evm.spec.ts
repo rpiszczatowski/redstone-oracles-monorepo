@@ -16,7 +16,7 @@ describe("Avalanche EVM fetcher", () => {
   let provider: MockProvider;
   let multicallContract: Contract;
 
-  describe("YYAV3SA1", () => {
+  describe("YY_AAVE_AVAX", () => {
     beforeAll(async () => {
       provider = new MockProvider();
       const [wallet] = provider.getWallets();
@@ -30,8 +30,8 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      yieldYakContractsDetails.YYAV3SA1.abi = YYMock.abi;
-      yieldYakContractsDetails.YYAV3SA1.address = Yycontract.address;
+      yieldYakContractsDetails.YY_AAVE_AVAX.abi = YYMock.abi;
+      yieldYakContractsDetails.YY_AAVE_AVAX.address = Yycontract.address;
     });
 
     test("Should properly fetch data", async () => {
@@ -42,12 +42,12 @@ describe("Avalanche EVM fetcher", () => {
 
       mockRedstoneApiPrice(17, "AVAX");
 
-      const result = await fetcher.fetchAll(["YYAV3SA1"]);
-      expect(result).toEqual([{ symbol: "YYAV3SA1", value: 17.28590481 }]);
+      const result = await fetcher.fetchAll(["YY_AAVE_AVAX"]);
+      expect(result).toEqual([{ symbol: "YY_AAVE_AVAX", value: 17.28590481 }]);
     });
   });
 
-  describe("YY_PTP_sAVAX_FT", () => {
+  describe("YY_PTP_sAVAX", () => {
     beforeAll(async () => {
       provider = new MockProvider();
       const [wallet] = provider.getWallets();
@@ -61,8 +61,8 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      yieldYakContractsDetails.YY_PTP_sAVAX_FT.abi = YYMock.abi;
-      yieldYakContractsDetails.YY_PTP_sAVAX_FT.address = Yycontract.address;
+      yieldYakContractsDetails.YY_PTP_sAVAX.abi = YYMock.abi;
+      yieldYakContractsDetails.YY_PTP_sAVAX.address = Yycontract.address;
     });
 
     test("Should properly fetch data", async () => {
@@ -71,12 +71,10 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockRedstoneApiPrice(23, "SAVAX");
+      mockRedstoneApiPrice(23, "sAVAX");
 
-      const result = await fetcher.fetchAll(["YY_PTP_sAVAX_FT"]);
-      expect(result).toEqual([
-        { symbol: "YY_PTP_sAVAX_FT", value: 23.38681239 },
-      ]);
+      const result = await fetcher.fetchAll(["YY_PTP_sAVAX"]);
+      expect(result).toEqual([{ symbol: "YY_PTP_sAVAX", value: 23.38681239 }]);
     });
   });
 
