@@ -22,7 +22,17 @@ module.exports = function (symbols, outputFilePath, predefinedManifest = {}) {
 
   // Building tokens
   for (const symbol of symbols) {
-    manifest.tokens[symbol] = manifestForMainProvider.tokens[symbol];
+    if (manifestForMainProvider.tokens[symbol]) {
+      manifest.tokens[symbol] = manifestForMainProvider.tokens[symbol];
+    } else {
+      console.warn(
+        `Missing symbol ${symbol} in main manifest, creating empty config`
+      );
+      manifest.tokens[symbol] = {
+        sources: [],
+        maxPriceDeviationPercent: 80,
+      };
+    }
   }
 
   // Saving manifest to the output file

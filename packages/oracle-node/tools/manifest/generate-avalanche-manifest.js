@@ -7,11 +7,8 @@ const SYMBOLS = [
   "PNG",
   "AVAX",
   "WAVAX",
-  "XAVA",
   "LINK",
   "BTC",
-  "FRAX",
-  "YAK",
   "QI",
   "USDC",
   "YYAV3SA1",
@@ -32,6 +29,10 @@ const SYMBOLS = [
   "YY_PNG_WETH_WAVAX_LP",
   "YY_TJ_sAVAX_WAVAX_LP",
   "YY_TJ_WETH_WAVAX_LP",
+  "BTC.b",
+  "WETH.e",
+  "LINK.e",
+  "USDt",
 ];
 
 generateSubManifest(SYMBOLS, OUTPUT_FILE_PATH);

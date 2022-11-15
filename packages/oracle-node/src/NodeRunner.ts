@@ -37,6 +37,7 @@ import {
 } from "redstone-protocol";
 import { config } from "./config";
 import { connectToDb } from "./db/remote-mongo/db-connector";
+import { addToAggregatedPricesTokensToOverride } from "./fetchers/override-token";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -288,6 +289,11 @@ export default class NodeRunner {
         Object.values(pricesBeforeAggregation), // what is the advantage of using lodash.values?
         aggregators[this.currentManifest!.priceAggregator]
       );
+    addToAggregatedPricesTokensToOverride(
+      this.currentManifest!,
+      aggregatedPrices
+    );
+
     NodeRunner.printAggregatedPrices(aggregatedPrices);
     trackEnd(fetchingAllTrackingId);
     return aggregatedPrices;

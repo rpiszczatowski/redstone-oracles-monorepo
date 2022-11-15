@@ -1,6 +1,7 @@
 import { Consola } from "consola";
 import { Fetcher, PriceDataFetched, FetcherOpts, PricesObj } from "../types";
 import createLogger from "../utils/logger";
+import { filterTokenToOverride } from "./override-token";
 
 const MAX_RESPONSE_TIME_TO_RETRY_FETCHING_MS = 3000;
 
@@ -37,8 +38,11 @@ export abstract class BaseFetcher implements Fetcher {
   ): Promise<PriceDataFetched[]> {
     // Fetching data
     const fetchStartTime = Date.now();
-    const ids = symbols.map((symbol) => this.convertSymbolToId(symbol));
-    let response = await this.fetchData(ids, opts);
+    const filteredSymbols = filterTokenToOverride(symbols);
+    const filteredIds = filteredSymbols.map((symbol) =>
+      this.convertSymbolToId(symbol)
+    );
+    let response = await this.fetchData(filteredIds, opts);
 
     // Retrying data fetching if needed
     const shouldRetry =
@@ -47,7 +51,7 @@ export abstract class BaseFetcher implements Fetcher {
       Date.now() - fetchStartTime <= MAX_RESPONSE_TIME_TO_RETRY_FETCHING_MS;
     if (shouldRetry) {
       this.logger.info("Retrying to fetch data");
-      response = await this.fetchData(ids, opts);
+      response = await this.fetchData(filteredIds, opts);
     }
 
     // Validating response
@@ -57,9 +61,9 @@ export abstract class BaseFetcher implements Fetcher {
     }
 
     // Extracting prices from response
-    const pricesObj = await this.extractPrices(response, ids, opts);
+    const pricesObj = await this.extractPrices(response, filteredIds, opts);
 
-    return this.convertPricesObjToResultPriceArray(pricesObj, ids);
+    return this.convertPricesObjToResultPriceArray(pricesObj, filteredIds);
   }
 
   // This method converts internal asset id (asset identifier on fetcher level)

@@ -107,10 +107,6 @@
       ],
       "maxPriceDeviationPercent": 80
     },
-    "XAVA": {
-      "source": ["kucoin", "pangolin-wavax", "trader-joe"],
-      "maxPriceDeviationPercent": 80
-    },
     "LINK": {
       "source": [
         "ascendex",
@@ -178,14 +174,6 @@
         "stex"
       ],
       "maxPriceDeviationPercent": 25
-    },
-    "FRAX": {
-      "source": ["coingecko", "sushiswap", "uniswap"],
-      "maxPriceDeviationPercent": 25
-    },
-    "YAK": {
-      "source": ["coingecko", "pangolin-wavax", "trader-joe"],
-      "maxPriceDeviationPercent": 80
     },
     "QI": {
       "source": [
@@ -292,6 +280,22 @@
     },
     "YY_TJ_WETH_WAVAX_LP": {
       "source": ["avalanche-evm-fetcher"],
+      "maxPriceDeviationPercent": 80
+    },
+    "BTC.b": {
+      "sources": [],
+      "maxPriceDeviationPercent": 80
+    },
+    "WETH.e": {
+      "sources": [],
+      "maxPriceDeviationPercent": 80
+    },
+    "LINK.e": {
+      "sources": [],
+      "maxPriceDeviationPercent": 80
+    },
+    "USDt": {
+      "sources": [],
       "maxPriceDeviationPercent": 80
     }
   }
