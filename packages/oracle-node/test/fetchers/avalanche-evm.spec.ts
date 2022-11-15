@@ -47,7 +47,7 @@ describe("Avalanche EVM fetcher", () => {
     });
   });
 
-  describe("SAV2", () => {
+  describe("YY_PTP_SAVAX_FT", () => {
     beforeAll(async () => {
       provider = new MockProvider();
       const [wallet] = provider.getWallets();
@@ -61,8 +61,8 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      yieldYakContractsDetails.SAV2.abi = YYMock.abi;
-      yieldYakContractsDetails.SAV2.address = Yycontract.address;
+      yieldYakContractsDetails.YY_PTP_SAVAX_FT.abi = YYMock.abi;
+      yieldYakContractsDetails.YY_PTP_SAVAX_FT.address = Yycontract.address;
     });
 
     test("Should properly fetch data", async () => {
@@ -71,10 +71,12 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockRedstoneApiPrice(23, "SAV2");
+      mockRedstoneApiPrice(23, "SAVAX");
 
-      const result = await fetcher.fetchAll(["SAV2"]);
-      expect(result).toEqual([{ symbol: "SAV2", value: 23.38681239 }]);
+      const result = await fetcher.fetchAll(["YY_PTP_SAVAX_FT"]);
+      expect(result).toEqual([
+        { symbol: "YY_PTP_SAVAX_FT", value: 23.38681239 },
+      ]);
     });
   });
 
