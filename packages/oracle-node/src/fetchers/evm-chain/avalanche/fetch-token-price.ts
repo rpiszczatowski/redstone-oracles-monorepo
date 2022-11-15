@@ -13,7 +13,7 @@ const tokensNameToSlice = [
 export const fetchTokenPrice = async (id: string) => {
   if (id === "YYAV3SA1") {
     return fetchPriceFromRedStone("AVAX");
-  } else if (id === "SAV2") {
+  } else if (id === "YY_PTP_SAVAX_FT") {
     return fetchPriceFromRedStone("sAVAX");
   } else if (tokensNameToSlice.includes(id)) {
     const tokenIdToFetch = id.split("_").slice(1).join("_");

@@ -16,7 +16,6 @@ const SYMBOLS = [
   "USDC",
   "YYAV3SA1",
   "sAVAX",
-  "SAV2",
   "PTP",
   "TJ_WAVAX_USDC_LP",
   "PNG_WAVAX_USDC_LP",
@@ -32,6 +31,7 @@ const SYMBOLS = [
   "YY_PNG_WETH_WAVAX_LP",
   "YY_TJ_sAVAX_WAVAX_LP",
   "YY_TJ_WETH_WAVAX_LP",
+  "YY_PTP_SAVAX_FT",
 ];
 
 generateSubManifest(SYMBOLS, OUTPUT_FILE_PATH);
