@@ -204,10 +204,7 @@
     "DYP": {},
     "SPORE": {},
     "JOE": {},
-    "WAVAX": {},
-    "FRAX": {},
     "QI": {},
-    "YAK": {},
     "SOS": {},
     "ONE": {},
     "GLMR": {},
@@ -381,7 +378,8 @@
     "SWISE": {},
     "ZB": {},
     "SYLO": {},
-    "APT": {}
+    "APT": {},
+    "PTP": {}
   },
   "defaultSource": ["coingecko"]
 }

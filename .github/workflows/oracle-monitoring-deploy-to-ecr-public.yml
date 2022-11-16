@@ -1,9 +1,7 @@
-# to automate building a public docker image of redstone-node
+# Automate building a public docker image of oracle-monitoring
 # and publishing it to the AWS ECR Public
 
-# Learn more: https://github.com/pahud/ecr-public-action
-
-name: Deploy to Amazon ECR Public
+name: Deploy monitoring to Amazon ECR Public
 on:
   push:
     branches:
@@ -11,19 +9,13 @@ on:
       - push-docker-ecr-public
     paths:
       - packages/oracle-monitoring/**
-      - .github/workflows/oracle-monitoring-deploy-to-ecr-public.yaml
+      - .github/workflows/oracle-monitoring-deploy-to-ecr-public.yml
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     name: ECR public action
     steps:
-      - name: Get repo name
-        id: repoName
-        run: echo "::set-output name=reponame::$(echo ${{github.repository}} | cut -d '/' -f 2)"
-      - name: Get short SHA
-        id: sha
-        run: echo "::set-output name=sha7::$(echo ${GITHUB_SHA} | cut -c1-7)"
       - name: Checkout
         uses: actions/checkout@v2
       - name: Configure AWS credentials
@@ -32,13 +24,14 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - name: Build and Push to ECR public
+      - name: Build and Push Docker images to ECR public
         id: build-and-push
-        uses: pahud/ecr-public-action@8cd826db40befb59b0cd0b60b22a7ba72d06a7f7
-        with:
-          dockerfile: Dockerfile
-          context: .
-          create_repo: ecr_repo_name
-          tags: |
-            public.ecr.aws/y7v2w8b2/${{ steps.repoName.outputs.reponame }}:latest
-            public.ecr.aws/y7v2w8b2/${{ steps.repoName.outputs.reponame }}:${{ steps.sha.outputs.sha7 }}
+        run: |
+          # Build images
+          ORACLE_MONITORING_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-oracle-monitoring
+          TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
+          docker build -t "$ORACLE_MONITORING_DOCKER_NAME:$TAG" packages/oracle-monitoring/
+
+          # Push images to ECR Public
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+          docker push $ORACLE_MONITORING_DOCKER_NAME:$TAG

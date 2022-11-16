@@ -5,34 +5,51 @@
       { "internalType": "address", "name": "_depositToken", "type": "address" },
       {
         "internalType": "address",
-        "name": "_swapPairDepositToken",
+        "name": "_poolRewardToken",
         "type": "address"
       },
       {
         "components": [
-          { "internalType": "address", "name": "reward", "type": "address" },
-          { "internalType": "address", "name": "swapPair", "type": "address" }
+          {
+            "internalType": "address",
+            "name": "swapPairToken",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "swapPairPoolReward",
+            "type": "address"
+          },
+          {
+            "internalType": "address",
+            "name": "swapPairExtraReward",
+            "type": "address"
+          }
         ],
-        "internalType": "struct VariableRewardsStrategy.RewardSwapPairs[]",
-        "name": "_rewardSwapPairs",
-        "type": "tuple[]"
+        "internalType": "struct PlatypusStrategy.SwapPairs",
+        "name": "swapPairs",
+        "type": "tuple"
       },
+      { "internalType": "uint256", "name": "_maxSlippage", "type": "uint256" },
+      { "internalType": "address", "name": "_pool", "type": "address" },
       {
         "internalType": "address",
         "name": "_stakingContract",
         "type": "address"
       },
-      {
-        "internalType": "address",
-        "name": "_boosterFeeCollector",
-        "type": "address"
-      },
+      { "internalType": "address", "name": "_voterProxy", "type": "address" },
+      { "internalType": "uint256", "name": "_pid", "type": "uint256" },
       { "internalType": "address", "name": "_timelock", "type": "address" },
       {
         "components": [
           {
             "internalType": "uint256",
             "name": "minTokensToReinvest",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "adminFeeBips",
             "type": "uint256"
           },
           {
@@ -46,32 +63,13 @@
             "type": "uint256"
           }
         ],
-        "internalType": "struct YakStrategyV2.StrategySettings",
+        "internalType": "struct PlatypusStrategy.StrategySettings",
         "name": "_strategySettings",
         "type": "tuple"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "rewardToken",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "swapPair",
-        "type": "address"
-      }
-    ],
-    "name": "AddReward",
-    "type": "event"
   },
   {
     "anonymous": false,
@@ -211,19 +209,6 @@
       }
     ],
     "name": "RemoveDepositor",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "rewardToken",
-        "type": "address"
-      }
-    ],
-    "name": "RemoveReward",
     "type": "event"
   },
   {
@@ -435,6 +420,13 @@
   },
   {
     "inputs": [],
+    "name": "PID",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "REINVEST_REWARD_BIPS",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
@@ -445,16 +437,6 @@
     "name": "VERSION_HASH",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "address", "name": "_rewardToken", "type": "address" },
-      { "internalType": "address", "name": "_swapPair", "type": "address" }
-    ],
-    "name": "addReward",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -494,20 +476,11 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "address", "name": "account", "type": "address" }
-    ],
-    "name": "balanceOf",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
-    "name": "boosterFeeCollector",
+    "name": "asset",
     "outputs": [
       {
-        "internalType": "contract IBoosterFeeCollector",
+        "internalType": "contract IPlatypusAsset",
         "name": "",
         "type": "address"
       }
@@ -517,18 +490,9 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
-    "name": "calculateDepositFee",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
-    ],
-    "name": "calculateWithdrawFee",
+    "name": "balanceOf",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
@@ -549,7 +513,7 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "deposit",
     "outputs": [],
@@ -558,8 +522,8 @@
   },
   {
     "inputs": [
-      { "internalType": "address", "name": "_account", "type": "address" },
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+      { "internalType": "address", "name": "account", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "depositFor",
     "outputs": [],
@@ -577,11 +541,11 @@
   },
   {
     "inputs": [
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
-      { "internalType": "uint256", "name": "_deadline", "type": "uint256" },
-      { "internalType": "uint8", "name": "_v", "type": "uint8" },
-      { "internalType": "bytes32", "name": "_r", "type": "bytes32" },
-      { "internalType": "bytes32", "name": "_s", "type": "bytes32" }
+      { "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "deadline", "type": "uint256" },
+      { "internalType": "uint8", "name": "v", "type": "uint8" },
+      { "internalType": "bytes32", "name": "r", "type": "bytes32" },
+      { "internalType": "bytes32", "name": "s", "type": "bytes32" }
     ],
     "name": "depositWithPermit",
     "outputs": [],
@@ -610,6 +574,13 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "extraToken",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
@@ -630,6 +601,26 @@
       { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "getSharesForDepositTokens",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "masterchef",
+    "outputs": [
+      {
+        "internalType": "contract IMasterPlatypus",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "maxSlippage",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
@@ -678,6 +669,32 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "pool",
+    "outputs": [
+      {
+        "internalType": "contract IPlatypusPool",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "proxy",
+    "outputs": [
+      {
+        "internalType": "contract IPlatypusVoterProxy",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
@@ -713,15 +730,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "address", "name": "_rewardToken", "type": "address" }
-    ],
-    "name": "removeReward",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
@@ -732,10 +740,10 @@
     "inputs": [
       {
         "internalType": "uint256",
-        "name": "_minReturnAmountAccepted",
+        "name": "minReturnAmountAccepted",
         "type": "uint256"
       },
-      { "internalType": "bool", "name": "", "type": "bool" }
+      { "internalType": "bool", "name": "disableDeposits", "type": "bool" }
     ],
     "name": "rescueDeployedFunds",
     "outputs": [],
@@ -754,20 +762,6 @@
   },
   {
     "inputs": [],
-    "name": "rewardCount",
-    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "name": "rewardSwapPairs",
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "rewardToken",
     "outputs": [
       { "internalType": "contract IERC20", "name": "", "type": "address" }
@@ -776,8 +770,37 @@
     "type": "function"
   },
   {
-    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
-    "name": "supportedRewards",
+    "inputs": [],
+    "name": "setAllowances",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_extraTokenSwapPair",
+        "type": "address"
+      }
+    ],
+    "name": "setExtraRewardSwapPair",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_voterProxy", "type": "address" }
+    ],
+    "name": "setPlatypusVoterProxy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "swapPairExtraReward",
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
@@ -843,15 +866,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      { "internalType": "address", "name": "_collector", "type": "address" }
-    ],
-    "name": "updateBoosterFeeCollector",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [{ "internalType": "bool", "name": "newValue", "type": "bool" }],
     "name": "updateDepositsEnabled",
     "outputs": [],
@@ -872,6 +886,15 @@
       { "internalType": "uint256", "name": "newValue", "type": "uint256" }
     ],
     "name": "updateDevFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "slippageBips", "type": "uint256" }
+    ],
+    "name": "updateMaxSwapSlippage",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -904,21 +927,8 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "vectorMainStaking",
-    "outputs": [
-      {
-        "internalType": "contract IVectorMainStaking",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
-      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "withdraw",
     "outputs": [],

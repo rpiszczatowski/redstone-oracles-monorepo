@@ -8,6 +8,13 @@ export type GetSinglePrice = (
   opts?: GetPriceOptions
 ) => Promise<PriceData>;
 
+export type GetPrices = (
+  symbol: string[],
+  opts?: GetPriceOptions
+) => Promise<{
+  [token: string]: PriceData;
+}>;
+
 export function mockRedstoneApiPrice(value: number, symbol: string = "USDT") {
   jest.mock("redstone-api");
   const mockedApi = RedstoneApi as MockProxy<typeof RedstoneApi>;
@@ -20,6 +27,28 @@ export function mockRedstoneApiPrice(value: number, symbol: string = "USDT") {
       permawebTx: "sdf",
       timestamp: 111111,
     });
+  });
+}
+
+export function mockRedstoneApiPrices(values: number[], symbols: string[]) {
+  jest.mock("redstone-api");
+  const mockedApi = RedstoneApi as MockProxy<typeof RedstoneApi>;
+
+  (mockedApi.getPrice as GetPrices) = jest.fn((symbols: string[]) => {
+    return Promise.resolve(
+      symbols.reduce((object, symbol, index) => {
+        return {
+          ...object,
+          [symbol]: {
+            symbol: symbol,
+            provider: "prov",
+            value: values[index],
+            permawebTx: "sdf",
+            timestamp: 111111,
+          },
+        };
+      }, {})
+    );
   });
 }
 

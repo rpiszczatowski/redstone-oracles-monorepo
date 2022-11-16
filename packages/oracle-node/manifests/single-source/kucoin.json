@@ -1,9 +1,7 @@
 {
   "interval": 60000,
   "priceAggregator": "median",
-  "defaultSource": [
-    "kucoin"
-  ],
+  "defaultSource": ["kucoin"],
   "sourceTimeout": 50000,
   "maxPriceDeviationPercent": 25,
   "evmChainId": 1,
@@ -193,7 +191,6 @@
     "IDEA": {},
     "SKEY": {},
     "WEST": {},
-    "XAVA": {},
     "KONO": {},
     "LTX": {},
     "NORD": {},
@@ -202,6 +199,7 @@
     "USDJ": {},
     "ENQ": {},
     "SUTER": {},
-    "LAYER": {}
+    "LAYER": {},
+    "QI": {}
   }
 }
