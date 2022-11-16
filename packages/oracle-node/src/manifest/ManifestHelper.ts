@@ -57,22 +57,4 @@ export default class ManifestHelper {
   static getDeviationCheckConfigForSymbol(symbol: string, manifest: Manifest) {
     return manifest.tokens[symbol].deviationCheck || manifest.deviationCheck;
   }
-
-  static getMaxDeviationForSymbol(
-    symbol: string,
-    manifest: Manifest
-  ): number | null {
-    if (manifest.tokens[symbol] === undefined) {
-      return null;
-    }
-    let result = manifest.tokens[symbol].maxPriceDeviationPercent;
-    if (result === undefined) {
-      result = manifest.maxPriceDeviationPercent;
-    }
-    if (typeof result !== "number") {
-      return null;
-    }
-
-    return result;
-  }
 }

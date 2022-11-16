@@ -87,6 +87,9 @@ describe("NodeRunnerOld", () => {
       sourceTimeout: 2000,
       evmChainId: 1,
       enableArweaveBackup: true,
+      deviationCheck: {
+        maxPercentDeviationForSource: 25,
+      },
       tokens: {
         BTC: {
           source: ["coingecko"],
@@ -136,7 +139,7 @@ describe("NodeRunnerOld", () => {
     });
 
     await expect(sut.run()).rejects.toThrowError(
-      "Could not determine maxPriceDeviationPercent"
+      "Could not determine deviationCheckConfig"
     );
   });
 

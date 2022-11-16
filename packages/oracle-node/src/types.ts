@@ -10,7 +10,7 @@ export interface Manifest {
   // TODO: This option will be removed
   maxPriceDeviationPercent: number;
 
-  deviationCheck?: DeviationCheckConfig;
+  deviationCheck: DeviationCheckConfig;
 
   evmChainId: number;
   tokens: TokensConfig;

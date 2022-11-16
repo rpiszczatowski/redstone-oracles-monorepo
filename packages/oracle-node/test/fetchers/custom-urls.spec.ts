@@ -25,6 +25,9 @@ describe("custom URL fetcher", () => {
         defaultSource: ["custom-urls"],
         interval: 10000,
         maxPriceDeviationPercent: 25,
+        deviationCheck: {
+          maxPercentDeviationForSource: 25,
+        },
         priceAggregator: "median",
         sourceTimeout: 2000,
         evmChainId: 1,

@@ -8,6 +8,9 @@
   "enableStreamrBroadcaster": false,
   "enableArweaveBackup": false,
   "evmChainId": 1,
+  "deviationCheck": {
+    "maxPercentDeviationForSource": 25
+  },
   "tokens": {
     "BTC": {},
     "ETH": {},

@@ -23,6 +23,9 @@ describe("twelve-data fetcher", () => {
         evmChainId: 1,
         sourceTimeout: 8000,
         maxPriceDeviationPercent: 25,
+        deviationCheck: {
+          maxPercentDeviationForSource: 25,
+        },
         tokens: {
           CHF: {},
           BGP: {},

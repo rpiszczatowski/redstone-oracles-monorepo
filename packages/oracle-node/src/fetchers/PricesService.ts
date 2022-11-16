@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import fetchers from "./index";
 import ManifestHelper, { TokensBySource } from "../manifest/ManifestHelper";
 import {
-  Aggregator,
   Credentials,
   DeviationCheckConfig,
   Manifest,
@@ -242,21 +241,6 @@ export default class PricesService {
     return pricesBeforeSigning;
   }
 
-  // TODO: remove
-  // private maxPriceDeviationPercent(priceSymbol: string): number {
-  //   const result = ManifestHelper.getDeviationCheckConfigForSymbol(
-  //     priceSymbol,
-  //     this.manifest
-  //   );
-  // if (result === null) {
-  //   throw new ManifestConfigError(`Could not determine maxPriceDeviationPercent for ${priceSymbol}.
-  //     Did you forget to add maxPriceDeviationPercent parameter in the manifest file?`);
-  // }
-  //   logger.debug(`maxPriceDeviationPercent for ${priceSymbol}: ${result}`);
-
-  //   return result;
-  // }
-
   private deviationCheckConfig(priceSymbol: string): DeviationCheckConfig {
     const deviationCheckConfig =
       ManifestHelper.getDeviationCheckConfigForSymbol(
@@ -265,7 +249,7 @@ export default class PricesService {
       );
     if (!deviationCheckConfig) {
       throw new ManifestConfigError(
-        `Could not determine deviationCheckConfig for ${priceSymbol}.` +
+        `Could not determine deviationCheckConfig for ${priceSymbol}. ` +
           `Did you forget to add deviationCheck parameter in the manifest file?`
       );
     }

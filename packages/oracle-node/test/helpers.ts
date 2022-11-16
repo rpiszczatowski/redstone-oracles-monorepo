@@ -9,6 +9,9 @@ const baseManifest = {
   httpBroadcasterURLs: ["http://localhost:9000"],
   enableStreamrBroadcaster: true,
   enableArweaveBackup: false,
+  deviationCheck: {
+    maxPercentDeviationForSource: 25,
+  },
 };
 
 export const MOCK_MANIFEST = {
