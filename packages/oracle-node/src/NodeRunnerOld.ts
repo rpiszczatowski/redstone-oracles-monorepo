@@ -2,7 +2,7 @@ import git from "git-last-commit";
 import { ethers } from "ethers";
 import { Consola } from "consola";
 import aggregators from "./aggregators";
-import ManifestHelper, { TokensBySource } from "./manifest/ManifestParser";
+import ManifestHelper, { TokensBySource } from "./manifest/ManifestHelper";
 import ArweaveService from "./arweave/ArweaveService";
 import { promiseTimeout, TimeoutError } from "./utils/promise-timeout";
 import { mergeObjects } from "./utils/objects";
@@ -235,9 +235,9 @@ export default class NodeRunnerOld {
       );
 
     const aggregatedPrices: PriceDataAfterAggregation[] =
-      this.pricesService!.calculateAggregatedValues(
+      await this.pricesService!.calculateAggregatedValues(
         Object.values(pricesBeforeAggregation), // what is the advantage of using lodash.values?
-        aggregators[this.currentManifest!.priceAggregator]
+        this.currentManifest!
       );
     NodeRunnerOld.printAggregatedPrices(aggregatedPrices);
     trackEnd(fetchingAllTrackingId);

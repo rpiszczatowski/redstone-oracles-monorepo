@@ -4,6 +4,7 @@ import {
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
 } from "../types";
+import { calculateDeviationPercent } from "../utils/calculate-deviation";
 
 const logger = require("../utils/logger")(
   "aggregators/median-aggregator"
@@ -27,7 +28,10 @@ const medianAggregator: Aggregator = {
     const stableValues = [];
     for (const sourceName of Object.keys(price.source)) {
       const value = price.source[sourceName];
-      const deviation = (Math.abs(value - initialMedian) / initialMedian) * 100;
+      const deviation = calculateDeviationPercent({
+        measuredValue: value,
+        trueValue: initialMedian,
+      });
       if (isNaN(value)) {
         // We don't log warnings for "error" values
         // because these values represent fetching fails

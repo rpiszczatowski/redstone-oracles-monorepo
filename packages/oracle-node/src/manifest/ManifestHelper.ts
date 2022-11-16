@@ -54,6 +54,10 @@ export default class ManifestHelper {
     return timeoutConfiguration;
   }
 
+  static getDeviationCheckConfigForSymbol(symbol: string, manifest: Manifest) {
+    return manifest.tokens[symbol].deviationCheck || manifest.deviationCheck;
+  }
+
   static getMaxDeviationForSymbol(
     symbol: string,
     manifest: Manifest

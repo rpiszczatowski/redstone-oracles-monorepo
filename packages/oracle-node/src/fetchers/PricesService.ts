@@ -1,10 +1,11 @@
 import { Consola } from "consola";
 import { v4 as uuidv4 } from "uuid";
 import fetchers from "./index";
-import ManifestHelper, { TokensBySource } from "../manifest/ManifestParser";
+import ManifestHelper, { TokensBySource } from "../manifest/ManifestHelper";
 import {
   Aggregator,
   Credentials,
+  DeviationCheckConfig,
   Manifest,
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
@@ -14,6 +15,9 @@ import {
 import { trackEnd, trackStart } from "../utils/performance-tracker";
 import ManifestConfigError from "../manifest/ManifestConfigError";
 import { promiseTimeout } from "../utils/promise-timeout";
+import aggregators from "../aggregators";
+import localDb, { AllPriceValuesInLocalDB } from "../db/local-db";
+import { calculateDeviationPercent } from "../utils/calculate-deviation";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -146,41 +150,71 @@ export default class PricesService {
   // - recent deviations check
   // - zero values filtering
   // - aggregation across different sources (exluding outliers)
-  calculateAggregatedValues(
+  async calculateAggregatedValues(
     prices: PriceDataBeforeAggregation[],
     manifest: Manifest
-  ): PriceDataAfterAggregation[] {
-    // switch (manifest.priceAggregator) {
-    //   case "median":
-    //     return Media;
-    // }
-    return [];
-    // const aggregatedPrices: PriceDataAfterAggregation[] = [];
-    // for (const price of prices) {
-    //   const maxPriceDeviationPercent = this.maxPriceDeviationPercent(
-    //     price.symbol
-    //   );
-    //   try {
-    //     const priceAfterAggregation = aggregator.getAggregatedValue(
-    //       price,
-    //       maxPriceDeviationPercent
-    //     );
-    //     if (
-    //       priceAfterAggregation.value <= 0 ||
-    //       priceAfterAggregation.value === undefined
-    //     ) {
-    //       throw new Error(
-    //         "Invalid price value: " + JSON.stringify(priceAfterAggregation)
-    //       );
-    //     }
-    //     aggregatedPrices.push(priceAfterAggregation);
-    //   } catch (e: any) {
-    //     // We use warn level instead of error because
-    //     // price aggregation errors occur quite often
-    //     logger.warn(e.stack);
-    //   }
-    // }
-    // return aggregatedPrices;
+  ): Promise<PriceDataAfterAggregation[]> {
+    const aggregator = aggregators[manifest.priceAggregator];
+    const pricesInLocalDB = await localDb.getAllPrices();
+
+    const aggregatedPrices: PriceDataAfterAggregation[] = [];
+    for (const price of prices) {
+      const deviationCheckConfig = this.deviationCheckConfig(price.symbol);
+
+      try {
+        const priceAfterAggregation = aggregator.getAggregatedValue(
+          price,
+          deviationCheckConfig.maxPercentDeviationForSource!
+        );
+
+        // Throws an error if price is invalid or too deviated
+        this.assertValidPrice(
+          priceAfterAggregation,
+          pricesInLocalDB,
+          deviationCheckConfig
+        );
+
+        aggregatedPrices.push(priceAfterAggregation);
+      } catch (e: any) {
+        logger.error(e.stack);
+      }
+    }
+
+    return aggregatedPrices;
+  }
+
+  assertValidPrice(
+    price: PriceDataAfterAggregation,
+    recentPricesInLocalDB: AllPriceValuesInLocalDB,
+    deviationCheckConfig: DeviationCheckConfig
+  ) {
+    // Checking if price value looks valid (non-zero, non-empty)
+    if (price.value <= 0 || price.value === undefined) {
+      throw new Error("Invalid price value: " + JSON.stringify(price));
+    }
+
+    // Checking deviation from recent values
+    const { deviationWithRecentValues } = deviationCheckConfig;
+    if (deviationWithRecentValues) {
+      for (const recentPrice of recentPricesInLocalDB[price.symbol]) {
+        const timestampDelay = price.timestamp - recentPrice.timestamp;
+        if (timestampDelay <= deviationWithRecentValues.maxDelayMilliseconds) {
+          const deviationPercent = calculateDeviationPercent({
+            measuredValue: price.value,
+            trueValue: recentPrice.value,
+          });
+          if (deviationPercent > deviationWithRecentValues.maxPercent) {
+            const errMsg =
+              `Value is too deviated from recent values. ` +
+              `Symbol: ${price.symbol}` +
+              `Deviation percent: ${deviationPercent}. ` +
+              `Recent price: ${JSON.stringify(recentPrice)}. ` +
+              `Current value: ${price.value}`;
+            throw new Error(errMsg);
+          }
+        }
+      }
+    }
   }
 
   filterPricesForSigning(
@@ -208,17 +242,33 @@ export default class PricesService {
     return pricesBeforeSigning;
   }
 
-  private maxPriceDeviationPercent(priceSymbol: string): number {
-    const result = ManifestHelper.getMaxDeviationForSymbol(
-      priceSymbol,
-      this.manifest
-    );
-    if (result === null) {
-      throw new ManifestConfigError(`Could not determine maxPriceDeviationPercent for ${priceSymbol}.
-        Did you forget to add maxPriceDeviationPercent parameter in the manifest file?`);
-    }
-    logger.debug(`maxPriceDeviationPercent for ${priceSymbol}: ${result}`);
+  // TODO: remove
+  // private maxPriceDeviationPercent(priceSymbol: string): number {
+  //   const result = ManifestHelper.getDeviationCheckConfigForSymbol(
+  //     priceSymbol,
+  //     this.manifest
+  //   );
+  // if (result === null) {
+  //   throw new ManifestConfigError(`Could not determine maxPriceDeviationPercent for ${priceSymbol}.
+  //     Did you forget to add maxPriceDeviationPercent parameter in the manifest file?`);
+  // }
+  //   logger.debug(`maxPriceDeviationPercent for ${priceSymbol}: ${result}`);
 
-    return result;
+  //   return result;
+  // }
+
+  private deviationCheckConfig(priceSymbol: string): DeviationCheckConfig {
+    const deviationCheckConfig =
+      ManifestHelper.getDeviationCheckConfigForSymbol(
+        priceSymbol,
+        this.manifest
+      );
+    if (!deviationCheckConfig) {
+      throw new ManifestConfigError(
+        `Could not determine deviationCheckConfig for ${priceSymbol}.` +
+          `Did you forget to add deviationCheck parameter in the manifest file?`
+      );
+    }
+    return deviationCheckConfig;
   }
 }

@@ -1,7 +1,7 @@
 import git from "git-last-commit";
 import { ethers } from "ethers";
 import { Consola } from "consola";
-import ManifestHelper, { TokensBySource } from "./manifest/ManifestParser";
+import ManifestHelper, { TokensBySource } from "./manifest/ManifestHelper";
 import ArweaveService from "./arweave/ArweaveService";
 import { promiseTimeout, TimeoutError } from "./utils/promise-timeout";
 import { mergeObjects } from "./utils/objects";
@@ -296,7 +296,7 @@ export default class NodeRunner {
       );
 
     const aggregatedPrices: PriceDataAfterAggregation[] =
-      this.pricesService!.calculateAggregatedValues(
+      await this.pricesService!.calculateAggregatedValues(
         Object.values(pricesBeforeAggregation),
         this.currentManifest!
       );
