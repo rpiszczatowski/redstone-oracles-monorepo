@@ -1,7 +1,6 @@
 import git from "git-last-commit";
 import { ethers } from "ethers";
 import { Consola } from "consola";
-import aggregators from "./aggregators";
 import ManifestHelper, { TokensBySource } from "./manifest/ManifestParser";
 import ArweaveService from "./arweave/ArweaveService";
 import { promiseTimeout, TimeoutError } from "./utils/promise-timeout";
@@ -37,6 +36,7 @@ import {
 } from "redstone-protocol";
 import { config } from "./config";
 import { connectToDb } from "./db/remote-mongo/db-connector";
+import localDB from "./db/local-db";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -215,19 +215,25 @@ export default class NodeRunner {
     // Fetching and aggregating
     const aggregatedPrices: PriceDataAfterAggregation[] =
       await this.fetchPrices();
-    const pricesReadyForSigning = this.pricesService!.preparePricesForSigning(
-      aggregatedPrices,
-      "",
-      this.providerAddress
-    );
 
-    if (pricesReadyForSigning.length === 0) {
+    // Saving prices in local db
+    // (they can be used for building TWAPs and checking recent deviations)
+    await this.savePricesInLocalDB(aggregatedPrices);
+
+    if (aggregatedPrices.length === 0) {
       logger.info("No prices to sign");
     } else {
+      // Exluding "helpful" prices, which should not be signed
+      // "Helpful" prices (e.g. AVAX_SPOT) can be used to calculate TWAP values
+      const pricesForSigning = this.pricesService!.filterPricesForSigning(
+        aggregatedPrices,
+        this.currentManifest!
+      );
+
       // Signing
       const signedDataPackages = this.signPrices(
-        pricesReadyForSigning,
-        pricesReadyForSigning[0].timestamp
+        pricesForSigning,
+        pricesForSigning[0].timestamp
       );
 
       // Broadcasting
@@ -235,8 +241,14 @@ export default class NodeRunner {
     }
   }
 
+  private async savePricesInLocalDB(prices: PriceDataAfterAggregation[]) {
+    logger.info(`Saving ${prices.length} prices in local db`);
+    await localDB.savePrices(prices);
+    logger.info("Prices saved in local db");
+  }
+
   private signPrices(
-    prices: PriceDataBeforeSigning[],
+    prices: PriceDataAfterAggregation[],
     timestamp: number
   ): SignedDataPackage[] {
     const ethPrivKey = this.nodeConfig.privateKeys.ethereumPrivateKey;
@@ -285,8 +297,8 @@ export default class NodeRunner {
 
     const aggregatedPrices: PriceDataAfterAggregation[] =
       this.pricesService!.calculateAggregatedValues(
-        Object.values(pricesBeforeAggregation), // what is the advantage of using lodash.values?
-        aggregators[this.currentManifest!.priceAggregator]
+        Object.values(pricesBeforeAggregation),
+        this.currentManifest!
       );
     NodeRunner.printAggregatedPrices(aggregatedPrices);
     trackEnd(fetchingAllTrackingId);
@@ -418,7 +430,7 @@ export default class NodeRunner {
   }
 }
 
-function priceToDataPoint(price: PriceDataBeforeSigning): NumericDataPoint {
+function priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
   return new NumericDataPoint({
     dataFeedId: price.symbol,
     value: price.value,

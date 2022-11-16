@@ -142,36 +142,52 @@ export default class PricesService {
     return result;
   }
 
+  // TODO: this function should calculate aggregated values based on
+  // - recent deviations check
+  // - zero values filtering
+  // - aggregation across different sources (exluding outliers)
   calculateAggregatedValues(
     prices: PriceDataBeforeAggregation[],
-    aggregator: Aggregator
+    manifest: Manifest
   ): PriceDataAfterAggregation[] {
-    const aggregatedPrices: PriceDataAfterAggregation[] = [];
-    for (const price of prices) {
-      const maxPriceDeviationPercent = this.maxPriceDeviationPercent(
-        price.symbol
-      );
-      try {
-        const priceAfterAggregation = aggregator.getAggregatedValue(
-          price,
-          maxPriceDeviationPercent
-        );
-        if (
-          priceAfterAggregation.value <= 0 ||
-          priceAfterAggregation.value === undefined
-        ) {
-          throw new Error(
-            "Invalid price value: " + JSON.stringify(priceAfterAggregation)
-          );
-        }
-        aggregatedPrices.push(priceAfterAggregation);
-      } catch (e: any) {
-        // We use warn level instead of error because
-        // price aggregation errors occur quite often
-        logger.warn(e.stack);
-      }
-    }
-    return aggregatedPrices;
+    // switch (manifest.priceAggregator) {
+    //   case "median":
+    //     return Media;
+    // }
+    return [];
+    // const aggregatedPrices: PriceDataAfterAggregation[] = [];
+    // for (const price of prices) {
+    //   const maxPriceDeviationPercent = this.maxPriceDeviationPercent(
+    //     price.symbol
+    //   );
+    //   try {
+    //     const priceAfterAggregation = aggregator.getAggregatedValue(
+    //       price,
+    //       maxPriceDeviationPercent
+    //     );
+    //     if (
+    //       priceAfterAggregation.value <= 0 ||
+    //       priceAfterAggregation.value === undefined
+    //     ) {
+    //       throw new Error(
+    //         "Invalid price value: " + JSON.stringify(priceAfterAggregation)
+    //       );
+    //     }
+    //     aggregatedPrices.push(priceAfterAggregation);
+    //   } catch (e: any) {
+    //     // We use warn level instead of error because
+    //     // price aggregation errors occur quite often
+    //     logger.warn(e.stack);
+    //   }
+    // }
+    // return aggregatedPrices;
+  }
+
+  filterPricesForSigning(
+    prices: PriceDataAfterAggregation[],
+    manifest: Manifest
+  ): PriceDataAfterAggregation[] {
+    return prices.filter((p) => !manifest.tokens[p.symbol].skipSigning);
   }
 
   preparePricesForSigning(

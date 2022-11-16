@@ -40,6 +40,7 @@ export interface TokenConfig {
   deviationCheck?: DeviationCheckConfig;
   customUrlDetails?: CustomUrlDetails;
   comment?: string;
+  skipSigning?: boolean;
 }
 
 export interface DeviationCheckConfig {
