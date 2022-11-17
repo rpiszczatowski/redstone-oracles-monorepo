@@ -28,6 +28,9 @@ const SYMBOLS = [
   "YY_TJ_AVAX_sAVAX_LP",
   "YY_TJ_AVAX_USDC_LP",
   "YY_TJ_AVAX_ETH_LP",
+  "XAVA",
+  "YAK",
+  "YYAV3SA1",
 ];
 
 generateSubManifest(SYMBOLS, OUTPUT_FILE_PATH);

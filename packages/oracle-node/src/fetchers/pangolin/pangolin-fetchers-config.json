@@ -10,5 +10,8 @@
   },
   "pangolin-usdt": {
     "baseToken": "USDT.e"
+  },
+  "pangolin-usdc": {
+    "baseToken": "USDC"
   }
 }
