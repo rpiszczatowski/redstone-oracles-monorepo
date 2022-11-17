@@ -1,6 +1,6 @@
 const generateSubManifest = require("./generate-submanifest-from-main");
 
-const OUTPUT_FILE_PATH = "./manifests/rapid.json";
+const OUTPUT_FILE_PATH = "./manifests/data-services/rapid.json";
 const SYMBOLS = [
   "BTC",
   "ETH",
