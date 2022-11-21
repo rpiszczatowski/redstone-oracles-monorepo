@@ -1,32 +1,80 @@
+import { AbstractBatchPutOperation } from "abstract-level";
 import { Level } from "level";
 import { config } from "../../config";
 import { PriceDataAfterAggregation } from "../../types";
+
+const PRICES_TTL_MILLISECONDS = 15 * 60 * 1000; // 15 minutes
+const PRICES_SUBLEVEL = "prices";
+const DEFAULT_LEVEL_OPTS = {
+  keyEncoding: "utf8",
+  valueEncoding: "json",
+};
 
 export interface PriceValueInLocalDB {
   timestamp: number;
   value: number;
 }
 
-export interface AllPriceValuesInLocalDB {
+export interface PriceValuesInLocalDB {
   [symbol: string]: PriceValueInLocalDB[];
 }
 
-export const db = new Level(config.levelDbLocation, {
-  keyEncoding: "utf8",
-  valueEncoding: "json",
-});
+const db = new Level(config.levelDbLocation, DEFAULT_LEVEL_OPTS);
+const pricesSublevel = db.sublevel<string, PriceValueInLocalDB[]>(
+  PRICES_SUBLEVEL,
+  DEFAULT_LEVEL_OPTS
+);
 
-// TODO: implement
-// It should also remove old data
-export const savePrices = async (prices: PriceDataAfterAggregation[]) => {};
+export const getPrices = async (
+  symbols: string[]
+): Promise<PriceValuesInLocalDB> => {
+  const valuesArr = await pricesSublevel.getMany(symbols);
 
-// TODO: implement
-export const getAllPrices = async (): Promise<AllPriceValuesInLocalDB> => {
-  return {};
+  // Preparing a result object with values
+  const resultValues: PriceValuesInLocalDB = {};
+  for (let i = 0; i < symbols.length; i++) {
+    const symbol = symbols[i];
+    const value = valuesArr[i];
+    resultValues[symbol] = value || [];
+  }
+
+  return resultValues;
+};
+
+export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
+  const pricesFromDB = await getPrices(prices.map((p) => p.symbol));
+
+  // Building opeartions array
+  const operations: AbstractBatchPutOperation<
+    typeof pricesSublevel,
+    string,
+    PriceValueInLocalDB[]
+  >[] = [];
+
+  for (const price of prices) {
+    const priceForSymbolToAdd: PriceValueInLocalDB = {
+      value: price.value,
+      timestamp: price.timestamp,
+    };
+
+    const currentTimestamp = Date.now();
+    const filteredPricesForSymbol = pricesFromDB[price.symbol].filter(
+      (p) => p.timestamp > currentTimestamp - PRICES_TTL_MILLISECONDS
+    );
+
+    operations.push({
+      type: "put",
+      key: price.symbol,
+      value: [priceForSymbolToAdd, ...filteredPricesForSymbol],
+    });
+  }
+
+  // Executing batch action
+  await pricesSublevel.batch(operations);
 };
 
 export default {
   db,
   savePrices,
-  getAllPrices,
+  getPrices,
 };
