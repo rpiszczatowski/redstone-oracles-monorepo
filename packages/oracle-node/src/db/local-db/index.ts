@@ -25,6 +25,10 @@ const pricesSublevel = db.sublevel<string, PriceValueInLocalDB[]>(
   DEFAULT_LEVEL_OPTS
 );
 
+export const clearPricesSublevel = async () => {
+  await pricesSublevel.clear();
+};
+
 export const getPrices = async (
   symbols: string[]
 ): Promise<PriceValuesInLocalDB> => {
@@ -74,7 +78,7 @@ export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
 };
 
 export default {
-  db,
   savePrices,
   getPrices,
+  clearPricesSublevel,
 };
