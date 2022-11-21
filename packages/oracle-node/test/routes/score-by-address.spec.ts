@@ -3,7 +3,7 @@ import request from "supertest";
 import { clearRecordedAddresses } from "../../src/routes/services/RateLimitingService";
 import { getApp } from "./_helpers";
 import { Wallet } from "ethers";
-import { UniversalSigner } from "redstone-protocol";
+import { prepareMessageToSign, UniversalSigner } from "redstone-protocol";
 
 jest.mock("../../src/routes/score-by-address.ts", () => ({
   ...jest.requireActual("../../src/routes/score-by-address.ts"),
@@ -221,9 +221,10 @@ const getQueryParams = async () => {
   const signer = new Wallet(
     "0xd14d1c078c6219fe2ed6e02c05b4a376f8161a05255611aa8d5e39ee06d0bc4e"
   );
+  const message = prepareMessageToSign(timestamp);
   const signature = await UniversalSigner.signWithEthereumHashMessage(
     signer,
-    timestamp.toString()
+    message
   );
 
   return { timestamp, signature };
