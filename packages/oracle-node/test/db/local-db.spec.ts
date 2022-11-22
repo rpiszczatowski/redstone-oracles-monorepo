@@ -1,5 +1,6 @@
 import {
   clearPricesSublevel,
+  closePricesSublevel,
   getPrices,
   savePrices,
 } from "../../src/db/local-db";
@@ -33,6 +34,10 @@ const prices: PriceDataAfterAggregation[] = [
 describe("Local DB", () => {
   beforeEach(async () => {
     await clearPricesSublevel();
+  });
+
+  afterAll(async () => {
+    await closePricesSublevel();
   });
 
   it("should properly put and get data", async () => {

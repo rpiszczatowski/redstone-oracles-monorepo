@@ -15,7 +15,7 @@ import { trackEnd, trackStart } from "../utils/performance-tracker";
 import ManifestConfigError from "../manifest/ManifestConfigError";
 import { promiseTimeout } from "../utils/promise-timeout";
 import aggregators from "../aggregators";
-import localDb, { AllPriceValuesInLocalDB } from "../db/local-db";
+import localDb, { getPrices, PriceValuesInLocalDB } from "../db/local-db";
 import { calculateDeviationPercent } from "../utils/calculate-deviation";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
@@ -154,7 +154,7 @@ export default class PricesService {
     manifest: Manifest
   ): Promise<PriceDataAfterAggregation[]> {
     const aggregator = aggregators[manifest.priceAggregator];
-    const pricesInLocalDB = await localDb.getAllPrices();
+    const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
 
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
     for (const price of prices) {
@@ -184,7 +184,7 @@ export default class PricesService {
 
   assertValidPrice(
     price: PriceDataAfterAggregation,
-    recentPricesInLocalDB: AllPriceValuesInLocalDB,
+    recentPricesInLocalDB: PriceValuesInLocalDB,
     deviationCheckConfig: DeviationCheckConfig
   ) {
     // Checking if price value looks valid (non-zero, non-empty)

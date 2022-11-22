@@ -1,3 +1,4 @@
+import { closePricesSublevel } from "../src/db/local-db";
 import PricesService, {
   PricesBeforeAggregation,
   PricesDataFetched,
@@ -9,6 +10,10 @@ jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 describe("groupPricesByToken", () => {
   const fetchTimestamp = 555;
   const nodeVersion = "3";
+
+  afterAll(async () => {
+    await closePricesSublevel();
+  });
 
   it("should assign values from different sources to tokens/symbols", () => {
     // Given
@@ -73,6 +78,10 @@ describe("groupPricesByToken", () => {
 });
 
 describe("fetchInParrallel", () => {
+  afterAll(async () => {
+    await closePricesSublevel();
+  });
+
   it("Should correctly fetch from sources", async () => {
     // Given
     const manifest = {

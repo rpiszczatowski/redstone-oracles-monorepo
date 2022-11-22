@@ -9,6 +9,7 @@ import { any } from "jest-mock-extended";
 import { timeout } from "../../src/utils/promise-timeout";
 import { MOCK_NODE_CONFIG } from "../helpers";
 import { NodeConfig } from "../../src/types";
+import { closePricesSublevel } from "../../src/db/local-db";
 
 /****** MOCKS START ******/
 const mockArProxy = {
@@ -102,6 +103,10 @@ describe("NodeRunnerOld", () => {
 
   afterEach(() => {
     jest.useRealTimers();
+  });
+
+  afterAll(async () => {
+    await closePricesSublevel();
   });
 
   it("should create node instance", async () => {

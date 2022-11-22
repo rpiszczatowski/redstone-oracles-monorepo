@@ -19,14 +19,23 @@ export interface PriceValuesInLocalDB {
   [symbol: string]: PriceValueInLocalDB[];
 }
 
-const db = new Level(config.levelDbLocation, DEFAULT_LEVEL_OPTS);
-const pricesSublevel = db.sublevel<string, PriceValueInLocalDB[]>(
-  PRICES_SUBLEVEL,
+const db = new Level<string, PriceValueInLocalDB[]>(
+  config.levelDbLocation,
   DEFAULT_LEVEL_OPTS
 );
+const pricesSublevel = db;
+
+// const pricesSublevel = db.sublevel<string, PriceValueInLocalDB[]>(
+//   PRICES_SUBLEVEL,
+//   DEFAULT_LEVEL_OPTS
+// );
 
 export const clearPricesSublevel = async () => {
   await pricesSublevel.clear();
+};
+
+export const closePricesSublevel = async () => {
+  await pricesSublevel.close();
 };
 
 export const getPrices = async (
@@ -81,4 +90,5 @@ export default {
   savePrices,
   getPrices,
   clearPricesSublevel,
+  closePricesSublevel,
 };
