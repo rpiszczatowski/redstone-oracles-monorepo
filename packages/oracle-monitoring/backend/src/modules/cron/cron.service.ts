@@ -11,9 +11,20 @@ import { stringifyError } from "../../shared/error-stringifier";
 import { Issue, IssueDocument } from "../issues/issues.schema";
 import { Metric, MetricDocument } from "../metrics/metrics.schema";
 
+interface DataServiceConfig {
+  id: string;
+  checkWithoutSymbol: boolean;
+  dataFeedsToCheck: string[];
+  checkEachSingleUrl: boolean;
+  minTimestampDiffForWarning: number;
+  schedule: string;
+  urls: string[];
+  uniqueSignersCount: number;
+}
+
 interface CheckDataServiceInput {
   dataServiceId: string;
-  symbol: string;
+  dataFeedId: string;
   urls?: string[];
   uniqueSignersCount: number;
 }
@@ -26,12 +37,29 @@ interface CheckSingleSourceInput {
   uniqueSignersCount: number;
 }
 
+interface CheckIfValidNumberOfSignaturesInput {
+  dataFeedId: string;
+  dataServiceId: string;
+  dataPackageResponse: DataPackagesResponse;
+  uniqueSignersCount: number;
+  timestamp: number;
+  url: string;
+}
+
 interface SaveMetricInput {
   metricName: string;
   timestampDiff: number;
   timestamp: number;
   dataServiceId: string;
   url: string;
+}
+
+interface SaveErrorInput {
+  timestamp: number;
+  dataServiceId: string;
+  url: string;
+  type: string;
+  comment: string;
 }
 
 @Injectable()
@@ -45,82 +73,92 @@ export class CronService {
   ) {}
 
   addCronJobs() {
-    // Starting data service checker jobs
     for (const dataService of dataServicesToCheck) {
-      // Starting job for checking whole data package fetching
-      // (without specified symbol)
       if (dataService.checkWithoutSymbol) {
-        Logger.log(`Starting data service checker job for: ${dataService.id}`);
-        const job = new CronJob(dataService.schedule, () => {
-          this.checkDataService({
-            dataServiceId: dataService.id,
-            urls: dataService.urls,
-            symbol: "___ALL_FEEDS___",
-            uniqueSignersCount: dataService.uniqueSignersCount,
-          });
-        });
-        this.schedulerRegistry.addCronJob(
-          `date-service-checker-${dataService.id}`,
-          job
-        );
-        job.start();
+        this.startCheckingDataServiceForAllDataFeeds(dataService);
       }
 
-      // Starting jobs for each symbol checking
       if (dataService.symbolsToCheck && dataService.symbolsToCheck.length > 0) {
-        for (const symbol of dataService.symbolsToCheck) {
-          Logger.log(
-            `Starting data service checker job for: ${dataService.id} with symbol: ${symbol}`
-          );
-          const job = new CronJob(dataService.schedule, () => {
-            this.checkDataService({
-              dataServiceId: dataService.id,
-              symbol,
-              urls: dataService.urls,
-              uniqueSignersCount: dataService.uniqueSignersCount,
-            });
-          });
-          this.schedulerRegistry.addCronJob(
-            `date-service-checker-${dataService.id}-symbol-${symbol}`,
-            job
-          );
-          job.start();
-        }
+        this.startCheckingDataServiceForEachDataFeed(dataService);
       }
 
-      // Starting jobs for each single url
       if (dataService.checkEachSingleUrl) {
-        for (const url of dataService.urls) {
-          Logger.log(`Starting single url checker job for: ${dataService.id}`);
-          const job = new CronJob(dataService.schedule, () => {
-            this.checkSingleUrl({
-              dataServiceId: dataService.id,
-              minTimestampDiffForWarning:
-                dataService.minTimestampDiffForWarning,
-              url,
-              dataFeeds: dataService.symbolsToCheck,
-              uniqueSignersCount: dataService.uniqueSignersCount,
-            });
-          });
-          this.schedulerRegistry.addCronJob(
-            `url-checker-${dataService.id}-${JSON.stringify(url)}`,
-            job
-          );
-          job.start();
-        }
+        this.startCheckingDataServiceForEachUrl(dataService);
       }
     }
   }
 
+  startCheckingDataServiceForAllDataFeeds = (
+    dataService: DataServiceConfig
+  ) => {
+    Logger.log(`Starting data service checker job for: ${dataService.id}`);
+    const job = new CronJob(dataService.schedule, () => {
+      this.checkDataService({
+        dataServiceId: dataService.id,
+        urls: dataService.urls,
+        dataFeedId: "___ALL_FEEDS___",
+        uniqueSignersCount: dataService.uniqueSignersCount,
+      });
+    });
+    this.schedulerRegistry.addCronJob(
+      `date-service-checker-${dataService.id}`,
+      job
+    );
+    job.start();
+  };
+
+  startCheckingDataServiceForEachDataFeed = (
+    dataService: DataServiceConfig
+  ) => {
+    for (const dataFeedId of dataService.dataFeedsToCheck) {
+      Logger.log(
+        `Starting data service checker job for: ${dataService.id} with data feed: ${dataFeedId}`
+      );
+      const job = new CronJob(dataService.schedule, () => {
+        this.checkDataService({
+          dataServiceId: dataService.id,
+          dataFeedId,
+          urls: dataService.urls,
+          uniqueSignersCount: dataService.uniqueSignersCount,
+        });
+      });
+      this.schedulerRegistry.addCronJob(
+        `date-service-checker-${dataService.id}-data-feed-${dataFeedId}`,
+        job
+      );
+      job.start();
+    }
+  };
+
+  startCheckingDataServiceForEachUrl = (dataService: DataServiceConfig) => {
+    for (const url of dataService.urls) {
+      Logger.log(`Starting single url checker job for: ${dataService.id}`);
+      const job = new CronJob(dataService.schedule, () => {
+        this.checkSingleUrl({
+          dataServiceId: dataService.id,
+          minTimestampDiffForWarning: dataService.minTimestampDiffForWarning,
+          url,
+          dataFeeds: dataService.dataFeedsToCheck,
+          uniqueSignersCount: dataService.uniqueSignersCount,
+        });
+      });
+      this.schedulerRegistry.addCronJob(
+        `url-checker-${dataService.id}-${JSON.stringify(url)}`,
+        job
+      );
+      job.start();
+    }
+  };
+
   checkDataService = async ({
     dataServiceId,
-    symbol,
+    dataFeedId,
     urls,
     uniqueSignersCount,
   }: CheckDataServiceInput) => {
     Logger.log(
       `Checking data service: ${dataServiceId}${
-        symbol ? " with symbol " + symbol : ""
+        dataFeedId ? " with data feed " + dataFeedId : ""
       }`
     );
     const currentTimestamp = Date.now();
@@ -130,32 +168,36 @@ export class CronService {
         {
           dataServiceId,
           uniqueSignersCount,
-          dataFeeds: [symbol],
+          dataFeeds: [dataFeedId],
         },
         urls
       );
-      await this.checkIfValidNumberOfSignatures(
-        symbol,
+      await this.checkIfValidNumberOfSignatures({
+        dataFeedId,
         dataServiceId,
         dataPackageResponse,
         uniqueSignersCount,
-        currentTimestamp,
-        urls
-      );
+        timestamp: currentTimestamp,
+        url: JSON.stringify(urls ?? ""),
+      });
     } catch (e) {
       const errStr = stringifyError(e);
       Logger.error(
         `Error occured in data service checker-job ` +
-          `(${dataServiceId}-${symbol}). ` +
+          `(${dataServiceId}-${dataFeedId}). ` +
           `Saving issue in DB: ${errStr}`
       );
-      await this.safeErrorInDbAndSend(
-        currentTimestamp,
+      await this.saveErrorInDb({
+        timestamp: currentTimestamp,
         dataServiceId,
-        "data-service-failed",
-        JSON.stringify(urls),
-        errStr,
-        symbol
+        type: "data-service-failed",
+        url: JSON.stringify(urls),
+        comment: errStr,
+      });
+      await this.sendErrorMessageToUptimeKuma(
+        dataServiceId,
+        dataFeedId,
+        "data-service-failed"
       );
     }
   };
@@ -175,7 +217,7 @@ export class CronService {
 
     try {
       // Trying to fetch from redstone
-      const response = await requestDataPackages(
+      const dataPackageResponse = await requestDataPackages(
         {
           dataServiceId,
           uniqueSignersCount: uniqueSignersCount,
@@ -184,16 +226,16 @@ export class CronService {
         [url]
       );
 
-      for (const dataFeedId of Object.keys(response)) {
-        await this.checkIfValidNumberOfSignatures(
+      for (const dataFeedId of Object.keys(dataPackageResponse)) {
+        await this.checkIfValidNumberOfSignatures({
           dataFeedId,
           dataServiceId,
-          response,
+          dataPackageResponse,
           uniqueSignersCount,
-          currentTimestamp,
-          url
-        );
-        const dataPackage = response[dataFeedId][0]?.dataPackage;
+          timestamp: currentTimestamp,
+          url,
+        });
+        const dataPackage = dataPackageResponse[dataFeedId][0]?.dataPackage;
         if (dataPackage) {
           const { timestampMilliseconds } = dataPackage;
           const timestampDiff = currentTimestamp - timestampMilliseconds;
@@ -223,52 +265,62 @@ export class CronService {
           Logger.error(
             `Error occurred: no data package for ${dataFeedId}. Saving issue in DB`
           );
-          await this.safeErrorInDbAndSend(
-            currentTimestamp,
+          await this.saveErrorInDb({
+            timestamp: currentTimestamp,
             dataServiceId,
-            "no-data-package",
+            type: "no-data-package",
             url,
-            `No data package for ${dataFeedId}`,
-            dataFeedId
+            comment: `No data package for ${dataFeedId}`,
+          });
+          await this.sendErrorMessageToUptimeKuma(
+            dataServiceId,
+            dataFeedId,
+            "no-data-package"
           );
         }
       }
     } catch (e) {
       const errStr = stringifyError(e);
       Logger.error(`Error occurred: ${errStr}. Saving issue in DB`);
-      await this.safeErrorInDbAndSend(
-        currentTimestamp,
+      await this.saveErrorInDb({
+        timestamp: currentTimestamp,
         dataServiceId,
-        "one-url-failed",
+        type: "one-url-failed",
         url,
-        errStr,
-        JSON.stringify(dataFeeds)
+        comment: errStr,
+      });
+      await this.sendErrorMessageToUptimeKuma(
+        dataServiceId,
+        JSON.stringify(dataFeeds),
+        "one-url-failed"
       );
     }
   };
 
-  checkIfValidNumberOfSignatures = async (
-    dataFeedId: string,
-    dataServiceId: string,
-    dataPackageResponse: DataPackagesResponse,
-    uniqueSignersCount: number,
-    timestamp: number,
-    urls?: string | string[]
-  ) => {
+  checkIfValidNumberOfSignatures = async ({
+    dataPackageResponse,
+    dataFeedId,
+    dataServiceId,
+    uniqueSignersCount,
+    timestamp,
+    url,
+  }: CheckIfValidNumberOfSignaturesInput) => {
     const uniqueDataPointsCount = dataPackageResponse[dataFeedId].length;
     if (uniqueDataPointsCount !== uniqueSignersCount) {
       Logger.error(
-        `Invalid number of signatures for ${dataFeedId} from ${JSON.stringify(
-          urls
-        )}. Saving issue in DB`
+        `Invalid number of signatures for ${dataFeedId} from ${url}. Saving issue in DB`
       );
-      await this.safeErrorInDbAndSend(
+      await this.saveErrorInDb({
         timestamp,
         dataServiceId,
-        "invalid-signers-number",
-        JSON.stringify(urls),
-        `Invalid number of signatures for ${dataFeedId}`,
-        dataFeedId
+        url,
+        type: "invalid-signers-number",
+        comment: `Invalid number of signatures for ${dataFeedId}`,
+      });
+      await this.sendErrorMessageToUptimeKuma(
+        dataServiceId,
+        dataFeedId,
+        "invalid-signers-number"
       );
     }
   };
@@ -298,14 +350,13 @@ export class CronService {
     }
   };
 
-  safeErrorInDbAndSend = async (
-    timestamp: number,
-    dataServiceId: string,
-    url: string,
-    type: string,
-    comment: string,
-    dataFeedId: string
-  ) => {
+  saveErrorInDb = async ({
+    timestamp,
+    dataServiceId,
+    url,
+    type,
+    comment,
+  }: SaveErrorInput) => {
     await new this.issueModel({
       timestamp,
       type,
@@ -314,7 +365,6 @@ export class CronService {
       url,
       comment,
     }).save();
-    await this.sendErrorMessageToUptimeKuma(dataServiceId, dataFeedId, type);
   };
 
   sendErrorMessageToUptimeKuma = async (
