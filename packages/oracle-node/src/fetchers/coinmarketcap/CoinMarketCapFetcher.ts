@@ -42,8 +42,14 @@ export class CoinMarketCapFetcher extends BaseFetcher {
     const tokenData = response.data;
 
     for (const id of ids) {
-      const price = tokenData[id].quote.USD.price;
-      pricesObj[id] = price;
+      const price = tokenData?.[id]?.quote?.USD?.price;
+      if (price) {
+        pricesObj[id] = price;
+      } else {
+        this.logger.warn(
+          `CoinMarketCap fetcher: Id ${id} not included in response`
+        );
+      }
     }
 
     return pricesObj;
