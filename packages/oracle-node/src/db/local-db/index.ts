@@ -29,7 +29,7 @@ export const clearPricesSublevel = async () => {
   await pricesSublevel.clear();
 };
 
-export const closePricesSublevel = async () => {
+export const closeLocalLevelDB = async () => {
   await pricesSublevel.close();
   await db.close();
 };
@@ -86,5 +86,5 @@ export default {
   savePrices,
   getPrices,
   clearPricesSublevel,
-  closePricesSublevel,
+  closeLocalLevelDB,
 };

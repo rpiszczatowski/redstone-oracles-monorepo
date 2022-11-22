@@ -9,7 +9,7 @@ import { any } from "jest-mock-extended";
 import { timeout } from "../../src/utils/promise-timeout";
 import { MOCK_NODE_CONFIG } from "../helpers";
 import { NodeConfig } from "../../src/types";
-import { closePricesSublevel } from "../../src/db/local-db";
+import { closeLocalLevelDB } from "../../src/db/local-db";
 
 /****** MOCKS START ******/
 const mockArProxy = {
@@ -115,7 +115,7 @@ describe("NodeRunner", () => {
   });
 
   afterAll(async () => {
-    await closePricesSublevel();
+    await closeLocalLevelDB();
   });
 
   it("should create node instance", async () => {

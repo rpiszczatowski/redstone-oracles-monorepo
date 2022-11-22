@@ -1,6 +1,6 @@
 import {
   clearPricesSublevel,
-  closePricesSublevel,
+  closeLocalLevelDB,
   getPrices,
   savePrices,
 } from "../../src/db/local-db";
@@ -37,7 +37,7 @@ describe("Local DB", () => {
   });
 
   afterAll(async () => {
-    await closePricesSublevel();
+    await closeLocalLevelDB();
   });
 
   it("should properly put and get data", async () => {

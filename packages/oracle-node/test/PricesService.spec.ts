@@ -1,4 +1,4 @@
-import { closePricesSublevel } from "../src/db/local-db";
+import { closeLocalLevelDB } from "../src/db/local-db";
 import PricesService, {
   PricesBeforeAggregation,
   PricesDataFetched,
@@ -12,7 +12,7 @@ describe("groupPricesByToken", () => {
   const nodeVersion = "3";
 
   afterAll(async () => {
-    await closePricesSublevel();
+    await closeLocalLevelDB();
   });
 
   it("should assign values from different sources to tokens/symbols", () => {
@@ -79,7 +79,7 @@ describe("groupPricesByToken", () => {
 
 describe("fetchInParrallel", () => {
   afterAll(async () => {
-    await closePricesSublevel();
+    await closeLocalLevelDB();
   });
 
   it("Should correctly fetch from sources", async () => {
