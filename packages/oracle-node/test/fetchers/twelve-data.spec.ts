@@ -24,7 +24,10 @@ describe("twelve-data fetcher", () => {
         sourceTimeout: 8000,
         maxPriceDeviationPercent: 25,
         deviationCheck: {
-          maxPercentDeviationForSource: 25,
+          deviationWithRecentValues: {
+            maxPercent: 25,
+            maxDelayMilliseconds: 300000,
+          },
         },
         tokens: {
           CHF: {},

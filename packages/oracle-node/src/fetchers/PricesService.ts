@@ -15,7 +15,11 @@ import { trackEnd, trackStart } from "../utils/performance-tracker";
 import ManifestConfigError from "../manifest/ManifestConfigError";
 import { promiseTimeout } from "../utils/promise-timeout";
 import aggregators from "../aggregators";
-import localDb, { getPrices, PriceValuesInLocalDB } from "../db/local-db";
+import {
+  getPrices,
+  PriceValueInLocalDB,
+  PriceValuesInLocalDB,
+} from "../db/local-db";
 import { calculateDeviationPercent } from "../utils/calculate-deviation";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
@@ -26,6 +30,18 @@ export type PricesDataFetched = { [source: string]: PriceDataFetched[] };
 export type PricesBeforeAggregation = {
   [token: string]: PriceDataBeforeAggregation;
 };
+
+interface PriceValidationArgs {
+  value: number;
+  timestamp: number;
+  deviationConfig: DeviationCheckConfig;
+  recentPrices: PriceValueInLocalDB[];
+}
+
+interface PriceValidationResult {
+  isValid: boolean;
+  reason: string;
+}
 
 export default class PricesService {
   constructor(private manifest: Manifest, private credentials: Credentials) {}
@@ -145,10 +161,10 @@ export default class PricesService {
     return result;
   }
 
-  // TODO: this function should calculate aggregated values based on
+  // This function calculates aggregated price values based on
   // - recent deviations check
-  // - zero values filtering
-  // - aggregation across different sources (exluding outliers)
+  // - invalid values excluding
+  // - aggregation across different sources
   async calculateAggregatedValues(
     prices: PriceDataBeforeAggregation[],
     manifest: Manifest
@@ -161,12 +177,19 @@ export default class PricesService {
       const deviationCheckConfig = this.deviationCheckConfig(price.symbol);
 
       try {
-        const priceAfterAggregation = aggregator.getAggregatedValue(
+        // Filtering out invalid (or too deviated) values from the `source` object
+        const priceWithoutDeviatedSources = this.excludeInvalidSources(
           price,
-          deviationCheckConfig.maxPercentDeviationForSource!
+          pricesInLocalDB,
+          deviationCheckConfig
         );
 
-        // Throws an error if price is invalid or too deviated
+        // Calculating final aggregated value based on the values from the "valid" sources
+        const priceAfterAggregation = aggregator.getAggregatedValue(
+          priceWithoutDeviatedSources
+        );
+
+        // Throwing an error if price is invalid or too deviated
         this.assertValidPrice(
           priceAfterAggregation,
           pricesInLocalDB,
@@ -182,38 +205,97 @@ export default class PricesService {
     return aggregatedPrices;
   }
 
+  excludeInvalidSources(
+    price: PriceDataBeforeAggregation,
+    recentPricesInLocalDB: PriceValuesInLocalDB,
+    deviationCheckConfig: DeviationCheckConfig
+  ): PriceDataBeforeAggregation {
+    const newSources: { [symbol: string]: number } = {};
+
+    for (const [sourceName, valueFromSource] of Object.entries(price.source)) {
+      const { isValid, reason } = this.validatePrice({
+        value: valueFromSource,
+        timestamp: price.timestamp,
+        deviationConfig: deviationCheckConfig,
+        recentPrices: recentPricesInLocalDB[price.symbol],
+      });
+
+      if (isValid) {
+        newSources[sourceName] = valueFromSource;
+      } else {
+        logger.warn(
+          `Excluding ${price.symbol} value for source: ${sourceName}. Reason: ${reason}`
+        );
+      }
+    }
+
+    return { ...price, source: newSources };
+  }
+
   assertValidPrice(
     price: PriceDataAfterAggregation,
     recentPricesInLocalDB: PriceValuesInLocalDB,
     deviationCheckConfig: DeviationCheckConfig
   ) {
-    // Checking if price value looks valid (non-zero, non-empty)
-    if (price.value <= 0 || price.value === undefined) {
-      throw new Error("Invalid price value: " + JSON.stringify(price));
-    }
+    const { isValid, reason } = this.validatePrice({
+      value: price.value,
+      timestamp: price.timestamp,
+      deviationConfig: deviationCheckConfig,
+      recentPrices: recentPricesInLocalDB[price.symbol],
+    });
 
-    // Checking deviation from recent values
-    const { deviationWithRecentValues } = deviationCheckConfig;
-    if (deviationWithRecentValues) {
-      for (const recentPrice of recentPricesInLocalDB[price.symbol]) {
-        const timestampDelay = price.timestamp - recentPrice.timestamp;
-        if (timestampDelay <= deviationWithRecentValues.maxDelayMilliseconds) {
-          const deviationPercent = calculateDeviationPercent({
-            measuredValue: price.value,
-            trueValue: recentPrice.value,
-          });
-          if (deviationPercent > deviationWithRecentValues.maxPercent) {
-            const errMsg =
-              `Value is too deviated from recent values. ` +
-              `Symbol: ${price.symbol}` +
-              `Deviation percent: ${deviationPercent}. ` +
-              `Recent price: ${JSON.stringify(recentPrice)}. ` +
-              `Current value: ${price.value}`;
-            throw new Error(errMsg);
-          }
-        }
+    if (!isValid) {
+      throw new Error(
+        `Invalid price for symbol ${price.symbol}. Reason: ${reason}`
+      );
+    }
+  }
+
+  validatePrice(args: PriceValidationArgs): PriceValidationResult {
+    const { value, deviationConfig } = args;
+    const { deviationWithRecentValues } = deviationConfig;
+
+    let isValid = false;
+    let reason = "";
+
+    if (isNaN(value)) {
+      reason = "Value is not a number";
+    } else if (value <= 0) {
+      reason = "Value is less or equal 0";
+    } else {
+      const deviationPercent = this.getDeviationPercentWithRecentValues(args);
+
+      if (deviationPercent > deviationWithRecentValues.maxPercent) {
+        reason = `Value is too deviated (${deviationPercent}%)`;
+      } else {
+        isValid = true;
       }
     }
+
+    return {
+      isValid,
+      reason,
+    };
+  }
+
+  // Calculates max deviation from all recent values
+  getDeviationPercentWithRecentValues(args: PriceValidationArgs): number {
+    const { value, timestamp, deviationConfig, recentPrices } = args;
+    const { deviationWithRecentValues } = deviationConfig;
+    let resultDeviation = 0;
+
+    for (const recentPrice of recentPrices) {
+      const timestampDelay = timestamp - recentPrice.timestamp;
+      if (timestampDelay <= deviationWithRecentValues.maxDelayMilliseconds) {
+        const deviationPercent = calculateDeviationPercent({
+          measuredValue: value,
+          trueValue: recentPrice.value,
+        });
+        resultDeviation = Math.max(deviationPercent, resultDeviation);
+      }
+    }
+
+    return resultDeviation;
   }
 
   filterPricesForSigning(

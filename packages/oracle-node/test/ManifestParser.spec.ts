@@ -9,7 +9,10 @@ describe("groupTokenBySource", () => {
     maxPriceDeviationPercent: 25,
     evmChainId: 1,
     deviationCheck: {
-      maxPercentDeviationForSource: 25,
+      deviationWithRecentValues: {
+        maxPercent: 25,
+        maxDelayMilliseconds: 300000,
+      },
     },
   };
 
@@ -123,7 +126,10 @@ describe("getTimeoutForSource", () => {
     priceAggregator: "median",
     maxPriceDeviationPercent: 25,
     deviationCheck: {
-      maxPercentDeviationForSource: 25,
+      deviationWithRecentValues: {
+        maxPercent: 25,
+        maxDelayMilliseconds: 300000,
+      },
     },
     evmChainId: 1,
     tokens: {

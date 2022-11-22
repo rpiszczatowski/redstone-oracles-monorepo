@@ -26,7 +26,10 @@ describe("custom URL fetcher", () => {
         interval: 10000,
         maxPriceDeviationPercent: 25,
         deviationCheck: {
-          maxPercentDeviationForSource: 25,
+          deviationWithRecentValues: {
+            maxPercent: 25,
+            maxDelayMilliseconds: 300000,
+          },
         },
         priceAggregator: "median",
         sourceTimeout: 2000,

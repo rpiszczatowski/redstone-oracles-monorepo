@@ -10,7 +10,10 @@ const baseManifest = {
   enableStreamrBroadcaster: true,
   enableArweaveBackup: false,
   deviationCheck: {
-    maxPercentDeviationForSource: 25,
+    deviationWithRecentValues: {
+      maxPercent: 25,
+      maxDelayMilliseconds: 300000,
+    },
   },
 };
 

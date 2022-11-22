@@ -204,6 +204,7 @@ export default class NodeRunnerOld {
     // Fetching and aggregating
     const aggregatedPrices: PriceDataAfterAggregation[] =
       await this.fetchPrices();
+
     const pricesReadyForSigning = this.pricesService!.preparePricesForSigning(
       aggregatedPrices,
       "",

@@ -9,7 +9,7 @@ import { any } from "jest-mock-extended";
 import { timeout } from "../../src/utils/promise-timeout";
 import { MOCK_NODE_CONFIG } from "../helpers";
 import { NodeConfig } from "../../src/types";
-import { closeLocalLevelDB } from "../../src/db/local-db";
+import { clearPricesSublevel, closeLocalLevelDB } from "../../src/db/local-db";
 
 /****** MOCKS START ******/
 const mockArProxy = {
@@ -70,7 +70,9 @@ describe("NodeRunner", () => {
     useNewSigningAndBroadcasting: true,
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await clearPricesSublevel();
+
     jest.useFakeTimers();
     mockedAxios.post.mockClear();
 
@@ -98,7 +100,10 @@ describe("NodeRunner", () => {
       evmChainId: 1,
       enableArweaveBackup: true,
       deviationCheck: {
-        maxPercentDeviationForSource: 25,
+        deviationWithRecentValues: {
+          maxPercent: 25,
+          maxDelayMilliseconds: 300000,
+        },
       },
       tokens: {
         BTC: {

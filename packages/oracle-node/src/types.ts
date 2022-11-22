@@ -44,8 +44,7 @@ export interface TokenConfig {
 }
 
 export interface DeviationCheckConfig {
-  maxPercentDeviationForSource?: number;
-  deviationWithRecentValues?: {
+  deviationWithRecentValues: {
     maxPercent: number;
     maxDelayMilliseconds: number;
   };
@@ -70,8 +69,7 @@ export interface Fetcher {
 
 export interface Aggregator {
   getAggregatedValue: (
-    price: PriceDataBeforeAggregation,
-    maxPriceDeviationPercent: number
+    price: PriceDataBeforeAggregation
   ) => PriceDataAfterAggregation;
 }
 
