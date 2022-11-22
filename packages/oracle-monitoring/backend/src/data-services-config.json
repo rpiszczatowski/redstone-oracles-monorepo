@@ -2,10 +2,16 @@
   {
     "id": "redstone-avalanche-prod",
     "checkWithoutSymbol": true,
-    "symbolsToCheck": ["AVAX", "QI", "YAK"],
+    "dataFeedsToCheck": [
+      "AVAX",
+      "PNG",
+      "TJ_AVAX_USDC_LP",
+      "YY_PNG_AVAX_USDC_LP"
+    ],
     "checkEachSingleUrl": true,
     "minTimestampDiffForWarning": 20000,
     "schedule": "*/10 * * * * *",
-    "urls": ["https://d33trozg86ya9x.cloudfront.net"]
+    "urls": ["https://cache-service-direct-1.b.redstone.finance"],
+    "uniqueSignersCount": 3
   }
 ]
