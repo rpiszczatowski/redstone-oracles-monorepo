@@ -38,7 +38,7 @@ export class CoinMarketCapFetcher extends BaseFetcher {
   }
 
   async extractPrices(response: any, ids: string[]): Promise<PricesObj> {
-    const pricesObj: { [symbol: string]: number } = {};
+    const pricesObj: { [id: string]: number } = {};
     const tokenData = response.data;
 
     for (const id of ids) {
