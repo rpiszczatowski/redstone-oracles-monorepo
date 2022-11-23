@@ -108,6 +108,7 @@ export const config: NodeConfig = Object.freeze({
       "TWELVE_DATA_RAPID_API_KEY",
       DEFAULT_TWELVE_DATA_RAPID_API_KEY
     ),
+    coinmarketcapApiKey: getFromEnv("COINMARKETCAP_API_KEY", ""),
   },
   privateKeys: {
     arweaveJwk: getArweaveWallet(),
