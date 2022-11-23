@@ -1,0 +1,549 @@
+{
+  "status": {
+    "timestamp": "2022-11-10T15:24:32.469Z",
+    "error_code": 0,
+    "error_message": null,
+    "elapsed": 52,
+    "credit_count": 1,
+    "notice": null
+  },
+  "data": {
+    "1": {
+      "id": 1,
+      "name": "Bitcoin",
+      "symbol": "BTC",
+      "slug": "bitcoin",
+      "num_market_pairs": 9831,
+      "date_added": "2013-04-28T00:00:00.000Z",
+      "tags": [
+        {
+          "slug": "mineable",
+          "name": "Mineable",
+          "category": "OTHERS"
+        },
+        {
+          "slug": "pow",
+          "name": "PoW",
+          "category": "ALGORITHM"
+        },
+        {
+          "slug": "sha-256",
+          "name": "SHA-256",
+          "category": "ALGORITHM"
+        },
+        {
+          "slug": "store-of-value",
+          "name": "Store Of Value",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "state-channel",
+          "name": "State Channel",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "coinbase-ventures-portfolio",
+          "name": "Coinbase Ventures Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "three-arrows-capital-portfolio",
+          "name": "Three Arrows Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "polychain-capital-portfolio",
+          "name": "Polychain Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "binance-labs-portfolio",
+          "name": "Binance Labs Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "blockchain-capital-portfolio",
+          "name": "Blockchain Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "boostvc-portfolio",
+          "name": "BoostVC Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "cms-holdings-portfolio",
+          "name": "CMS Holdings Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "dcg-portfolio",
+          "name": "DCG Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "dragonfly-capital-portfolio",
+          "name": "DragonFly Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "electric-capital-portfolio",
+          "name": "Electric Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "fabric-ventures-portfolio",
+          "name": "Fabric Ventures Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "framework-ventures-portfolio",
+          "name": "Framework Ventures Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "galaxy-digital-portfolio",
+          "name": "Galaxy Digital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "huobi-capital-portfolio",
+          "name": "Huobi Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "alameda-research-portfolio",
+          "name": "Alameda Research Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "a16z-portfolio",
+          "name": "a16z Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "1confirmation-portfolio",
+          "name": "1Confirmation Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "winklevoss-capital-portfolio",
+          "name": "Winklevoss Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "usv-portfolio",
+          "name": "USV Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "placeholder-ventures-portfolio",
+          "name": "Placeholder Ventures Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "pantera-capital-portfolio",
+          "name": "Pantera Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "multicoin-capital-portfolio",
+          "name": "Multicoin Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "paradigm-portfolio",
+          "name": "Paradigm Portfolio",
+          "category": "CATEGORY"
+        }
+      ],
+      "max_supply": 21000000,
+      "circulating_supply": 19203668,
+      "total_supply": 19203668,
+      "is_active": 1,
+      "platform": null,
+      "cmc_rank": 1,
+      "is_fiat": 0,
+      "self_reported_circulating_supply": null,
+      "self_reported_market_cap": null,
+      "tvl_ratio": null,
+      "last_updated": "2022-11-10T15:23:00.000Z",
+      "quote": {
+        "USD": {
+          "price": 17719.583178051398,
+          "volume_24h": 105122074635.2805,
+          "volume_change_24h": -17.2272,
+          "percent_change_1h": 1.56569472,
+          "percent_change_24h": -0.05020763,
+          "percent_change_7d": -12.56249314,
+          "percent_change_30d": -7.19809935,
+          "percent_change_60d": -17.85677385,
+          "percent_change_90d": -25.84471797,
+          "market_cap": 340280992449.68396,
+          "market_cap_dominance": 38.01,
+          "fully_diluted_market_cap": 372111246739.08,
+          "tvl": null,
+          "last_updated": "2022-11-10T15:23:00.000Z"
+        }
+      }
+    },
+    "825": {
+      "id": 825,
+      "name": "Tether",
+      "symbol": "USDT",
+      "slug": "tether",
+      "num_market_pairs": 41755,
+      "date_added": "2015-02-25T00:00:00.000Z",
+      "tags": [
+        {
+          "slug": "payments",
+          "name": "Payments",
+          "category": "INDUSTRY"
+        },
+        {
+          "slug": "stablecoin",
+          "name": "Stablecoin",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "asset-backed-stablecoin",
+          "name": "Asset-Backed Stablecoin",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "avalanche-ecosystem",
+          "name": "Avalanche Ecosystem",
+          "category": "PLATFORM"
+        },
+        {
+          "slug": "solana-ecosystem",
+          "name": "Solana Ecosystem",
+          "category": "PLATFORM"
+        },
+        {
+          "slug": "arbitrum-ecosytem",
+          "name": "Arbitrum Ecosystem",
+          "category": "PLATFORM"
+        },
+        {
+          "slug": "moonriver-ecosystem",
+          "name": "Moonriver Ecosystem",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "injective-ecosystem",
+          "name": "Injective Ecosystem",
+          "category": "PLATFORM"
+        },
+        {
+          "slug": "bnb-chain",
+          "name": "BNB Chain",
+          "category": "PLATFORM"
+        },
+        {
+          "slug": "usd-stablecoin",
+          "name": "USD Stablecoin",
+          "category": "CATEGORY"
+        }
+      ],
+      "max_supply": null,
+      "circulating_supply": 69613437845.79234,
+      "total_supply": 73141766321.23428,
+      "platform": {
+        "id": 1027,
+        "name": "Ethereum",
+        "symbol": "ETH",
+        "slug": "ethereum",
+        "token_address": "0xdac17f958d2ee523a2206206994597c13d831ec7"
+      },
+      "is_active": 1,
+      "cmc_rank": 3,
+      "is_fiat": 0,
+      "self_reported_circulating_supply": null,
+      "self_reported_market_cap": null,
+      "tvl_ratio": null,
+      "last_updated": "2022-11-10T15:23:00.000Z",
+      "quote": {
+        "USD": {
+          "price": 0.9978569770020286,
+          "volume_24h": 143198022289.6689,
+          "volume_change_24h": -19.7375,
+          "percent_change_1h": 0.16492767,
+          "percent_change_24h": -0.12024403,
+          "percent_change_7d": -0.21798652,
+          "percent_change_30d": -0.20605759,
+          "percent_change_60d": -0.24394635,
+          "percent_change_90d": -0.25748698,
+          "market_cap": 69464254647.52095,
+          "market_cap_dominance": 7.7593,
+          "fully_diluted_market_cap": 72985021833.9,
+          "tvl": null,
+          "last_updated": "2022-11-10T15:23:00.000Z"
+        }
+      }
+    },
+    "1027": {
+      "id": 1027,
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "slug": "ethereum",
+      "num_market_pairs": 6182,
+      "date_added": "2015-08-07T00:00:00.000Z",
+      "tags": [
+        {
+          "slug": "pos",
+          "name": "PoS",
+          "category": "ALGORITHM"
+        },
+        {
+          "slug": "smart-contracts",
+          "name": "Smart Contracts",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "ethereum-ecosystem",
+          "name": "Ethereum Ecosystem",
+          "category": "PLATFORM"
+        },
+        {
+          "slug": "coinbase-ventures-portfolio",
+          "name": "Coinbase Ventures Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "three-arrows-capital-portfolio",
+          "name": "Three Arrows Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "polychain-capital-portfolio",
+          "name": "Polychain Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "binance-labs-portfolio",
+          "name": "Binance Labs Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "blockchain-capital-portfolio",
+          "name": "Blockchain Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "boostvc-portfolio",
+          "name": "BoostVC Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "cms-holdings-portfolio",
+          "name": "CMS Holdings Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "dcg-portfolio",
+          "name": "DCG Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "dragonfly-capital-portfolio",
+          "name": "DragonFly Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "electric-capital-portfolio",
+          "name": "Electric Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "fabric-ventures-portfolio",
+          "name": "Fabric Ventures Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "framework-ventures-portfolio",
+          "name": "Framework Ventures Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "hashkey-capital-portfolio",
+          "name": "Hashkey Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "kenetic-capital-portfolio",
+          "name": "Kenetic Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "huobi-capital-portfolio",
+          "name": "Huobi Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "alameda-research-portfolio",
+          "name": "Alameda Research Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "a16z-portfolio",
+          "name": "a16z Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "1confirmation-portfolio",
+          "name": "1Confirmation Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "winklevoss-capital-portfolio",
+          "name": "Winklevoss Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "usv-portfolio",
+          "name": "USV Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "placeholder-ventures-portfolio",
+          "name": "Placeholder Ventures Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "pantera-capital-portfolio",
+          "name": "Pantera Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "multicoin-capital-portfolio",
+          "name": "Multicoin Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "paradigm-portfolio",
+          "name": "Paradigm Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "injective-ecosystem",
+          "name": "Injective Ecosystem",
+          "category": "PLATFORM"
+        }
+      ],
+      "max_supply": null,
+      "circulating_supply": 122373866.2178,
+      "total_supply": 122373866.2178,
+      "is_active": 1,
+      "platform": null,
+      "cmc_rank": 2,
+      "is_fiat": 0,
+      "self_reported_circulating_supply": null,
+      "self_reported_market_cap": null,
+      "tvl_ratio": null,
+      "last_updated": "2022-11-10T15:23:00.000Z",
+      "quote": {
+        "USD": {
+          "price": 1329.6789589290904,
+          "volume_24h": 36920218159.63266,
+          "volume_change_24h": -25.1245,
+          "percent_change_1h": 3.4085541,
+          "percent_change_24h": 8.14302182,
+          "percent_change_7d": -14.00848623,
+          "percent_change_30d": 3.26204344,
+          "percent_change_60d": -24.82155823,
+          "percent_change_90d": -29.55812585,
+          "market_cap": 162717955032.6121,
+          "market_cap_dominance": 18.1759,
+          "fully_diluted_market_cap": 162717955032.61,
+          "tvl": null,
+          "last_updated": "2022-11-10T15:23:00.000Z"
+        }
+      }
+    },
+    "5805": {
+      "id": 5805,
+      "name": "Avalanche",
+      "symbol": "AVAX",
+      "slug": "avalanche",
+      "num_market_pairs": 339,
+      "date_added": "2020-07-13T00:00:00.000Z",
+      "tags": [
+        {
+          "slug": "defi",
+          "name": "DeFi",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "smart-contracts",
+          "name": "Smart Contracts",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "three-arrows-capital-portfolio",
+          "name": "Three Arrows Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "polychain-capital-portfolio",
+          "name": "Polychain Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "avalanche-ecosystem",
+          "name": "Avalanche Ecosystem",
+          "category": "PLATFORM"
+        },
+        {
+          "slug": "cms-holdings-portfolio",
+          "name": "CMS Holdings Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "dragonfly-capital-portfolio",
+          "name": "DragonFly Capital Portfolio",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "moonriver-ecosystem",
+          "name": "Moonriver Ecosystem",
+          "category": "CATEGORY"
+        },
+        {
+          "slug": "injective-ecosystem",
+          "name": "Injective Ecosystem",
+          "category": "PLATFORM"
+        }
+      ],
+      "max_supply": 720000000,
+      "circulating_supply": 299820103.5134983,
+      "total_supply": 404229626.49901325,
+      "is_active": 1,
+      "platform": null,
+      "cmc_rank": 16,
+      "is_fiat": 0,
+      "self_reported_circulating_supply": null,
+      "self_reported_market_cap": null,
+      "tvl_ratio": null,
+      "last_updated": "2022-11-10T15:23:00.000Z",
+      "quote": {
+        "USD": {
+          "price": 15.683797238052769,
+          "volume_24h": 765776833.3895363,
+          "volume_change_24h": -13.5278,
+          "percent_change_1h": 2.41551447,
+          "percent_change_24h": 9.13576189,
+          "percent_change_7d": -14.49760706,
+          "percent_change_30d": -2.75880695,
+          "percent_change_60d": -23.16156909,
+          "percent_change_90d": -45.97816923,
+          "market_cap": 4702317711.3977,
+          "market_cap_dominance": 0.5253,
+          "fully_diluted_market_cap": 11292334011.4,
+          "tvl": null,
+          "last_updated": "2022-11-10T15:23:00.000Z"
+        }
+      }
+    }
+  }
+}
