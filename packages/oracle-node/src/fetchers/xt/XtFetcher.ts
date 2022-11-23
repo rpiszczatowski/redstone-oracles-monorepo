@@ -32,8 +32,8 @@ export class XtFetcher extends BaseFetcher {
     const results = await response.result;
     for (const result of results) {
       const symbol = result.s;
-      const prices = result.p;
-      pricesObj[symbol] = Number(prices);
+      const price = result.p;
+      pricesObj[symbol] = Number(price);
     }
 
     return pricesObj;
