@@ -33,7 +33,7 @@ export class XtFetcher extends BaseFetcher {
     for (const result of results) {
       const symbol = result.s;
       const prices = result.p;
-      pricesObj[symbol] = prices;
+      pricesObj[symbol] = Number(prices);
     }
 
     return pricesObj;
