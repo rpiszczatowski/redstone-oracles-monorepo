@@ -85,7 +85,6 @@ describe("NodeRunnerOld", () => {
     manifest = {
       defaultSource: ["uniswap"],
       interval: 10000,
-      maxPriceDeviationPercent: 25,
       priceAggregator: "median",
       sourceTimeout: 2000,
       evmChainId: 1,
@@ -114,67 +113,66 @@ describe("NodeRunnerOld", () => {
     await closeLocalLevelDB();
   });
 
-  // it("should create node instance", async () => {
-  //   // given
-  //   const mockedArProxy = mocked(ArweaveProxy, true);
+  it("should create node instance", async () => {
+    // given
+    const mockedArProxy = mocked(ArweaveProxy, true);
 
-  //   const sut = await NodeRunnerOld.create({
-  //     ...nodeConfig,
-  //     overrideManifestUsingFile: manifest,
-  //   });
+    const sut = await NodeRunnerOld.create({
+      ...nodeConfig,
+      overrideManifestUsingFile: manifest,
+    });
 
-  //   // then
-  //   expect(sut).not.toBeNull();
-  //   expect(mockedArProxy).toHaveBeenCalledWith(jwk);
-  // });
+    // then
+    expect(sut).not.toBeNull();
+    expect(mockedArProxy).toHaveBeenCalledWith(jwk);
+  });
 
-  // it("should throw if no maxDeviationPercent configured for token", async () => {
-  //   // given
-  //   manifest = JSON.parse(`{
-  //       "defaultSource": ["uniswap"],
-  //       "interval": 0,
-  //       "priceAggregator": "median",
-  //       "sourceTimeout": 2000,
-  //       "tokens": {
-  //         "BTC": {
-  //          "source": ["coingecko"]
-  //         },
-  //         "ETH": {}
-  //       }
-  //     }`);
+  it("should throw if no maxDeviationPercent configured for token", async () => {
+    // given
+    manifest = JSON.parse(`{
+        "defaultSource": ["uniswap"],
+        "interval": 0,
+        "priceAggregator": "median",
+        "sourceTimeout": 2000,
+        "tokens": {
+          "BTC": {
+           "source": ["coingecko"]
+          },
+          "ETH": {}
+        }
+      }`);
 
-  //   const sut = await NodeRunnerOld.create({
-  //     ...nodeConfig,
-  //     overrideManifestUsingFile: manifest,
-  //   });
+    const sut = await NodeRunnerOld.create({
+      ...nodeConfig,
+      overrideManifestUsingFile: manifest,
+    });
 
-  //   await expect(sut.run()).rejects.toThrowError(
-  //     "Could not determine deviationCheckConfig"
-  //   );
-  // });
+    await expect(sut.run()).rejects.toThrowError(
+      "Could not determine deviationCheckConfig"
+    );
+  });
 
-  // it("should throw if no sourceTimeout", async () => {
-  //   // given
-  //   manifest = JSON.parse(`{
-  //       "defaultSource": ["uniswap"],
-  //       "interval": 0,
-  //       "priceAggregator": "median",
-  //       "maxPriceDeviationPercent": 25,
-  //       "evmChainId": 1,
-  //       "tokens": {
-  //         "BTC": {
-  //          "source": ["coingecko"]
-  //         },
-  //         "ETH": {}
-  //       }
-  //     }`);
-  //   const sut = await NodeRunnerOld.create({
-  //     ...nodeConfig,
-  //     overrideManifestUsingFile: manifest,
-  //   });
+  it("should throw if no sourceTimeout", async () => {
+    // given
+    manifest = JSON.parse(`{
+        "defaultSource": ["uniswap"],
+        "interval": 0,
+        "priceAggregator": "median",
+        "evmChainId": 1,
+        "tokens": {
+          "BTC": {
+           "source": ["coingecko"]
+          },
+          "ETH": {}
+        }
+      }`);
+    const sut = await NodeRunnerOld.create({
+      ...nodeConfig,
+      overrideManifestUsingFile: manifest,
+    });
 
-  //   await expect(sut.run()).rejects.toThrowError("No timeout configured for");
-  // });
+    await expect(sut.run()).rejects.toThrowError("No timeout configured for");
+  });
 
   it("should broadcast fetched and signed prices", async () => {
     const sut = await NodeRunnerOld.create({
@@ -209,93 +207,98 @@ describe("NodeRunnerOld", () => {
     });
   });
 
-  // it("should not broadcast fetched and signed prices if values deviates too much", async () => {
-  //   manifest = {
-  //     ...manifest,
-  //     maxPriceDeviationPercent: 0,
-  //   };
+  it("should not broadcast fetched and signed prices if values deviates too much", async () => {
+    manifest = {
+      ...manifest,
+      deviationCheck: {
+        deviationWithRecentValues: {
+          maxPercent: 0,
+          maxDelayMilliseconds: 300000,
+        },
+      },
+    };
 
-  //   const sut = await NodeRunnerOld.create({
-  //     ...nodeConfig,
-  //     overrideManifestUsingFile: manifest,
-  //   });
+    const sut = await NodeRunnerOld.create({
+      ...nodeConfig,
+      overrideManifestUsingFile: manifest,
+    });
 
-  //   await sut.run();
-  //   expect(axios.post).not.toHaveBeenCalledWith("http://localhost:9000", any());
-  // });
+    await sut.run();
+    expect(axios.post).not.toHaveBeenCalledWith("http://localhost:9000", any());
+  });
 
-  // describe("when overrideManifestUsingFile flag is null", () => {
-  //   let nodeConfigManifestFromAr: any;
-  //   beforeEach(() => {
-  //     nodeConfigManifestFromAr = {
-  //       ...nodeConfig,
-  //       overrideManifestUsingFile: null,
-  //     };
-  //   });
+  describe("when overrideManifestUsingFile flag is null", () => {
+    let nodeConfigManifestFromAr: any;
+    beforeEach(() => {
+      nodeConfigManifestFromAr = {
+        ...nodeConfig,
+        overrideManifestUsingFile: null,
+      };
+    });
 
-  //   it("should download prices when manifest is available", async () => {
-  //     // given
-  //     const arServiceSpy = jest
-  //       .spyOn(ArweaveService.prototype, "getCurrentManifest")
-  //       .mockImplementation(() => Promise.resolve(manifest));
+    it("should download prices when manifest is available", async () => {
+      // given
+      const arServiceSpy = jest
+        .spyOn(ArweaveService.prototype, "getCurrentManifest")
+        .mockImplementation(() => Promise.resolve(manifest));
 
-  //     const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
+      const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
 
-  //     await sut.run();
+      await sut.run();
 
-  //     expect(fetchers.uniswap.fetchAll).toHaveBeenCalled();
+      expect(fetchers.uniswap.fetchAll).toHaveBeenCalled();
 
-  //     arServiceSpy.mockClear();
-  //   });
+      arServiceSpy.mockClear();
+    });
 
-  //   it("should not create NodeRunnerOld instance until manifest is available", async () => {
-  //     // given
-  //     jest.useRealTimers();
-  //     let arServiceSpy = jest
-  //       .spyOn(ArweaveService.prototype, "getCurrentManifest")
-  //       .mockImplementation(async () => {
-  //         await timeout(200);
-  //         return Promise.reject("no way!");
-  //       });
+    it("should not create NodeRunnerOld instance until manifest is available", async () => {
+      // given
+      jest.useRealTimers();
+      let arServiceSpy = jest
+        .spyOn(ArweaveService.prototype, "getCurrentManifest")
+        .mockImplementation(async () => {
+          await timeout(200);
+          return Promise.reject("no way!");
+        });
 
-  //     // this effectively makes manifest available after 100ms - so
-  //     // we expect that second manifest fetching trial will succeed.
-  //     setTimeout(() => {
-  //       arServiceSpy = jest
-  //         .spyOn(ArweaveService.prototype, "getCurrentManifest")
-  //         .mockImplementation(() => Promise.resolve(manifest));
-  //     }, 100);
-  //     const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
-  //     expect(sut).not.toBeNull();
-  //     expect(ArweaveService.prototype.getCurrentManifest).toHaveBeenCalledTimes(
-  //       2
-  //     );
-  //     arServiceSpy.mockClear();
-  //     jest.useFakeTimers();
-  //   });
+      // this effectively makes manifest available after 100ms - so
+      // we expect that second manifest fetching trial will succeed.
+      setTimeout(() => {
+        arServiceSpy = jest
+          .spyOn(ArweaveService.prototype, "getCurrentManifest")
+          .mockImplementation(() => Promise.resolve(manifest));
+      }, 100);
+      const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
+      expect(sut).not.toBeNull();
+      expect(ArweaveService.prototype.getCurrentManifest).toHaveBeenCalledTimes(
+        2
+      );
+      arServiceSpy.mockClear();
+      jest.useFakeTimers();
+    });
 
-  //   it("should continue working when update manifest fails", async () => {
-  //     // given
-  //     nodeConfigManifestFromAr.manifestRefreshInterval = 0;
-  //     let arServiceSpy = jest
-  //       .spyOn(ArweaveService.prototype, "getCurrentManifest")
-  //       .mockResolvedValueOnce(manifest)
-  //       .mockRejectedValue("timeout");
+    it("should continue working when update manifest fails", async () => {
+      // given
+      nodeConfigManifestFromAr.manifestRefreshInterval = 0;
+      let arServiceSpy = jest
+        .spyOn(ArweaveService.prototype, "getCurrentManifest")
+        .mockResolvedValueOnce(manifest)
+        .mockRejectedValue("timeout");
 
-  //     const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
+      const sut = await NodeRunnerOld.create(nodeConfigManifestFromAr);
 
-  //     await sut.run();
+      await sut.run();
 
-  //     expect(sut).not.toBeNull();
-  //     expect(ArweaveService.prototype.getCurrentManifest).toHaveBeenCalledTimes(
-  //       2
-  //     );
-  //     expect(fetchers.uniswap.fetchAll).toHaveBeenCalled();
-  //     expect(axios.post).not.toHaveBeenCalledWith(
-  //       "http://localhost:9000",
-  //       any()
-  //     );
-  //     arServiceSpy.mockClear();
-  //   });
-  // });
+      expect(sut).not.toBeNull();
+      expect(ArweaveService.prototype.getCurrentManifest).toHaveBeenCalledTimes(
+        2
+      );
+      expect(fetchers.uniswap.fetchAll).toHaveBeenCalled();
+      expect(axios.post).not.toHaveBeenCalledWith(
+        "http://localhost:9000",
+        any()
+      );
+      arServiceSpy.mockClear();
+    });
+  });
 });

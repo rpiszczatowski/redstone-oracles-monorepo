@@ -4,7 +4,6 @@ const baseManifest = {
   interval: 2000,
   priceAggregator: "median",
   sourceTimeout: 3000,
-  maxPriceDeviationPercent: 25,
   evmChainId: 1,
   httpBroadcasterURLs: ["http://localhost:9000"],
   enableStreamrBroadcaster: true,

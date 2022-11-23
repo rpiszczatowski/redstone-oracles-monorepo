@@ -24,7 +24,6 @@ describe("custom URL fetcher", () => {
       manifest: {
         defaultSource: ["custom-urls"],
         interval: 10000,
-        maxPriceDeviationPercent: 25,
         deviationCheck: {
           deviationWithRecentValues: {
             maxPercent: 25,
@@ -41,7 +40,6 @@ describe("custom URL fetcher", () => {
               jsonpath: "$.A.B.C",
             },
             comment: "Test url with jsonpath",
-            maxPriceDeviationPercent: 80,
           },
         },
       },

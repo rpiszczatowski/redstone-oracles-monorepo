@@ -3,7 +3,12 @@
   "priceAggregator": "median",
   "defaultSource": ["coingecko"],
   "sourceTimeout": 7000,
-  "maxPriceDeviationPercent": 25,
+  "deviationCheck": {
+    "deviationWithRecentValues": {
+      "maxPercent": 25,
+      "maxDelayMilliseconds": 300000
+    }
+  },
   "evmChainId": 1,
   "httpBroadcasterURLs": [
     "https://api.redstone.finance",
@@ -46,8 +51,7 @@
         "probit",
         "qtrade",
         "stex"
-      ],
-      "maxPriceDeviationPercent": 25
+      ]
     },
     "ETH": {
       "source": [
@@ -82,8 +86,7 @@
         "probit",
         "qtrade",
         "stex"
-      ],
-      "maxPriceDeviationPercent": 25
+      ]
     },
     "USDT": {
       "source": [
@@ -99,8 +102,7 @@
         "okcoin",
         "sushiswap",
         "uniswap"
-      ],
-      "maxPriceDeviationPercent": 25
+      ]
     },
     "BNB": {
       "source": [
@@ -119,8 +121,7 @@
         "oceanex",
         "poloniex",
         "probit"
-      ],
-      "maxPriceDeviationPercent": 25
+      ]
     },
     "DOGE": {
       "source": [
@@ -151,8 +152,7 @@
         "okx",
         "poloniex",
         "probit"
-      ],
-      "maxPriceDeviationPercent": 25
+      ]
     },
     "XRP": {
       "source": [
@@ -184,8 +184,7 @@
         "poloniex",
         "probit",
         "stex"
-      ],
-      "maxPriceDeviationPercent": 25
+      ]
     },
     "ADA": {
       "source": [
@@ -212,8 +211,7 @@
         "oceanex",
         "okcoin",
         "okx"
-      ],
-      "maxPriceDeviationPercent": 25
+      ]
     },
     "DOT": {
       "source": [
@@ -241,8 +239,7 @@
         "okx",
         "poloniex",
         "probit"
-      ],
-      "maxPriceDeviationPercent": 25
+      ]
     },
     "XLM": {
       "source": [
@@ -270,16 +267,13 @@
         "okx",
         "poloniex",
         "probit"
-      ],
-      "maxPriceDeviationPercent": 25
+      ]
     },
     "AR": {
-      "source": ["binance", "coingecko", "hitbtc", "huobipro"],
-      "maxPriceDeviationPercent": 25
+      "source": ["binance", "coingecko", "hitbtc", "huobipro"]
     },
     "CELO": {
-      "source": ["binance", "bittrex", "kucoin", "okcoin", "okx"],
-      "maxPriceDeviationPercent": 80
+      "source": ["binance", "bittrex", "kucoin", "okcoin", "okx"]
     },
     "AVAX": {
       "source": [
@@ -295,8 +289,7 @@
         "lbank",
         "okcoin",
         "okx"
-      ],
-      "maxPriceDeviationPercent": 25
+      ]
     }
   }
 }

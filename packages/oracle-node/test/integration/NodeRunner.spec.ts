@@ -94,7 +94,6 @@ describe("NodeRunner", () => {
     manifest = {
       defaultSource: ["uniswap"],
       interval: 10000,
-      maxPriceDeviationPercent: 25,
       priceAggregator: "median",
       sourceTimeout: 2000,
       evmChainId: 1,
@@ -168,7 +167,6 @@ describe("NodeRunner", () => {
         "defaultSource": ["uniswap"],
         "interval": 0,
         "priceAggregator": "median",
-        "maxPriceDeviationPercent": 25,
         "evmChainId": 1,
         "tokens": {
           "BTC": {
@@ -247,7 +245,12 @@ describe("NodeRunner", () => {
   it("should not broadcast fetched and signed prices if values deviates too much", async () => {
     manifest = {
       ...manifest,
-      maxPriceDeviationPercent: 0,
+      deviationCheck: {
+        deviationWithRecentValues: {
+          maxPercent: 0,
+          maxDelayMilliseconds: 300000,
+        },
+      },
     };
 
     const sut = await NodeRunner.create({

@@ -87,7 +87,6 @@ describe("fetchInParrallel", () => {
     const manifest = {
       defaultSource: ["mock"],
       interval: 10000,
-      maxPriceDeviationPercent: 25,
       deviationCheck: {
         deviationWithRecentValues: {
           maxPercent: 25,

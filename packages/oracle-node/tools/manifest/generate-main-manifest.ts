@@ -27,7 +27,6 @@ function main() {
       } else {
         tokens[tokenName] = {
           source: [sourceId],
-          maxPriceDeviationPercent: getMaxDeviationPercent(tokenName),
         };
       }
     }
@@ -57,10 +56,4 @@ function readSingleSourceManifests() {
   }
 
   return manifests;
-}
-
-function getMaxDeviationPercent(symbol: string): number {
-  return popularTokens.includes(symbol)
-    ? MAX_DEVIATION_FOR_POPULAR_TOKENS
-    : MAX_DEVIATION_FOR_UNPOPULAR_TOKENS;
 }

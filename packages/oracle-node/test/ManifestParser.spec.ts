@@ -6,7 +6,6 @@ describe("groupTokenBySource", () => {
     interval: 2000,
     priceAggregator: "median",
     sourceTimeout: 3000,
-    maxPriceDeviationPercent: 25,
     evmChainId: 1,
     deviationCheck: {
       deviationWithRecentValues: {
@@ -124,7 +123,6 @@ describe("getTimeoutForSource", () => {
   const baseManifest = {
     interval: 2000,
     priceAggregator: "median",
-    maxPriceDeviationPercent: 25,
     deviationCheck: {
       deviationWithRecentValues: {
         maxPercent: 25,
