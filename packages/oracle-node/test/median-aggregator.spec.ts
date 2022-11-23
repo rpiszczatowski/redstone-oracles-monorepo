@@ -6,9 +6,21 @@ import medianAggregator, {
   getMedianValue,
 } from "../src/aggregators/median-aggregator";
 
+const NAN_VALUES_ERR =
+  "Cannot get median value of an array that contains NaN value";
+
 describe("getMedianValue", () => {
   it("should throw for empty array", () => {
     expect(() => getMedianValue([])).toThrow();
+  });
+
+  it("should throw array with NaN values", () => {
+    expect(() => getMedianValue([42, 43, undefined] as any)).toThrow(
+      NAN_VALUES_ERR
+    );
+    expect(() => getMedianValue([42, "error", 45] as any)).toThrow(
+      NAN_VALUES_ERR
+    );
   });
 
   it("should properly calculate median for odd number of elements", () => {
@@ -51,5 +63,22 @@ describe("medianAggregator", () => {
 
     // Then
     expect(result.value).toEqual(6);
+  });
+
+  it("should fail for array with NaN values", () => {
+    const input: PriceDataBeforeAggregation = {
+      id: "",
+      source: {
+        src1: 3,
+        src2: "error",
+      },
+      symbol: "BTC",
+      timestamp: 0,
+      version: "",
+    };
+
+    expect(() => medianAggregator.getAggregatedValue(input)).toThrow(
+      NAN_VALUES_ERR
+    );
   });
 });
