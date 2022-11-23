@@ -161,9 +161,7 @@ export class RedstonePayloadParser {
   ): DataPoint {
     return new NumericDataPoint({
       dataFeedId: toUtf8String(dataFeedId).replaceAll("\x00", ""),
-      value: BigNumber.from(dataPointValue)
-        .div(10 ** 8)
-        .toNumber(),
+      value: BigNumber.from(dataPointValue).toNumber() / 10 ** 8,
     });
   }
 
