@@ -10,6 +10,7 @@ import { timeout } from "../../src/utils/promise-timeout";
 import { MOCK_NODE_CONFIG } from "../helpers";
 import { NodeConfig } from "../../src/types";
 import { clearPricesSublevel, closeLocalLevelDB } from "../../src/db/local-db";
+import emptyManifest from "../../manifests/dev/empty.json";
 
 /****** MOCKS START ******/
 const mockArProxy = {
@@ -92,25 +93,14 @@ describe("NodeRunner", () => {
     };
 
     manifest = {
+      ...emptyManifest,
       defaultSource: ["uniswap"],
-      interval: 10000,
-      priceAggregator: "median",
-      sourceTimeout: 2000,
-      evmChainId: 1,
-      enableArweaveBackup: true,
-      deviationCheck: {
-        deviationWithRecentValues: {
-          maxPercent: 25,
-          maxDelayMilliseconds: 300000,
-        },
-      },
       tokens: {
         BTC: {
           source: ["coingecko"],
         },
         ETH: {},
       },
-      httpBroadcasterURLs: ["http://localhost:9000"],
     };
   });
 
@@ -122,144 +112,140 @@ describe("NodeRunner", () => {
     await closeLocalLevelDB();
   });
 
-  it("should create node instance", async () => {
-    // given
-    const mockedArProxy = mocked(ArweaveProxy, true);
+  describe("node set up", () => {
+    it("should create node instance", async () => {
+      const mockedArProxy = mocked(ArweaveProxy, true);
 
-    const sut = await NodeRunner.create({
-      ...nodeConfig,
-      overrideManifestUsingFile: manifest,
+      const sut = await NodeRunner.create({
+        ...nodeConfig,
+        overrideManifestUsingFile: manifest,
+      });
+
+      expect(sut).not.toBeNull();
+      expect(mockedArProxy).toHaveBeenCalledWith(jwk);
     });
 
-    // then
-    expect(sut).not.toBeNull();
-    expect(mockedArProxy).toHaveBeenCalledWith(jwk);
-  });
+    it("should throw if no maxDeviationPercent configured for token", async () => {
+      const { deviationCheck, ...manifestWithoutDeviationCheck } = manifest;
 
-  it("should throw if no maxDeviationPercent configured for token", async () => {
-    // given
-    manifest = JSON.parse(`{
-        "defaultSource": ["uniswap"],
-        "interval": 0,
-        "priceAggregator": "median",
-        "sourceTimeout": 2000,
-        "tokens": {
-          "BTC": {
-           "source": ["coingecko"]
-          },
-          "ETH": {}
-        }
-      }`);
+      const sut = await NodeRunner.create({
+        ...nodeConfig,
+        overrideManifestUsingFile: manifestWithoutDeviationCheck,
+      });
 
-    const sut = await NodeRunner.create({
-      ...nodeConfig,
-      overrideManifestUsingFile: manifest,
+      await expect(sut.run()).rejects.toThrowError(
+        "Could not determine deviationCheckConfig"
+      );
     });
 
-    await expect(sut.run()).rejects.toThrowError(
-      "Could not determine deviationCheckConfig"
-    );
-  });
+    it("should throw if no sourceTimeout", async () => {
+      const { sourceTimeout, ...manifestWithoutSourceTimeout } = manifest;
 
-  it("should throw if no sourceTimeout", async () => {
-    // given
-    manifest = JSON.parse(`{
-        "defaultSource": ["uniswap"],
-        "interval": 0,
-        "priceAggregator": "median",
-        "evmChainId": 1,
-        "tokens": {
-          "BTC": {
-           "source": ["coingecko"]
-          },
-          "ETH": {}
-        }
-      }`);
-    const sut = await NodeRunner.create({
-      ...nodeConfig,
-      overrideManifestUsingFile: manifest,
+      const sut = await NodeRunner.create({
+        ...nodeConfig,
+        overrideManifestUsingFile: manifestWithoutSourceTimeout,
+      });
+
+      await expect(sut.run()).rejects.toThrowError("No timeout configured for");
     });
-
-    await expect(sut.run()).rejects.toThrowError("No timeout configured for");
   });
 
-  it("should broadcast fetched and signed prices", async () => {
-    const sut = await NodeRunner.create({
-      ...nodeConfig,
-      overrideManifestUsingFile: {
-        ...manifest,
-        enableArweaveBackup: false,
-      },
-    });
-
-    await sut.run();
-
-    expect(axios.post).toHaveBeenCalledWith(
-      "http://localhost:9000/data-packages/bulk",
-      {
-        requestSignature:
-          "0xdd8c162ee49b5a506cc6afbe5d0d9a7aabd1c0e8946900e3601a5eacd96439e56db8419660b4508c9f35db4b1d4716ec58011101c9744f6f812d7b742124a3ff1c",
-        dataPackages: [
-          {
-            signature:
-              "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
-            timestampMilliseconds: 111111111,
-            dataPoints: [
-              {
-                dataFeedId: "BTC",
-                value: 444.5,
-              },
-            ],
-          },
-          {
-            signature:
-              "WF1VFvLYv+Nd0PGAi3y1zPBp6fADtyUKREYEwuhl4k1hHZ+2MWnvztrxLK2NPeSryZXU9sgNLG5SJwhwqHV5ohs=",
-            timestampMilliseconds: 111111111,
-            dataPoints: [
-              {
-                dataFeedId: "ETH",
-                value: 42,
-              },
-            ],
-          },
-          {
-            signature:
-              "VjPF6m+SYKTv4gEBWEqRSR1Ppje0xrRg0gluaQB5vf96YLyHLVdaloSRcypaoHNCu0nSmlxlJWtye7EReGB7vhw=",
-            timestampMilliseconds: 111111111,
-            dataPoints: [
-              {
-                dataFeedId: "BTC",
-                value: 444.5,
-              },
-              {
-                dataFeedId: "ETH",
-                value: 42,
-              },
-            ],
-          },
-        ],
-      }
-    );
-  });
-
-  it("should not broadcast fetched and signed prices if values deviates too much", async () => {
-    manifest = {
-      ...manifest,
-      deviationCheck: {
-        deviationWithRecentValues: {
-          maxPercent: 0,
-          maxDelayMilliseconds: 300000,
+  describe("standard flow", () => {
+    it("should broadcast fetched and signed prices", async () => {
+      const sut = await NodeRunner.create({
+        ...nodeConfig,
+        overrideManifestUsingFile: {
+          ...manifest,
+          enableArweaveBackup: false,
         },
-      },
-    };
+      });
 
-    const sut = await NodeRunner.create({
-      ...nodeConfig,
-      overrideManifestUsingFile: manifest,
+      await sut.run();
+
+      expect(axios.post).toHaveBeenCalledWith(
+        "http://localhost:9000/data-packages/bulk",
+        {
+          requestSignature:
+            "0xdd8c162ee49b5a506cc6afbe5d0d9a7aabd1c0e8946900e3601a5eacd96439e56db8419660b4508c9f35db4b1d4716ec58011101c9744f6f812d7b742124a3ff1c",
+          dataPackages: [
+            {
+              signature:
+                "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
+              timestampMilliseconds: 111111111,
+              dataPoints: [
+                {
+                  dataFeedId: "BTC",
+                  value: 444.5,
+                },
+              ],
+            },
+            {
+              signature:
+                "WF1VFvLYv+Nd0PGAi3y1zPBp6fADtyUKREYEwuhl4k1hHZ+2MWnvztrxLK2NPeSryZXU9sgNLG5SJwhwqHV5ohs=",
+              timestampMilliseconds: 111111111,
+              dataPoints: [
+                {
+                  dataFeedId: "ETH",
+                  value: 42,
+                },
+              ],
+            },
+            {
+              signature:
+                "VjPF6m+SYKTv4gEBWEqRSR1Ppje0xrRg0gluaQB5vf96YLyHLVdaloSRcypaoHNCu0nSmlxlJWtye7EReGB7vhw=",
+              timestampMilliseconds: 111111111,
+              dataPoints: [
+                {
+                  dataFeedId: "BTC",
+                  value: 444.5,
+                },
+                {
+                  dataFeedId: "ETH",
+                  value: 42,
+                },
+              ],
+            },
+          ],
+        }
+      );
+    });
+  });
+
+  describe("invalid values handling", () => {
+    it("should not broadcast fetched and signed prices if values deviate too much", async () => {
+      manifest = {
+        ...manifest,
+        deviationCheck: {
+          deviationWithRecentValues: {
+            maxPercent: 0,
+            maxDelayMilliseconds: 300000,
+          },
+        },
+      };
+
+      const sut = await NodeRunner.create({
+        ...nodeConfig,
+        overrideManifestUsingFile: manifest,
+      });
+
+      await sut.run();
+      expect(axios.post).not.toHaveBeenCalledWith(
+        "http://localhost:9000",
+        any()
+      );
     });
 
-    await sut.run();
-    expect(axios.post).not.toHaveBeenCalledWith("http://localhost:9000", any());
+    // TODO: implement
+    it("should filter out too deviated sources", async () => {});
+
+    // TODO: implement
+    it("should filter out invalid sources", async () => {});
+
+    // TODO: implement
+    it("should not broadcast if all sources are deviated", async () => {});
+
+    // TODO: implement
+    it("should not broadcast if all sources provide invalid value", async () => {});
   });
 
   describe("when overrideManifestUsingFile flag is null", () => {

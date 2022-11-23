@@ -96,4 +96,7 @@ describe("Local DB", () => {
       ETH: [{ value: 42, timestamp: newCurrentTimestamp }],
     });
   });
+
+  // TODO: implement
+  it("should correctly simulate adding and clearing data of 2K assets for 30 minutes", async () => {});
 });
