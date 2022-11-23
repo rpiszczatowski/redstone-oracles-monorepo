@@ -7,11 +7,14 @@ import {
   mooTokens,
   yyTokenIds,
   MooJoeTokensDetailsKeys,
+  oracleAdaptersTokens,
+  OracleAdaptersDetailsKeys,
 } from "./AvalancheEvmFetcher";
 import { fetchTokenPrice, fetchTokensPrices } from "./fetch-token-price";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
+import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
 
 interface TokenReserve {
   [name: string]: BigNumber;
@@ -30,6 +33,8 @@ export const extractPrice = async (
     const { address } =
       mooTokensContractsDetails[id as MooJoeTokensDetailsKeys];
     return extractPriceForYieldYakOrMoo(response, id, address, "balance");
+  } else if (oracleAdaptersTokens.includes(id)) {
+    return extractPriceForOracleAdapterTokens(response, id);
   }
 };
 
@@ -115,4 +120,16 @@ const serializeStableCoinsDecimals = (tokenReserves: TokenReserve) => {
     }
   }
   return serializedTokenReserves;
+};
+
+const extractPriceForOracleAdapterTokens = (
+  multicallResult: MulticallParsedResponses,
+  id: string
+) => {
+  const { address } =
+    oracleAdaptersContractsDetails[id as OracleAdaptersDetailsKeys];
+  const latestAnswer = BigNumber.from(
+    multicallResult[address].latestAnswer.value
+  );
+  return ethers.utils.formatUnits(latestAnswer, 8);
 };

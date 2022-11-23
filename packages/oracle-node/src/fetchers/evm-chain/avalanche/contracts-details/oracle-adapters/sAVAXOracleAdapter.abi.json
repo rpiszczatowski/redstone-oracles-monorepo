@@ -1,0 +1,41 @@
+[
+  {
+    "inputs": [],
+    "name": "AVAX_USD_FEED",
+    "outputs": [
+      {
+        "internalType": "contract ICLAggregator",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "latestAnswer",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "SAVAX",
+    "outputs": [
+      {
+        "internalType": "contract IsAVAXWithRate",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
