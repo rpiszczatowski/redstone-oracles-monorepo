@@ -8,7 +8,9 @@ import { mooTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanch
 import YYMock from "./mocks/YYMock.json";
 import LPTokenMock from "./mocks/LPTokenMock.json";
 import MooTokenMock from "./mocks/MooTokenMock.json";
+import OracleAdaptersMock from "./mocks/OracleAdaptersMock.json";
 import { mockRedstoneApiPrice, mockRedstoneApiPrices } from "./_helpers";
+import { oracleAdaptersContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/oracle-adapters";
 
 jest.setTimeout(15000);
 
@@ -143,6 +145,36 @@ describe("Avalanche EVM fetcher", () => {
       expect(result).toEqual([
         { symbol: "MOO_TJ_AVAX_USDC_LP", value: 12566138.19921592 },
       ]);
+    });
+  });
+
+  describe("Oracle Adapters Token", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+      const oracleTokenContract = await deployContract(wallet, {
+        bytecode: OracleAdaptersMock.bytecode,
+        abi: OracleAdaptersMock.abi,
+      });
+
+      multicallContract = await deployContract(wallet, {
+        bytecode: Multicall2.bytecode,
+        abi: Multicall2.abi,
+      });
+
+      oracleAdaptersContractsDetails.sAVAX.abi = OracleAdaptersMock.abi;
+      oracleAdaptersContractsDetails.sAVAX.address =
+        oracleTokenContract.address;
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new AvalancheEvmFetcher(
+        provider,
+        multicallContract.address
+      );
+
+      const result = await fetcher.fetchAll(["sAVAX"]);
+      expect(result).toEqual([{ symbol: "sAVAX", value: 13.71346982 }]);
     });
   });
 });
