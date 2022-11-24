@@ -12,7 +12,7 @@ import {
   recordRequestSentByAddress,
   hasAddressReachedRateLimit,
 } from "./services/RateLimitingService";
-import { validateAddressByKyc } from "../on-demand/CoinbaseKyc";
+import { determineAddressLevelByCoinbaseData } from "../on-demand/CoinbaseKyd";
 import * as ScoreByAddress from "./score-by-address";
 
 const logger = require("../utils/logger")("score-by-address") as Consola;
@@ -100,8 +100,8 @@ export const fetchScoreForAddress = async (
   logger.info(`Fetching score data for address: ${address}`);
   let fetchedData: number | null = null;
   switch (scoreType) {
-    case "coinbase-kyc": {
-      fetchedData = await validateAddressByKyc(address);
+    case "coinbase-kyd": {
+      fetchedData = await determineAddressLevelByCoinbaseData(address);
       break;
     }
     default:
