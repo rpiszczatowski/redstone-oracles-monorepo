@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { Consola } from "consola";
 import { config } from "../config";
 import { Transaction } from "../db/remote-mongo/models/Transaction";
@@ -10,6 +10,8 @@ const BIG_END_BLOCK = 99999999;
 const TXS_PER_PAGE = 10000;
 const LEVEL_2_MIN_USD_AMOUNT = 100;
 const WEI_TO_ETH_MULTIPLIER = 10 ** -18;
+const RETRY_COUNT = 10;
+export const RETRY_INTERVAL = 2000;
 
 const COINBASE_ADDRESSES = [
   "0x71660c4005ba85c37ccec55d0c4493e66fe775d3",
@@ -36,6 +38,7 @@ export interface RawTx {
 
 export interface QueryResponse {
   result: RawTx[];
+  status: string;
 }
 
 export const validateAddressByCoinbaseData = async (
@@ -85,6 +88,23 @@ const fetchTransactionForAddress = async (
   address: string,
   page: number = 1
 ) => {
+  const response = await retryRequestIfFailedOrRateLimited({
+    request: () => getEtherscanRequest(address, page),
+    retryCount: RETRY_COUNT,
+    retryInterval: RETRY_INTERVAL,
+  });
+
+  let transactions = (response.data as QueryResponse).result;
+  validateEtherscanResponse(transactions);
+  const transactionFromNextPage = await fetchMoreTransactionsIfPaginated(
+    transactions.length,
+    address,
+    page
+  );
+  return [...transactions, ...transactionFromNextPage];
+};
+
+const getEtherscanRequest = (address: string, page: number = 1) => {
   const { etherscanApiUrl, etherscanApiKey } = validateEtherscanConfig();
   const etherscanRequestParams = {
     module: "account",
@@ -97,17 +117,9 @@ const fetchTransactionForAddress = async (
     sort: "asc",
     apikey: etherscanApiKey,
   };
-  const response = await axios.get(etherscanApiUrl, {
+  return axios.get(etherscanApiUrl, {
     params: etherscanRequestParams,
   });
-  let transactions = (response.data as QueryResponse).result;
-  validateEtherscanResponse(transactions);
-  const transactionFromNextPage = await fetchMoreTransactionsIfPaginated(
-    transactions.length,
-    address,
-    page
-  );
-  return [...transactions, ...transactionFromNextPage];
 };
 
 const validateEtherscanConfig = () => {
@@ -156,3 +168,40 @@ const assignAddressLevel = (
   }
   return 0;
 };
+
+const retryRequestIfFailedOrRateLimited = async ({
+  request,
+  retryCount,
+  retryInterval,
+}: {
+  request: () => Promise<AxiosResponse<QueryResponse>>;
+  retryCount: number;
+  retryInterval: number;
+}): Promise<AxiosResponse<QueryResponse>> => {
+  if (retryCount === 0) {
+    throw new Error("Cannot fetch address details from Etherscan");
+  }
+  try {
+    const response = await request();
+    const status = (response.data as QueryResponse).status;
+    if (Number(status) === 0) {
+      await sleep(retryInterval);
+      return retryRequestIfFailedOrRateLimited({
+        request,
+        retryCount: retryCount - 1,
+        retryInterval,
+      });
+    }
+    return response;
+  } catch {
+    await sleep(retryInterval);
+    return retryRequestIfFailedOrRateLimited({
+      request,
+      retryCount: retryCount - 1,
+      retryInterval,
+    });
+  }
+};
+
+const sleep = (sleepTime: number) =>
+  new Promise((resolve) => setTimeout(resolve, sleepTime));

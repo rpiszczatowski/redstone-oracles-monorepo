@@ -33,3 +33,9 @@ export const getMultipliedResponse = () => {
 
   return multipliedResponse;
 };
+
+export const getRateLimitedResponse = () => ({
+  status: "0",
+  message: "NOTOK",
+  result: "Max rate limit reached, please use API Key for higher rate limit",
+});
