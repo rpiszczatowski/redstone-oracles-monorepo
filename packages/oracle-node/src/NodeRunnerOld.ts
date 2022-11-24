@@ -237,8 +237,7 @@ export default class NodeRunnerOld {
 
     const aggregatedPrices: PriceDataAfterAggregation[] =
       await this.pricesService!.calculateAggregatedValues(
-        Object.values(pricesBeforeAggregation), // what is the advantage of using lodash.values?
-        this.currentManifest!
+        Object.values(pricesBeforeAggregation)
       );
     NodeRunnerOld.printAggregatedPrices(aggregatedPrices);
     trackEnd(fetchingAllTrackingId);

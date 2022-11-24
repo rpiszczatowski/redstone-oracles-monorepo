@@ -225,10 +225,8 @@ export default class NodeRunner {
     } else {
       // Exluding "helpful" prices, which should not be signed
       // "Helpful" prices (e.g. AVAX_SPOT) can be used to calculate TWAP values
-      const pricesForSigning = this.pricesService!.filterPricesForSigning(
-        aggregatedPrices,
-        this.currentManifest!
-      );
+      const pricesForSigning =
+        this.pricesService!.filterPricesForSigning(aggregatedPrices);
 
       // Signing
       const signedDataPackages = this.signPrices(
@@ -297,8 +295,7 @@ export default class NodeRunner {
 
     const aggregatedPrices: PriceDataAfterAggregation[] =
       await this.pricesService!.calculateAggregatedValues(
-        Object.values(pricesBeforeAggregation),
-        this.currentManifest!
+        Object.values(pricesBeforeAggregation)
       );
     NodeRunner.printAggregatedPrices(aggregatedPrices);
     trackEnd(fetchingAllTrackingId);

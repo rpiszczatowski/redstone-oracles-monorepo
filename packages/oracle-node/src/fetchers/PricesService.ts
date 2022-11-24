@@ -166,10 +166,9 @@ export default class PricesService {
   // - invalid values excluding
   // - aggregation across different sources
   async calculateAggregatedValues(
-    prices: PriceDataBeforeAggregation[],
-    manifest: Manifest
+    prices: PriceDataBeforeAggregation[]
   ): Promise<PriceDataAfterAggregation[]> {
-    const aggregator = aggregators[manifest.priceAggregator];
+    const aggregator = aggregators[this.manifest.priceAggregator];
     const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
 
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
@@ -299,10 +298,9 @@ export default class PricesService {
   }
 
   filterPricesForSigning(
-    prices: PriceDataAfterAggregation[],
-    manifest: Manifest
+    prices: PriceDataAfterAggregation[]
   ): PriceDataAfterAggregation[] {
-    return prices.filter((p) => !manifest.tokens[p.symbol].skipSigning);
+    return prices.filter((p) => !this.manifest.tokens[p.symbol].skipSigning);
   }
 
   preparePricesForSigning(
