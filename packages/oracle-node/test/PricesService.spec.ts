@@ -6,6 +6,7 @@ import {
 import PricesService, {
   PricesBeforeAggregation,
   PricesDataFetched,
+  PriceValidationArgs,
 } from "../src/fetchers/PricesService";
 import emptyManifest from "../manifests/dev/empty.json";
 import {
@@ -15,24 +16,35 @@ import {
 
 // Having hard time to mock uuid..so far only this solution is working: https://stackoverflow.com/a/61150430
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
+const testTimestamp = Date.now();
 
-const preparePrices = (
-  partialPrices: Partial<PriceDataAfterAggregation>[]
-): any[] => {
+const preparePrice = (
+  partialPrice: Partial<PriceDataAfterAggregation>
+): any => {
   const defaultPrice: PriceDataBeforeAggregation = {
     id: "00000000-0000-0000-0000-000000000000",
     symbol: "mock-symbol",
     source: {},
-    timestamp: 555,
+    timestamp: testTimestamp,
     version: "3",
   };
-  return partialPrices.map((partialPrice) => ({
+  return {
     ...defaultPrice,
     ...partialPrice,
-  }));
+  };
 };
 
+const preparePrices = (
+  partialPrices: Partial<PriceDataAfterAggregation>[]
+): any[] => partialPrices.map(preparePrice);
+
+const pricesService = new PricesService(emptyManifest, {});
+
 describe("PricesService", () => {
+  beforeEach(async () => {
+    await clearPricesSublevel();
+  });
+
   afterAll(async () => {
     await closeLocalLevelDB();
   });
@@ -109,10 +121,10 @@ describe("PricesService", () => {
         ...emptyManifest,
         defaultSource: ["mock"],
       };
-      const priceService = new PricesService(manifest, {});
+      const pricesService = new PricesService(manifest, {});
 
       // Mocking `doFetchFromSource` function
-      priceService.doFetchFromSource = async (
+      pricesService.doFetchFromSource = async (
         source: string,
         tokens: string[]
       ) => {
@@ -124,7 +136,7 @@ describe("PricesService", () => {
       };
 
       // When
-      const result: PricesDataFetched[] = await priceService.fetchInParallel({
+      const result: PricesDataFetched[] = await pricesService.fetchInParallel({
         "good-src-1": ["BTC", "ETH"],
         "good-src-2": ["BTC", "DAI"],
         "bad-src": ["DAI", "USDT"],
@@ -174,7 +186,7 @@ describe("PricesService", () => {
 
   describe("filterPricesForSigning", () => {
     it("should properly filter prices for signing", () => {
-      const priceService = new PricesService(
+      const pricesService = new PricesService(
         {
           ...emptyManifest,
           tokens: {
@@ -198,22 +210,16 @@ describe("PricesService", () => {
         },
       ]);
 
-      const filteredPrices = priceService.filterPricesForSigning(prices);
+      const filteredPrices = pricesService.filterPricesForSigning(prices);
 
       expect(filteredPrices.map((p) => p.symbol)).toEqual(["ETH"]);
     });
   });
 
   describe("calculateAggregatedValues", () => {
-    const priceService = new PricesService(emptyManifest, {});
-
-    beforeEach(async () => {
-      await clearPricesSublevel();
-    });
-
     it("should properly calculate aggregated values for empty array", async () => {
       const pricesAfterAggregation =
-        await priceService.calculateAggregatedValues([]);
+        await pricesService.calculateAggregatedValues([]);
       expect(pricesAfterAggregation.map((p) => p.value)).toEqual([]);
     });
 
@@ -224,7 +230,7 @@ describe("PricesService", () => {
       ]);
 
       const pricesAfterAggregation =
-        await priceService.calculateAggregatedValues(prices);
+        await pricesService.calculateAggregatedValues(prices);
 
       expect(pricesAfterAggregation.map((p) => p.value)).toEqual([42, 442]);
     });
@@ -238,7 +244,7 @@ describe("PricesService", () => {
       ]);
 
       const pricesAfterAggregation =
-        await priceService.calculateAggregatedValues(prices);
+        await pricesService.calculateAggregatedValues(prices);
 
       expect(pricesAfterAggregation.map((p) => p.value)).toEqual([42]);
     });
@@ -252,7 +258,7 @@ describe("PricesService", () => {
       ]);
 
       const pricesAfterAggregation =
-        await priceService.calculateAggregatedValues(prices);
+        await pricesService.calculateAggregatedValues(prices);
 
       expect(pricesAfterAggregation).toEqual([]);
     });
@@ -267,7 +273,7 @@ describe("PricesService", () => {
       ]);
 
       const pricesAfterAggregation =
-        await priceService.calculateAggregatedValues(prices);
+        await pricesService.calculateAggregatedValues(prices);
 
       expect(pricesAfterAggregation.map((p) => p.value)).toEqual([42]);
     });
@@ -282,45 +288,216 @@ describe("PricesService", () => {
       ]);
 
       const pricesAfterAggregation =
-        await priceService.calculateAggregatedValues(prices);
+        await pricesService.calculateAggregatedValues(prices);
 
       expect(pricesAfterAggregation).toEqual([]);
     });
   });
 
   describe("excludeInvalidSources", () => {
-    // TODO: implement
-    it("should exclude invalid sources", () => {});
+    it("should exclude invalid sources", () => {
+      const price = preparePrice({
+        source: {
+          src1: 0,
+          src2: -10,
+          src3: 42,
+          src4: null,
+          src5: "error",
+          src6: {},
+          src7: 123,
+        },
+      });
+      const priceWithExcludedSources = pricesService.excludeInvalidSources(
+        price,
+        [],
+        emptyManifest.deviationCheck
+      );
+      expect(priceWithExcludedSources.source).toEqual({ src3: 42, src7: 123 });
+    });
 
-    // TODO: implement
-    it("should exclude deviated sources", () => {});
+    it("should exclude deviated sources", async () => {
+      const price = preparePrice({
+        symbol: "ETH",
+        source: {
+          src1: 100,
+          src2: 44,
+          src3: 20,
+          src4: 41,
+          src5: 42,
+        },
+      });
+      const recentPrices = [{ value: 42, timestamp: price.timestamp }];
+      const priceWithExcludedSources = pricesService.excludeInvalidSources(
+        price,
+        recentPrices,
+        emptyManifest.deviationCheck
+      );
+      expect(priceWithExcludedSources.source).toEqual({
+        src2: 44,
+        src4: 41,
+        src5: 42,
+      });
+    });
   });
 
   describe("assertValidPrice", () => {
-    // TODO: implement
-    it("should pass assertion for valid price", () => {});
+    it("should pass assertion for valid price", () => {
+      pricesService.assertValidPrice(
+        preparePrice({ value: 42 }),
+        [],
+        emptyManifest.deviationCheck
+      );
+    });
 
-    // TODO: implement
-    it("should throw for 0 value", () => {});
+    it("should throw for 0 value", () => {
+      expect(() =>
+        pricesService.assertValidPrice(
+          preparePrice({ value: 0 }),
+          [],
+          emptyManifest.deviationCheck
+        )
+      ).toThrow(
+        "Invalid price for symbol mock-symbol. Reason: Value is less or equal 0"
+      );
+    });
 
-    // TODO: implement
-    it("should throw for negative value", () => {});
+    it("should throw for negative value", () => {
+      expect(() =>
+        pricesService.assertValidPrice(
+          preparePrice({ value: -1 }),
+          [],
+          emptyManifest.deviationCheck
+        )
+      ).toThrow(
+        "Invalid price for symbol mock-symbol. Reason: Value is less or equal 0"
+      );
+    });
 
-    // TODO: implement
-    it("should throw for NaN value", () => {});
+    it("should throw for NaN value", () => {
+      expect(() =>
+        pricesService.assertValidPrice(
+          preparePrice({ value: "Hello" } as any),
+          [],
+          emptyManifest.deviationCheck
+        )
+      ).toThrow(
+        "Invalid price for symbol mock-symbol. Reason: Value is not a number"
+      );
+    });
 
-    // TODO: implement
-    it("should throw for deviated value", () => {});
+    it("should throw for deviated value", async () => {
+      const price = preparePrice({ value: 90, symbol: "ETH" });
+      const recentPrices = [{ value: 42, timestamp: price.timestamp }];
+      expect(() =>
+        pricesService.assertValidPrice(
+          price,
+          recentPrices,
+          emptyManifest.deviationCheck
+        )
+      ).toThrow(
+        "Invalid price for symbol ETH. Reason: Value is too deviated (114.28571428571428%)"
+      );
+    });
   });
 
   describe("getDeviationPercentWithRecentValues", () => {
-    // TODO: implement
-    it("should properly calculate deviation with recent values", () => {});
+    const getDeviation = (
+      partialPriceValidationArgs: Partial<PriceValidationArgs>
+    ) => {
+      const defaultPriceValidationArgs = {
+        value: 42,
+        timestamp: testTimestamp,
+        deviationConfig: emptyManifest.deviationCheck,
+        recentPrices: [],
+      };
+      return pricesService.getDeviationPercentWithRecentValues({
+        ...defaultPriceValidationArgs,
+        ...partialPriceValidationArgs,
+      });
+    };
 
-    // TODO: implement
-    it("should exclude too old values from the deviation calculation", () => {});
+    it("should properly calculate deviation with recent values", () => {
+      expect(
+        getDeviation({
+          value: 42,
+          recentPrices: [{ value: 42, timestamp: testTimestamp - 1 }],
+        })
+      ).toBe(0);
 
-    // TODO: implement
-    it("should return 0% deviation if there are no recent values", () => {});
+      expect(
+        getDeviation({
+          value: 84,
+          recentPrices: [{ value: 42, timestamp: testTimestamp - 1 }],
+        })
+      ).toBe(100);
+
+      expect(
+        getDeviation({
+          value: 63,
+          recentPrices: [{ value: 42, timestamp: testTimestamp - 1 }],
+        })
+      ).toBe(50);
+
+      expect(
+        getDeviation({
+          value: 168,
+          recentPrices: [{ value: 42, timestamp: testTimestamp - 1 }],
+        })
+      ).toBe(300);
+
+      expect(
+        getDeviation({
+          value: 11,
+          recentPrices: [{ value: 10, timestamp: testTimestamp - 1 }],
+        })
+      ).toBe(10);
+
+      expect(
+        getDeviation({
+          value: 11,
+          recentPrices: [
+            { value: 10, timestamp: testTimestamp - 1 },
+            { value: 10.5, timestamp: testTimestamp - 2 },
+          ],
+        })
+      ).toBe(10);
+
+      expect(
+        getDeviation({
+          value: 21,
+          recentPrices: [{ value: 42, timestamp: testTimestamp - 1 }],
+        })
+      ).toBe(50);
+    });
+
+    it("should properly calculate deviation with negative values", () => {
+      expect(
+        getDeviation({
+          value: 42,
+          recentPrices: [{ value: -42, timestamp: testTimestamp - 1 }],
+        })
+      ).toBe(0);
+    });
+
+    it("should exclude too old values from the deviation calculation", () => {
+      expect(
+        getDeviation({
+          value: 21,
+          recentPrices: [
+            { value: 42, timestamp: testTimestamp - 2 * 60 * 1000 },
+            { value: 1, timestamp: testTimestamp - 180 * 60 * 1000 },
+          ],
+        })
+      ).toBe(50);
+    });
+
+    it("should return 0% deviation if there are no recent values", () => {
+      expect(
+        getDeviation({
+          value: 42,
+          recentPrices: [],
+        })
+      ).toBe(0);
+    });
   });
 });

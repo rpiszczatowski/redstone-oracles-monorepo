@@ -15,11 +15,7 @@ import { trackEnd, trackStart } from "../utils/performance-tracker";
 import ManifestConfigError from "../manifest/ManifestConfigError";
 import { promiseTimeout } from "../utils/promise-timeout";
 import aggregators from "../aggregators";
-import {
-  getPrices,
-  PriceValueInLocalDB,
-  PriceValuesInLocalDB,
-} from "../db/local-db";
+import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import { calculateDeviationPercent } from "../utils/calculate-deviation";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
@@ -31,7 +27,7 @@ export type PricesBeforeAggregation = {
   [token: string]: PriceDataBeforeAggregation;
 };
 
-interface PriceValidationArgs {
+export interface PriceValidationArgs {
   value: number;
   timestamp: number;
   deviationConfig: DeviationCheckConfig;
@@ -174,12 +170,13 @@ export default class PricesService {
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
     for (const price of prices) {
       const deviationCheckConfig = this.deviationCheckConfig(price.symbol);
+      const pricesInLocalDBForSymbol = pricesInLocalDB[price.symbol] || [];
 
       try {
         // Filtering out invalid (or too deviated) values from the `source` object
         const priceWithoutDeviatedSources = this.excludeInvalidSources(
           price,
-          pricesInLocalDB,
+          pricesInLocalDBForSymbol,
           deviationCheckConfig
         );
 
@@ -191,7 +188,7 @@ export default class PricesService {
         // Throwing an error if price is invalid or too deviated
         this.assertValidPrice(
           priceAfterAggregation,
-          pricesInLocalDB,
+          pricesInLocalDBForSymbol,
           deviationCheckConfig
         );
 
@@ -206,7 +203,7 @@ export default class PricesService {
 
   excludeInvalidSources(
     price: PriceDataBeforeAggregation,
-    recentPricesInLocalDB: PriceValuesInLocalDB,
+    recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
     deviationCheckConfig: DeviationCheckConfig
   ): PriceDataBeforeAggregation {
     const newSources: { [symbol: string]: number } = {};
@@ -216,7 +213,7 @@ export default class PricesService {
         value: valueFromSource,
         timestamp: price.timestamp,
         deviationConfig: deviationCheckConfig,
-        recentPrices: recentPricesInLocalDB[price.symbol],
+        recentPrices: recentPricesInLocalDBForSymbol,
       });
 
       if (isValid) {
@@ -233,14 +230,14 @@ export default class PricesService {
 
   assertValidPrice(
     price: PriceDataAfterAggregation,
-    recentPricesInLocalDB: PriceValuesInLocalDB,
+    recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
     deviationCheckConfig: DeviationCheckConfig
   ) {
     const { isValid, reason } = this.validatePrice({
       value: price.value,
       timestamp: price.timestamp,
       deviationConfig: deviationCheckConfig,
-      recentPrices: recentPricesInLocalDB[price.symbol],
+      recentPrices: recentPricesInLocalDBForSymbol,
     });
 
     if (!isValid) {
