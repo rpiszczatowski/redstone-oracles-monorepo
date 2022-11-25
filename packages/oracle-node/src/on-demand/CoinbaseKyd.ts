@@ -1,8 +1,9 @@
+import { BigNumber, constants, utils } from "ethers";
 import axios, { AxiosResponse } from "axios";
+import redstone from "redstone-api";
 import { Consola } from "consola";
 import { config } from "../config";
 import { Transaction } from "../db/remote-mongo/models/Transaction";
-import redstone from "redstone-api";
 
 const logger = require("../utils/logger")("score-by-address") as Consola;
 
@@ -69,18 +70,22 @@ export const determineAddressLevelByCoinbaseData = async (
     COINBASE_ADDRESSES.includes(transaction.from)
   );
   const sumFromCoinbaseTransactions = transactionsFromCoinbase.reduce(
-    (sum, transaction) => (sum += Number(transaction.value)),
-    0
+    (sum, transaction) => sum.add(BigNumber.from(transaction.value)),
+    constants.Zero
   );
-  const lastEthPrice = (await redstone.getPrice("ETH")).value;
+  const lastEthPriceInUsd = (await redstone.getPrice("ETH")).value;
+  const ethPriceAsNumber = BigNumber.from(lastEthPriceInUsd.toString());
   const transactionsSumInUSD =
-    sumFromCoinbaseTransactions * WEI_TO_ETH_MULTIPLIER * lastEthPrice;
+    sumFromCoinbaseTransactions.mul(ethPriceAsNumber);
+  const transactionsSumAsNumber = Number(
+    utils.formatEther(transactionsSumInUSD)
+  );
   const transactionsCount = transactions.length;
   const transactionsFromCoinbaseCount = transactionsFromCoinbase.length;
   return assignAddressLevel(
     transactionsCount,
     transactionsFromCoinbaseCount,
-    transactionsSumInUSD
+    transactionsSumAsNumber
   );
 };
 
