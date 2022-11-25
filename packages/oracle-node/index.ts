@@ -2,6 +2,7 @@ import { Consola } from "consola";
 import NodeRunnerOld from "./src/NodeRunnerOld";
 import { config } from "./src/config";
 import NodeRunner from "./src/NodeRunner";
+import { handleExceptions } from "./src/utils/handle-exceptions";
 
 const logger = require("./src/utils/logger")("index") as Consola;
 
@@ -21,7 +22,7 @@ async function main(): Promise<void> {
     ? NodeRunner
     : NodeRunnerOld;
   const runner = await SelectedNodeRunner.create(config);
-  await runner.run();
+  await handleExceptions(() => runner.run());
 }
 
 start();
