@@ -17,4 +17,3 @@ spec:
       http_port: 3000
   databases:
     - name: cache-service-mongo-db
-      engine: MONGODB
