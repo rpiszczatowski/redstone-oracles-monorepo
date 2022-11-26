@@ -25,6 +25,12 @@ export interface GetLatestDataPackagesQuery {
   "data-feeds": string;
 }
 
+export interface GetDataPackagesStatsQuery {
+  "from-timestamp": number;
+  "to-timestamp": number;
+  "api-key": string;
+}
+
 export interface DataPackagesResponse {
   [dataFeedId: string]: CachedDataPackage[];
 }
@@ -50,6 +56,24 @@ export class DataPackagesController {
     }
 
     return await this.dataPackagesService.getDataPackages(requestParams);
+  }
+
+  @Get("stats")
+  async getStats(@Query() query: GetDataPackagesStatsQuery): Promise<any> {
+    if (query["api-key"] !== config.apiKeyForAccessToAdminRoutes) {
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: "Incorrect api-key query param",
+        },
+        HttpStatus.UNAUTHORIZED
+      );
+    }
+
+    return await this.dataPackagesService.getDataPackagesStats({
+      fromTimestamp: Number(query["from-timestamp"]),
+      toTimestamp: Number(query["to-timestamp"] || Date.now()),
+    });
   }
 
   @Post("bulk")

@@ -15,6 +15,11 @@ import { CachedDataPackage, DataPackage } from "./data-packages.model";
 
 export const ALL_FEEDS_KEY = "___ALL_FEEDS___";
 
+export interface StatsRequestParams {
+  fromTimestamp: number;
+  toTimestamp: number;
+}
+
 @Injectable()
 export class DataPackagesService {
   async saveManyDataPackagesInDB(dataPackages: CachedDataPackage[]) {
@@ -76,6 +81,53 @@ export class DataPackagesService {
     }
 
     return fetchedPackagesPerDataFeed;
+  }
+
+  // TODO: implement
+  async getDataPackagesStats(
+    statsRequestParams: StatsRequestParams
+  ): Promise<any> {
+    const { fromTimestamp, toTimestamp } = statsRequestParams;
+
+    const signersStats = await DataPackage.aggregate([
+      {
+        $match: {
+          $and: [
+            { timestampMilliseconds: { $gte: fromTimestamp } },
+            { timestampMilliseconds: { $lte: toTimestamp } },
+          ],
+        },
+      },
+      {
+        $group: {
+          _id: "$signerAddress",
+          dataPackagesCount: { $sum: 1 },
+        },
+      },
+    ]);
+
+    // console.log({ groupedStats });
+
+    const state = await getOracleRegistryState();
+    const result: any = {};
+    for (const signerStats of signersStats) {
+      const signerAddress = signerStats._id;
+      // const dataServiceId = getDataServiceIdForSigner(state, signerAddress);
+      const nodeDetails = Object.values(state.nodes).find(
+        (n) => n.evmAddress === signerAddress
+      );
+
+      result[`${signerAddress}`] = {
+        dataPackagesCount: signerStats.dataPackagesCount,
+        nodeName: nodeDetails?.name || "unknown",
+        dataService: nodeDetails?.dataServiceId || "unknown",
+      };
+    }
+    // const resultObj =
+
+    console.log({ result });
+
+    return result;
   }
 
   verifyRequester(body: BulkPostRequestBody) {
