@@ -2,6 +2,10 @@
 
 This is a NestJS web app, which serves as a gateway to the data in the RedStone ecosystem.
 
+<!-- TODO: update link to the main branch -->
+
+[![Deploy to DO](https://www.deploytodo.com/do-btn-blue.svg)](https://cloud.digitalocean.com/apps/new?repo=https://github.com/redstone-finance/redstone-oracles-monorepo/tree/162-cache-service-add-deploy-to-digital-ocean-button)
+
 - New name ideas:
 
   - redstone-cache-node

@@ -1,0 +1,20 @@
+spec:
+  name: redstone-streamr-cache-service
+  services:
+    - name: cache-service
+      git:
+        branch: main
+        repo_clone_url: https://github.com/redstone-finance/redstone-oracles-monorepo
+      dockerfile_path: packages/integration/cache-service.Dockerfile
+      envs:
+        - key: MONGO_DB_URL
+          scope: RUN_TIME
+          value: ${cache-service-mongo-db.DATABASE_URL}
+        - key: ENABLE_STREAMR_LISTENING
+          value: "true"
+        - key: ENABLE_DIRECT_POSTING_ROUTES
+          value: "false"
+      http_port: 3000
+  databases:
+    - name: cache-service-mongo-db
+      engine: MONGODB
