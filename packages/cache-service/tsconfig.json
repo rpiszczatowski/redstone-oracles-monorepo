@@ -21,7 +21,6 @@
     "declarationMap": true,
     "composite": true
   },
-  // asdsa
   "include": ["./src", "./test"],
   "references": [
     {

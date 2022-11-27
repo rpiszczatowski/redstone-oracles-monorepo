@@ -112,10 +112,10 @@ export class DataPackagesService {
     const stats: DataPackagesStatsResponse = {};
     for (const { dataPackagesCount, _id: signerAddress } of signersStats) {
       const nodeDetails = Object.values(state.nodes).find(
-        (n) => n.evmAddress === signerAddress
+        ({ evmAddress }) => evmAddress === signerAddress
       );
 
-      stats[`${signerAddress}`] = {
+      stats[signerAddress] = {
         dataPackagesCount,
         nodeName: nodeDetails?.name || "unknown",
         dataServiceId: nodeDetails?.dataServiceId || "unknown",
