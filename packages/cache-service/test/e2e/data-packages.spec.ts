@@ -28,18 +28,6 @@ const expectedDataPackages = mockDataPackages.map((dataPackage) => ({
   dataFeedId: "___ALL_FEEDS___",
 }));
 
-jest.mock("../../src/config", () => {
-  const originalConfig = jest.requireActual("../../src/config");
-  return {
-    __esModule: true,
-    ...originalConfig,
-    default: {
-      ...originalConfig.default,
-      apiKeyForAccessToAdminRoutes: "test-api-key",
-    },
-  };
-});
-
 describe("Data packages (e2e)", () => {
   let app: INestApplication, httpServer: any;
 
