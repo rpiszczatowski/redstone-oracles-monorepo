@@ -35,6 +35,14 @@ export interface DataPackagesResponse {
   [dataFeedId: string]: CachedDataPackage[];
 }
 
+export interface DataPackagesStatsResponse {
+  [signerAddress: string]: {
+    dataPackagesCount: number;
+    nodeName: string;
+    dataServiceId: string;
+  };
+}
+
 @Controller("data-packages")
 export class DataPackagesController {
   private bundlrService = new BundlrService();
@@ -59,7 +67,9 @@ export class DataPackagesController {
   }
 
   @Get("stats")
-  async getStats(@Query() query: GetDataPackagesStatsQuery): Promise<any> {
+  async getStats(
+    @Query() query: GetDataPackagesStatsQuery
+  ): Promise<DataPackagesStatsResponse> {
     if (query["api-key"] !== config.apiKeyForAccessToAdminRoutes) {
       throw new HttpException(
         {

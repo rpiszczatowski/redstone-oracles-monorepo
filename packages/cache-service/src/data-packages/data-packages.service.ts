@@ -9,6 +9,7 @@ import config from "../config";
 import {
   BulkPostRequestBody,
   DataPackagesResponse,
+  DataPackagesStatsResponse,
 } from "./data-packages.controller";
 import { ReceivedDataPackage } from "./data-packages.interface";
 import { CachedDataPackage, DataPackage } from "./data-packages.model";
@@ -83,12 +84,12 @@ export class DataPackagesService {
     return fetchedPackagesPerDataFeed;
   }
 
-  // TODO: implement
   async getDataPackagesStats(
     statsRequestParams: StatsRequestParams
-  ): Promise<any> {
+  ): Promise<DataPackagesStatsResponse> {
     const { fromTimestamp, toTimestamp } = statsRequestParams;
 
+    // Fetching stats form DB
     const signersStats = await DataPackage.aggregate([
       {
         $match: {
@@ -106,28 +107,22 @@ export class DataPackagesService {
       },
     ]);
 
-    // console.log({ groupedStats });
-
+    // Prepare stats response
     const state = await getOracleRegistryState();
-    const result: any = {};
-    for (const signerStats of signersStats) {
-      const signerAddress = signerStats._id;
-      // const dataServiceId = getDataServiceIdForSigner(state, signerAddress);
+    const stats: DataPackagesStatsResponse = {};
+    for (const { dataPackagesCount, _id: signerAddress } of signersStats) {
       const nodeDetails = Object.values(state.nodes).find(
         (n) => n.evmAddress === signerAddress
       );
 
-      result[`${signerAddress}`] = {
-        dataPackagesCount: signerStats.dataPackagesCount,
+      stats[`${signerAddress}`] = {
+        dataPackagesCount,
         nodeName: nodeDetails?.name || "unknown",
-        dataService: nodeDetails?.dataServiceId || "unknown",
+        dataServiceId: nodeDetails?.dataServiceId || "unknown",
       };
     }
-    // const resultObj =
 
-    console.log({ result });
-
-    return result;
+    return stats;
   }
 
   verifyRequester(body: BulkPostRequestBody) {
