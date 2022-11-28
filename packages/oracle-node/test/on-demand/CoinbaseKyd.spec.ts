@@ -18,7 +18,7 @@ const EXAMPLE_ADDRESS = "0x473780deaf4a2ac070bbba936b0cdefe7f267dfc";
 describe("Coinbase KYD", () => {
   describe("determineAddressLevelByCoinbaseData", () => {
     beforeAll(() => {
-      mockRedstoneApiPrice(1165, "ETH");
+      mockRedstoneApiPrice(1165.69, "ETH");
     });
 
     test("should return level 3", async () => {

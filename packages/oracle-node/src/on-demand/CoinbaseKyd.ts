@@ -39,6 +39,7 @@ export interface RawTx {
 export interface QueryResponse {
   result: RawTx[];
   status: string;
+  message: string;
 }
 
 interface AssignAddressLevelParams {
@@ -79,9 +80,10 @@ export const determineAddressLevelByCoinbaseData = async (
     constants.Zero
   );
   const lastEthPriceInUsd = (await redstone.getPrice("ETH")).value;
-  const ethPriceAsNumber = BigNumber.from(lastEthPriceInUsd.toString());
-  const transactionsSumInUSD =
-    sumFromCoinbaseTransactions.mul(ethPriceAsNumber);
+  const ethPriceAsBigNumber = utils.parseUnits(lastEthPriceInUsd.toString(), 8);
+  const transactionsSumInUSD = sumFromCoinbaseTransactions
+    .mul(ethPriceAsBigNumber)
+    .div(utils.parseUnits("1.0", 8));
   const transactionsSumAsNumber = Number(
     utils.formatEther(transactionsSumInUSD)
   );
@@ -185,7 +187,10 @@ const retryRequestIfFailedOrRateLimited = async ({
   try {
     const response = await request();
     const status = (response.data as QueryResponse).status;
-    if (Number(status) === 0) {
+    const message = (response.data as QueryResponse).message;
+    const needRetry =
+      Number(status) === 0 && message !== "No transactions found";
+    if (needRetry) {
       await sleep(retryInterval);
       return retryRequestIfFailedOrRateLimited({
         request,
