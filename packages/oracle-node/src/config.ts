@@ -124,4 +124,6 @@ export const config: NodeConfig = Object.freeze({
   coinbaseIndexerMongoDbUrl: getFromEnv("COINBASE_INDEXER_MONGODB_URL", ""),
   ethMainRpcUrl: getFromEnv("ETH_MAIN_RPC_URL", DEFAULT_ETH_MAIN_RPC_URL),
   levelDbLocation: getFromEnv("LEVEL_DB_LOCATION", DEFAULT_LEVEL_DB_LOCATION),
+  etherscanApiUrl: getFromEnv("ETHERSCAN_API_URL", ""),
+  etherscanApiKey: getFromEnv("ETHERSCAN_API_KEY", ""),
 });

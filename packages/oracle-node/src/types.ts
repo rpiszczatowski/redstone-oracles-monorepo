@@ -159,6 +159,8 @@ export interface NodeConfig {
   coinbaseIndexerMongoDbUrl?: string;
   ethMainRpcUrl?: string;
   levelDbLocation: string;
+  etherscanApiUrl?: string;
+  etherscanApiKey?: string;
 }
 
 export interface MulticallRequest {
