@@ -10,7 +10,6 @@ const logger = require("../utils/logger")("score-by-address") as Consola;
 const BIG_END_BLOCK = 99999999;
 const TXS_PER_PAGE = 10000;
 const LEVEL_2_MIN_USD_AMOUNT = 100;
-const WEI_TO_ETH_MULTIPLIER = 10 ** -18;
 const RETRY_COUNT = 10;
 export const RETRY_INTERVAL = 2000;
 
@@ -40,6 +39,12 @@ export interface RawTx {
 export interface QueryResponse {
   result: RawTx[];
   status: string;
+}
+
+interface AssignAddressLevelParams {
+  transactionsCount: number;
+  transactionsFromCoinbaseCount: number;
+  transactionsSumInUSD: number;
 }
 
 export const validateAddressByCoinbaseData = async (
@@ -82,17 +87,17 @@ export const determineAddressLevelByCoinbaseData = async (
   );
   const transactionsCount = transactions.length;
   const transactionsFromCoinbaseCount = transactionsFromCoinbase.length;
-  return assignAddressLevel(
+  return assignAddressLevel({
     transactionsCount,
     transactionsFromCoinbaseCount,
-    transactionsSumAsNumber
-  );
+    transactionsSumInUSD: transactionsSumAsNumber,
+  });
 };
 
 const fetchTransactionForAddress = async (
   address: string,
   page: number = 1
-) => {
+): Promise<RawTx[]> => {
   const response = await retryRequestIfFailedOrRateLimited({
     request: () => getEtherscanRequest(address, page),
     retryCount: RETRY_COUNT,
@@ -101,11 +106,13 @@ const fetchTransactionForAddress = async (
 
   let transactions = (response.data as QueryResponse).result;
   validateEtherscanResponse(transactions);
-  const transactionFromNextPage = await fetchMoreTransactionsIfPaginated(
-    transactions.length,
-    address,
-    page
-  );
+  let transactionFromNextPage = [] as RawTx[];
+  if (transactions.length >= TXS_PER_PAGE) {
+    transactionFromNextPage = await fetchTransactionForAddress(
+      address,
+      page + 1
+    );
+  }
   return [...transactions, ...transactionFromNextPage];
 };
 
@@ -142,22 +149,11 @@ const validateEtherscanResponse = (transactions: any) => {
   }
 };
 
-const fetchMoreTransactionsIfPaginated = async (
-  transactionsCount: number,
-  address: string,
-  page: number
-): Promise<RawTx[]> => {
-  if (transactionsCount >= TXS_PER_PAGE) {
-    return await fetchTransactionForAddress(address, page + 1);
-  }
-  return [];
-};
-
-const assignAddressLevel = (
-  transactionsCount: number,
-  transactionsFromCoinbaseCount: number,
-  transactionsSumInUSD: number
-) => {
+const assignAddressLevel = ({
+  transactionsCount,
+  transactionsFromCoinbaseCount,
+  transactionsSumInUSD,
+}: AssignAddressLevelParams) => {
   if (
     transactionsCount > 0 &&
     transactionsFromCoinbaseCount > 0 &&
