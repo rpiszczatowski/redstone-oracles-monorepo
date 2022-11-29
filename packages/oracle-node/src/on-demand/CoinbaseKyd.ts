@@ -4,6 +4,11 @@ import redstone from "redstone-api";
 import { Consola } from "consola";
 import { config } from "../config";
 import { Transaction } from "../db/remote-mongo/models/Transaction";
+import {
+  level1Addresses,
+  level2Addresses,
+  level3Addresses,
+} from "./mock-addresses";
 
 const logger = require("../utils/logger")("score-by-address") as Consola;
 
@@ -46,6 +51,7 @@ interface AssignAddressLevelParams {
   transactionsCount: number;
   transactionsFromCoinbaseCount: number;
   transactionsSumInUSD: number;
+  address: string;
 }
 
 export const validateAddressByCoinbaseData = async (
@@ -93,6 +99,7 @@ export const determineAddressLevelByCoinbaseData = async (
     transactionsCount,
     transactionsFromCoinbaseCount,
     transactionsSumInUSD: transactionsSumAsNumber,
+    address,
   });
 };
 
@@ -155,7 +162,17 @@ const assignAddressLevel = ({
   transactionsCount,
   transactionsFromCoinbaseCount,
   transactionsSumInUSD,
+  address,
 }: AssignAddressLevelParams) => {
+  if (level1Addresses.includes(address)) {
+    return 1;
+  }
+  if (level2Addresses.includes(address)) {
+    return 2;
+  }
+  if (level3Addresses.includes(address)) {
+    return 3;
+  }
   if (
     transactionsCount > 0 &&
     transactionsFromCoinbaseCount > 0 &&
