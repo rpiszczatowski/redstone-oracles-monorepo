@@ -86,10 +86,13 @@ export const determineAddressLevelByCoinbaseData = async (
     constants.Zero
   );
   const lastEthPriceInUsd = (await redstone.getPrice("ETH")).value;
-  const ethPriceAsBigNumber = utils.parseUnits(lastEthPriceInUsd.toString(), 8);
+  const ethPriceAsBigNumber = utils.parseUnits(
+    lastEthPriceInUsd.toString(),
+    15
+  );
   const transactionsSumInUSD = sumFromCoinbaseTransactions
     .mul(ethPriceAsBigNumber)
-    .div(utils.parseUnits("1.0", 8));
+    .div(utils.parseUnits("1.0", 15));
   const transactionsSumAsNumber = Number(
     utils.formatEther(transactionsSumInUSD)
   );
