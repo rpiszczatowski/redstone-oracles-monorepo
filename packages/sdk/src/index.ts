@@ -77,20 +77,11 @@ const errToString = (e: any): string => {
   // }
 };
 
-export const requestDataPackages = async (
+export const requestAnyDataPackages = async (
   reqParams: DataPackagesRequestParams,
   urls: string[] = DEFAULT_CACHE_SERVICE_URLS
 ): Promise<DataPackagesResponse> => {
-  const promises = urls.map((url) =>
-    axios.get(url + "/data-packages/latest", {
-      params: {
-        "data-service-id": reqParams.dataServiceId,
-        "unique-signers-count": reqParams.uniqueSignersCount,
-        "data-feeds": reqParams.dataFeeds?.join(","),
-      },
-    })
-  );
-
+  const promises = prepareDataPackagePromises(reqParams, urls);
   try {
     const response = await Promise.any(promises);
     return parseDataPackagesResponse(response.data);
@@ -103,12 +94,49 @@ export const requestDataPackages = async (
   }
 };
 
+export const requestAllDataPackages = async (
+  reqParams: DataPackagesRequestParams,
+  urls: string[] = DEFAULT_CACHE_SERVICE_URLS
+): Promise<DataPackagesResponse[]> => {
+  const promises = prepareDataPackagePromises(reqParams, urls);
+  try {
+    const responses = await Promise.all(promises);
+    return responses.map((response) =>
+      parseDataPackagesResponse(response.data)
+    );
+  } catch (e: any) {
+    const errMessage = `Request failed ${JSON.stringify({
+      reqParams,
+      urls,
+    })}, Original error: ${errToString(e)}`;
+    throw new Error(errMessage);
+  }
+};
+
+const prepareDataPackagePromises = (
+  reqParams: DataPackagesRequestParams,
+  urls: string[]
+) => {
+  return urls.map((url) =>
+    axios.get(url + "/data-packages/latest", {
+      params: {
+        "data-service-id": reqParams.dataServiceId,
+        "unique-signers-count": reqParams.uniqueSignersCount,
+        "data-feeds": reqParams.dataFeeds?.join(","),
+      },
+    })
+  );
+};
+
 export const requestRedstonePayload = async (
   reqParams: DataPackagesRequestParams,
   urls: string[] = DEFAULT_CACHE_SERVICE_URLS,
   unsignedMetadataMsg?: string
 ): Promise<string> => {
-  const signedDataPackagesResponse = await requestDataPackages(reqParams, urls);
+  const signedDataPackagesResponse = await requestAnyDataPackages(
+    reqParams,
+    urls
+  );
   const signedDataPackages = [];
   for (const packages of Object.values(signedDataPackagesResponse)) {
     signedDataPackages.push(...packages);
@@ -116,9 +144,31 @@ export const requestRedstonePayload = async (
   return RedstonePayload.prepare(signedDataPackages, unsignedMetadataMsg || "");
 };
 
+export const requestRedstonePayloadsToVerify = async (
+  reqParams: DataPackagesRequestParams,
+  urls: string[] = DEFAULT_CACHE_SERVICE_URLS,
+  unsignedMetadataMsg?: string
+): Promise<string[]> => {
+  const signedDataPackagesResponses = await requestAllDataPackages(
+    reqParams,
+    urls
+  );
+  const payloads: string[] = [];
+  for (const dataPackages of signedDataPackagesResponses) {
+    const signedDataPackages = Object.values(dataPackages).flatMap(
+      (packages) => packages
+    );
+    payloads.push(
+      RedstonePayload.prepare(signedDataPackages, unsignedMetadataMsg || "")
+    );
+  }
+  return payloads;
+};
+
 export default {
   getOracleRegistryState,
-  requestDataPackages,
+  requestAnyDataPackages,
   getDataServiceIdForSigner,
   requestRedstonePayload,
+  requestRedstonePayloadsToVerify,
 };

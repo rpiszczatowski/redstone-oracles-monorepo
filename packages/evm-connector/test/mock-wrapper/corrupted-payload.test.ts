@@ -11,8 +11,12 @@ class CustomPayloadWrapper extends BaseWrapper {
     super();
   }
 
-  async getBytesDataForAppending(): Promise<string> {
-    return this.customRedstonePayload;
+  async getBytesDataForAppending(): Promise<string[]> {
+    return [this.customRedstonePayload];
+  }
+
+  async dryRunToVerifyPayload(payloads: string[]): Promise<string> {
+    return payloads[0];
   }
 }
 

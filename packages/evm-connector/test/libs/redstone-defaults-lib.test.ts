@@ -3,8 +3,6 @@ import { SampleRedstoneDefaultsLib } from "../../typechain-types";
 import { expect } from "chai";
 import { BigNumber } from "ethers";
 
-const MILLISECONDS_IN_MINUTE = 60 * 1000;
-
 describe("SampleRedstoneDefaultsLib", function () {
   let contract: SampleRedstoneDefaultsLib;
 
@@ -17,20 +15,30 @@ describe("SampleRedstoneDefaultsLib", function () {
   });
 
   it("Should properly validate valid timestamps", async () => {
-    await contract.validateTimestamp(Date.now());
-    await contract.validateTimestamp(Date.now() + 0.5 * MILLISECONDS_IN_MINUTE);
-    await contract.validateTimestamp(Date.now() - 2.5 * MILLISECONDS_IN_MINUTE);
+    const currentDate = new Date();
+    await contract.validateTimestamp(currentDate.getTime());
+    const datePlusHalfMinute = currentDate;
+    datePlusHalfMinute.setSeconds(datePlusHalfMinute.getSeconds() + 30);
+    await contract.validateTimestamp(datePlusHalfMinute.getTime());
+    const dateMinusTwoHalfMinute = currentDate;
+    dateMinusTwoHalfMinute.setMinutes(dateMinusTwoHalfMinute.getMinutes() - 2);
+    dateMinusTwoHalfMinute.setSeconds(dateMinusTwoHalfMinute.getSeconds() - 30);
+    await contract.validateTimestamp(dateMinusTwoHalfMinute.getTime());
   });
 
   it("Should revert for too old timestamp", async () => {
+    const dateMinusFourMinute = new Date();
+    dateMinusFourMinute.setMinutes(dateMinusFourMinute.getMinutes() - 4);
     await expect(
-      contract.validateTimestamp(Date.now() - 4 * MILLISECONDS_IN_MINUTE)
+      contract.validateTimestamp(dateMinusFourMinute.getTime())
     ).to.be.revertedWith("TimestampIsTooOld");
   });
 
   it("Should revert for timestamp from too long future", async () => {
+    const datePlusTwoMinute = new Date();
+    datePlusTwoMinute.setMinutes(datePlusTwoMinute.getMinutes() + 2);
     await expect(
-      contract.validateTimestamp(Date.now() + 2 * MILLISECONDS_IN_MINUTE)
+      contract.validateTimestamp(datePlusTwoMinute.getTime())
     ).to.be.revertedWith("TimestampFromTooLongFuture");
   });
 

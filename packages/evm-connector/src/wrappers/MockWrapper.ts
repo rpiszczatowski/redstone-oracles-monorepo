@@ -24,7 +24,11 @@ export class MockWrapper extends BaseWrapper {
     return `${version}#mock`;
   }
 
-  async getBytesDataForAppending(): Promise<string> {
+  async dryRunToVerifyPayload(payloads: string[]): Promise<string> {
+    return payloads[0];
+  }
+
+  async getBytesDataForAppending(): Promise<string[]> {
     const signedDataPackages: SignedDataPackage[] = [];
 
     for (const mockDataPackage of this.mockDataPackages) {
@@ -35,6 +39,6 @@ export class MockWrapper extends BaseWrapper {
 
     const unsignedMetadata = this.getUnsignedMetadata();
 
-    return RedstonePayload.prepare(signedDataPackages, unsignedMetadata);
+    return [RedstonePayload.prepare(signedDataPackages, unsignedMetadata)];
   }
 }
