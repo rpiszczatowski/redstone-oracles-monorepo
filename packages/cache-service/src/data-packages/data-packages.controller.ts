@@ -26,8 +26,8 @@ export interface GetLatestDataPackagesQuery {
 }
 
 export interface GetDataPackagesStatsQuery {
-  "from-timestamp": number;
-  "to-timestamp": number;
+  "from-timestamp": string;
+  "to-timestamp"?: string;
   "api-key": string;
 }
 
