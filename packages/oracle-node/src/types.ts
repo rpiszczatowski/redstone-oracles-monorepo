@@ -24,6 +24,7 @@ export interface SourceTimeout {
 
 export interface Credentials {
   twelveDataRapidApiKey?: string;
+  coinmarketcapApiKey?: string;
 }
 
 export interface TokenConfig {
@@ -148,6 +149,8 @@ export interface NodeConfig {
   coinbaseIndexerMongoDbUrl?: string;
   ethMainRpcUrl?: string;
   levelDbLocation: string;
+  etherscanApiUrl?: string;
+  etherscanApiKey?: string;
   ttlForPricesInLocalDBInMilliseconds: number;
 }
 

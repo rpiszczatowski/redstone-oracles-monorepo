@@ -18,16 +18,14 @@
   "enableStreamrBroadcaster": false,
   "enableArweaveBackup": false,
   "tokens": {
-    "WAVAX": {},
     "PNG": {},
     "SNOB": {},
     "SPORE": {},
-    "XAVA": {},
     "SHERPA": {},
     "JOE": {},
     "QI": {},
-    "YAK": {},
-    "sAVAX": {},
-    "PTP": {}
+    "PTP": {},
+    "XAVA": {},
+    "YAK": {}
   }
 }

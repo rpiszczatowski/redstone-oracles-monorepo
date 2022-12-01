@@ -1,14 +1,18 @@
 import express from "express";
 import { utils } from "ethers";
 import { Consola } from "consola";
-import { ScoreType, signOnDemandDataPackage } from "redstone-protocol";
+import {
+  prepareMessageToSign,
+  ScoreType,
+  signOnDemandDataPackage,
+} from "redstone-protocol";
 import { NodeConfig } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 import {
   recordRequestSentByAddress,
   hasAddressReachedRateLimit,
 } from "./services/RateLimitingService";
-import { validateAddressByKyc } from "../on-demand/CoinbaseKyc";
+import { determineAddressLevelByCoinbaseData } from "../on-demand/CoinbaseKyd";
 import * as ScoreByAddress from "./score-by-address";
 
 const logger = require("../utils/logger")("score-by-address") as Consola;
@@ -64,7 +68,8 @@ const verifyPayload = (
 };
 
 const recoverAddressFromSignature = (timestamp: string, signature: string) => {
-  return utils.verifyMessage(timestamp, signature);
+  const message = prepareMessageToSign(Number(timestamp));
+  return utils.verifyMessage(message, signature);
 };
 
 const verifyTimestamp = (timestamp: number) => {
@@ -95,8 +100,8 @@ export const fetchScoreForAddress = async (
   logger.info(`Fetching score data for address: ${address}`);
   let fetchedData: number | null = null;
   switch (scoreType) {
-    case "coinbase-kyc": {
-      fetchedData = await validateAddressByKyc(address);
+    case "coinbase-kyd": {
+      fetchedData = await determineAddressLevelByCoinbaseData(address);
       break;
     }
     default:

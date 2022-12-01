@@ -1,7 +1,9 @@
 {
   "interval": 10000,
   "priceAggregator": "median",
-  "defaultSource": ["coingecko"],
+  "defaultSource": [
+    "coingecko"
+  ],
   "sourceTimeout": 50000,
   "deviationCheck": {
     "deviationWithRecentValues": {
@@ -32,11 +34,11 @@
         "bittrex",
         "btcturk",
         "cex",
+        "chainlink",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
         "currencycom",
-        "ftx",
         "hitbtc",
         "hollaex",
         "huobipro",
@@ -63,7 +65,6 @@
         "coinbasepro",
         "coingecko",
         "currencycom",
-        "ftx",
         "kraken",
         "uniswap"
       ]
@@ -98,18 +99,6 @@
         "okx"
       ]
     },
-    "WAVAX": {
-      "source": [
-        "coingecko",
-        "pangolin-png",
-        "pangolin-qi",
-        "pangolin-usdt",
-        "trader-joe"
-      ]
-    },
-    "XAVA": {
-      "source": ["kucoin", "pangolin-wavax", "trader-joe"]
-    },
     "LINK": {
       "source": [
         "ascendex",
@@ -128,7 +117,6 @@
         "coinbasepro",
         "coingecko",
         "currencycom",
-        "ftx",
         "hitbtc",
         "huobipro",
         "kraken",
@@ -160,7 +148,6 @@
         "coinbasepro",
         "coingecko",
         "currencycom",
-        "ftx",
         "hitbtc",
         "hollaex",
         "huobipro",
@@ -175,12 +162,6 @@
         "qtrade",
         "stex"
       ]
-    },
-    "FRAX": {
-      "source": ["coingecko", "sushiswap", "uniswap"]
-    },
-    "YAK": {
-      "source": ["coingecko", "pangolin-wavax", "trader-joe"]
     },
     "QI": {
       "source": [
@@ -215,59 +196,123 @@
         "uniswap"
       ]
     },
-    "YYAV3SA1": {
-      "source": ["avalanche-evm-fetcher"]
-    },
     "sAVAX": {
-      "source": ["coingecko", "pangolin-wavax", "platypus", "trader-joe"]
-    },
-    "SAV2": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
     "PTP": {
-      "source": ["bkex", "coinex", "coingecko", "pangolin-wavax", "trader-joe"]
+      "source": [
+        "bkex",
+        "coinex",
+        "coingecko",
+        "pangolin-wavax",
+        "trader-joe"
+      ]
     },
-    "TJ_WAVAX_USDC_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "YY_AAVE_AVAX": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "PNG_WAVAX_USDC_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "YY_PTP_sAVAX": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "YY_TJ_WAVAX_USDC_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "PNG_AVAX_USDC_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "MOO_TJ_WAVAX_USDC_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "PNG_AVAX_USDT_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "PNG_USDT_WAVAX_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "PNG_AVAX_ETH_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "TJ_USDT_WAVAX_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "TJ_AVAX_USDC_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "TJ_sAVAX_WAVAX_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "TJ_AVAX_USDT_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "PNG_WETH_WAVAX_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "TJ_AVAX_ETH_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "TJ_WETH_WAVAX_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "TJ_AVAX_BTC_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "TJ_BTC_WAVAX_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "TJ_AVAX_sAVAX_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "YY_PNG_WAVAX_USDC_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "MOO_TJ_AVAX_USDC_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "YY_PNG_WETH_WAVAX_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "YY_PNG_AVAX_USDC_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "YY_TJ_sAVAX_WAVAX_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "YY_PNG_AVAX_ETH_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     },
-    "YY_TJ_WETH_WAVAX_LP": {
-      "source": ["avalanche-evm-fetcher"]
+    "YY_TJ_AVAX_sAVAX_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
+    },
+    "YY_TJ_AVAX_USDC_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
+    },
+    "YY_TJ_AVAX_ETH_LP": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
+    },
+    "XAVA": {
+      "source": [
+        "coingecko",
+        "gate",
+        "kucoin",
+        "latoken",
+        "mexc",
+        "pangolin-wavax",
+        "trader-joe"
+      ]
+    },
+    "YAK": {
+      "source": [
+        "coingecko",
+        "pangolin-usdc",
+        "pangolin-wavax",
+        "trader-joe"
+      ]
+    },
+    "YYAV3SA1": {
+      "source": [
+        "avalanche-evm-fetcher"
+      ]
     }
   }
 }

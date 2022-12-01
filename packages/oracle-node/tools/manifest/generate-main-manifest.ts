@@ -6,10 +6,6 @@ import {
 } from "../common/paths";
 import { generateManifest } from "../common/manifest-utils";
 import { Manifest, TokensConfig } from "../../src/types";
-import popularTokens from "./popular-tokens.json";
-
-const MAX_DEVIATION_FOR_POPULAR_TOKENS = 25;
-const MAX_DEVIATION_FOR_UNPOPULAR_TOKENS = 80;
 
 main();
 

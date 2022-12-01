@@ -11,9 +11,10 @@ export class Issue {
   @Prop({ required: true })
   type:
     | "timestamp-diff"
-    | "invalid-signature"
-    | "one-source-failed"
-    | "data-feed-failed";
+    | "no-data-package"
+    | "one-url-failed"
+    | "data-service-failed"
+    | "invalid-signers-number";
 
   @Prop()
   symbol: string;

@@ -209,10 +209,7 @@
     "DYP": {},
     "SPORE": {},
     "JOE": {},
-    "WAVAX": {},
-    "FRAX": {},
     "QI": {},
-    "YAK": {},
     "SOS": {},
     "ONE": {},
     "GLMR": {},
@@ -225,7 +222,6 @@
     "GNT": {},
     "EVMOS": {},
     "XSGD": {},
-    "sAVAX": {},
     "STETH": {},
     "CUSDC": {},
     "USDP": {},
@@ -387,7 +383,9 @@
     "ZB": {},
     "SYLO": {},
     "APT": {},
-    "PTP": {}
+    "PTP": {},
+    "XAVA": {},
+    "YAK": {}
   },
   "defaultSource": ["coingecko"]
 }

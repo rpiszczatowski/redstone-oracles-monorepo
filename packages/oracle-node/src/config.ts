@@ -109,6 +109,7 @@ export const config: NodeConfig = Object.freeze({
       "TWELVE_DATA_RAPID_API_KEY",
       DEFAULT_TWELVE_DATA_RAPID_API_KEY
     ),
+    coinmarketcapApiKey: getFromEnv("COINMARKETCAP_API_KEY", ""),
   },
   privateKeys: {
     arweaveJwk: getArweaveWallet(),
@@ -124,6 +125,8 @@ export const config: NodeConfig = Object.freeze({
   coinbaseIndexerMongoDbUrl: getFromEnv("COINBASE_INDEXER_MONGODB_URL", ""),
   ethMainRpcUrl: getFromEnv("ETH_MAIN_RPC_URL", DEFAULT_ETH_MAIN_RPC_URL),
   levelDbLocation: getFromEnv("LEVEL_DB_LOCATION", DEFAULT_LEVEL_DB_LOCATION),
+  etherscanApiUrl: getFromEnv("ETHERSCAN_API_URL", ""),
+  etherscanApiKey: getFromEnv("ETHERSCAN_API_KEY", ""),
   ttlForPricesInLocalDBInMilliseconds: parserFromString.number(
     getFromEnv(
       "TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS",

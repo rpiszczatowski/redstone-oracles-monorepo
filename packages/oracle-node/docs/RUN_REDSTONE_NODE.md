@@ -96,7 +96,6 @@ You can simply open this URL [https://api.redstone.finance/prices?provider=YOUR_
       "cex": 1.0031,
       "coingecko": 1,
       "currencycom": 0.9985,
-      "ftx": 1,
       "kraken": 1.0001,
       "okcoin": 1,
       "kyber": 0.9981773824698535,

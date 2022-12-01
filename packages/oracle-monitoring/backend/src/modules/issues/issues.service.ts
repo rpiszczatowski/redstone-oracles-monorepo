@@ -61,14 +61,22 @@ export class IssuesService {
           warnings: {
             $sum: { $cond: [{ $eq: ["$level", "WARNING"] }, 1, 0] },
           },
-          "data-feed-failed": {
-            $sum: { $cond: [{ $eq: ["$type", "data-feed-failed"] }, 1, 0] },
+          "data-service-failed": {
+            $sum: { $cond: [{ $eq: ["$type", "data-service-failed"] }, 1, 0] },
           },
-          "one-source-failed": {
-            $sum: { $cond: [{ $eq: ["$type", "one-source-failed"] }, 1, 0] },
+          "no-data-package": {
+            $sum: { $cond: [{ $eq: ["$type", "no-data-package"] }, 1, 0] },
+          },
+          "one-url-failed": {
+            $sum: { $cond: [{ $eq: ["$type", "one-url-failed"] }, 1, 0] },
           },
           "timestamp-diff": {
             $sum: { $cond: [{ $eq: ["$type", "timestamp-diff"] }, 1, 0] },
+          },
+          "invalid-signers-number": {
+            $sum: {
+              $cond: [{ $eq: ["$type", "invalid-signers-number"] }, 1, 0],
+            },
           },
         },
       },
@@ -77,9 +85,11 @@ export class IssuesService {
           errors: "$errors",
           warnings: "$warnings",
           groupedByType: {
-            "data-feed-failed": "$data-feed-failed",
-            "one-source-failed": "$one-source-failed",
+            "data-service-failed": "$data-service-failed",
+            "no-data-package": "$no-data-package",
             "timestamp-diff": "$timestamp-diff",
+            "one-url-failed": "$one-url-failed",
+            "invalid-signers-number": "$invalid-signers-number",
           },
         },
       },
