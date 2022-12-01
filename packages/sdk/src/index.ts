@@ -77,7 +77,7 @@ const errToString = (e: any): string => {
   // }
 };
 
-export const requestAnyDataPackages = async (
+export const requestDataPackages = async (
   reqParams: DataPackagesRequestParams,
   urls: string[] = DEFAULT_CACHE_SERVICE_URLS
 ): Promise<DataPackagesResponse> => {
@@ -85,25 +85,6 @@ export const requestAnyDataPackages = async (
   try {
     const response = await Promise.any(promises);
     return parseDataPackagesResponse(response.data);
-  } catch (e: any) {
-    const errMessage = `Request failed ${JSON.stringify({
-      reqParams,
-      urls,
-    })}, Original error: ${errToString(e)}`;
-    throw new Error(errMessage);
-  }
-};
-
-export const requestAllDataPackages = async (
-  reqParams: DataPackagesRequestParams,
-  urls: string[] = DEFAULT_CACHE_SERVICE_URLS
-): Promise<DataPackagesResponse[]> => {
-  const promises = prepareDataPackagePromises(reqParams, urls);
-  try {
-    const responses = await Promise.all(promises);
-    return responses.map((response) =>
-      parseDataPackagesResponse(response.data)
-    );
   } catch (e: any) {
     const errMessage = `Request failed ${JSON.stringify({
       reqParams,
@@ -133,10 +114,7 @@ export const requestRedstonePayload = async (
   urls: string[] = DEFAULT_CACHE_SERVICE_URLS,
   unsignedMetadataMsg?: string
 ): Promise<string> => {
-  const signedDataPackagesResponse = await requestAnyDataPackages(
-    reqParams,
-    urls
-  );
+  const signedDataPackagesResponse = await requestDataPackages(reqParams, urls);
   const signedDataPackages = [];
   for (const packages of Object.values(signedDataPackagesResponse)) {
     signedDataPackages.push(...packages);
@@ -144,31 +122,8 @@ export const requestRedstonePayload = async (
   return RedstonePayload.prepare(signedDataPackages, unsignedMetadataMsg || "");
 };
 
-export const requestRedstonePayloadsToVerify = async (
-  reqParams: DataPackagesRequestParams,
-  urls: string[] = DEFAULT_CACHE_SERVICE_URLS,
-  unsignedMetadataMsg?: string
-): Promise<string[]> => {
-  const signedDataPackagesResponses = await requestAllDataPackages(
-    reqParams,
-    urls
-  );
-  const payloads: string[] = [];
-  for (const dataPackages of signedDataPackagesResponses) {
-    const signedDataPackages = Object.values(dataPackages).flatMap(
-      (packages) => packages
-    );
-    payloads.push(
-      RedstonePayload.prepare(signedDataPackages, unsignedMetadataMsg || "")
-    );
-  }
-  return payloads;
-};
-
 export default {
   getOracleRegistryState,
-  requestAnyDataPackages,
   getDataServiceIdForSigner,
   requestRedstonePayload,
-  requestRedstonePayloadsToVerify,
 };

@@ -1,15 +1,14 @@
 import {
   DataPackagesRequestParams,
-  requestRedstonePayloadsToVerify,
+  requestRedstonePayload,
 } from "redstone-sdk";
-import { BaseWrapper } from "./BaseWrapper";
+import { BaseWrapper, ParamsForDryRunVerification } from "./BaseWrapper";
 import { version } from "../../package.json";
-import { Contract, PopulatedTransaction } from "ethers";
 
 export class DataServiceWrapper extends BaseWrapper {
   constructor(
     private dataPackagesRequestParams: DataPackagesRequestParams,
-    private urls?: string[]
+    private urls: string[]
   ) {
     super();
   }
@@ -18,30 +17,27 @@ export class DataServiceWrapper extends BaseWrapper {
     return `${version}#${this.dataPackagesRequestParams.dataServiceId}`;
   }
 
-  async getBytesDataForAppending(): Promise<string[]> {
+  async getBytesDataForAppending({
+    functionName,
+    contract,
+    transaction,
+  }: ParamsForDryRunVerification): Promise<string> {
     const unsignedMetadataMsg = this.getUnsignedMetadata();
-    const redstonePayloads = await requestRedstonePayloadsToVerify(
-      this.dataPackagesRequestParams,
-      this.urls,
-      unsignedMetadataMsg
-    );
-    return redstonePayloads;
-  }
-
-  override async dryRunToVerifyPayload(
-    payloads: string[],
-    functionName: string,
-    contract: Contract,
-    transaction: PopulatedTransaction
-  ): Promise<string> {
-    for (const payload of payloads) {
-      try {
-        transaction.data = transaction.data + payload;
-        const result = await contract.signer.call(transaction);
-        contract.interface.decodeFunctionResult(functionName, result);
-        return payload;
-      } catch {}
-    }
-    throw new Error("All redstone payloads don't pass dry run verification");
+    const promises = this.urls.map(async (url) => {
+      const transactionToTest = Object.assign({}, transaction);
+      const redstonePayload = await requestRedstonePayload(
+        this.dataPackagesRequestParams,
+        [url],
+        unsignedMetadataMsg
+      );
+      transactionToTest.data = transactionToTest.data + redstonePayload;
+      contract.provider.call(transactionToTest);
+      const result = await contract.provider.call(transactionToTest);
+      contract.interface.decodeFunctionResult(functionName, result);
+      return redstonePayload;
+    });
+    return Promise.any(promises).catch(() => {
+      throw new Error("All redstone payloads don't pass dry run verification");
+    });
   }
 }

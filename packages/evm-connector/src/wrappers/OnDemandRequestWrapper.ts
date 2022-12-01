@@ -32,7 +32,7 @@ export class OnDemandRequestWrapper extends BaseWrapper {
     return payloads[0];
   }
 
-  async getBytesDataForAppending(): Promise<string[]> {
+  async getBytesDataForAppending(): Promise<string> {
     const timestamp = Date.now();
     const message = prepareMessageToSign(timestamp);
     const { signer, scoreType } = this.requestParams;
@@ -50,6 +50,6 @@ export class OnDemandRequestWrapper extends BaseWrapper {
       SignedDataPackage.fromObj(response.data as SignedDataPackagePlainObj)
     );
     const unsignedMetadata = this.getUnsignedMetadata();
-    return [RedstonePayload.prepare(signedDataPackages, unsignedMetadata)];
+    return RedstonePayload.prepare(signedDataPackages, unsignedMetadata);
   }
 }

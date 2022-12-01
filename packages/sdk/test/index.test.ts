@@ -1,7 +1,7 @@
 import {
   DataPackagesRequestParams,
   getOracleRegistryState,
-  requestAnyDataPackages,
+  requestDataPackages,
   requestRedstonePayload,
 } from "../src";
 import { mockSignedDataPackages } from "./mocks/mock-packages";
@@ -23,7 +23,7 @@ describe("SDK tests", () => {
   });
 
   test("Should properly request data packages", async () => {
-    const dataPackages = await requestAnyDataPackages(reqParams);
+    const dataPackages = await requestDataPackages(reqParams);
     expect(mockSignedDataPackages.ETH[0]).toMatchObject(
       dataPackages["ETH"][0].toObj()
     );
@@ -37,7 +37,7 @@ describe("SDK tests", () => {
   });
 
   test("Should not fail if not all urls fail", async () => {
-    const dataPackages = await requestAnyDataPackages(reqParams, [
+    const dataPackages = await requestDataPackages(reqParams, [
       "https://bad-url-1.com",
       "https://bad-url-2.com",
       "https://cache-2.redstone.finance",
@@ -49,7 +49,7 @@ describe("SDK tests", () => {
 
   test("Should fail if all urls fail", async () => {
     await expect(
-      requestAnyDataPackages(reqParams, [
+      requestDataPackages(reqParams, [
         "https://bad-url-1.com",
         "https://bad-url-2.com",
       ])
