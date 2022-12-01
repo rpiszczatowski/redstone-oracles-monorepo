@@ -12,6 +12,7 @@ import { KyberFetcher } from "./kyber/KyberFetcher";
 import { VertoFetcher } from "./verto/VertoFetcher";
 import { EcbFetcher } from "./ecb/EcbFetcher";
 import { DrandFetcher } from "./drand/DrandFetcher";
+import { DiaFetcher } from "./dia/DiaFetcher";
 import twapFetchers from "./twap/all-twap-fetchers";
 import { TwelveDataFetcher } from "./twelve-data/TwelveDataFetcher";
 import { AvalancheEvmFetcher } from "./evm-chain/avalanche/AvalancheEvmFetcher";
@@ -30,6 +31,7 @@ export default {
   sushiswap: new SushiswapFetcher(),
   uniswap: new UniswapFetcher(),
   drand: new DrandFetcher(),
+  dia: new DiaFetcher(),
   kyber: new KyberFetcher(),
   verto: new VertoFetcher(),
   ecb: new EcbFetcher(),
