@@ -48,4 +48,5 @@ export const MOCK_NODE_CONFIG = {
   credentials: {},
   useNewSigningAndBroadcasting: false,
   levelDbLocation: "oracle-node-level-db-tests",
+  ttlForPricesInLocalDBInMilliseconds: 900000,
 };

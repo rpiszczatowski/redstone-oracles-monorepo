@@ -239,7 +239,7 @@ describe("PricesService", () => {
       const prices: PriceDataBeforeAggregation[] = preparePrices([
         {
           symbol: "ETH",
-          source: { src1: 0, src2: -10, src3: 42, src4: null, src5: "error" },
+          source: { src1: [], src2: -10, src3: 42, src4: null, src5: "error" },
         },
       ]);
 
@@ -253,7 +253,7 @@ describe("PricesService", () => {
       const prices: PriceDataBeforeAggregation[] = preparePrices([
         {
           symbol: "ETH",
-          source: { src1: 0, src2: -10, src3: -42, src4: null, src5: "error" },
+          source: { src1: {}, src2: -10, src3: -42, src4: null, src5: "error" },
         },
       ]);
 
@@ -294,11 +294,11 @@ describe("PricesService", () => {
     });
   });
 
-  describe("excludeInvalidSources", () => {
+  describe("sanitizeSourceValues", () => {
     it("should exclude invalid sources", () => {
       const price = preparePrice({
         source: {
-          src1: 0,
+          src1: [],
           src2: -10,
           src3: 42,
           src4: null,
@@ -307,7 +307,7 @@ describe("PricesService", () => {
           src7: 123,
         },
       });
-      const priceWithExcludedSources = pricesService.excludeInvalidSources(
+      const priceWithExcludedSources = pricesService.sanitizeSourceValues(
         price,
         [],
         emptyManifest.deviationCheck
@@ -327,7 +327,7 @@ describe("PricesService", () => {
         },
       });
       const recentPrices = [{ value: 42, timestamp: price.timestamp }];
-      const priceWithExcludedSources = pricesService.excludeInvalidSources(
+      const priceWithExcludedSources = pricesService.sanitizeSourceValues(
         price,
         recentPrices,
         emptyManifest.deviationCheck
@@ -349,18 +349,6 @@ describe("PricesService", () => {
       );
     });
 
-    it("should throw for 0 value", () => {
-      expect(() =>
-        pricesService.assertValidPrice(
-          preparePrice({ value: 0 }),
-          [],
-          emptyManifest.deviationCheck
-        )
-      ).toThrow(
-        "Invalid price for symbol mock-symbol. Reason: Value is less or equal 0"
-      );
-    });
-
     it("should throw for negative value", () => {
       expect(() =>
         pricesService.assertValidPrice(
@@ -369,7 +357,7 @@ describe("PricesService", () => {
           emptyManifest.deviationCheck
         )
       ).toThrow(
-        "Invalid price for symbol mock-symbol. Reason: Value is less or equal 0"
+        "Invalid price for symbol mock-symbol. Reason: Value is less than 0"
       );
     });
 

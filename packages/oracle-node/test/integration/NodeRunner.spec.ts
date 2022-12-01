@@ -273,7 +273,7 @@ describe("NodeRunner", () => {
     it("should not broadcast if all sources provide invalid value", async () => {
       // Mocking fetchers to provide invalid values
       fetchers["coingecko"] = {
-        fetchAll: jest.fn().mockResolvedValue([{ symbol: "BTC", value: 0 }]),
+        fetchAll: jest.fn().mockResolvedValue([{ symbol: "BTC", value: -1 }]),
       };
       fetchers["uniswap"] = {
         fetchAll: jest.fn().mockResolvedValue([

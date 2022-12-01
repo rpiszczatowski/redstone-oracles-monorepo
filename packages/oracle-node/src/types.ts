@@ -148,6 +148,7 @@ export interface NodeConfig {
   coinbaseIndexerMongoDbUrl?: string;
   ethMainRpcUrl?: string;
   levelDbLocation: string;
+  ttlForPricesInLocalDBInMilliseconds: number;
 }
 
 export interface MulticallRequest {

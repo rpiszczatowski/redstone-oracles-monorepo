@@ -3,7 +3,6 @@ import { Level } from "level";
 import { config } from "../../config";
 import { PriceDataAfterAggregation } from "../../types";
 
-const PRICES_TTL_MILLISECONDS = 15 * 60 * 1000; // 15 minutes
 const PRICES_SUBLEVEL = "prices";
 const DEFAULT_LEVEL_OPTS = {
   keyEncoding: "utf8",
@@ -37,14 +36,14 @@ export const closeLocalLevelDB = async () => {
 export const getPrices = async (
   symbols: string[]
 ): Promise<PriceValuesInLocalDB> => {
-  const valuesArr = await pricesSublevel.getMany(symbols);
+  const valuesForSymbols = await pricesSublevel.getMany(symbols);
 
   // Preparing a result object with values
   const resultValues: PriceValuesInLocalDB = {};
-  for (let i = 0; i < symbols.length; i++) {
-    const symbol = symbols[i];
-    const value = valuesArr[i];
-    resultValues[symbol] = value || [];
+  for (let symbolIndex = 0; symbolIndex < symbols.length; symbolIndex++) {
+    const symbol = symbols[symbolIndex];
+    const valuesForSymbol = valuesForSymbols[symbolIndex];
+    resultValues[symbol] = valuesForSymbol || [];
   }
 
   return resultValues;
@@ -60,15 +59,18 @@ export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
     PriceValueInLocalDB[]
   >[] = [];
 
+  const currentTimestamp = Date.now();
+
   for (const price of prices) {
     const priceForSymbolToAdd: PriceValueInLocalDB = {
       value: price.value,
       timestamp: price.timestamp,
     };
 
-    const currentTimestamp = Date.now();
     const filteredPricesForSymbol = pricesFromDB[price.symbol].filter(
-      (p) => p.timestamp > currentTimestamp - PRICES_TTL_MILLISECONDS
+      (p) =>
+        p.timestamp >
+        currentTimestamp - config.ttlForPricesInLocalDBInMilliseconds
     );
 
     operations.push({

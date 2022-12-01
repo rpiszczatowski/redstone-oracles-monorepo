@@ -17,6 +17,7 @@ import { promiseTimeout } from "../utils/promise-timeout";
 import aggregators from "../aggregators";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import { calculateDeviationPercent } from "../utils/calculate-deviation";
+import { safelyConvertAnyValueToNumber } from "../utils/numbers";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -174,7 +175,7 @@ export default class PricesService {
 
       try {
         // Filtering out invalid (or too deviated) values from the `source` object
-        const priceWithoutDeviatedSources = this.excludeInvalidSources(
+        const sanitizedPriceBeforeAggregation = this.sanitizeSourceValues(
           price,
           pricesInLocalDBForSymbol,
           deviationCheckConfig
@@ -182,7 +183,7 @@ export default class PricesService {
 
         // Calculating final aggregated value based on the values from the "valid" sources
         const priceAfterAggregation = aggregator.getAggregatedValue(
-          priceWithoutDeviatedSources
+          sanitizedPriceBeforeAggregation
         );
 
         // Throwing an error if price is invalid or too deviated
@@ -201,7 +202,9 @@ export default class PricesService {
     return aggregatedPrices;
   }
 
-  excludeInvalidSources(
+  // This function converts all source values to numbers
+  // and excludes sources with invalid values
+  sanitizeSourceValues(
     price: PriceDataBeforeAggregation,
     recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
     deviationCheckConfig: DeviationCheckConfig
@@ -209,15 +212,16 @@ export default class PricesService {
     const newSources: { [symbol: string]: number } = {};
 
     for (const [sourceName, valueFromSource] of Object.entries(price.source)) {
+      const valueFromSourceNum = safelyConvertAnyValueToNumber(valueFromSource);
       const { isValid, reason } = this.validatePrice({
-        value: valueFromSource,
+        value: valueFromSourceNum,
         timestamp: price.timestamp,
         deviationConfig: deviationCheckConfig,
         recentPrices: recentPricesInLocalDBForSymbol,
       });
 
       if (isValid) {
-        newSources[sourceName] = valueFromSource;
+        newSources[sourceName] = valueFromSourceNum;
       } else {
         logger.warn(
           `Excluding ${price.symbol} value for source: ${sourceName}. Reason: ${reason}`
@@ -256,8 +260,8 @@ export default class PricesService {
 
     if (isNaN(value)) {
       reason = "Value is not a number";
-    } else if (value <= 0) {
-      reason = "Value is less or equal 0";
+    } else if (value < 0) {
+      reason = "Value is less than 0";
     } else {
       const deviationPercent = this.getDeviationPercentWithRecentValues(args);
 
