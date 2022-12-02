@@ -5,6 +5,12 @@ import {
 import { BaseWrapper, ParamsForDryRunVerification } from "./BaseWrapper";
 import { version } from "../../package.json";
 
+const SHOULD_RUN_DRY_RUN = false;
+
+interface RequestPayloadWithDryRunParams extends ParamsForDryRunVerification {
+  unsignedMetadataMsg: string;
+}
+
 export class DataServiceWrapper extends BaseWrapper {
   constructor(
     private dataPackagesRequestParams: DataPackagesRequestParams,
@@ -17,12 +23,22 @@ export class DataServiceWrapper extends BaseWrapper {
     return `${version}#${this.dataPackagesRequestParams.dataServiceId}`;
   }
 
-  async getBytesDataForAppending({
+  async getBytesDataForAppending(
+    params: ParamsForDryRunVerification
+  ): Promise<string> {
+    const unsignedMetadataMsg = this.getUnsignedMetadata();
+    if (SHOULD_RUN_DRY_RUN) {
+      return this.requestPayloadWithDryRun({ ...params, unsignedMetadataMsg });
+    }
+    return this.requestPayloadWithoutDryRun(unsignedMetadataMsg);
+  }
+
+  async requestPayloadWithDryRun({
     functionName,
     contract,
     transaction,
-  }: ParamsForDryRunVerification): Promise<string> {
-    const unsignedMetadataMsg = this.getUnsignedMetadata();
+    unsignedMetadataMsg,
+  }: RequestPayloadWithDryRunParams) {
     const promises = this.urls.map(async (url) => {
       const transactionToTest = Object.assign({}, transaction);
       const redstonePayload = await requestRedstonePayload(
@@ -38,5 +54,13 @@ export class DataServiceWrapper extends BaseWrapper {
     return Promise.any(promises).catch(() => {
       throw new Error("All redstone payloads don't pass dry run verification");
     });
+  }
+
+  async requestPayloadWithoutDryRun(unsignedMetadataMsg: string) {
+    return requestRedstonePayload(
+      this.dataPackagesRequestParams,
+      this.urls,
+      unsignedMetadataMsg
+    );
   }
 }
