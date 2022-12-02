@@ -124,6 +124,7 @@ export const requestRedstonePayload = async (
 
 export default {
   getOracleRegistryState,
+  requestDataPackages,
   getDataServiceIdForSigner,
   requestRedstonePayload,
 };

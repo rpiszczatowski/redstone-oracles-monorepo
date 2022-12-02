@@ -31,7 +31,6 @@ export class DataServiceWrapper extends BaseWrapper {
         unsignedMetadataMsg
       );
       transactionToTest.data = transactionToTest.data + redstonePayload;
-      contract.provider.call(transactionToTest);
       const result = await contract.provider.call(transactionToTest);
       contract.interface.decodeFunctionResult(functionName, result);
       return redstonePayload;

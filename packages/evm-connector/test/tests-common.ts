@@ -1,5 +1,6 @@
 import {
   getMockNumericPackage,
+  getMockSignedDataPackageObj,
   getMockStringPackage,
   getRange,
   MockNumericPackageArgs,
@@ -49,6 +50,10 @@ export const mockNumericPackageConfigs: MockNumericPackageArgs[] = [
 
 export const mockNumericPackages = mockNumericPackageConfigs.map(
   getMockNumericPackage
+);
+
+export const mockSignedDataPackageObj = mockNumericPackageConfigs.map(
+  getMockSignedDataPackageObj
 );
 
 export const expectedNumericValues: any = {
