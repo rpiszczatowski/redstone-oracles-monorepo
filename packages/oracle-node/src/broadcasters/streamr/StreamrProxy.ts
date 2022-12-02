@@ -1,8 +1,19 @@
-import { StreamrClient, StorageNode, StreamOperation } from "streamr-client";
+import {
+  StreamPermission,
+  StreamrClient,
+  STREAMR_STORAGE_NODE_GERMANY,
+} from "streamr-client";
+import { providers, utils } from "ethers";
 import { Consola } from "consola";
 import pako from "pako";
 
 const logger = require("../../utils/logger")("StreamrProxy") as Consola;
+
+const POLYGON_RPC = {
+  name: "Polygon",
+  rpc: "https://polygon-rpc.com",
+  chainId: 137,
+};
 
 export class StreamrProxy {
   private streamrClient: StreamrClient;
@@ -13,22 +24,97 @@ export class StreamrProxy {
     });
   }
 
-  // Returns stream id of the created (or previously created) stream
-  async tryCreateStream(name: string): Promise<string> {
+  public async publishToStreamByName(data: any, streamName: string) {
+    const streamId = await this.getStreamIdOrCreate(streamName);
+    if (streamId) {
+      const dataCompressed = this.compressData(data);
+      return await this.publish(dataCompressed, streamId);
+    }
+    throw new Error("Cannot broadcast to Streamr network");
+  }
+
+  async getStreamIdOrCreate(name: string) {
     const streamId = await this.getStreamIdForStreamName(name);
     const streamExists = await this.doesStreamExist(streamId);
     if (streamExists) {
       logger.info(`Streamr stream already exists: ${streamId}`);
       return streamId;
     } else {
-      return await this.createStream(streamId);
+      logger.info(`Streamr stream ${streamId} doesn't exist`);
+      return await this.tryToCreateStream(streamId);
     }
   }
 
-  public async publishToStreamByName(data: any, streamName: string) {
-    const streamId = await this.getStreamIdForStreamName(streamName);
-    const dataCompressed = this.compressData(data);
-    return await this.publish(dataCompressed, streamId);
+  private async getStreamIdForStreamName(name: string): Promise<string> {
+    const publicAddress = await this.streamrClient.getAddress();
+    const path = `/redstone-oracle-node/${name}`;
+    return `${publicAddress}${path}`;
+  }
+
+  private async doesStreamExist(streamId: string): Promise<boolean> {
+    logger.info(`Checking if Streamr stream ${streamId} already exists`);
+    try {
+      await this.streamrClient.getStream(streamId);
+      return true;
+    } catch (error: any) {
+      if (error.toString().includes("NOT_FOUND")) {
+        return false;
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  /* A small amount of MATIC (around 0.03) is needed for gas to create stream */
+  private async tryToCreateStream(id: string) {
+    logger.info(`Trying to create new Streamr stream ${id}`);
+    const publicAddress = await this.streamrClient.getAddress();
+    const { isEnoughMatic, balance } = await this.checkIfEnoughMatic(
+      publicAddress
+    );
+    if (!isEnoughMatic) {
+      logger.error(
+        `Cannot create Streamr stream, not enough MATIC: ${balance}`
+      );
+      return;
+    }
+    const stream = await this.streamrClient.createStream({
+      id,
+      storageDays: 7,
+      inactivityThresholdHours: 24 * 20, // 20 days
+    });
+    logger.info(`Stream created: ${stream.id}`);
+    await stream.grantPermissions({
+      public: true,
+      permissions: [StreamPermission.SUBSCRIBE],
+    });
+    logger.info(`Added permissions to the stream: ${stream.id}`);
+
+    try {
+      await stream.addToStorageNode(STREAMR_STORAGE_NODE_GERMANY);
+      logger.info(
+        "Stream added to the storage node: STREAMR_STORAGE_NODE_GERMANY"
+      );
+    } catch (error) {
+      logger.error(
+        "Adding stream to storage node hit timeout limit. It could be added, please verify it manually. Data will be still broadcasted"
+      );
+    }
+
+    return stream.id;
+  }
+
+  private async checkIfEnoughMatic(address: string) {
+    logger.info("Checking MATIC balance");
+    const provider = new providers.JsonRpcProvider(POLYGON_RPC.rpc, {
+      name: POLYGON_RPC.name,
+      chainId: POLYGON_RPC.chainId,
+    });
+    const balance = await provider.getBalance(address);
+    return {
+      isEnoughMatic: balance.gte(utils.parseEther("0.1")),
+      balance: utils.formatEther(balance),
+    };
   }
 
   public async compressData(data: any) {
@@ -36,58 +122,10 @@ export class StreamrProxy {
     return pako.deflate(dataAsString);
   }
 
-  // Publishes data to the stream
   private async publish(data: any, streamId: string) {
     await this.streamrClient.publish(streamId, {
       ...data,
     });
     logger.info(`New data published to the stream: ${streamId}`);
-  }
-
-  private async getStreamIdForStreamName(name: string): Promise<string> {
-    const publicAddress = await this.streamrClient.getUserId();
-    const path = `/redstone-oracle/${name}`;
-    return `${publicAddress}${path}`;
-  }
-
-  // This method creates and configures a stream.
-  // It enables historical data storage in STREAMR_GERMANY
-  // And allows everyone to get the stream and access the stream data
-  private async createStream(id: string): Promise<string> {
-    const stream = await this.streamrClient.createStream({
-      id,
-      storageDays: 7,
-      requireEncryptedData: false,
-      requireSignedData: false,
-      inactivityThresholdHours: 24 * 20, // 20 days
-    });
-
-    logger.info(`Stream created: ${stream.id}`);
-    await stream.addToStorageNode(StorageNode.STREAMR_GERMANY);
-    logger.info("Stream added to the storage node: STREAMR_GERMANY");
-    await stream.grantPermission(
-      StreamOperation.STREAM_SUBSCRIBE,
-      undefined /* anyone */
-    );
-    await stream.grantPermission(
-      StreamOperation.STREAM_GET,
-      undefined /* anyone */
-    );
-    logger.info(`Added permissions to the stream: ${stream.id}`);
-
-    return stream.id;
-  }
-
-  private async doesStreamExist(streamId: string): Promise<boolean> {
-    try {
-      await this.streamrClient.getStream(streamId);
-      return true;
-    } catch (e: any) {
-      if (e.toString().includes("NOT_FOUND")) {
-        return false;
-      } else {
-        throw e;
-      }
-    }
   }
 }
