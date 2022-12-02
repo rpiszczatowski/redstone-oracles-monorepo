@@ -5,7 +5,7 @@ import {
 import { BaseWrapper, ParamsForDryRunVerification } from "./BaseWrapper";
 import { version } from "../../package.json";
 
-const SHOULD_RUN_DRY_RUN = false;
+export const SHOULD_RUN_DRY_RUN = false;
 
 interface RequestPayloadWithDryRunParams extends ParamsForDryRunVerification {
   unsignedMetadataMsg: string;
