@@ -1,8 +1,4 @@
-import {
-  StreamPermission,
-  StreamrClient,
-  STREAMR_STORAGE_NODE_GERMANY,
-} from "streamr-client";
+import { StreamPermission, StreamrClient } from "streamr-client";
 import { providers, utils } from "ethers";
 import { Consola } from "consola";
 import pako from "pako";
@@ -15,13 +11,17 @@ const POLYGON_RPC = {
   chainId: 137,
 };
 
+const MINIMAL_MATIC_BALANCE = "0.1";
+
 export class StreamrProxy {
   private streamrClient: StreamrClient;
+  private isStreamCreationRequested: boolean;
 
   constructor(ethPrivateKey: string) {
     this.streamrClient = new StreamrClient({
       auth: { privateKey: ethPrivateKey },
     });
+    this.isStreamCreationRequested = false;
   }
 
   public async publishToStreamByName(data: any, streamName: string) {
@@ -41,6 +41,12 @@ export class StreamrProxy {
       return streamId;
     } else {
       logger.info(`Streamr stream ${streamId} doesn't exist`);
+      if (this.isStreamCreationRequested) {
+        logger.info(
+          `Streamr stream ${streamId} creation requested, not creating new stream`
+        );
+        return;
+      }
       return await this.tryToCreateStream(streamId);
     }
   }
@@ -69,7 +75,7 @@ export class StreamrProxy {
   private async tryToCreateStream(id: string) {
     logger.info(`Trying to create new Streamr stream ${id}`);
     const publicAddress = await this.streamrClient.getAddress();
-    const { isEnoughMatic, balance } = await this.checkIfEnoughMatic(
+    const { isEnoughMatic, balance } = await this.checkMaticBalance(
       publicAddress
     );
     if (!isEnoughMatic) {
@@ -83,6 +89,7 @@ export class StreamrProxy {
       storageDays: 7,
       inactivityThresholdHours: 24 * 20, // 20 days
     });
+    this.isStreamCreationRequested = true;
     logger.info(`Stream created: ${stream.id}`);
     await stream.grantPermissions({
       public: true,
@@ -90,21 +97,10 @@ export class StreamrProxy {
     });
     logger.info(`Added permissions to the stream: ${stream.id}`);
 
-    try {
-      await stream.addToStorageNode(STREAMR_STORAGE_NODE_GERMANY);
-      logger.info(
-        "Stream added to the storage node: STREAMR_STORAGE_NODE_GERMANY"
-      );
-    } catch (error) {
-      logger.error(
-        "Adding stream to storage node hit timeout limit. It could be added, please verify it manually. Data will be still broadcasted"
-      );
-    }
-
     return stream.id;
   }
 
-  private async checkIfEnoughMatic(address: string) {
+  private async checkMaticBalance(address: string) {
     logger.info("Checking MATIC balance");
     const provider = new providers.JsonRpcProvider(POLYGON_RPC.rpc, {
       name: POLYGON_RPC.name,
@@ -112,7 +108,7 @@ export class StreamrProxy {
     });
     const balance = await provider.getBalance(address);
     return {
-      isEnoughMatic: balance.gte(utils.parseEther("0.1")),
+      isEnoughMatic: balance.gte(utils.parseEther(MINIMAL_MATIC_BALANCE)),
       balance: utils.formatEther(balance),
     };
   }
