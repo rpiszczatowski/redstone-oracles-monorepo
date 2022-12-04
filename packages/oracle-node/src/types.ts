@@ -6,12 +6,7 @@ export interface Manifest {
   priceAggregator: string;
   defaultSource?: string[];
   sourceTimeout: number;
-
-  // TODO: This option will be removed
-  maxPriceDeviationPercent: number;
-
-  deviationCheck?: DeviationCheckConfig;
-
+  deviationCheck: DeviationCheckConfig;
   evmChainId: number;
   tokens: TokensConfig;
   httpBroadcasterURLs?: string[];
@@ -34,18 +29,14 @@ export interface Credentials {
 
 export interface TokenConfig {
   source?: string[];
-
-  // TODO: This option will be removed
-  maxPriceDeviationPercent?: number;
-
   deviationCheck?: DeviationCheckConfig;
   customUrlDetails?: CustomUrlDetails;
   comment?: string;
+  skipSigning?: boolean;
 }
 
 export interface DeviationCheckConfig {
-  maxPercentDeviationForSource?: number;
-  deviationWithRecentValues?: {
+  deviationWithRecentValues: {
     maxPercent: number;
     maxDelayMilliseconds: number;
   };
@@ -70,8 +61,7 @@ export interface Fetcher {
 
 export interface Aggregator {
   getAggregatedValue: (
-    price: PriceDataBeforeAggregation,
-    maxPriceDeviationPercent: number
+    price: PriceDataBeforeAggregation
   ) => PriceDataAfterAggregation;
 }
 
@@ -161,6 +151,7 @@ export interface NodeConfig {
   levelDbLocation: string;
   etherscanApiUrl?: string;
   etherscanApiKey?: string;
+  ttlForPricesInLocalDBInMilliseconds: number;
 }
 
 export interface MulticallRequest {

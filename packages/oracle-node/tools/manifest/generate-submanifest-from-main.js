@@ -7,7 +7,12 @@ module.exports = function (symbols, outputFilePath, predefinedManifest = {}) {
     priceAggregator: "median",
     defaultSource: ["coingecko"],
     sourceTimeout: 50000,
-    maxPriceDeviationPercent: 25,
+    deviationCheck: {
+      deviationWithRecentValues: {
+        maxPercent: 25,
+        maxDelayMilliseconds: 300000,
+      },
+    },
     evmChainId: 1,
     httpBroadcasterURLs: [
       "https://api.redstone.finance",

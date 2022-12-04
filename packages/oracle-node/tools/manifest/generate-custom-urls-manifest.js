@@ -29,7 +29,15 @@ function main() {
     };
   }
 
-  const manifest = generateManifest({ tokens, maxPriceDeviationPercent: 100 });
+  const manifest = generateManifest({
+    tokens,
+    deviationCheck: {
+      deviationWithRecentValues: {
+        maxPercent: 100, // "disabling" deviation checks for data from custom urls
+        maxDelayMilliseconds: 300000,
+      },
+    },
+  });
   manifest.defaultSource = ["custom-urls"];
 
   // Saving manifest to the output file

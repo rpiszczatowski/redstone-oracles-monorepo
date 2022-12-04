@@ -147,7 +147,12 @@ function saveManifestToFile({ tokens, exchange }) {
     priceAggregator: "median",
     defaultSource: [exchange],
     sourceTimeout: 50000,
-    maxPriceDeviationPercent: 25,
+    deviationCheck: {
+      deviationWithRecentValues: {
+        maxPercent: 25,
+        maxDelayMilliseconds: 300000,
+      },
+    },
     evmChainId: 1,
     tokens: generateTokensObj(tokens),
   };

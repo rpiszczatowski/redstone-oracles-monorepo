@@ -6,9 +6,21 @@ import medianAggregator, {
   getMedianValue,
 } from "../src/aggregators/median-aggregator";
 
+const NAN_VALUES_ERR =
+  "Cannot get median value of an array that contains NaN value";
+
 describe("getMedianValue", () => {
   it("should throw for empty array", () => {
     expect(() => getMedianValue([])).toThrow();
+  });
+
+  it("should throw array with NaN values", () => {
+    expect(() => getMedianValue([42, 43, undefined] as any)).toThrow(
+      NAN_VALUES_ERR
+    );
+    expect(() => getMedianValue([42, "error", 45] as any)).toThrow(
+      NAN_VALUES_ERR
+    );
   });
 
   it("should properly calculate median for odd number of elements", () => {
@@ -47,86 +59,26 @@ describe("medianAggregator", () => {
 
     // When
     const result: PriceDataAfterAggregation =
-      medianAggregator.getAggregatedValue(input, 25);
+      medianAggregator.getAggregatedValue(input);
 
     // Then
     expect(result.value).toEqual(6);
   });
 
-  it("should throw if all price values deviate too much from median", () => {
-    // Given
+  it("should fail for array with NaN values", () => {
     const input: PriceDataBeforeAggregation = {
       id: "",
       source: {
-        src1: 555,
-        src2: 0,
-        src3: 12312312.3,
-        src4: 89.3334,
-        src5: -1,
-        src6: -0.0000000001,
-        src7: 0.0000000001,
+        src1: 3,
+        src2: "error",
       },
       symbol: "BTC",
       timestamp: 0,
       version: "",
     };
 
-    // Then
-    expect(() => medianAggregator.getAggregatedValue(input, 25)).toThrow(
-      "All values have too big deviation for symbol: BTC"
+    expect(() => medianAggregator.getAggregatedValue(input)).toThrow(
+      NAN_VALUES_ERR
     );
-  });
-
-  it("should filter prices that deviate too much from the median value", () => {
-    // Given
-    const input: PriceDataBeforeAggregation = {
-      id: "",
-      source: {
-        src1: 74,
-        src2: 80,
-        src3: 90,
-        src4: 100,
-        src5: 110,
-        src6: 120,
-        src7: 124,
-      },
-      symbol: "BTC",
-      timestamp: 0,
-      version: "",
-    };
-
-    // When
-    const result: PriceDataAfterAggregation =
-      medianAggregator.getAggregatedValue(input, 25);
-
-    // Then
-    expect(result.value).toEqual((100 + 110) / 2);
-  });
-
-  it("should keep all prices for all sources", () => {
-    // Given
-    const input: PriceDataBeforeAggregation = {
-      id: "",
-      source: {
-        src1: 0,
-        src2: null,
-        src3: 110,
-        src4: "error",
-        src5: undefined,
-        src6: 100,
-        src7: 120,
-      },
-      symbol: "BTC",
-      timestamp: 0,
-      version: "",
-    };
-
-    // When
-    const result: PriceDataAfterAggregation =
-      medianAggregator.getAggregatedValue(input, 25);
-
-    // Then
-    expect(result.value).toEqual(110);
-    expect(result.source).toEqual(input.source);
   });
 });

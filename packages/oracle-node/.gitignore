@@ -31,3 +31,4 @@ Dockerfile.redstone-dev
 tmp.patch
 
 oracle-node-level-db*
+level-db-for-tests

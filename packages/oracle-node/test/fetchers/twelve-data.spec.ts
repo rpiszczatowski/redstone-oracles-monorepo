@@ -22,7 +22,12 @@ describe("twelve-data fetcher", () => {
         defaultSource: ["twelve-data"],
         evmChainId: 1,
         sourceTimeout: 8000,
-        maxPriceDeviationPercent: 25,
+        deviationCheck: {
+          deviationWithRecentValues: {
+            maxPercent: 25,
+            maxDelayMilliseconds: 300000,
+          },
+        },
         tokens: {
           CHF: {},
           BGP: {},

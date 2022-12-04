@@ -1,10 +1,10 @@
 import { Consola } from "consola";
 import { v4 as uuidv4 } from "uuid";
 import fetchers from "./index";
-import ManifestHelper, { TokensBySource } from "../manifest/ManifestParser";
+import ManifestHelper, { TokensBySource } from "../manifest/ManifestHelper";
 import {
-  Aggregator,
   Credentials,
+  DeviationCheckConfig,
   Manifest,
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
@@ -14,6 +14,10 @@ import {
 import { trackEnd, trackStart } from "../utils/performance-tracker";
 import ManifestConfigError from "../manifest/ManifestConfigError";
 import { promiseTimeout } from "../utils/promise-timeout";
+import aggregators from "../aggregators";
+import { getPrices, PriceValueInLocalDB } from "../db/local-db";
+import { calculateDeviationPercent } from "../utils/calculate-deviation";
+import { safelyConvertAnyValueToNumber } from "../utils/numbers";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -23,6 +27,18 @@ export type PricesDataFetched = { [source: string]: PriceDataFetched[] };
 export type PricesBeforeAggregation = {
   [token: string]: PriceDataBeforeAggregation;
 };
+
+export interface PriceValidationArgs {
+  value: number;
+  timestamp: number;
+  deviationConfig: DeviationCheckConfig;
+  recentPrices: PriceValueInLocalDB[];
+}
+
+interface PriceValidationResult {
+  isValid: boolean;
+  reason: string;
+}
 
 export default class PricesService {
   constructor(private manifest: Manifest, private credentials: Credentials) {}
@@ -142,36 +158,150 @@ export default class PricesService {
     return result;
   }
 
-  calculateAggregatedValues(
-    prices: PriceDataBeforeAggregation[],
-    aggregator: Aggregator
-  ): PriceDataAfterAggregation[] {
+  // This function calculates aggregated price values based on
+  // - recent deviations check
+  // - invalid values excluding
+  // - aggregation across different sources
+  async calculateAggregatedValues(
+    prices: PriceDataBeforeAggregation[]
+  ): Promise<PriceDataAfterAggregation[]> {
+    const aggregator = aggregators[this.manifest.priceAggregator];
+    const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
+
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
     for (const price of prices) {
-      const maxPriceDeviationPercent = this.maxPriceDeviationPercent(
-        price.symbol
-      );
+      const deviationCheckConfig = this.deviationCheckConfig(price.symbol);
+      const pricesInLocalDBForSymbol = pricesInLocalDB[price.symbol] || [];
+
       try {
-        const priceAfterAggregation = aggregator.getAggregatedValue(
+        // Filtering out invalid (or too deviated) values from the `source` object
+        const sanitizedPriceBeforeAggregation = this.sanitizeSourceValues(
           price,
-          maxPriceDeviationPercent
+          pricesInLocalDBForSymbol,
+          deviationCheckConfig
         );
-        if (
-          priceAfterAggregation.value <= 0 ||
-          priceAfterAggregation.value === undefined
-        ) {
-          throw new Error(
-            "Invalid price value: " + JSON.stringify(priceAfterAggregation)
-          );
-        }
+
+        // Calculating final aggregated value based on the values from the "valid" sources
+        const priceAfterAggregation = aggregator.getAggregatedValue(
+          sanitizedPriceBeforeAggregation
+        );
+
+        // Throwing an error if price is invalid or too deviated
+        this.assertValidPrice(
+          priceAfterAggregation,
+          pricesInLocalDBForSymbol,
+          deviationCheckConfig
+        );
+
         aggregatedPrices.push(priceAfterAggregation);
       } catch (e: any) {
-        // We use warn level instead of error because
-        // price aggregation errors occur quite often
-        logger.warn(e.stack);
+        logger.error(e.stack);
       }
     }
+
     return aggregatedPrices;
+  }
+
+  // This function converts all source values to numbers
+  // and excludes sources with invalid values
+  sanitizeSourceValues(
+    price: PriceDataBeforeAggregation,
+    recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
+    deviationCheckConfig: DeviationCheckConfig
+  ): PriceDataBeforeAggregation {
+    const newSources: { [symbol: string]: number } = {};
+
+    for (const [sourceName, valueFromSource] of Object.entries(price.source)) {
+      const valueFromSourceNum = safelyConvertAnyValueToNumber(valueFromSource);
+      const { isValid, reason } = this.validatePrice({
+        value: valueFromSourceNum,
+        timestamp: price.timestamp,
+        deviationConfig: deviationCheckConfig,
+        recentPrices: recentPricesInLocalDBForSymbol,
+      });
+
+      if (isValid) {
+        newSources[sourceName] = valueFromSourceNum;
+      } else {
+        logger.warn(
+          `Excluding ${price.symbol} value for source: ${sourceName}. Reason: ${reason}`
+        );
+      }
+    }
+
+    return { ...price, source: newSources };
+  }
+
+  assertValidPrice(
+    price: PriceDataAfterAggregation,
+    recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
+    deviationCheckConfig: DeviationCheckConfig
+  ) {
+    const { isValid, reason } = this.validatePrice({
+      value: price.value,
+      timestamp: price.timestamp,
+      deviationConfig: deviationCheckConfig,
+      recentPrices: recentPricesInLocalDBForSymbol,
+    });
+
+    if (!isValid) {
+      throw new Error(
+        `Invalid price for symbol ${price.symbol}. Reason: ${reason}`
+      );
+    }
+  }
+
+  validatePrice(args: PriceValidationArgs): PriceValidationResult {
+    const { value, deviationConfig } = args;
+    const { deviationWithRecentValues } = deviationConfig;
+
+    let isValid = false;
+    let reason = "";
+
+    if (isNaN(value)) {
+      reason = "Value is not a number";
+    } else if (value < 0) {
+      reason = "Value is less than 0";
+    } else {
+      const deviationPercent = this.getDeviationPercentWithRecentValues(args);
+
+      if (deviationPercent > deviationWithRecentValues.maxPercent) {
+        reason = `Value is too deviated (${deviationPercent}%)`;
+      } else {
+        isValid = true;
+      }
+    }
+
+    return {
+      isValid,
+      reason,
+    };
+  }
+
+  // Calculates max deviation from all recent values
+  getDeviationPercentWithRecentValues(args: PriceValidationArgs): number {
+    const { value, timestamp, deviationConfig, recentPrices } = args;
+    const { deviationWithRecentValues } = deviationConfig;
+    let resultDeviation = 0;
+
+    for (const recentPrice of recentPrices) {
+      const timestampDelay = timestamp - recentPrice.timestamp;
+      if (timestampDelay <= deviationWithRecentValues.maxDelayMilliseconds) {
+        const deviationPercent = calculateDeviationPercent({
+          measuredValue: value,
+          trueValue: recentPrice.value,
+        });
+        resultDeviation = Math.max(deviationPercent, resultDeviation);
+      }
+    }
+
+    return resultDeviation;
+  }
+
+  filterPricesForSigning(
+    prices: PriceDataAfterAggregation[]
+  ): PriceDataAfterAggregation[] {
+    return prices.filter((p) => !this.manifest.tokens[p.symbol].skipSigning);
   }
 
   preparePricesForSigning(
@@ -192,17 +322,18 @@ export default class PricesService {
     return pricesBeforeSigning;
   }
 
-  private maxPriceDeviationPercent(priceSymbol: string): number {
-    const result = ManifestHelper.getMaxDeviationForSymbol(
-      priceSymbol,
-      this.manifest
-    );
-    if (result === null) {
-      throw new ManifestConfigError(`Could not determine maxPriceDeviationPercent for ${priceSymbol}.
-        Did you forget to add maxPriceDeviationPercent parameter in the manifest file?`);
+  private deviationCheckConfig(priceSymbol: string): DeviationCheckConfig {
+    const deviationCheckConfig =
+      ManifestHelper.getDeviationCheckConfigForSymbol(
+        priceSymbol,
+        this.manifest
+      );
+    if (!deviationCheckConfig) {
+      throw new ManifestConfigError(
+        `Could not determine deviationCheckConfig for ${priceSymbol}. ` +
+          `Did you forget to add deviationCheck parameter in the manifest file?`
+      );
     }
-    logger.debug(`maxPriceDeviationPercent for ${priceSymbol}: ${result}`);
-
-    return result;
+    return deviationCheckConfig;
   }
 }
