@@ -5,8 +5,6 @@ import {
 import { BaseWrapper, ParamsForDryRunVerification } from "./BaseWrapper";
 import { version } from "../../package.json";
 
-export const SHOULD_RUN_DRY_RUN = false;
-
 interface RequestPayloadWithDryRunParams extends ParamsForDryRunVerification {
   unsignedMetadataMsg: string;
 }
@@ -27,12 +25,20 @@ export class DataServiceWrapper extends BaseWrapper {
     params: ParamsForDryRunVerification
   ): Promise<string> {
     const unsignedMetadataMsg = this.getUnsignedMetadata();
-    if (SHOULD_RUN_DRY_RUN) {
+    const shouldDryRunPayloads = Boolean(
+      this.dataPackagesRequestParams.shouldDryRunPayloads
+    );
+    if (shouldDryRunPayloads) {
       return this.requestPayloadWithDryRun({ ...params, unsignedMetadataMsg });
     }
     return this.requestPayloadWithoutDryRun(unsignedMetadataMsg);
   }
 
+  /* 
+    Call function on provider always returns some result and doesn't throw an error.
+    Later we nee to decode result from the call (decodeFunctionResult) and
+    this function will throw error if call was reverted.
+  */
   async requestPayloadWithDryRun({
     functionName,
     contract,
@@ -51,8 +57,14 @@ export class DataServiceWrapper extends BaseWrapper {
       contract.interface.decodeFunctionResult(functionName, result);
       return redstonePayload;
     });
-    return Promise.any(promises).catch(() => {
-      throw new Error("All redstone payloads don't pass dry run verification");
+    return Promise.any(promises).catch((error: any) => {
+      throw new Error(
+        `All redstone payloads don't pass dry run verification, aggregated errors: ${JSON.stringify(
+          error.errors,
+          null,
+          2
+        )}`
+      );
     });
   }
 

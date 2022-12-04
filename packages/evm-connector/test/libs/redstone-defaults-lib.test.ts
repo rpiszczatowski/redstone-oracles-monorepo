@@ -21,8 +21,9 @@ describe("SampleRedstoneDefaultsLib", function () {
     datePlusHalfMinute.setSeconds(datePlusHalfMinute.getSeconds() + 30);
     await contract.validateTimestamp(datePlusHalfMinute.getTime());
     const dateMinusTwoHalfMinute = currentDate;
-    dateMinusTwoHalfMinute.setMinutes(dateMinusTwoHalfMinute.getMinutes() - 2);
-    dateMinusTwoHalfMinute.setSeconds(dateMinusTwoHalfMinute.getSeconds() - 30);
+    dateMinusTwoHalfMinute.setSeconds(
+      dateMinusTwoHalfMinute.getSeconds() - 150
+    );
     await contract.validateTimestamp(dateMinusTwoHalfMinute.getTime());
   });
 

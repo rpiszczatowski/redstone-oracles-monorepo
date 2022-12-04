@@ -6,10 +6,8 @@ import { WrapperBuilder } from "../../src/index";
 import { SampleRedstoneConsumerNumericMockManyDataFeeds } from "../../typechain-types";
 import { expectedNumericValues } from "../tests-common";
 import { server } from "./mock-server";
-import * as DataServiceWrapper from "../../src/wrappers/DataServiceWrapper";
 
 chai.use(chaiAsPromised);
-(DataServiceWrapper as any).SHOULD_RUN_DRY_RUN = true;
 
 describe("DataServiceWrapper", () => {
   let contract: SampleRedstoneConsumerNumericMockManyDataFeeds;
@@ -20,6 +18,7 @@ describe("DataServiceWrapper", () => {
         dataServiceId: "mock-data-service",
         uniqueSignersCount: 1,
         dataFeeds: ["ETH", "BTC"],
+        shouldDryRunPayloads: true,
       },
       urls
     );

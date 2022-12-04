@@ -52,7 +52,7 @@ export const mockNumericPackages = mockNumericPackageConfigs.map(
   getMockNumericPackage
 );
 
-export const mockSignedDataPackageObj = mockNumericPackageConfigs.map(
+export const mockSignedDataPackageObjects = mockNumericPackageConfigs.map(
   getMockSignedDataPackageObj
 );
 

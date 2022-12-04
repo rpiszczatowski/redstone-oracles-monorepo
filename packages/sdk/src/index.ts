@@ -19,6 +19,7 @@ export interface DataPackagesRequestParams {
   dataServiceId: string;
   uniqueSignersCount: number;
   dataFeeds?: string[];
+  shouldDryRunPayloads?: boolean;
 }
 
 export interface DataPackagesResponse {
