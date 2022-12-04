@@ -12,6 +12,7 @@ const DEFAULT_TWELVE_DATA_RAPID_API_KEY = "";
 const DEFAULT_USE_NEW_SIGNING_AND_BROADCASTING = "false";
 const DEFAULT_ETH_MAIN_RPC_URL = "https://rpc.ankr.com/eth";
 const DEFAULT_LEVEL_DB_LOCATION = "oracle-node-level-db";
+const DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS = "900000";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -126,4 +127,10 @@ export const config: NodeConfig = Object.freeze({
   levelDbLocation: getFromEnv("LEVEL_DB_LOCATION", DEFAULT_LEVEL_DB_LOCATION),
   etherscanApiUrl: getFromEnv("ETHERSCAN_API_URL", ""),
   etherscanApiKey: getFromEnv("ETHERSCAN_API_KEY", ""),
+  ttlForPricesInLocalDBInMilliseconds: parserFromString.number(
+    getFromEnv(
+      "TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS",
+      DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS
+    )
+  ),
 });

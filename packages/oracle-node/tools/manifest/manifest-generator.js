@@ -1,40 +1,21 @@
-const popularTokens = require("./popular-tokens.json");
-
-const DEFAULT_MAX_DEVIATION = 25;
-const MAX_DEVIATION_FOR_POPULAR_TOKENS = 25;
-const MAX_DEVIATION_FOR_UNPOPULAR_TOKENS = 80;
-
-function getTokensConfig(tokens) {
-  const result = {};
-  for (const symbol in tokens) {
-    const maxPriceDeviationPercent = getDeviationForToken(symbol);
-    result[symbol] = {
-      ...tokens[symbol],
-      maxPriceDeviationPercent,
-    };
-  }
-  return result;
-}
-
-function getDeviationForToken(symbol) {
-  if (popularTokens.includes(symbol)) {
-    return MAX_DEVIATION_FOR_POPULAR_TOKENS;
-  } else {
-    return MAX_DEVIATION_FOR_UNPOPULAR_TOKENS;
-  }
-}
+const DEFAULT_DEVIATION_CHECK = {
+  deviationWithRecentValues: {
+    maxPercent: 25,
+    maxDelayMilliseconds: 300000,
+  },
+};
 
 function generateManifest({
   tokens,
   interval = 60000,
   sourceTimeout = 20000,
-  maxPriceDeviationPercent = DEFAULT_MAX_DEVIATION,
+  deviationCheck = DEFAULT_DEVIATION_CHECK,
 }) {
   return {
     interval,
     priceAggregator: "median",
     sourceTimeout,
-    maxPriceDeviationPercent,
+    deviationCheck,
     evmChainId: 1,
     httpBroadcasterURLs: [
       "https://api.redstone.finance",
@@ -43,7 +24,7 @@ function generateManifest({
     ],
     enableStreamrBroadcaster: false,
     enableArweaveBackup: false,
-    tokens: getTokensConfig(tokens),
+    tokens,
   };
 }
 

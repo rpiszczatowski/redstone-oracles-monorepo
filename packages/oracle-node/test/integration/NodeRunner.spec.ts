@@ -9,8 +9,15 @@ import { any } from "jest-mock-extended";
 import { timeout } from "../../src/utils/promise-timeout";
 import { MOCK_NODE_CONFIG } from "../helpers";
 import { NodeConfig } from "../../src/types";
+import {
+  clearPricesSublevel,
+  closeLocalLevelDB,
+  savePrices,
+} from "../../src/db/local-db";
+import emptyManifest from "../../manifests/dev/empty.json";
 
 /****** MOCKS START ******/
+const broadcastingUrl = "http://localhost:9000/data-packages/bulk";
 const mockArProxy = {
   getAddress: () => Promise.resolve("mockArAddress"),
 };
@@ -38,7 +45,7 @@ jest.mock("../../src/fetchers/uniswap/UniswapFetcher");
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.post.mockImplementation((url) => {
-  if (url == "https://api.redstone.finance/metrics") {
+  if (["https://api.redstone.finance/metrics", broadcastingUrl].includes(url)) {
     return Promise.resolve();
   }
   return Promise.reject(
@@ -69,7 +76,17 @@ describe("NodeRunner", () => {
     useNewSigningAndBroadcasting: true,
   };
 
-  beforeEach(() => {
+  const runTestNode = async () => {
+    const sut = await NodeRunner.create({
+      ...nodeConfig,
+      overrideManifestUsingFile: manifest,
+    });
+    await sut.run();
+  };
+
+  beforeEach(async () => {
+    await clearPricesSublevel();
+
     jest.useFakeTimers();
     mockedAxios.post.mockClear();
 
@@ -89,20 +106,14 @@ describe("NodeRunner", () => {
     };
 
     manifest = {
+      ...emptyManifest,
       defaultSource: ["uniswap"],
-      interval: 10000,
-      maxPriceDeviationPercent: 25,
-      priceAggregator: "median",
-      sourceTimeout: 2000,
-      evmChainId: 1,
-      enableArweaveBackup: true,
       tokens: {
         BTC: {
           source: ["coingecko"],
         },
         ETH: {},
       },
-      httpBroadcasterURLs: ["http://localhost:9000"],
     };
   });
 
@@ -110,82 +121,53 @@ describe("NodeRunner", () => {
     jest.useRealTimers();
   });
 
-  it("should create node instance", async () => {
-    // given
-    const mockedArProxy = mocked(ArweaveProxy, true);
-
-    const sut = await NodeRunner.create({
-      ...nodeConfig,
-      overrideManifestUsingFile: manifest,
-    });
-
-    // then
-    expect(sut).not.toBeNull();
-    expect(mockedArProxy).toHaveBeenCalledWith(jwk);
+  afterAll(async () => {
+    await closeLocalLevelDB();
   });
 
-  it("should throw if no maxDeviationPercent configured for token", async () => {
-    // given
-    manifest = JSON.parse(`{
-        "defaultSource": ["uniswap"],
-        "interval": 0,
-        "priceAggregator": "median",
-        "sourceTimeout": 2000,
-        "tokens": {
-          "BTC": {
-           "source": ["coingecko"]
-          },
-          "ETH": {}
-        }
-      }`);
+  describe("node set up", () => {
+    it("should create node instance", async () => {
+      const mockedArProxy = mocked(ArweaveProxy, true);
 
-    const sut = await NodeRunner.create({
-      ...nodeConfig,
-      overrideManifestUsingFile: manifest,
+      const sut = await NodeRunner.create({
+        ...nodeConfig,
+        overrideManifestUsingFile: manifest,
+      });
+
+      expect(sut).not.toBeNull();
+      expect(mockedArProxy).toHaveBeenCalledWith(jwk);
     });
 
-    await expect(sut.run()).rejects.toThrowError(
-      "Could not determine maxPriceDeviationPercent"
-    );
+    it("should throw if no maxDeviationPercent configured for token", async () => {
+      const { deviationCheck, ...manifestWithoutDeviationCheck } = manifest;
+
+      const sut = await NodeRunner.create({
+        ...nodeConfig,
+        overrideManifestUsingFile: manifestWithoutDeviationCheck,
+      });
+
+      await expect(sut.run()).rejects.toThrowError(
+        "Could not determine deviationCheckConfig"
+      );
+    });
+
+    it("should throw if no sourceTimeout", async () => {
+      const { sourceTimeout, ...manifestWithoutSourceTimeout } = manifest;
+
+      const sut = await NodeRunner.create({
+        ...nodeConfig,
+        overrideManifestUsingFile: manifestWithoutSourceTimeout,
+      });
+
+      await expect(sut.run()).rejects.toThrowError("No timeout configured for");
+    });
   });
 
-  it("should throw if no sourceTimeout", async () => {
-    // given
-    manifest = JSON.parse(`{
-        "defaultSource": ["uniswap"],
-        "interval": 0,
-        "priceAggregator": "median",
-        "maxPriceDeviationPercent": 25,
-        "evmChainId": 1,
-        "tokens": {
-          "BTC": {
-           "source": ["coingecko"]
-          },
-          "ETH": {}
-        }
-      }`);
-    const sut = await NodeRunner.create({
-      ...nodeConfig,
-      overrideManifestUsingFile: manifest,
-    });
+  describe("standard flow", () => {
+    it("should broadcast fetched and signed prices", async () => {
+      await runTestNode();
 
-    await expect(sut.run()).rejects.toThrowError("No timeout configured for");
-  });
-
-  it("should broadcast fetched and signed prices", async () => {
-    const sut = await NodeRunner.create({
-      ...nodeConfig,
-      overrideManifestUsingFile: {
-        ...manifest,
-        enableArweaveBackup: false,
-      },
-    });
-
-    await sut.run();
-
-    expect(axios.post).toHaveBeenCalledWith(
-      "http://localhost:9000/data-packages/bulk",
-      {
+      expect(axios.post).toHaveBeenCalledWith(broadcastingUrl, {
         requestSignature:
           "0xdd8c162ee49b5a506cc6afbe5d0d9a7aabd1c0e8946900e3601a5eacd96439e56db8419660b4508c9f35db4b1d4716ec58011101c9744f6f812d7b742124a3ff1c",
         dataPackages: [
@@ -227,23 +209,86 @@ describe("NodeRunner", () => {
             ],
           },
         ],
-      }
-    );
+      });
+    });
   });
 
-  it("should not broadcast fetched and signed prices if values deviates too much", async () => {
-    manifest = {
-      ...manifest,
-      maxPriceDeviationPercent: 0,
+  describe("invalid values handling", () => {
+    const expectValueBroadcasted = (symbol: string, expectedValue: number) => {
+      expect(axios.post).toHaveBeenCalledWith(
+        broadcastingUrl,
+        expect.objectContaining({
+          dataPackages: expect.arrayContaining([
+            expect.objectContaining({
+              dataPoints: expect.arrayContaining([
+                expect.objectContaining({
+                  dataFeedId: symbol,
+                  value: expectedValue,
+                }),
+              ]),
+            }),
+          ]),
+        })
+      );
     };
 
-    const sut = await NodeRunner.create({
-      ...nodeConfig,
-      overrideManifestUsingFile: manifest,
+    it("should not broadcast fetched and signed prices if values deviate too much (maxPercent is 0)", async () => {
+      await savePrices([
+        { symbol: "BTC", value: 100, timestamp: Date.now() },
+      ] as any);
+      await runTestNode();
+      expectValueBroadcasted("ETH", 42);
     });
 
-    await sut.run();
-    expect(axios.post).not.toHaveBeenCalledWith("http://localhost:9000", any());
+    it("should filter out too deviated sources", async () => {
+      await savePrices([
+        { symbol: "BTC", value: 444, timestamp: Date.now() },
+      ] as any);
+
+      // Mocking coingecko fetcher to provide deviated value
+      fetchers["coingecko"] = {
+        fetchAll: jest.fn().mockResolvedValue([{ symbol: "BTC", value: 100 }]),
+      };
+
+      await runTestNode();
+
+      expectValueBroadcasted("BTC", 445);
+    });
+
+    it("should filter out invalid sources", async () => {
+      await savePrices([
+        { symbol: "BTC", value: 444, timestamp: Date.now() },
+      ] as any);
+
+      // Mocking coingecko fetcher to provide invalid value
+      fetchers["coingecko"] = {
+        fetchAll: jest.fn().mockResolvedValue([{ symbol: "BTC", value: 0 }]),
+      };
+
+      await runTestNode();
+
+      expectValueBroadcasted("BTC", 445);
+    });
+
+    it("should not broadcast if all sources provide invalid value", async () => {
+      // Mocking fetchers to provide invalid values
+      fetchers["coingecko"] = {
+        fetchAll: jest.fn().mockResolvedValue([{ symbol: "BTC", value: -1 }]),
+      };
+      fetchers["uniswap"] = {
+        fetchAll: jest.fn().mockResolvedValue([
+          { symbol: "BTC", value: -10 },
+          {
+            symbol: "ETH",
+            value: "error",
+          },
+        ]),
+      };
+
+      await runTestNode();
+
+      expect(axios.post).not.toHaveBeenCalledWith(broadcastingUrl, any());
+    });
   });
 
   describe("when overrideManifestUsingFile flag is null", () => {
@@ -313,10 +358,7 @@ describe("NodeRunner", () => {
         2
       );
       expect(fetchers.uniswap.fetchAll).toHaveBeenCalled();
-      expect(axios.post).not.toHaveBeenCalledWith(
-        "http://localhost:9000",
-        any()
-      );
+      expect(axios.post).toHaveBeenCalledWith(broadcastingUrl, any());
       arServiceSpy.mockClear();
     });
   });

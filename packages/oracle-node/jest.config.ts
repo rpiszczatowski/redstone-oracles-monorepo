@@ -7,7 +7,7 @@ const config: Config.InitialOptions = {
     "^.+\\.(ts|js)$": "ts-jest",
   },
   testEnvironment: "node",
-  setupFiles: ["<rootDir>/.jest/setEnvVars.js"],
+  setupFiles: ["<rootDir>/.jest/set-env-vars.js"],
 };
 
 export default config;

@@ -24,7 +24,12 @@ describe("custom URL fetcher", () => {
       manifest: {
         defaultSource: ["custom-urls"],
         interval: 10000,
-        maxPriceDeviationPercent: 25,
+        deviationCheck: {
+          deviationWithRecentValues: {
+            maxPercent: 25,
+            maxDelayMilliseconds: 300000,
+          },
+        },
         priceAggregator: "median",
         sourceTimeout: 2000,
         evmChainId: 1,
@@ -35,7 +40,6 @@ describe("custom URL fetcher", () => {
               jsonpath: "$.A.B.C",
             },
             comment: "Test url with jsonpath",
-            maxPriceDeviationPercent: 80,
           },
         },
       },

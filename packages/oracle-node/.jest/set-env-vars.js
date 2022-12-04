@@ -7,3 +7,4 @@ process.env.ECDSA_PRIVATE_KEY =
 process.env.OVERRIDE_DIRECT_CACHE_SERVICE_URLS = `["http://localhost:9000"]`;
 process.env.ETHERSCAN_API_URL = "http://localhost:9000";
 process.env.ETHERSCAN_API_KEY = "test-api-key";
+process.env.LEVEL_DB_LOCATION = "level-db-for-tests";

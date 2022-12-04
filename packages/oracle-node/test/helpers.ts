@@ -4,11 +4,16 @@ const baseManifest = {
   interval: 2000,
   priceAggregator: "median",
   sourceTimeout: 3000,
-  maxPriceDeviationPercent: 25,
   evmChainId: 1,
   httpBroadcasterURLs: ["http://localhost:9000"],
   enableStreamrBroadcaster: true,
   enableArweaveBackup: false,
+  deviationCheck: {
+    deviationWithRecentValues: {
+      maxPercent: 25,
+      maxDelayMilliseconds: 300000,
+    },
+  },
 };
 
 export const MOCK_MANIFEST = {
@@ -43,4 +48,5 @@ export const MOCK_NODE_CONFIG = {
   credentials: {},
   useNewSigningAndBroadcasting: false,
   levelDbLocation: "oracle-node-level-db-tests",
+  ttlForPricesInLocalDBInMilliseconds: 900000,
 };

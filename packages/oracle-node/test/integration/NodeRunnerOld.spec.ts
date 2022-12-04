@@ -9,6 +9,7 @@ import { any } from "jest-mock-extended";
 import { timeout } from "../../src/utils/promise-timeout";
 import { MOCK_NODE_CONFIG } from "../helpers";
 import { NodeConfig } from "../../src/types";
+import { clearPricesSublevel, closeLocalLevelDB } from "../../src/db/local-db";
 
 /****** MOCKS START ******/
 const mockArProxy = {
@@ -66,7 +67,9 @@ describe("NodeRunnerOld", () => {
 
   const nodeConfig: NodeConfig = { ...MOCK_NODE_CONFIG };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await clearPricesSublevel();
+
     jest.useFakeTimers();
     mockedAxios.post.mockClear();
 
@@ -82,11 +85,16 @@ describe("NodeRunnerOld", () => {
     manifest = {
       defaultSource: ["uniswap"],
       interval: 10000,
-      maxPriceDeviationPercent: 25,
       priceAggregator: "median",
       sourceTimeout: 2000,
       evmChainId: 1,
       enableArweaveBackup: true,
+      deviationCheck: {
+        deviationWithRecentValues: {
+          maxPercent: 25,
+          maxDelayMilliseconds: 300000,
+        },
+      },
       tokens: {
         BTC: {
           source: ["coingecko"],
@@ -99,6 +107,10 @@ describe("NodeRunnerOld", () => {
 
   afterEach(() => {
     jest.useRealTimers();
+  });
+
+  afterAll(async () => {
+    await closeLocalLevelDB();
   });
 
   it("should create node instance", async () => {
@@ -136,7 +148,7 @@ describe("NodeRunnerOld", () => {
     });
 
     await expect(sut.run()).rejects.toThrowError(
-      "Could not determine maxPriceDeviationPercent"
+      "Could not determine deviationCheckConfig"
     );
   });
 
@@ -146,7 +158,6 @@ describe("NodeRunnerOld", () => {
         "defaultSource": ["uniswap"],
         "interval": 0,
         "priceAggregator": "median",
-        "maxPriceDeviationPercent": 25,
         "evmChainId": 1,
         "tokens": {
           "BTC": {
@@ -199,7 +210,12 @@ describe("NodeRunnerOld", () => {
   it("should not broadcast fetched and signed prices if values deviates too much", async () => {
     manifest = {
       ...manifest,
-      maxPriceDeviationPercent: 0,
+      deviationCheck: {
+        deviationWithRecentValues: {
+          maxPercent: 0,
+          maxDelayMilliseconds: 300000,
+        },
+      },
     };
 
     const sut = await NodeRunnerOld.create({
