@@ -20,6 +20,7 @@ import { LensFetcher } from "./lens/LensFetcher";
 import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
 import { XtFetcher } from "./xt/XtFetcher";
 import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
+import { config } from "../config";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -34,9 +35,7 @@ export default {
   verto: new VertoFetcher(),
   ecb: new EcbFetcher(),
   "avalanche-evm-fetcher": new AvalancheEvmFetcher(
-    new ethers.providers.JsonRpcProvider(
-      "https://api.avax.network/ext/bc/C/rpc"
-    )
+    new ethers.providers.JsonRpcProvider(config.avalancheRpcUrl)
   ),
   platypus: new PlatypusFetcher(),
   chainlink: new ChainlinkFetcher(),
