@@ -4,20 +4,17 @@ import {
   SignedDataPackage,
   RedstonePayload,
   SignedDataPackagePlainObj,
-  ScoreType,
   UniversalSigner,
   prepareMessageToSign,
 } from "redstone-protocol";
 import { BaseWrapper } from "./BaseWrapper";
 import { version } from "../../package.json";
 
-export interface OnDemandRequestParams {
-  signer: Signer;
-  scoreType: ScoreType;
-}
+export type OnDemandRequestParams = Record<string, string>;
 
 export class OnDemandRequestWrapper extends BaseWrapper {
   constructor(
+    private readonly signer: Signer,
     private readonly requestParams: OnDemandRequestParams,
     private readonly nodeUrls: string[]
   ) {
@@ -31,21 +28,25 @@ export class OnDemandRequestWrapper extends BaseWrapper {
   async getBytesDataForAppending(): Promise<string> {
     const timestamp = Date.now();
     const message = prepareMessageToSign(timestamp);
-    const { signer, scoreType } = this.requestParams;
+
     const signature = await UniversalSigner.signWithEthereumHashMessage(
-      signer,
+      this.signer,
       message
     );
+
+    const params = { timestamp, signature, ...this.requestParams };
     const promises = this.nodeUrls.map((url) =>
       axios.get(url, {
-        params: { timestamp, signature, scoreType },
+        params
       })
     );
+
     const responses = await Promise.all(promises);
     const signedDataPackages = responses.map((response) =>
       SignedDataPackage.fromObj(response.data as SignedDataPackagePlainObj)
     );
     const unsignedMetadata = this.getUnsignedMetadata();
+
     return RedstonePayload.prepare(signedDataPackages, unsignedMetadata);
   }
 }

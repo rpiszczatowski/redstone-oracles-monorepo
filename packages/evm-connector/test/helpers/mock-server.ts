@@ -7,7 +7,7 @@ import {
 } from "redstone-protocol";
 import { MOCK_PRIVATE_KEYS } from "../../src/helpers/test-utils";
 
-interface ScoreByAddressResponse {
+interface OnDemandRequestResponse {
   dataPoints: [
     {
       dataFeedId: string;
@@ -20,8 +20,65 @@ interface ScoreByAddressResponse {
 
 const VERIFIED_ADDRESS = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 
-const handlers = [
-  rest.get<ScoreByAddressResponse>(
+export const handlers = [
+
+  rest.get<OnDemandRequestResponse>(
+    "http://first-node.com/lens-reactions",
+    async (req, res, ctx) => {
+      const signedDataPackage = getSignedDataPackage({
+        request: req,
+        privateKey: MOCK_PRIVATE_KEYS[1],
+        value: 10,
+        dataFeedId: getParam(req, "postId")
+      });
+
+      return res(ctx.json(signedDataPackage.toObj()))
+    }
+  ),
+
+  rest.get<OnDemandRequestResponse>(
+    "http://second-node.com/lens-reactions",
+    async (req, res, ctx) => {
+      const signedDataPackage = getSignedDataPackage({
+        request: req,
+        privateKey: MOCK_PRIVATE_KEYS[2],
+        value: 10,
+        dataFeedId: getParam(req, "postId")
+      });
+
+      return res(ctx.json(signedDataPackage.toObj()))
+    }
+  ),
+
+  rest.get<OnDemandRequestResponse>(
+    "http://invalid-node.com/lens-reactions",
+    async (req, res, ctx) => {
+      const signedDataPackage = getSignedDataPackage({
+        request: req,
+        privateKey: MOCK_PRIVATE_KEYS[1],
+        value: 10,
+        dataFeedId: "wrong-data-feed-id"
+      });
+
+      return res(ctx.json(signedDataPackage.toObj()))
+    }
+  ),
+
+  rest.get<OnDemandRequestResponse>(
+    "http://invalid-value-node.com/lens-reactions",
+    async (req, res, ctx) => {
+      const signedDataPackage = getSignedDataPackage({
+        request: req,
+        privateKey: MOCK_PRIVATE_KEYS[2],
+        value: 15,
+        dataFeedId: getParam(req, "postId")
+      });
+
+      return res(ctx.json(signedDataPackage.toObj()))
+    }
+  ),
+
+  rest.get<OnDemandRequestResponse>(
     "http://first-node.com/score-by-address",
     async (req, res, ctx) => {
       const signedDataPackage = getSignedDataPackage({
@@ -34,7 +91,7 @@ const handlers = [
     }
   ),
 
-  rest.get<ScoreByAddressResponse>(
+  rest.get<OnDemandRequestResponse>(
     "http://second-node.com/score-by-address",
     async (req, res, ctx) => {
       const signedDataPackage = getSignedDataPackage({
@@ -47,7 +104,7 @@ const handlers = [
     }
   ),
 
-  rest.get<ScoreByAddressResponse>(
+  rest.get<OnDemandRequestResponse>(
     "http://invalid-address-node.com/score-by-address",
     async (req, res, ctx) => {
       const signedDataPackage = getSignedDataPackage({
@@ -61,7 +118,7 @@ const handlers = [
     }
   ),
 
-  rest.get<ScoreByAddressResponse>(
+  rest.get<OnDemandRequestResponse>(
     "http://invalid-value-node.com/score-by-address",
     async (req, res, ctx) => {
       const signedDataPackage = getSignedDataPackage({
@@ -87,8 +144,8 @@ const getSignedDataPackage = ({
   dataFeedId?: string;
   valueBasedOnAddress?: boolean;
 }) => {
-  const timestamp = request.url.searchParams.get("timestamp") ?? "";
-  const signature = request.url.searchParams.get("signature") ?? "";
+  const timestamp = getParam(request, "timestamp");
+  const signature = getParam(request, "signature");
   const message = prepareMessageToSign(Number(timestamp));
   const address = UniversalSigner.recoverAddressFromEthereumHashMessage(
     message,
@@ -107,4 +164,10 @@ const getSignedDataPackage = ({
   );
 };
 
-export const server = setupServer(...handlers);
+function getParam(request: RestRequest, name: string) {
+  return request.url.searchParams.get(name) ?? "";
+}
+
+export const getServer = () => setupServer(...handlers);
+
+

@@ -1,12 +1,18 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+import { SetupServerApi } from "msw/node";
 import { ScoreType } from "redstone-protocol";
 import { WrapperBuilder } from "../../src/index";
 import { SampleKydServiceConsumer } from "../../typechain-types";
-import { server } from "../helpers/mock-server";
+import { getServer } from "../helpers/mock-server";
 
 describe("SampleKydServiceConsumer", () => {
-  before(() => server.listen());
+  let server: SetupServerApi;
+
+  before(() => {
+    server = getServer();
+    server.listen()
+  });
 
   afterEach(() => server.resetHandlers());
 
@@ -17,7 +23,7 @@ describe("SampleKydServiceConsumer", () => {
         "http://first-node.com/score-by-address",
         "http://second-node.com/score-by-address",
       ],
-      ScoreType.coinbaseKYD
+      { ScoreType: ScoreType.coinbaseKYD }
     );
     const transaction = await wrappedContract.executeActionPassingKYD();
     await transaction.wait();
@@ -32,7 +38,7 @@ describe("SampleKydServiceConsumer", () => {
         "http://first-node.com/score-by-address",
         "http://second-node.com/score-by-address",
       ],
-      ScoreType.coinbaseKYD
+      { ScoreType: ScoreType.coinbaseKYD }
     );
     await expect(wrappedContract.executeActionPassingKYD()).to.be.revertedWith(
       `UserDidNotPassKYD("0x70997970C51812dc3A010C7d01b50e0d17dc79C8")`
@@ -46,7 +52,7 @@ describe("SampleKydServiceConsumer", () => {
         "http://first-node.com/score-by-address",
         "http://invalid-address-node.com/score-by-address",
       ],
-      ScoreType.coinbaseKYD
+      { ScoreType: ScoreType.coinbaseKYD }
     );
     await expect(wrappedContract.executeActionPassingKYD()).to.be.revertedWith(
       "InsufficientNumberOfUniqueSigners(1, 2)"
@@ -60,7 +66,7 @@ describe("SampleKydServiceConsumer", () => {
         "http://first-node.com/score-by-address",
         "http://invalid-value-node.com/score-by-address",
       ],
-      ScoreType.coinbaseKYD
+      { ScoreType: ScoreType.coinbaseKYD }
     );
     await expect(wrappedContract.executeActionPassingKYD()).to.be.revertedWith(
       "AllValuesMustBeEqual()"
@@ -74,7 +80,7 @@ describe("SampleKydServiceConsumer", () => {
         "http://first-node.com/score-by-address",
         "http://first-node.com/score-by-address",
       ],
-      ScoreType.coinbaseKYD
+      { ScoreType: ScoreType.coinbaseKYD }
     );
     await expect(wrappedContract.executeActionPassingKYD()).to.be.revertedWith(
       "InsufficientNumberOfUniqueSigners(1, 2)"
@@ -94,5 +100,6 @@ const getContract = async (
   );
   const contract = await ContractFactory.deploy();
   await contract.deployed();
+
   return contract;
 };
