@@ -153,6 +153,7 @@ export interface NodeConfig {
   etherscanApiKey?: string;
   ttlForPricesInLocalDBInMilliseconds: number;
   avalancheRpcUrl: string;
+  enableStreamrBroadcasting: boolean;
 }
 
 export interface MulticallRequest {

@@ -7,6 +7,7 @@ import { ethers } from "ethers";
 const DEFAULT_ENABLE_PERFORMANCE_TRACKING = "true";
 const DEFAULT_ENABLE_JSON_LOGS = "true";
 const DEFAULT_PRINT_DIAGNOSTIC_INFO = "true";
+const DEFAULT_ENABLE_STREAMR_BROADCASTING = "true";
 const DEFAULT_MANIFEST_REFRESH_INTERVAL = "120000";
 const DEFAULT_TWELVE_DATA_RAPID_API_KEY = "";
 const DEFAULT_USE_NEW_SIGNING_AND_BROADCASTING = "false";
@@ -137,4 +138,10 @@ export const config: NodeConfig = Object.freeze({
     )
   ),
   avalancheRpcUrl: getFromEnv("AVALANCHE_RPC_URL", DEFAULT_AVALANCHE_RPC_URL),
+  enableStreamrBroadcasting: parserFromString.boolean(
+    getFromEnv(
+      "ENABLE_STREAMR_BROADCASTING",
+      DEFAULT_ENABLE_STREAMR_BROADCASTING
+    )
+  ),
 });

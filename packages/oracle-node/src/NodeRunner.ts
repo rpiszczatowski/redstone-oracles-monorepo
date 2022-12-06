@@ -308,9 +308,7 @@ export default class NodeRunner {
     try {
       const promises = [];
       promises.push(this.httpBroadcaster.broadcast(signedDataPackages));
-      const enableStreamrBroadcaster =
-        !!this.currentManifest?.enableStreamrBroadcaster;
-      if (enableStreamrBroadcaster) {
+      if (config.enableStreamrBroadcasting) {
         promises.push(this.streamrBroadcaster.broadcast(signedDataPackages));
       }
       const results = await Promise.allSettled(promises);
