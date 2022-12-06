@@ -2,13 +2,13 @@ import { DataPackage } from "../data-package/DataPackage";
 import { NumericDataPoint } from "../data-point/NumericDataPoint";
 
 export const signOnDemandDataPackage = (
-  address: string,
+  dataFeedId: string,
   score: number,
   timestamp: number,
   privateKey: string
 ) => {
   const dataPoint = new NumericDataPoint({
-    dataFeedId: address,
+    dataFeedId,
     value: score,
     decimals: 0,
   });

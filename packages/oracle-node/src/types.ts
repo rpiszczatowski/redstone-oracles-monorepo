@@ -153,6 +153,12 @@ export interface NodeConfig {
   etherscanApiKey?: string;
   ttlForPricesInLocalDBInMilliseconds: number;
   avalancheRpcUrl?: string;
+  warp?: Warp;
+}
+
+export interface Warp {
+  dreNodeUrl: string,
+  reactionsContract: string
 }
 
 export interface MulticallRequest {
