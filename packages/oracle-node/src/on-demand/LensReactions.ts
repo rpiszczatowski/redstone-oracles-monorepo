@@ -34,7 +34,7 @@ export async function fetchLensReactionsByPostId(postId: string): Promise<number
 async function fetchStateFromDreNode(): Promise<DreReactionStateResponse["state"]> {
     const { dreNodeUrl, reactionsContract } = getConfig();
 
-    const { data } = await axios.get<DreReactionStateResponse>(dreNodeUrl, {
+    const { data } = await axios.get<DreReactionStateResponse>(dreNodeUrl + "contract", {
         params: {
             id: reactionsContract,
             state: true

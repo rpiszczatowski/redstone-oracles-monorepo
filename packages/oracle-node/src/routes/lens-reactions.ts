@@ -56,7 +56,7 @@ export const fetchReactions = async (
 ): Promise<number> => {
     logger.info(`Fetching lens reactions for post: ${postId}`);
 
-    const score = fetchLensReactionsByPostId(postId);
+    const score = await fetchLensReactionsByPostId(postId);
 
     logger.info(
         `Fetched score data for post ${postId}, computed score: ${score} `
