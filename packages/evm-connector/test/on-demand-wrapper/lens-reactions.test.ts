@@ -1,5 +1,5 @@
 import { SampleLensReactionsConsumer } from "../../typechain-types";
-import { expect, util } from "chai";
+import { expect } from "chai";
 import { ethers } from "hardhat";
 import { WrapperBuilder } from "../../src/index";
 import { getServer } from "../helpers/mock-server";
@@ -17,7 +17,7 @@ describe("SampleLensReactionsConsumer", () => {
 
     it("Should pass reactions to contract", async () => {
         const contract = await getContract();
-        const postId = ethers.utils.hexZeroPad("0x01", 32);
+        const postId = "0x01-0x0118";
 
         const wrappedContract = WrapperBuilder.wrap(contract).usingOnDemandRequest(
             [
@@ -28,7 +28,7 @@ describe("SampleLensReactionsConsumer", () => {
         );
 
 
-        const transaction = await wrappedContract.executeActionPassingLensReactions("0x01");
+        const transaction = await wrappedContract.executeActionPassingLensReactions("0x0118");
         await transaction.wait();
 
         const passedReactionsValue = await contract.getPassedOracleData();
@@ -37,7 +37,8 @@ describe("SampleLensReactionsConsumer", () => {
 
     it("Should revert if invalid response from one node", async () => {
         const contract = await getContract();
-        const postId = ethers.utils.hexZeroPad("0x01", 32);
+        const postId = "0x01-0x0118";
+
 
         const wrappedContract = WrapperBuilder.wrap(contract).usingOnDemandRequest(
             [
@@ -47,14 +48,15 @@ describe("SampleLensReactionsConsumer", () => {
             { postId }
         );
 
-        await expect(wrappedContract.executeActionPassingLensReactions("0x01")).to.be.revertedWith(
+        await expect(wrappedContract.executeActionPassingLensReactions("0x0118")).to.be.revertedWith(
             "InsufficientNumberOfUniqueSigners(1, 2)"
         );
     });
 
     it("Should revert if value from nodes is not equal", async () => {
         const contract = await getContract();
-        const postId = ethers.utils.hexZeroPad("0x01", 32);
+        const postId = "0x01-0x0118";
+
 
         const wrappedContract = WrapperBuilder.wrap(contract).usingOnDemandRequest(
             [
@@ -64,14 +66,14 @@ describe("SampleLensReactionsConsumer", () => {
             { postId }
         );
 
-        await expect(wrappedContract.executeActionPassingLensReactions("0x01")).to.be.revertedWith(
+        await expect(wrappedContract.executeActionPassingLensReactions("0x0118")).to.be.revertedWith(
             "AllValuesMustBeEqual()"
         );
     });
 
     it("Should revert if two calls to same node", async () => {
         const contract = await getContract();
-        const postId = ethers.utils.hexZeroPad("0x01", 32);
+        const postId = "0x01-0x0118";
 
         const wrappedContract = WrapperBuilder.wrap(contract).usingOnDemandRequest(
             [
@@ -81,7 +83,7 @@ describe("SampleLensReactionsConsumer", () => {
             { postId }
         );
 
-        await expect(wrappedContract.executeActionPassingLensReactions("0x01")).to.be.revertedWith(
+        await expect(wrappedContract.executeActionPassingLensReactions("0x0118")).to.be.revertedWith(
             "InsufficientNumberOfUniqueSigners(1, 2)"
         );
     });

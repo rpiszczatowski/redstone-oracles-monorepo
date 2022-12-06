@@ -7,6 +7,7 @@ import { NodeConfig } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 import * as LensReactions from "./lens-reactions";
 import { fetchLensReactionsByPostId } from "../on-demand/LensReactions";
+import { utils } from "ethers";
 
 const logger = require("../utils/logger")("lens-reactions-by-post") as Consola;
 
@@ -72,5 +73,15 @@ const getSignedDataPackage = async (
 ) => {
     const score = await LensReactions.fetchReactions(postId);
 
-    return signOnDemandDataPackage(postId, score, timestamp, privateKey);
+    return signOnDemandDataPackage(extractDataFeedIdFromPost(postId), score, timestamp, privateKey);
 };
+
+const extractDataFeedIdFromPost = (postId: string) => {
+    const [profileId, pubId] = postId.split("-");
+
+    if (!profileId || !pubId) {
+        throw Error(`Wrong format of postId "${postId}", should be "hexString-hexString"`)
+    }
+
+    return utils.hexZeroPad(pubId, 32);
+}

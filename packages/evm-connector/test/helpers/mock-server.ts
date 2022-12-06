@@ -6,6 +6,7 @@ import {
   prepareMessageToSign,
 } from "redstone-protocol";
 import { MOCK_PRIVATE_KEYS } from "../../src/helpers/test-utils";
+import { utils } from "ethers";
 
 interface OnDemandRequestResponse {
   dataPoints: [
@@ -20,6 +21,8 @@ interface OnDemandRequestResponse {
 
 const VERIFIED_ADDRESS = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 
+const getPostIdFromRequest = (req: RestRequest) => utils.hexZeroPad(getParam(req, "postId").split("-")[1], 32)
+
 export const handlers = [
 
   rest.get<OnDemandRequestResponse>(
@@ -29,7 +32,7 @@ export const handlers = [
         request: req,
         privateKey: MOCK_PRIVATE_KEYS[1],
         value: 10,
-        dataFeedId: getParam(req, "postId")
+        dataFeedId: getPostIdFromRequest(req)
       });
 
       return res(ctx.json(signedDataPackage.toObj()))
@@ -43,7 +46,7 @@ export const handlers = [
         request: req,
         privateKey: MOCK_PRIVATE_KEYS[2],
         value: 10,
-        dataFeedId: getParam(req, "postId")
+        dataFeedId: getPostIdFromRequest(req)
       });
 
       return res(ctx.json(signedDataPackage.toObj()))
@@ -71,7 +74,7 @@ export const handlers = [
         request: req,
         privateKey: MOCK_PRIVATE_KEYS[2],
         value: 15,
-        dataFeedId: getParam(req, "postId")
+        dataFeedId: getPostIdFromRequest(req)
       });
 
       return res(ctx.json(signedDataPackage.toObj()))

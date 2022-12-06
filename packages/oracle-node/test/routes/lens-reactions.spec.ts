@@ -1,8 +1,9 @@
 import { getApp } from "./_helpers";
 import { Express } from "express";
 import request from 'supertest';
-import { utils, Wallet } from 'ethers';
+import { Wallet } from 'ethers';
 import { prepareMessageToSign, UniversalSigner } from "redstone-protocol";
+import { hexZeroPad } from "ethers/lib/utils";
 
 jest.mock("../../src/routes/lens-reactions.ts", () => ({
     ...jest.requireActual("../../src/routes/lens-reactions.ts"),
@@ -37,14 +38,14 @@ describe("Lens reactions on demand request", () => {
     }
 
     it("Should return correct response", async () => {
-        const postId = utils.hexZeroPad("0x01", 32);
+        const postId = "0x01-0x02";
         const response = await getLensReactions(postId);
 
         expect(response.statusCode).toBe(200);
         expect(response.body).toEqual({
             signature: expect.any(String),
             dataPoints: [{
-                dataFeedId: postId,
+                dataFeedId: hexZeroPad("0x02", 32),
                 value: 100,
                 decimals: 0
             }],
