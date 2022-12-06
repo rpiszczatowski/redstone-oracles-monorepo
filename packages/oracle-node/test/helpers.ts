@@ -50,4 +50,5 @@ export const MOCK_NODE_CONFIG = {
   levelDbLocation: "oracle-node-level-db-tests",
   ttlForPricesInLocalDBInMilliseconds: 900000,
   avalancheRpcUrl: "",
+  enableStreamrBroadcasting: false,
 };
