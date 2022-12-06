@@ -259,7 +259,7 @@ export default class PricesService {
     let reason = "";
 
     if (isNaN(value)) {
-      reason = "Value is not a number";
+      reason = `Value is not a number. Received: ${value}`;
     } else if (value < 0) {
       reason = "Value is less than 0";
     } else {
