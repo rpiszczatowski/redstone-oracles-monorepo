@@ -28,10 +28,14 @@ jest.mock("redstone-sdk", () => ({
   getOracleRegistryState: jest.fn(() => mockOracleRegistryState),
 }));
 
-const validHandler = rest.get(
-  "https://arweave.net/mockManifestTxId",
-  (_, res, ctx) => res(ctx.json(devManifest))
-);
+const validHandlers = [
+  rest.get("https://arweave.net/mockManifestTxId", (_, res, ctx) =>
+    res(ctx.json(devManifest))
+  ),
+  rest.post("http://mock-avalanche-rpc-url", (_, res, ctx) => {
+    res(ctx.json({}));
+  }),
+];
 
 const invalidHandler = rest.get(
   "https://arweave.net/mockManifestTxId",
@@ -43,7 +47,7 @@ const bigDelayHandler = rest.get(
   (_, res, ctx) => res(ctx.delay(10), ctx.json(devManifest))
 );
 
-export const server = setupServer(validHandler);
+export const server = setupServer(...validHandlers);
 
 const TEST_TIMEOUT_MS = 5;
 

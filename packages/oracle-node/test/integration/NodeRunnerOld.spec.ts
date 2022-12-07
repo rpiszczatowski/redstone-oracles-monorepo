@@ -49,6 +49,8 @@ mockedAxios.post.mockImplementation((url) => {
 
 let manifest: any = null;
 
+const mockCacheServiceUrl = "http://mock-direct-cache-service-url";
+
 jest.mock("../../src/utils/objects", () => ({
   // @ts-ignore
   ...jest.requireActual("../../src/utils/objects"),
@@ -101,7 +103,7 @@ describe("NodeRunnerOld", () => {
         },
         ETH: {},
       },
-      httpBroadcasterURLs: ["http://localhost:9000"],
+      httpBroadcasterURLs: [mockCacheServiceUrl],
     };
   });
 
@@ -185,7 +187,7 @@ describe("NodeRunnerOld", () => {
 
     await sut.run();
 
-    expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/prices", [
+    expect(axios.post).toHaveBeenCalledWith(`${mockCacheServiceUrl}/prices`, [
       {
         liteEvmSignature: "mock_evm_signed_lite",
         id: "00000000-0000-0000-0000-000000000000",
@@ -198,7 +200,7 @@ describe("NodeRunnerOld", () => {
         version: "0.4",
       },
     ]);
-    expect(axios.post).toHaveBeenCalledWith("http://localhost:9000/packages", {
+    expect(axios.post).toHaveBeenCalledWith(`${mockCacheServiceUrl}/packages`, {
       timestamp: 111111111,
       liteSignature: "mock_evm_signed_lite",
       signerAddress: "mock_evm_signer_address",
@@ -224,7 +226,7 @@ describe("NodeRunnerOld", () => {
     });
 
     await sut.run();
-    expect(axios.post).not.toHaveBeenCalledWith("http://localhost:9000", any());
+    expect(axios.post).not.toHaveBeenCalledWith(mockCacheServiceUrl, any());
   });
 
   describe("when overrideManifestUsingFile flag is null", () => {
@@ -294,10 +296,7 @@ describe("NodeRunnerOld", () => {
         2
       );
       expect(fetchers.uniswap.fetchAll).toHaveBeenCalled();
-      expect(axios.post).not.toHaveBeenCalledWith(
-        "http://localhost:9000",
-        any()
-      );
+      expect(axios.post).not.toHaveBeenCalledWith(mockCacheServiceUrl, any());
       arServiceSpy.mockClear();
     });
   });
