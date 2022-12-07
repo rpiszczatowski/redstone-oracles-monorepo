@@ -19,10 +19,14 @@ type DreReactionStateResponse = {
 export async function fetchLensLikesByPostId(postId: string): Promise<number> {
     const state = await fetchStateFromDreNode();
 
+    console.log(JSON.stringify(state, undefined, 4))
+
     const post = state[postId];
 
+
+
     if (post === undefined) {
-        throw new Error(`Post ${postId} not found`);
+        return 0;
     }
 
     const score = post.likes;

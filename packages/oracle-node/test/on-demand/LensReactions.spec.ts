@@ -13,11 +13,11 @@ describe("Lens Reactions from Warp contract", () => {
             .rejects.toThrowError("State wasn't evaluated")
     });
 
-    it("should fail on missing postId", async () => {
+    it("should return 0 on missing postId", async () => {
         mockedAxios.get.mockResolvedValueOnce({ data: { state: {}, status: "evaluated" } });
 
-        await expect(fetchLensLikesByPostId("0x02-0x01"))
-            .rejects.toThrowError("Post 0x02-0x01 not found");
+        expect(await fetchLensLikesByPostId("0x02-0x01"))
+            .toStrictEqual(0);
     });
 
 
