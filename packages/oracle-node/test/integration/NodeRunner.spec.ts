@@ -17,7 +17,8 @@ import {
 import emptyManifest from "../../manifests/dev/empty.json";
 
 /****** MOCKS START ******/
-const broadcastingUrl = "http://localhost:9000/data-packages/bulk";
+const broadcastingUrl =
+  "http://mock-direct-cache-service-url/data-packages/bulk";
 const mockArProxy = {
   getAddress: () => Promise.resolve("mockArAddress"),
 };

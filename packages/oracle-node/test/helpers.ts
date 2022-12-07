@@ -5,7 +5,7 @@ const baseManifest = {
   priceAggregator: "median",
   sourceTimeout: 3000,
   evmChainId: 1,
-  httpBroadcasterURLs: ["http://localhost:9000"],
+  httpBroadcasterURLs: ["http://mock-direct-cache-service-url"],
   enableStreamrBroadcaster: false,
   enableArweaveBackup: false,
   deviationCheck: {
