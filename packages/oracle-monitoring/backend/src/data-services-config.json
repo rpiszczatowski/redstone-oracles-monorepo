@@ -11,7 +11,10 @@
     "checkEachSingleUrl": true,
     "minTimestampDiffForWarning": 20000,
     "schedule": "*/10 * * * * *",
-    "urls": ["https://cache-service-direct-1.b.redstone.finance"],
+    "urls": [
+      "https://cache-service-direct-1.a.redstone.finance",
+      "https://cache-service-direct-1.b.redstone.finance"
+    ],
     "uniqueSignersCount": 3
   }
 ]
