@@ -5,6 +5,7 @@ import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
 import {
+  MOCK_SIGNATURE,
   mockDataPackages,
   mockOracleRegistryState,
   mockSigner,
@@ -13,6 +14,9 @@ import { connectToTestDB, dropTestDatabase } from "../common/test-db";
 import { DataPackage } from "../../src/data-packages/data-packages.model";
 import { BundlrService } from "../../src/bundlr/bundlr.service";
 import { ALL_FEEDS_KEY } from "../../src/data-packages/data-packages.service";
+import { RedstonePayloadParser } from "redstone-protocol/dist/src/redstone-payload/RedstonePayloadParser";
+import { ethers } from "ethers";
+import { ResponseFormat } from "../../src/data-packages/data-packages.controller";
 
 jest.mock("redstone-sdk", () => ({
   __esModule: true,
@@ -84,6 +88,7 @@ describe("Data packages (e2e)", () => {
       dataFeedId: 1,
     });
     const dataPackagesInDBCleaned = dataPackagesInDB.map((dp) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { _id, __v, ...rest } = dp.toJSON() as any;
       return rest;
     });
@@ -143,7 +148,7 @@ describe("Data packages (e2e)", () => {
       for (const dataPackage of testResponse.body[dataFeedId]) {
         expect(dataPackage).toHaveProperty("dataFeedId", dataFeedId);
         expect(dataPackage).toHaveProperty("sources", null);
-        expect(dataPackage).toHaveProperty("signature", "mock-signature");
+        expect(dataPackage).toHaveProperty("signature", MOCK_SIGNATURE);
         signers.push(dataPackage.signerAddress);
       }
       expect(signers.length).toBe(4);
@@ -161,6 +166,63 @@ describe("Data packages (e2e)", () => {
 
     expect(testResponse2.body[ALL_FEEDS_KEY].length).toBe(4);
     expect(testResponse2.body[ALL_FEEDS_KEY][0].dataPoints.length).toBe(2);
+  });
+
+  async function performPayloadTests(
+    bytesProvider: (response: request.Response) => Uint8Array,
+    format?: ResponseFormat
+  ) {
+    const testResponse = await request(httpServer)
+      .get("/data-packages/payload")
+      .query({
+        "data-service-id": "service-2",
+        "unique-signers-count": 4,
+        "data-feeds": "ETH,BTC",
+        format,
+      })
+      .expect(200);
+
+    const payloadBytes = bytesProvider(testResponse);
+    const expectedStreamLengthWithFeedsSpecified = 1662;
+    expect(payloadBytes.length).toBe(expectedStreamLengthWithFeedsSpecified);
+
+    const payload = new RedstonePayloadParser(payloadBytes).parse();
+    expect(payload.signedDataPackages.length).toBe(8); // 4*2
+
+    // Testing response for the case when there is no data feeds specified
+    const testResponse2 = await request(httpServer)
+      .get("/data-packages/payload")
+      .query({
+        "data-service-id": "service-2",
+        "unique-signers-count": 4,
+        format,
+      })
+      .expect(200);
+
+    const payloadBytes2 = bytesProvider(testResponse2);
+    const expectedStreamLengthForAllFeeds = 838;
+    expect(payloadBytes2.length).toBe(expectedStreamLengthForAllFeeds);
+
+    const payload2 = new RedstonePayloadParser(payloadBytes2).parse();
+    expect(payload2.signedDataPackages.length).toBe(4);
+  }
+
+  it("/data-packages/payload (GET) - should return payload in hex format", async () => {
+    await performPayloadTests((response) => {
+      return ethers.utils.arrayify(response.text);
+    }, ResponseFormat.hex);
+  });
+
+  it("/data-packages/payload (GET) - should return payload in raw format", async () => {
+    await performPayloadTests((response) => {
+      return response.body;
+    }, ResponseFormat.raw);
+  });
+
+  it("/data-packages/payload (GET) - should return payload in raw format when no format is specified", async () => {
+    await performPayloadTests((response) => {
+      return response.body;
+    });
   });
 
   it("/data-packages/stats (GET) - should work properly with a valid api key", async () => {
