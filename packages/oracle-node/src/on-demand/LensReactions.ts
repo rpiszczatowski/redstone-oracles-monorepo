@@ -16,7 +16,7 @@ type DreReactionStateResponse = {
     status: ContractStatus
 };
 
-export async function fetchLensReactionsByPostId(postId: string): Promise<number> {
+export async function fetchLensLikesByPostId(postId: string): Promise<number> {
     const state = await fetchStateFromDreNode();
 
     const post = state[postId];
@@ -25,7 +25,7 @@ export async function fetchLensReactionsByPostId(postId: string): Promise<number
         throw new Error(`Post ${postId} not found`);
     }
 
-    const score = post.likes - post.dislikes;
+    const score = post.likes;
 
     return score;
 }

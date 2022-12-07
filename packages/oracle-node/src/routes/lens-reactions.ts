@@ -6,7 +6,7 @@ import {
 import { NodeConfig } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 import * as LensReactions from "./lens-reactions";
-import { fetchLensReactionsByPostId } from "../on-demand/LensReactions";
+import { fetchLensLikesByPostId } from "../on-demand/LensReactions";
 import { utils } from "ethers";
 
 const logger = require("../utils/logger")("lens-reactions-by-post") as Consola;
@@ -57,7 +57,7 @@ export const fetchReactions = async (
 ): Promise<number> => {
     logger.info(`Fetching lens reactions for post: ${postId}`);
 
-    const score = await fetchLensReactionsByPostId(postId);
+    const score = await fetchLensLikesByPostId(postId);
 
     logger.info(
         `Fetched score data for post ${postId}, computed score: ${score} `
