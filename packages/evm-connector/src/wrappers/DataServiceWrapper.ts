@@ -5,8 +5,6 @@ import {
 import { BaseWrapper, ParamsForDryRunVerification } from "./BaseWrapper";
 import { version } from "../../package.json";
 
-const DEFAULT_SHOULD_DRY_RUN_PAYLOAD = true;
-
 interface RequestPayloadWithDryRunParams extends ParamsForDryRunVerification {
   unsignedMetadataMsg: string;
 }
@@ -27,13 +25,13 @@ export class DataServiceWrapper extends BaseWrapper {
     params: ParamsForDryRunVerification
   ): Promise<string> {
     const unsignedMetadataMsg = this.getUnsignedMetadata();
-    const shouldDryRunPayloads =
-      this.dataPackagesRequestParams?.shouldDryRunPayloads ??
-      DEFAULT_SHOULD_DRY_RUN_PAYLOAD;
-    if (shouldDryRunPayloads) {
-      return this.requestPayloadWithDryRun({ ...params, unsignedMetadataMsg });
+    const disablePayloadsDryRun = Boolean(
+      this.dataPackagesRequestParams.disablePayloadsDryRun
+    );
+    if (disablePayloadsDryRun) {
+      return this.requestPayloadWithoutDryRun(this.urls, unsignedMetadataMsg);
     }
-    return this.requestPayloadWithoutDryRun(this.urls, unsignedMetadataMsg);
+    return this.requestPayloadWithDryRun({ ...params, unsignedMetadataMsg });
   }
 
   /* 
