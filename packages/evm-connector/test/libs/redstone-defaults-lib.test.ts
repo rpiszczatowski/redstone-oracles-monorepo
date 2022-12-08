@@ -2,6 +2,12 @@ import { ethers } from "hardhat";
 import { SampleRedstoneDefaultsLib } from "../../typechain-types";
 import { expect } from "chai";
 import { BigNumber } from "ethers";
+import {
+  getBlockTimestamp,
+  getBlockTimestampMilliseconds,
+} from "../tests-common";
+
+const MILLISECONDS_IN_MINUTE = 60 * 1000;
 
 describe("SampleRedstoneDefaultsLib", function () {
   let contract: SampleRedstoneDefaultsLib;
@@ -15,31 +21,21 @@ describe("SampleRedstoneDefaultsLib", function () {
   });
 
   it("Should properly validate valid timestamps", async () => {
-    const currentDate = new Date();
-    await contract.validateTimestamp(currentDate.getTime());
-    const datePlusHalfMinute = currentDate;
-    datePlusHalfMinute.setSeconds(datePlusHalfMinute.getSeconds() + 30);
-    await contract.validateTimestamp(datePlusHalfMinute.getTime());
-    const dateMinusTwoHalfMinute = currentDate;
-    dateMinusTwoHalfMinute.setSeconds(
-      dateMinusTwoHalfMinute.getSeconds() - 150
-    );
-    await contract.validateTimestamp(dateMinusTwoHalfMinute.getTime());
+    const timestamp = await getBlockTimestampMilliseconds();
+    await contract.validateTimestamp(timestamp);
+    await contract.validateTimestamp(timestamp + 0.5 * MILLISECONDS_IN_MINUTE);
+    await contract.validateTimestamp(timestamp - 2.5 * MILLISECONDS_IN_MINUTE);
   });
 
   it("Should revert for too old timestamp", async () => {
-    const dateMinusFourMinute = new Date();
-    dateMinusFourMinute.setMinutes(dateMinusFourMinute.getMinutes() - 4);
     await expect(
-      contract.validateTimestamp(dateMinusFourMinute.getTime())
+      contract.validateTimestamp(Date.now() - 4 * MILLISECONDS_IN_MINUTE)
     ).to.be.revertedWith("TimestampIsTooOld");
   });
 
   it("Should revert for timestamp from too long future", async () => {
-    const datePlusTwoMinute = new Date();
-    datePlusTwoMinute.setMinutes(datePlusTwoMinute.getMinutes() + 2);
     await expect(
-      contract.validateTimestamp(datePlusTwoMinute.getTime())
+      contract.validateTimestamp(Date.now() + 2 * MILLISECONDS_IN_MINUTE)
     ).to.be.revertedWith("TimestampFromTooLongFuture");
   });
 
