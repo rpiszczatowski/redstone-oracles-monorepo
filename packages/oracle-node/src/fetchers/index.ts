@@ -23,6 +23,9 @@ import { XtFetcher } from "./xt/XtFetcher";
 import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { config } from "../config";
 
+const AVALANCHE_NETWORK_NAME = "Avalanche Network";
+const AVALANCHE_CHAIN_ID = 43114;
+
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
   "custom-urls": new CustomUrlsFetcher(),
@@ -37,7 +40,10 @@ export default {
   verto: new VertoFetcher(),
   ecb: new EcbFetcher(),
   "avalanche-evm-fetcher": new AvalancheEvmFetcher(
-    new ethers.providers.JsonRpcProvider(config.avalancheRpcUrl)
+    new ethers.providers.StaticJsonRpcProvider(config.avalancheRpcUrl, {
+      name: AVALANCHE_NETWORK_NAME,
+      chainId: AVALANCHE_CHAIN_ID,
+    })
   ),
   platypus: new PlatypusFetcher(),
   chainlink: new ChainlinkFetcher(),
