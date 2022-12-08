@@ -1,0 +1,11 @@
+{
+  "Symbol": "AAVE",
+  "Name": "Aave Token",
+  "Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
+  "Blockchain": "Ethereum",
+  "Price": 64.75379202233283,
+  "PriceYesterday": 63.759525531100444,
+  "VolumeYesterdayUSD": 853731.9889260614,
+  "Time": "2022-12-02T13:51:46.814Z",
+  "Source": "diadata.org"
+}
