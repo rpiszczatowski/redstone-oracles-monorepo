@@ -18,6 +18,10 @@ export interface PriceValuesInLocalDB {
   [symbol: string]: PriceValueInLocalDB[];
 }
 
+interface LastPrices {
+  [symbol: string]: PriceValueInLocalDB;
+}
+
 const db = new Level(config.levelDbLocation, DEFAULT_LEVEL_OPTS);
 const pricesSublevel = db.sublevel<string, PriceValueInLocalDB[]>(
   PRICES_SUBLEVEL,
@@ -82,11 +86,31 @@ export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
 
   // Executing batch action
   await pricesSublevel.batch(operations);
+
+  // Saving last prices to local cache
+  setLastPrices(prices);
 };
+
+/*
+  These could be not the last prices but the one which was cached last.
+  If two iterations will evaluate close to each other,
+  these prices could be older than expected by one iteration.
+*/
+const lastPrices: LastPrices = {};
+
+const setLastPrices = (prices: PriceDataAfterAggregation[]) => {
+  for (const price of prices) {
+    const { symbol, value, timestamp } = price;
+    lastPrices[symbol] = { value, timestamp };
+  }
+};
+
+export const getLastPrice = (symbol: string) => lastPrices[symbol];
 
 export default {
   savePrices,
   getPrices,
   clearPricesSublevel,
   closeLocalLevelDB,
+  getLastPrice,
 };
