@@ -1,0 +1,11 @@
+{
+  "Symbol": "ETH",
+  "Name": "Ether",
+  "Address": "0x0000000000000000000000000000000000000000",
+  "Blockchain": "Ethereum",
+  "Price": 1278.9030349377606,
+  "PriceYesterday": 1281.7252617300485,
+  "VolumeYesterdayUSD": 2837281279.546264,
+  "Time": "2022-12-02T10:39:59.524Z",
+  "Source": "diadata.org"
+}
