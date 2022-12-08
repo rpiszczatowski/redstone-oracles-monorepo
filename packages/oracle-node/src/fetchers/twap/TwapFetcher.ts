@@ -1,7 +1,7 @@
 import axios from "axios";
 import { PricesObj } from "../../types";
-import { BaseFetcher } from "../BaseFetcher";
 import EvmPriceSignerOld from "../../signers/EvmPriceSignerOld";
+import { MultiRequestFetcher } from "../MultiRequestFetcher";
 
 const PRICES_URL = "https://api.redstone.finance/prices";
 const MAX_LIMIT = 1000;
@@ -18,11 +18,7 @@ export interface HistoricalPrice extends ShortPrice {
   version: string;
 }
 
-interface ResponseForTwap {
-  [symbol: string]: HistoricalPrice[];
-}
-
-export class TwapFetcher extends BaseFetcher {
+export class TwapFetcher extends MultiRequestFetcher {
   constructor(
     private readonly sourceProviderId: string,
     private readonly providerEvmAddress: string
@@ -30,55 +26,51 @@ export class TwapFetcher extends BaseFetcher {
     super(`twap-${sourceProviderId}`);
   }
 
-  async fetchData(ids: string[]) {
-    const currentTimestamp = Date.now();
-    const response: ResponseForTwap = {};
-
-    // Fetching historical prices for each asset in parallel
-    const promises: Promise<void>[] = [];
-    for (const id of ids) {
-      const { assetSymbol, millisecondsOffset } =
-        TwapFetcher.parseTwapAssetId(id);
-      const fromTimestamp = currentTimestamp - millisecondsOffset;
-      const fetchingPromiseForSymbol = axios
-        .get(PRICES_URL, {
-          params: {
-            symbol: assetSymbol,
-            provider: this.sourceProviderId,
-            fromTimestamp,
-            toTimestamp: currentTimestamp,
-            limit: MAX_LIMIT,
-          },
-        })
-        .then((responseForSymbol) => {
-          response[id] = responseForSymbol.data;
-        });
-      promises.push(fetchingPromiseForSymbol);
-    }
-    await Promise.all(promises);
-
-    return response;
+  getRequestContext(): number {
+    return Date.now();
   }
 
-  async extractPrices(response: ResponseForTwap): Promise<PricesObj> {
-    const pricesObj: PricesObj = {};
+  makeRequest(id: string, timestamp: number): Promise<any> {
+    const { assetSymbol, millisecondsOffset } =
+      TwapFetcher.parseTwapAssetId(id);
+    const fromTimestamp = timestamp - millisecondsOffset;
 
-    for (const [symbol, historicalPrices] of Object.entries(response)) {
-      this.verifySignatures(historicalPrices);
-      const twapValue = TwapFetcher.getTwapValue(historicalPrices);
-      pricesObj[symbol] = twapValue!;
-    }
+    return axios
+      .get(PRICES_URL, {
+        params: {
+          symbol: assetSymbol,
+          provider: this.sourceProviderId,
+          fromTimestamp,
+          toTimestamp: timestamp,
+          limit: MAX_LIMIT,
+        },
+      })
+      .then((responseForSymbol) => {
+        return {
+          data: {
+            id: id,
+            data: responseForSymbol.data,
+          },
+        };
+      });
+  }
+
+  processData(data: any, pricesObj: PricesObj): PricesObj {
+    this.verifySignatures(data.data);
+
+    const twapValue = TwapFetcher.getTwapValue(data.data);
+    pricesObj[data.id] = twapValue!;
 
     return pricesObj;
   }
 
-  async verifySignatures(prices: HistoricalPrice[]) {
+  private async verifySignatures(prices: HistoricalPrice[]) {
     for (const price of prices) {
       await this.verifySignature(price);
     }
   }
 
-  async verifySignature(price: HistoricalPrice) {
+  private async verifySignature(price: HistoricalPrice) {
     const evmSigner = new EvmPriceSignerOld(price.version, EVM_CHAIN_ID);
     const isSignatureValid = evmSigner.verifyLiteSignature({
       pricePackage: {
@@ -135,7 +127,7 @@ export class TwapFetcher extends BaseFetcher {
 
   // This function groups price objects with the same timestamps
   // and replaces them with a single price object with avg value
-  static aggregatePricesWithSameTimestamps(
+  private static aggregatePricesWithSameTimestamps(
     sortedValidPrices: HistoricalPrice[]
   ): ShortPrice[] {
     const prev = {
@@ -184,7 +176,7 @@ export class TwapFetcher extends BaseFetcher {
     };
   }
 
-  static getSortedValidPricesByTimestamp(
+  private static getSortedValidPricesByTimestamp(
     prices: HistoricalPrice[]
   ): HistoricalPrice[] {
     const validHistoricalPrices = prices.filter((p) => !isNaN(p.value));
