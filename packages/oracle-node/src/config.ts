@@ -17,6 +17,7 @@ const DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS = "900000";
 const DEFAULT_ETHERSCAN_API_URL = "";
 const DEFAULT_ETHERSCAN_API_KEY = "";
 const DEFAULT_AVALANCHE_RPC_URL = "https://api.avax.network/ext/bc/C/rpc";
+const DEFAULT_MOCKED_PRICES_DATA_PATH = "./mocked-prices.json";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -143,5 +144,9 @@ export const config: NodeConfig = Object.freeze({
       "ENABLE_STREAMR_BROADCASTING",
       DEFAULT_ENABLE_STREAMR_BROADCASTING
     )
+  ),
+  mockedPricesDataPath: getFromEnv(
+    "MOCKED_PRICES_DATA_PATH",
+    DEFAULT_MOCKED_PRICES_DATA_PATH
   ),
 });

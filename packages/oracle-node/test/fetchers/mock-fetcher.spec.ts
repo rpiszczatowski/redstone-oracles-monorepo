@@ -16,8 +16,7 @@ describe("mock fetcher", () => {
     const prices = [{ ETH: 90, AAVE: 10 }] as PricesObj[];
     sut.loadPrices(prices);
     // When
-    const result = await sut.fetchAll(["ETH"]); //"AAVE", "UNI"]);
-
+    const result = await sut.fetchAll(["ETH"]);
     // Then
     expect(result).toEqual([
       {
@@ -32,8 +31,8 @@ describe("mock fetcher", () => {
     const prices = [{ ETH: 90, AAVE: 10 }, { ETH: 80 }] as PricesObj[];
     sut.loadPrices(prices);
     // When
-    await sut.fetchAll(["ETH"]); //"AAVE", "UNI"]);
-    const result = await sut.fetchAll(["ETH"]); //"AAVE", "UNI"]);
+    await sut.fetchAll(["ETH"]);
+    const result = await sut.fetchAll(["ETH"]);
 
     // Then
     expect(result).toEqual([

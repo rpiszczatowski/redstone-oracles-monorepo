@@ -154,6 +154,7 @@ export interface NodeConfig {
   ttlForPricesInLocalDBInMilliseconds: number;
   avalancheRpcUrl: string;
   enableStreamrBroadcasting: boolean;
+  mockedPricesDataPath: string;
 }
 
 export interface MulticallRequest {

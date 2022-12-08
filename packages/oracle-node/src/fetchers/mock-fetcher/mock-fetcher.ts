@@ -1,6 +1,7 @@
 import fs from "fs";
 import { BaseFetcher } from "../BaseFetcher";
 import { PricesObj } from "../../types";
+import { config } from "../../config";
 
 export class MockFetcher extends BaseFetcher {
   private mockedPrices: PricesObj[];
@@ -11,6 +12,7 @@ export class MockFetcher extends BaseFetcher {
     super("mock-fetcher");
     this.mockedPrices = [];
     this.counter = 0;
+    this.loadPricesFromFile(config.mockedPricesDataPath);
     this.maxRandomPrice = 100;
   }
 
@@ -19,8 +21,9 @@ export class MockFetcher extends BaseFetcher {
     this.counter = 0;
   }
   loadPricesFromFile(path: string) {
-    this.mockedPrices = JSON.parse(fs.readFileSync(path, "utf8"));
-    this.counter = 0;
+    if (fs.existsSync(path)) {
+      this.mockedPrices = JSON.parse(fs.readFileSync(path, "utf8"));
+    }
   }
 
   getRandomPrices(ids: string[]): { [id: string]: number } {
