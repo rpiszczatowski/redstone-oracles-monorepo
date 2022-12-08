@@ -21,12 +21,14 @@ import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
 import { XtFetcher } from "./xt/XtFetcher";
 import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { config } from "../config";
+import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
   "custom-urls": new CustomUrlsFetcher(),
   "trader-joe": new TraderJoeFetcher(),
   "twelve-data": new TwelveDataFetcher(),
+  "mock-fetcher": new MockFetcher(),
   coingecko: new CoingeckoFetcher(),
   sushiswap: new SushiswapFetcher(),
   uniswap: new UniswapFetcher(),
