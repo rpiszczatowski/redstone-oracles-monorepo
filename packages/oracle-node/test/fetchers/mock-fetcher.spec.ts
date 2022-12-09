@@ -1,104 +1,43 @@
 import { MockFetcher } from "../../src/fetchers/mock-fetcher/mock-fetcher";
-import { PricesObj } from "../../src/types";
+import { mockFetcherResponse } from "./_helpers";
+
+jest.mock("axios");
 
 describe("mock fetcher", () => {
   const sut = new MockFetcher();
+
   beforeEach(() => {
-    jest.spyOn(global.Math, "random").mockReturnValue(0.13);
+    mockFetcherResponse(
+      "../../src/fetchers/mock-fetcher/example-response.json"
+    );
   });
 
-  afterEach(() => {
-    jest.spyOn(global.Math, "random").mockRestore();
-  });
-
-  it("should properly load data from json", async () => {
+  it("should properly fetch data from URL", async () => {
     // Given
-    const prices = [{ ETH: 90, AAVE: 10 }] as PricesObj[];
-    sut.loadPrices(prices);
     // When
     const result = await sut.fetchAll(["ETH"]);
     // Then
     expect(result).toEqual([
       {
         symbol: "ETH",
-        value: 90,
+        value: 1500,
       },
     ]);
   });
 
-  it("should properly load multiple token price data from json", async () => {
+  it("should properly fetch default data from URL when no price for token present", async () => {
     // Given
-    const prices = [{ ETH: 90, AAVE: 10 }, { ETH: 80 }] as PricesObj[];
-    sut.loadPrices(prices);
     // When
-    await sut.fetchAll(["ETH"]);
-    const result = await sut.fetchAll(["ETH"]);
-
+    const result = await sut.fetchAll(["UNI", "AAVE"]);
     // Then
     expect(result).toEqual([
       {
-        symbol: "ETH",
-        value: 80,
-      },
-    ]);
-  });
-
-  it("should properly load multiple token price multiple data from json", async () => {
-    // Given
-    const prices = [{ ETH: 90 }, { ETH: 80, AAVE: 10 }] as PricesObj[];
-    sut.loadPrices(prices);
-    // When
-    await sut.fetchAll(["ETH", "AAVE"]);
-    const result = await sut.fetchAll(["ETH", "AAVE"]);
-
-    // Then
-    expect(result).toEqual([
-      {
-        symbol: "ETH",
-        value: 80,
+        symbol: "UNI",
+        value: 6.2,
       },
       {
         symbol: "AAVE",
-        value: 10,
-      },
-    ]);
-  });
-
-  it("should properly set next price", async () => {
-    // Given
-    const nextPrices = { ETH: 90, AAVE: 20 };
-    sut.setNextPrices(nextPrices);
-    // When
-    const result = await sut.fetchAll(["ETH", "AAVE"]);
-    // Then
-    expect(result).toEqual([
-      {
-        symbol: "ETH",
-        value: 90,
-      },
-      {
-        symbol: "AAVE",
-        value: 20,
-      },
-    ]);
-  });
-
-  it("should return random prices when out of data", async () => {
-    // Given
-    const nextPrices = { ETH: 90, AAVE: 20 };
-    sut.setNextPrices(nextPrices);
-    // When
-    await sut.fetchAll(["ETH", "AAVE"]);
-    const result = await sut.fetchAll(["ETH", "AAVE"]);
-    // Then
-    expect(result).toEqual([
-      {
-        symbol: "ETH",
-        value: 13,
-      },
-      {
-        symbol: "AAVE",
-        value: 13,
+        value: 42,
       },
     ]);
   });
