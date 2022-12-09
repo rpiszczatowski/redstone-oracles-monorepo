@@ -28,7 +28,7 @@ export default {
   "custom-urls": new CustomUrlsFetcher(),
   "trader-joe": new TraderJoeFetcher(),
   "twelve-data": new TwelveDataFetcher(),
-  "mock-fetcher": new MockFetcher(),
+  mock: new MockFetcher(),
   coingecko: new CoingeckoFetcher(),
   sushiswap: new SushiswapFetcher(),
   uniswap: new UniswapFetcher(),

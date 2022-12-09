@@ -5,24 +5,16 @@ import axios from "axios";
 
 export class MockFetcher extends BaseFetcher {
   constructor() {
-    super("mock-fetcher");
+    super("mock");
   }
 
   async fetchData(ids: string[]) {
-    let mockedPrices = await axios.get(config.mockPricesUrl);
-    let result = {};
-    ids.forEach((id) => {
-      let price;
-      if (id in mockedPrices.data) {
-        price = mockedPrices.data[id];
-      } else {
-        price = mockedPrices.data.__DEFAULT__;
-      }
-      result = {
-        ...result,
-        [id]: price,
-      };
-    });
+    const mockedPrices = (await axios.get(config.mockPricesUrl)).data;
+    const result: { [id: string]: number } = {};
+
+    for (const id of ids) {
+      result[id] = mockedPrices[id] ?? mockedPrices.__DEFAULT__;
+    }
     return result;
   }
 
