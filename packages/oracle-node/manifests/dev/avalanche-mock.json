@@ -18,10 +18,19 @@
       "source": ["binance", "kraken", "coingecko", "mock"]
     },
     "USDT": {
-      "source": ["coingecko", "mock"]
+      "source": ["coingecko", "mock"],
+      "deviationWithRecentValues": {
+        "maxPercent": 5,
+        "maxDelayMilliseconds": 600000
+      }
     },
     "PNG": {},
-    "AVAX": {},
+    "AVAX": {
+      "deviationWithRecentValues": {
+        "maxPercent": 50,
+        "maxDelayMilliseconds": 600000
+      }
+    },
     "LINK": {},
     "BTC": {},
     "QI": {},
