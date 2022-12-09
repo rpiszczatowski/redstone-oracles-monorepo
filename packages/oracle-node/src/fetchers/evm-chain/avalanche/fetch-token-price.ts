@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from "ethers";
-import redstone from "redstone-api";
+import { getLastPrice } from "../../../db/local-db";
 import {
   MooJoeTokensDetailsKeys,
   YieldYakDetailsKeys,
@@ -18,19 +18,21 @@ export const fetchTokenPrice = async (id: string) => {
   if (!tokenContractDetails) {
     throw new Error(`Invalid id ${id} for Avalanche EVM fetcher`);
   }
-  const priceObjectFromApi = await redstone.getPrice(
-    tokenContractDetails.tokenToFetch
-  );
-  const priceAsString = priceObjectFromApi.value.toString();
-  return ethers.utils.parseUnits(priceAsString, 18);
+  const tokenPriceFromDb = getLastPrice(tokenContractDetails.tokenToFetch);
+  if (tokenPriceFromDb) {
+    const priceAsString = tokenPriceFromDb.value.toString();
+    return ethers.utils.parseUnits(priceAsString, 18);
+  }
 };
 
 export const fetchTokensPrices = async (tokens: string[]) => {
-  const priceObjectFromApi = await redstone.getPrice(tokens);
   const priceObject = {} as { [tokenName: string]: BigNumber };
   for (const token of tokens) {
-    const priceAsString = priceObjectFromApi[token].value.toString();
-    priceObject[token] = ethers.utils.parseUnits(priceAsString, 18);
+    const tokenPriceFromDb = getLastPrice(token);
+    if (tokenPriceFromDb) {
+      const priceAsString = tokenPriceFromDb.value.toString();
+      priceObject[token] = ethers.utils.parseUnits(priceAsString, 18);
+    }
   }
   return priceObject;
 };

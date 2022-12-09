@@ -81,7 +81,6 @@ export default class NodeRunnerOld {
     // It should be called as early as possible
     // Otherwise App Runner crashes ¯\_(ツ)_/¯
     new ExpressAppRunner(nodeConfig).run();
-
     const arweave = new ArweaveProxy(nodeConfig.privateKeys.arweaveJwk);
     const providerAddress = await arweave.getAddress();
     const arweaveService = new ArweaveService();

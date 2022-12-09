@@ -1,6 +1,6 @@
 import axios from "axios";
-import redstone from "redstone-api";
 import { BaseFetcher } from "../BaseFetcher";
+import { getLastPrice } from "../../db/local-db";
 import { PricesObj } from "../../types";
 
 const vertoSymbolToId = require("./verto-symbol-to-id.json");
@@ -23,12 +23,12 @@ export class VertoFetcher extends BaseFetcher {
   }
 
   async extractPrices(responses: any): Promise<PricesObj> {
-    const lastArPrice = (await redstone.getPrice("AR")).value;
+    const lastArPrice = getLastPrice("AR")?.value;
 
     const pricesObj: PricesObj = {};
 
     for (const response of responses) {
-      if (response && response.data) {
+      if (response && response.data && lastArPrice) {
         const quote = response.data;
         pricesObj[quote.ticker] = quote.price * lastArPrice;
       }

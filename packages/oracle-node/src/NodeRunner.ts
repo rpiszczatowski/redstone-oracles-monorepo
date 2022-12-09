@@ -20,12 +20,7 @@ import {
   HttpBroadcaster,
   StreamrBroadcaster,
 } from "./broadcasters";
-import {
-  Manifest,
-  NodeConfig,
-  PriceDataAfterAggregation,
-  PriceDataBeforeSigning,
-} from "./types";
+import { Manifest, NodeConfig, PriceDataAfterAggregation } from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
 import { ArweaveProxy } from "./arweave/ArweaveProxy";
 import {
@@ -36,7 +31,7 @@ import {
 } from "redstone-protocol";
 import { config } from "./config";
 import { connectToDb } from "./db/remote-mongo/db-connector";
-import localDB from "./db/local-db";
+import { savePrices } from "./db/local-db";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -241,7 +236,7 @@ export default class NodeRunner {
 
   private async savePricesInLocalDB(prices: PriceDataAfterAggregation[]) {
     logger.info(`Saving ${prices.length} prices in local db`);
-    await localDB.savePrices(prices);
+    await savePrices(prices);
     logger.info("Prices saved in local db");
   }
 

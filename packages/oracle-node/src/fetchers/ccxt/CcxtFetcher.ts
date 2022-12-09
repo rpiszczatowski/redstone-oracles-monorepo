@@ -1,10 +1,10 @@
-import { BaseFetcher } from "../BaseFetcher";
-import { PricesObj } from "../../types";
-import redstone from "redstone-api";
+import _ from "lodash";
 import ccxt, { Exchange, Ticker } from "ccxt";
+import { BaseFetcher } from "../BaseFetcher";
+import { getLastPrice } from "../../db/local-db";
 import { getRequiredPropValue } from "../../utils/objects";
 import symbolToIdForExchanges from "./symbol-to-id/index";
-import _ from "lodash";
+import { PricesObj } from "../../types";
 
 const CCXT_FETCHER_MAX_REQUEST_TIMEOUT_MS = 120000;
 
@@ -51,8 +51,8 @@ export class CcxtFetcher extends BaseFetcher {
   }
 
   async extractPrices(response: any): Promise<PricesObj> {
-    const lastUsdtPrice = (await redstone.getPrice("USDT")).value;
-    const lastBusdPrice = (await redstone.getPrice("BUSD")).value;
+    const lastUsdtPrice = getLastPrice("USDT")?.value;
+    const lastBusdPrice = getLastPrice("BUSD")?.value;
 
     const pricesObj: PricesObj = {};
 
@@ -70,7 +70,9 @@ export class CcxtFetcher extends BaseFetcher {
           const lastUsdInStablePrice = isSymbolInUsdt
             ? lastUsdtPrice
             : lastBusdPrice;
-          pricesObj[pairSymbol] = lastPrice * lastUsdInStablePrice;
+          if (lastUsdInStablePrice) {
+            pricesObj[pairSymbol] = lastPrice * lastUsdInStablePrice;
+          }
         }
       }
     }

@@ -1,11 +1,27 @@
 import axios from "axios";
+import {
+  clearPricesSublevel,
+  closeLocalLevelDB,
+  setupLocalDb,
+} from "../../src/db/local-db";
 import fetchers from "../../src/fetchers/index";
-import { mockFetcherResponse, mockRedstoneApiPrice } from "./_helpers";
+import { mockFetcherResponse, saveMockPriceInLocalDb } from "./_helpers";
 
 jest.mock("axios");
-mockRedstoneApiPrice(2500, "ETH");
 
 describe("kyber fetcher", () => {
+  beforeAll(() => {
+    setupLocalDb();
+  });
+
+  beforeEach(async () => {
+    await clearPricesSublevel();
+  });
+
+  afterAll(async () => {
+    await closeLocalLevelDB();
+  });
+
   const sut = fetchers["kyber"];
 
   beforeEach(() => {
@@ -13,12 +29,8 @@ describe("kyber fetcher", () => {
   });
 
   it("should properly fetch data", async () => {
-    // Given
-
-    // When
+    await saveMockPriceInLocalDb(2500, "ETH");
     const result = await sut.fetchAll(["MKR", "UNI", "SUSHI"]);
-
-    // Then
     expect(result).toEqual([
       {
         symbol: "MKR",
