@@ -13,7 +13,7 @@ export class MockFetcher extends BaseFetcher {
   }
 
   async extractPrices(response: any, ids: string[]): Promise<PricesObj> {
-    const result: { [id: string]: number } = {};
+    const result: PricesObj = {};
 
     for (const id of ids) {
       result[id] = response[id] ?? response.__DEFAULT__;
