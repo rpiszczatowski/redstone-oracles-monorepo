@@ -1,12 +1,14 @@
 {
   "interval": 10000,
   "priceAggregator": "median",
-  "defaultSource": ["mock"],
+  "defaultSource": [
+    "mock"
+  ],
   "sourceTimeout": 50000,
   "deviationCheck": {
     "deviationWithRecentValues": {
-      "maxPercent": 25,
-      "maxDelayMilliseconds": 600000
+      "maxPercent": 30,
+      "maxDelayMilliseconds": 300000
     }
   },
   "evmChainId": 1,
@@ -15,26 +17,34 @@
   "enableArweaveBackup": false,
   "tokens": {
     "ETH": {
-      "source": ["binance", "kraken", "coingecko", "mock"]
+      "source": [
+        "binance",
+        "kraken",
+        "coingecko",
+        "mock"
+      ]
     },
     "USDT": {
-      "source": ["coingecko", "mock"],
+      "source": [
+        "coingecko",
+        "mock"
+      ],
       "deviationWithRecentValues": {
         "maxPercent": 5,
-        "maxDelayMilliseconds": 600000
+        "maxDelayMilliseconds": 300000
       }
     },
     "PNG": {},
-    "AVAX": {
-      "deviationWithRecentValues": {
-        "maxPercent": 50,
-        "maxDelayMilliseconds": 600000
-      }
-    },
+    "AVAX": {},
     "LINK": {},
     "BTC": {},
     "QI": {},
-    "USDC": {},
+    "USDC": {
+      "deviationWithRecentValues": {
+        "maxPercent": 5,
+        "maxDelayMilliseconds": 300000
+      }
+    },
     "sAVAX": {},
     "PTP": {},
     "YY_AAVE_AVAX": {},
