@@ -9,16 +9,15 @@ export class MockFetcher extends BaseFetcher {
   }
 
   async fetchData(ids: string[]) {
-    const mockedPrices = (await axios.get(config.mockPricesUrl)).data;
+    return (await axios.get(config.mockPricesUrl)).data;
+  }
+
+  async extractPrices(response: any, ids: string[]): Promise<PricesObj> {
     const result: { [id: string]: number } = {};
 
     for (const id of ids) {
-      result[id] = mockedPrices[id] ?? mockedPrices.__DEFAULT__;
+      result[id] = response[id] ?? response.__DEFAULT__;
     }
     return result;
-  }
-
-  async extractPrices(response: any): Promise<PricesObj> {
-    return response;
   }
 }
