@@ -51,4 +51,5 @@ export const MOCK_NODE_CONFIG = {
   ttlForPricesInLocalDBInMilliseconds: 900000,
   avalancheRpcUrl: "",
   enableStreamrBroadcasting: false,
+  mockPricesUrl: "",
 };

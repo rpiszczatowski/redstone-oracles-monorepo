@@ -22,6 +22,7 @@ import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
 import { XtFetcher } from "./xt/XtFetcher";
 import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { config } from "../config";
+import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 
 const AVALANCHE_NETWORK_NAME = "Avalanche Network";
 const AVALANCHE_CHAIN_ID = 43114;
@@ -31,6 +32,7 @@ export default {
   "custom-urls": new CustomUrlsFetcher(),
   "trader-joe": new TraderJoeFetcher(),
   "twelve-data": new TwelveDataFetcher(),
+  mock: new MockFetcher(),
   coingecko: new CoingeckoFetcher(),
   sushiswap: new SushiswapFetcher(),
   uniswap: new UniswapFetcher(),

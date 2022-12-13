@@ -17,6 +17,8 @@ const DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS = "900000";
 const DEFAULT_ETHERSCAN_API_URL = "";
 const DEFAULT_ETHERSCAN_API_KEY = "";
 const DEFAULT_AVALANCHE_RPC_URL = "https://api.avax.network/ext/bc/C/rpc";
+const DEFAULT_MOCK_PRICES_URL =
+  "https://raw.githubusercontent.com/redstone-finance/redstone-mock-prices/main/mock-prices.json";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -144,4 +146,5 @@ export const config: NodeConfig = Object.freeze({
       DEFAULT_ENABLE_STREAMR_BROADCASTING
     )
   ),
+  mockPricesUrl: getFromEnv("MOCK_PRICES_URL", DEFAULT_MOCK_PRICES_URL),
 });
