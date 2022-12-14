@@ -144,6 +144,29 @@ describe("NodeRunner", () => {
       expect(mockedArProxy).toHaveBeenCalledWith(jwk);
     });
 
+    it("should throw if interval not divisble by 1000", async () => {
+      manifest.interval = 60001;
+      const sut = await NodeRunner.create({
+        ...nodeConfig,
+        overrideManifestUsingFile: manifest,
+      });
+      await expect(sut.run()).rejects.toThrowError(
+        "Interval needs to be divisible by 1000"
+      );
+    });
+
+    it("should create node when interval greater than 60 seconds", async () => {
+      const mockedArProxy = mocked(ArweaveProxy, true);
+      manifest.interval = 60000 * 5;
+      const sut = await NodeRunner.create({
+        ...nodeConfig,
+        overrideManifestUsingFile: manifest,
+      });
+
+      expect(sut).not.toBeNull();
+      expect(mockedArProxy).toHaveBeenCalledWith(jwk);
+    });
+
     it("should throw if no maxDeviationPercent configured for token", async () => {
       const { deviationCheck, ...manifestWithoutDeviationCheck } = manifest;
 
@@ -175,12 +198,12 @@ describe("NodeRunner", () => {
 
       expect(axios.post).toHaveBeenCalledWith(broadcastingUrl, {
         requestSignature:
-          "0xdd8c162ee49b5a506cc6afbe5d0d9a7aabd1c0e8946900e3601a5eacd96439e56db8419660b4508c9f35db4b1d4716ec58011101c9744f6f812d7b742124a3ff1c",
+          "0x86f00b6f14e46844e653f3ec4adc41ac51498063276b7869bfeef3a5a11e673d6471a0d728174e9e7965ecc891925c1e7d9a62dd2f39e392edb1100c693aeec71c",
         dataPackages: [
           {
             signature:
-              "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
-            timestampMilliseconds: 111111111,
+              "Qm4FMKLEMfuD2SwHQWL1AK9viW9O80ok1y4PKvCkKu8b6c4xMyOjSU1CiLjDB3PPimPUJN7AKE7RUTVuBI8TNhw=",
+            timestampMilliseconds: 111110000,
             dataPoints: [
               {
                 dataFeedId: "BTC",
@@ -190,8 +213,8 @@ describe("NodeRunner", () => {
           },
           {
             signature:
-              "WF1VFvLYv+Nd0PGAi3y1zPBp6fADtyUKREYEwuhl4k1hHZ+2MWnvztrxLK2NPeSryZXU9sgNLG5SJwhwqHV5ohs=",
-            timestampMilliseconds: 111111111,
+              "nYugX5486D0AEiZaoV8I+yxzcottFH+giz0U6maSeckCICN5tSPytiUF+/6UDePsZSN87vBZp7JWVSih8HX/3hs=",
+            timestampMilliseconds: 111110000,
             dataPoints: [
               {
                 dataFeedId: "ETH",
@@ -201,8 +224,8 @@ describe("NodeRunner", () => {
           },
           {
             signature:
-              "VjPF6m+SYKTv4gEBWEqRSR1Ppje0xrRg0gluaQB5vf96YLyHLVdaloSRcypaoHNCu0nSmlxlJWtye7EReGB7vhw=",
-            timestampMilliseconds: 111111111,
+              "LzvfZOMlkn619o297BO/4G51aFhpbUSpt+umC2ja1TV5QxKRyANoA8MGesw9hINi6hqDqcBqUlxw6r03gK3g2xs=",
+            timestampMilliseconds: 111110000,
             dataPoints: [
               {
                 dataFeedId: "BTC",

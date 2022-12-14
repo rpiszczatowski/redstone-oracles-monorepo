@@ -32,6 +32,8 @@ import {
 import { config } from "./config";
 import { connectToDb } from "./db/remote-mongo/db-connector";
 import localDB from "./db/local-db";
+import { roundTimestamp } from "./utils/timestamps";
+import ManifestConfigError from "./manifest/ManifestConfigError";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -126,6 +128,9 @@ export default class NodeRunner {
 
     try {
       await this.runIteration(); // Start immediately then repeat in manifest.interval
+      if (this.currentManifest!.interval % 1000 != 0) {
+        throw new ManifestConfigError("Interval needs to be divisible by 1000");
+      }
       schedule.scheduleJob(
         `*/${this.currentManifest!.interval / 1000} * * * * *`,
         this.runIteration
@@ -263,14 +268,16 @@ export default class NodeRunner {
       }
     }
 
+    let roundedTimestamp = roundTimestamp(timestamp);
+
     // Prepare signed data packages with single data point
     const signedDataPackages = dataPoints.map((dataPoint) => {
-      const dataPackage = new DataPackage([dataPoint], timestamp);
+      const dataPackage = new DataPackage([dataPoint], roundedTimestamp);
       return dataPackage.sign(ethPrivKey);
     });
 
     // Adding a data package with all data points
-    const bigDataPackage = new DataPackage(dataPoints, timestamp);
+    const bigDataPackage = new DataPackage(dataPoints, roundedTimestamp);
     const signedBigDataPackage = bigDataPackage.sign(ethPrivKey);
     signedDataPackages.push(signedBigDataPackage);
 
