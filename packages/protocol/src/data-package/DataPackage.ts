@@ -110,14 +110,6 @@ export class DataPackage extends Serializable {
     );
   }
 
-  //Rounds timestamp for better node synchronization and querying historical data
-  protected serializeRoundedTimestamp(): Uint8Array {
-    return convertIntegerNumberToBytes(
-      Math.floor(this.timestampMilliseconds / 10000) * 10000,
-      TIMESTAMP_BS
-    );
-  }
-
   protected serializeDataPointsCount(): Uint8Array {
     return convertIntegerNumberToBytes(
       this.dataPoints.length,
