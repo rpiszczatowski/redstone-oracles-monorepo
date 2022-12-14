@@ -29,6 +29,11 @@ let pricesSublevel: AbstractSublevel<
   string,
   PriceValueInLocalDB[]
 >;
+
+/* 
+  In order to use any function from this module you need
+  to run function setupLocalDb at least once before
+*/
 export const setupLocalDb = () => {
   db = new Level(config.levelDbLocation, DEFAULT_LEVEL_OPTS);
   pricesSublevel = db.sublevel<string, PriceValueInLocalDB[]>(

@@ -31,7 +31,7 @@ import {
 } from "redstone-protocol";
 import { config } from "./config";
 import { connectToDb } from "./db/remote-mongo/db-connector";
-import { savePrices } from "./db/local-db";
+import localDB from "./db/local-db";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -236,7 +236,7 @@ export default class NodeRunner {
 
   private async savePricesInLocalDB(prices: PriceDataAfterAggregation[]) {
     logger.info(`Saving ${prices.length} prices in local db`);
-    await savePrices(prices);
+    await localDB.savePrices(prices);
     logger.info("Prices saved in local db");
   }
 
