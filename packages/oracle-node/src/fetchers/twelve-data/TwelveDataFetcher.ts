@@ -30,7 +30,7 @@ export class TwelveDataFetcher extends BaseFetcher {
   }
 
   async extractPrices(result: any): Promise<PricesObj> {
-    const pricesObj: { [id: string]: number } = {};
+    const pricesObj: PricesObj = {};
 
     const rates = result.data;
     for (const symbol of Object.keys(rates)) {

@@ -27,7 +27,7 @@ export class XtFetcher extends BaseFetcher {
   }
 
   async extractPrices(response: any): Promise<PricesObj> {
-    const pricesObj: { [id: string]: number } = {};
+    const pricesObj: PricesObj = {};
 
     const results = await response.result;
     for (const result of results) {
