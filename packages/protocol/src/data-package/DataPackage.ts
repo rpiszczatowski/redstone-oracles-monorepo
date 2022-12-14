@@ -51,6 +51,7 @@ export class DataPackage extends Serializable {
     return concat([
       this.serializeDataPoints(),
       this.serializeTimestamp(),
+      this.serializeRoundedTimestamp(),
       this.serializeDefaultDataPointByteSize(),
       this.serializeDataPointsCount(),
     ]);
@@ -105,6 +106,14 @@ export class DataPackage extends Serializable {
   protected serializeTimestamp(): Uint8Array {
     return convertIntegerNumberToBytes(
       this.timestampMilliseconds,
+      TIMESTAMP_BS
+    );
+  }
+
+  //Rounds timestamp for better node synchronization and querying historical data
+  protected serializeRoundedTimestamp(): Uint8Array {
+    return convertIntegerNumberToBytes(
+      Math.floor(this.timestampMilliseconds / 10000) * 10000,
       TIMESTAMP_BS
     );
   }
