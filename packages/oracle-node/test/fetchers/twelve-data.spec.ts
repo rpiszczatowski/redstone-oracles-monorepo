@@ -36,9 +36,6 @@ describe("twelve-data fetcher", () => {
           AUD: {},
         },
       },
-      credentials: {
-        twelveDataRapidApiKey: "",
-      },
     });
 
     // Then

@@ -19,6 +19,8 @@ const DEFAULT_ETHERSCAN_API_KEY = "";
 const DEFAULT_AVALANCHE_RPC_URL = "https://api.avax.network/ext/bc/C/rpc";
 const DEFAULT_MOCK_PRICES_URL =
   "https://raw.githubusercontent.com/redstone-finance/redstone-mock-prices/main/mock-prices.json";
+const DEFAULT_COINBASE_INDEXER_MONGODB_URL = "";
+const DEFAULT_COINMARKETCAP_API_KEY = "";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -110,13 +112,14 @@ export const config: NodeConfig = Object.freeze({
   ),
   overrideManifestUsingFile: getOptionallyManifestData(),
   overrideDirectCacheServiceUrls: getOptionallyCacheServiceUrls(),
-  credentials: {
-    twelveDataRapidApiKey: getFromEnv(
-      "TWELVE_DATA_RAPID_API_KEY",
-      DEFAULT_TWELVE_DATA_RAPID_API_KEY
-    ),
-    coinmarketcapApiKey: getFromEnv("COINMARKETCAP_API_KEY", ""),
-  },
+  twelveDataRapidApiKey: getFromEnv(
+    "TWELVE_DATA_RAPID_API_KEY",
+    DEFAULT_TWELVE_DATA_RAPID_API_KEY
+  ),
+  coinmarketcapApiKey: getFromEnv(
+    "COINMARKETCAP_API_KEY",
+    DEFAULT_COINMARKETCAP_API_KEY
+  ),
   privateKeys: {
     arweaveJwk: getArweaveWallet(),
     ethereumPrivateKey,
@@ -128,7 +131,10 @@ export const config: NodeConfig = Object.freeze({
     )
   ),
   ethereumAddress: new ethers.Wallet(ethereumPrivateKey).address,
-  coinbaseIndexerMongoDbUrl: getFromEnv("COINBASE_INDEXER_MONGODB_URL", ""),
+  coinbaseIndexerMongoDbUrl: getFromEnv(
+    "COINBASE_INDEXER_MONGODB_URL",
+    DEFAULT_COINBASE_INDEXER_MONGODB_URL
+  ),
   ethMainRpcUrl: getFromEnv("ETH_MAIN_RPC_URL", DEFAULT_ETH_MAIN_RPC_URL),
   levelDbLocation: getFromEnv("LEVEL_DB_LOCATION", DEFAULT_LEVEL_DB_LOCATION),
   etherscanApiUrl: getFromEnv("ETHERSCAN_API_URL", DEFAULT_ETHERSCAN_API_URL),
