@@ -35,6 +35,7 @@ import localDB from "./db/local-db";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
+const schedule = require("node-schedule");
 
 const MANIFEST_LOAD_TIMEOUT_MS = 25 * 1000;
 const DIAGNOSTIC_INFO_PRINTING_INTERVAL = 60 * 1000;
@@ -125,7 +126,10 @@ export default class NodeRunner {
 
     try {
       await this.runIteration(); // Start immediately then repeat in manifest.interval
-      setInterval(this.runIteration, this.currentManifest!.interval);
+      schedule.scheduleJob(
+        `*/${this.currentManifest!.interval / 1000} * * * * *`,
+        this.runIteration
+      );
     } catch (e: any) {
       NodeRunner.reThrowIfManifestConfigError(e);
     }
