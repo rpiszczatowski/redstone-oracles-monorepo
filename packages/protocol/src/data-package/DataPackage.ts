@@ -51,7 +51,6 @@ export class DataPackage extends Serializable {
     return concat([
       this.serializeDataPoints(),
       this.serializeTimestamp(),
-      this.serializeRoundedTimestamp(),
       this.serializeDefaultDataPointByteSize(),
       this.serializeDataPointsCount(),
     ]);
