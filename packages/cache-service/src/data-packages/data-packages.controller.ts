@@ -15,7 +15,7 @@ import { DataPackagesService } from "./data-packages.service";
 import { CachedDataPackage } from "./data-packages.model";
 import { BundlrService } from "../bundlr/bundlr.service";
 import type { Response } from "express";
-import { readableStream } from "../utils/streams";
+import { duplexStream } from "../utils/streams";
 import { Serializable } from "redstone-protocol";
 
 export interface BulkPostRequestBody {
@@ -161,7 +161,7 @@ export class DataPackagesController {
 
       case ResponseFormat.raw:
         res.contentType(CONTENT_TYPE_OCTET_STREAM);
-        readableStream(data.toBytes()).pipe(res);
+        duplexStream(data.toBytes()).pipe(res);
 
         return;
       default:
