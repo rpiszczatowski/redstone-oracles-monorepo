@@ -25,7 +25,7 @@ export class VertoFetcher extends BaseFetcher {
   async extractPrices(responses: any): Promise<PricesObj> {
     const lastArPrice = (await redstone.getPrice("AR")).value;
 
-    const pricesObj: { [id: string]: number } = {};
+    const pricesObj: PricesObj = {};
 
     for (const response of responses) {
       if (response && response.data) {

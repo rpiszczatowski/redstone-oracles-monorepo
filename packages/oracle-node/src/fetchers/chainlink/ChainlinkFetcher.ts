@@ -15,7 +15,7 @@ export class ChainlinkFetcher extends BaseFetcher {
   }
 
   async extractPrices(response: any): Promise<PricesObj> {
-    const pricesObj: { [id: string]: number } = {};
+    const pricesObj: PricesObj = {};
 
     for (const id of Object.keys(response)) {
       const decimalPrice =

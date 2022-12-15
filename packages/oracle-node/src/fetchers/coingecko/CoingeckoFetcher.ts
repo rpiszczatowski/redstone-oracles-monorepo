@@ -28,7 +28,7 @@ export class CoingeckoFetcher extends BaseFetcher {
   }
 
   async extractPrices(response: any): Promise<PricesObj> {
-    const pricesObj: { [id: string]: number } = {};
+    const pricesObj: PricesObj = {};
 
     const rates = response.data;
     for (const id of Object.keys(rates)) {
