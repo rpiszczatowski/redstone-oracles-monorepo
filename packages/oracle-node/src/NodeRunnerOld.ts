@@ -1,7 +1,6 @@
 import git from "git-last-commit";
 import { ethers } from "ethers";
 import { Consola } from "consola";
-import aggregators from "./aggregators";
 import ManifestHelper, { TokensBySource } from "./manifest/ManifestHelper";
 import ArweaveService from "./arweave/ArweaveService";
 import { promiseTimeout, TimeoutError } from "./utils/promise-timeout";
@@ -414,10 +413,7 @@ export default class NodeRunnerOld {
 
   private useNewManifest(newManifest: Manifest) {
     this.currentManifest = newManifest;
-    this.pricesService = new PricesService(
-      newManifest,
-      this.nodeConfig.credentials
-    );
+    this.pricesService = new PricesService(newManifest);
     this.tokensBySource = ManifestHelper.groupTokensBySource(newManifest);
     this.priceSignerService = new PriceSignerService({
       ethereumPrivateKey: this.nodeConfig.privateKeys.ethereumPrivateKey,

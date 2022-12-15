@@ -416,10 +416,7 @@ export default class NodeRunner {
 
   private useNewManifest(newManifest: Manifest) {
     this.currentManifest = newManifest;
-    this.pricesService = new PricesService(
-      newManifest,
-      this.nodeConfig.credentials
-    );
+    this.pricesService = new PricesService(newManifest);
     this.tokensBySource = ManifestHelper.groupTokensBySource(newManifest);
     this.newManifest = null;
   }

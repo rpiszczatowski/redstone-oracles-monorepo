@@ -38,7 +38,7 @@ const preparePrices = (
   partialPrices: Partial<PriceDataAfterAggregation>[]
 ): any[] => partialPrices.map(preparePrice);
 
-const pricesService = new PricesService(emptyManifest, {});
+const pricesService = new PricesService(emptyManifest);
 
 describe("PricesService", () => {
   beforeEach(async () => {
@@ -121,7 +121,7 @@ describe("PricesService", () => {
         ...emptyManifest,
         defaultSource: ["mock"],
       };
-      const pricesService = new PricesService(manifest, {});
+      const pricesService = new PricesService(manifest);
 
       // Mocking `doFetchFromSource` function
       pricesService.doFetchFromSource = async (
@@ -186,18 +186,15 @@ describe("PricesService", () => {
 
   describe("filterPricesForSigning", () => {
     it("should properly filter prices for signing", () => {
-      const pricesService = new PricesService(
-        {
-          ...emptyManifest,
-          tokens: {
-            BTC: {
-              skipSigning: true,
-            },
-            ETH: {},
+      const pricesService = new PricesService({
+        ...emptyManifest,
+        tokens: {
+          BTC: {
+            skipSigning: true,
           },
+          ETH: {},
         },
-        {}
-      );
+      });
 
       const prices = preparePrices([
         {
