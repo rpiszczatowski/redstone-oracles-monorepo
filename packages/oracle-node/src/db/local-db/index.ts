@@ -1,4 +1,4 @@
-import { AbstractBatchPutOperation } from "abstract-level";
+import { AbstractBatchPutOperation, AbstractSublevel } from "abstract-level";
 import { Level } from "level";
 import { config } from "../../config";
 import { PriceDataAfterAggregation } from "../../types";
@@ -22,11 +22,25 @@ interface LastPrices {
   [symbol: string]: PriceValueInLocalDB;
 }
 
-const db = new Level(config.levelDbLocation, DEFAULT_LEVEL_OPTS);
-const pricesSublevel = db.sublevel<string, PriceValueInLocalDB[]>(
-  PRICES_SUBLEVEL,
-  DEFAULT_LEVEL_OPTS
-);
+let db: Level<string, string>;
+let pricesSublevel: AbstractSublevel<
+  Level<string, string>,
+  string | Buffer | Uint8Array,
+  string,
+  PriceValueInLocalDB[]
+>;
+
+/* 
+  In order to use any function from this module you need
+  to run function setupLocalDb at least once before
+*/
+export const setupLocalDb = () => {
+  db = new Level(config.levelDbLocation, DEFAULT_LEVEL_OPTS);
+  pricesSublevel = db.sublevel<string, PriceValueInLocalDB[]>(
+    PRICES_SUBLEVEL,
+    DEFAULT_LEVEL_OPTS
+  );
+};
 
 export const clearPricesSublevel = async () => {
   await pricesSublevel.clear();
@@ -55,7 +69,6 @@ export const getPrices = async (
 
 export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
   const pricesFromDB = await getPrices(prices.map((p) => p.symbol));
-
   // Building opeartions array
   const operations: AbstractBatchPutOperation<
     typeof pricesSublevel,
@@ -105,7 +118,8 @@ const setLastPrices = (prices: PriceDataAfterAggregation[]) => {
   }
 };
 
-export const getLastPrice = (symbol: string) => lastPrices[symbol];
+export const getLastPrice = (symbol: string): PriceValueInLocalDB | undefined =>
+  lastPrices[symbol];
 
 export default {
   savePrices,

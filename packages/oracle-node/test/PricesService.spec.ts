@@ -1,6 +1,7 @@
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
+  setupLocalDb,
   savePrices,
 } from "../src/db/local-db";
 import PricesService, {
@@ -9,38 +10,20 @@ import PricesService, {
   PriceValidationArgs,
 } from "../src/fetchers/PricesService";
 import emptyManifest from "../manifests/dev/empty.json";
-import {
-  PriceDataAfterAggregation,
-  PriceDataBeforeAggregation,
-} from "../src/types";
+import { PriceDataBeforeAggregation } from "../src/types";
+import { preparePrices, preparePrice } from "./fetchers/_helpers";
 
 // Having hard time to mock uuid..so far only this solution is working: https://stackoverflow.com/a/61150430
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 const testTimestamp = Date.now();
 
-const preparePrice = (
-  partialPrice: Partial<PriceDataAfterAggregation>
-): any => {
-  const defaultPrice: PriceDataBeforeAggregation = {
-    id: "00000000-0000-0000-0000-000000000000",
-    symbol: "mock-symbol",
-    source: {},
-    timestamp: testTimestamp,
-    version: "3",
-  };
-  return {
-    ...defaultPrice,
-    ...partialPrice,
-  };
-};
-
-const preparePrices = (
-  partialPrices: Partial<PriceDataAfterAggregation>[]
-): any[] => partialPrices.map(preparePrice);
-
 const pricesService = new PricesService(emptyManifest);
 
 describe("PricesService", () => {
+  beforeAll(() => {
+    setupLocalDb();
+  });
+
   beforeEach(async () => {
     await clearPricesSublevel();
   });

@@ -1,7 +1,7 @@
 import { BigNumber, constants, utils } from "ethers";
 import axios, { AxiosResponse } from "axios";
-import redstone from "redstone-api";
 import { Consola } from "consola";
+import { getLastPrice } from "../db/local-db";
 import { config } from "../config";
 import { Transaction } from "../db/remote-mongo/models/Transaction";
 import {
@@ -85,7 +85,10 @@ export const determineAddressLevelByCoinbaseData = async (
     (sum, transaction) => sum.add(BigNumber.from(transaction.value)),
     constants.Zero
   );
-  const lastEthPriceInUsd = (await redstone.getPrice("ETH")).value;
+  const lastEthPriceInUsd = getLastPrice("ETH")?.value;
+  if (!lastEthPriceInUsd) {
+    throw new Error("Cannot get last price of ETH from local DB");
+  }
   const ethPriceAsBigNumber = utils.parseUnits(
     lastEthPriceInUsd.toString(),
     15
