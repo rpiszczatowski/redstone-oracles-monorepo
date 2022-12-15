@@ -132,6 +132,7 @@ export default class PricesService {
 
   static groupPricesByToken(
     fetchTimestamp: number,
+    roundedTimestamp: number,
     pricesData: PricesDataFetched,
     nodeVersion: string
   ): PricesBeforeAggregation {
@@ -145,6 +146,7 @@ export default class PricesService {
             source: {},
             symbol: price.symbol,
             timestamp: fetchTimestamp,
+            roundedTimestamp: roundedTimestamp,
             version: nodeVersion,
           };
         }

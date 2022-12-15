@@ -26,6 +26,7 @@ import {
 } from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
 import { ArweaveProxy } from "./arweave/ArweaveProxy";
+import { roundTimestamp } from "./utils/timestamps";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -222,6 +223,7 @@ export default class NodeRunnerOld {
     const fetchingAllTrackingId = trackStart("fetching-all");
 
     const fetchTimestamp = Date.now();
+    const roundedTimestamp = roundTimestamp(fetchTimestamp);
     const fetchedPrices = await this.pricesService!.fetchInParallel(
       this.tokensBySource!
     );
@@ -229,6 +231,7 @@ export default class NodeRunnerOld {
     const pricesBeforeAggregation: PricesBeforeAggregation =
       PricesService.groupPricesByToken(
         fetchTimestamp,
+        roundedTimestamp,
         pricesData,
         this.version
       );

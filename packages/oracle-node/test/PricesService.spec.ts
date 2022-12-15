@@ -10,14 +10,38 @@ import PricesService, {
   PriceValidationArgs,
 } from "../src/fetchers/PricesService";
 import emptyManifest from "../manifests/dev/empty.json";
-import { PriceDataBeforeAggregation } from "../src/types";
-import { preparePrices, preparePrice } from "./fetchers/_helpers";
+import {
+  PriceDataAfterAggregation,
+  PriceDataBeforeAggregation,
+} from "../src/types";
+import { roundTimestamp } from "../src/utils/timestamps";
 
 // Having hard time to mock uuid..so far only this solution is working: https://stackoverflow.com/a/61150430
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 const testTimestamp = Date.now();
+const roundedTimestamp = roundTimestamp(testTimestamp);
 
 const pricesService = new PricesService(emptyManifest);
+const preparePrice = (
+  partialPrice: Partial<PriceDataAfterAggregation>
+): any => {
+  const defaultPrice: PriceDataBeforeAggregation = {
+    id: "00000000-0000-0000-0000-000000000000",
+    symbol: "mock-symbol",
+    source: {},
+    timestamp: testTimestamp,
+    roundedTimestamp: roundedTimestamp,
+    version: "3",
+  };
+  return {
+    ...defaultPrice,
+    ...partialPrice,
+  };
+};
+
+const preparePrices = (
+  partialPrices: Partial<PriceDataAfterAggregation>[]
+): any[] => partialPrices.map(preparePrice);
 
 describe("PricesService", () => {
   beforeAll(() => {
@@ -34,6 +58,7 @@ describe("PricesService", () => {
 
   describe("groupPricesByToken", () => {
     const fetchTimestamp = 555;
+    const roundedTimestamp = 0;
     const nodeVersion = "3";
 
     it("should assign values from different sources to tokens/symbols", () => {
@@ -41,6 +66,7 @@ describe("PricesService", () => {
       const defaultPriceFields = {
         id: "00000000-0000-0000-0000-000000000000",
         timestamp: fetchTimestamp,
+        roundedTimestamp: 0,
         version: nodeVersion,
       };
       const pricesData: PricesDataFetched = {
@@ -62,6 +88,7 @@ describe("PricesService", () => {
       // When
       const result: PricesBeforeAggregation = PricesService.groupPricesByToken(
         fetchTimestamp,
+        roundedTimestamp,
         pricesData,
         nodeVersion
       );

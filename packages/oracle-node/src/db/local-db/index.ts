@@ -2,7 +2,6 @@ import { AbstractBatchPutOperation, AbstractSublevel } from "abstract-level";
 import { Level } from "level";
 import { config } from "../../config";
 import { PriceDataAfterAggregation } from "../../types";
-import { roundTimestamp } from "../../utils/timestamps";
 
 const PRICES_SUBLEVEL = "prices";
 const DEFAULT_LEVEL_OPTS = {
@@ -114,8 +113,7 @@ const lastPrices: LastPrices = {};
 
 const setLastPrices = (prices: PriceDataAfterAggregation[]) => {
   for (const price of prices) {
-    const { symbol, value, timestamp } = price;
-    const roundedTimestamp = roundTimestamp(timestamp);
+    const { symbol, value, roundedTimestamp } = price;
     lastPrices[symbol] = { value, timestamp: roundedTimestamp };
   }
 };

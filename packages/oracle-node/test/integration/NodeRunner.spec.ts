@@ -155,18 +155,6 @@ describe("NodeRunner", () => {
       );
     });
 
-    it("should create node when interval greater than 60 seconds", async () => {
-      const mockedArProxy = mocked(ArweaveProxy, true);
-      manifest.interval = 60000 * 5;
-      const sut = await NodeRunner.create({
-        ...nodeConfig,
-        overrideManifestUsingFile: manifest,
-      });
-
-      expect(sut).not.toBeNull();
-      expect(mockedArProxy).toHaveBeenCalledWith(jwk);
-    });
-
     it("should throw if no maxDeviationPercent configured for token", async () => {
       const { deviationCheck, ...manifestWithoutDeviationCheck } = manifest;
 
