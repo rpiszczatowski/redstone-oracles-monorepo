@@ -20,12 +20,7 @@ import {
   HttpBroadcaster,
   StreamrBroadcaster,
 } from "./broadcasters";
-import {
-  Manifest,
-  NodeConfig,
-  PriceDataAfterAggregation,
-  PriceDataBeforeSigning,
-} from "./types";
+import { Manifest, NodeConfig, PriceDataAfterAggregation } from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
 import { ArweaveProxy } from "./arweave/ArweaveProxy";
 import {
@@ -416,10 +411,7 @@ export default class NodeRunner {
 
   private useNewManifest(newManifest: Manifest) {
     this.currentManifest = newManifest;
-    this.pricesService = new PricesService(
-      newManifest,
-      this.nodeConfig.credentials
-    );
+    this.pricesService = new PricesService(newManifest);
     this.tokensBySource = ManifestHelper.groupTokensBySource(newManifest);
     this.newManifest = null;
   }

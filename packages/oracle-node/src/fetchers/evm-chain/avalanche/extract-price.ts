@@ -57,11 +57,13 @@ const extractPriceForYieldYakOrMoo = async (
     .div(totalSupply);
 
   const tokenPrice = await fetchTokenPrice(id);
-  const yieldYakPrice = tokenValue
-    .mul(tokenPrice)
-    .div(ethers.utils.parseUnits("1.0", 8));
+  if (tokenPrice) {
+    const yieldYakPrice = tokenValue
+      .mul(tokenPrice)
+      .div(ethers.utils.parseUnits("1.0", 8));
 
-  return ethers.utils.formatEther(yieldYakPrice);
+    return ethers.utils.formatEther(yieldYakPrice);
+  }
 };
 
 const extractPriceForLpTokens = async (
@@ -83,28 +85,37 @@ const extractPriceForLpTokens = async (
   const tokensReservesPrices = await calculateReserveTokensPrices(
     tokenReserves
   );
-  const firstTokenReservePrice = tokensReservesPrices[firstToken];
-  const secondTokenReservePrice = tokensReservesPrices[secondToken];
-  const reservesPricesSum = firstTokenReservePrice.add(secondTokenReservePrice);
-  const totalSupply = BigNumber.from(
-    multicallResult[address].totalSupply.value
-  );
-  const lpTokenPrice = reservesPricesSum.div(totalSupply);
-  return ethers.utils.formatEther(lpTokenPrice);
+  if (tokensReservesPrices) {
+    const firstTokenReservePrice = tokensReservesPrices[firstToken];
+    const secondTokenReservePrice = tokensReservesPrices[secondToken];
+    const reservesPricesSum = firstTokenReservePrice.add(
+      secondTokenReservePrice
+    );
+    const totalSupply = BigNumber.from(
+      multicallResult[address].totalSupply.value
+    );
+    const lpTokenPrice = reservesPricesSum.div(totalSupply);
+    return ethers.utils.formatEther(lpTokenPrice);
+  }
 };
 
 const calculateReserveTokensPrices = async (tokenReserves: TokenReserve) => {
   const tokenNames = Object.keys(tokenReserves);
   const tokensPrices = await fetchTokensPrices(tokenNames);
-  const tokensReservesSerialized = serializeStableCoinsDecimals(tokenReserves);
-  const tokensReservesPrices = {} as TokenReserve;
-  for (const tokenName of Object.keys(tokenReserves)) {
-    const tokenReservePrice = tokensReservesSerialized[tokenName].mul(
-      tokensPrices[tokenName]
-    );
-    tokensReservesPrices[tokenName] = tokenReservePrice;
+  const areAllTokensFetched =
+    Object.keys(tokensPrices).length === Object.keys(tokenReserves).length;
+  if (areAllTokensFetched) {
+    const tokensReservesSerialized =
+      serializeStableCoinsDecimals(tokenReserves);
+    const tokensReservesPrices = {} as TokenReserve;
+    for (const tokenName of Object.keys(tokenReserves)) {
+      const tokenReservePrice = tokensReservesSerialized[tokenName].mul(
+        tokensPrices[tokenName]
+      );
+      tokensReservesPrices[tokenName] = tokenReservePrice;
+    }
+    return tokensReservesPrices;
   }
-  return tokensReservesPrices;
 };
 
 const serializeStableCoinsDecimals = (tokenReserves: TokenReserve) => {

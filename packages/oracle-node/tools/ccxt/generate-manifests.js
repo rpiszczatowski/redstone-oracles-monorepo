@@ -1,6 +1,5 @@
 const fs = require("fs");
 const ccxt = require("ccxt");
-const redstone = require("redstone-api");
 const exchanges = require("../../src/fetchers/ccxt/all-supported-exchanges.json");
 const allSupportedTokensManifest = require("../../manifests/data-services/main.json");
 
@@ -31,11 +30,6 @@ async function getAllTickers() {
     log(`Loaded ${Object.keys(tickers).length} tickers for: ${exchangeName}`);
     result = mergeTickers(tickers, exchangeName, result);
   }
-
-  // Adding current tickers from redstone-api
-  // to avoid big price deviation with non-ccxt sources (like coingecko)
-  const redstoneApiTickers = await getRedstoneApiTickers();
-  result = mergeTickers(redstoneApiTickers, "___redstone-api___", result);
 
   return result;
 }
@@ -71,15 +65,6 @@ async function getTickersForExchange(exchangeName) {
   }
 
   return supportedTickers;
-}
-
-async function getRedstoneApiTickers() {
-  const redstoneTickers = {};
-  const prices = await redstone.getAllPrices();
-  for (const symbol in prices) {
-    redstoneTickers[symbol] = prices[symbol].value;
-  }
-  return redstoneTickers;
 }
 
 function mergeTickers(newTickers, exchangeName, prevResult) {

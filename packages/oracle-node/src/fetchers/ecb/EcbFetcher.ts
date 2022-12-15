@@ -12,7 +12,7 @@ export class EcbFetcher extends BaseFetcher {
   }
 
   async extractPrices(response: any, ids: string[]): Promise<PricesObj> {
-    const pricesObj: { [symbol: string]: number } = {};
+    const pricesObj: PricesObj = {};
 
     const { rates } = response;
     const usdRate = rates.USD;

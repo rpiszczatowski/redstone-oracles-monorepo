@@ -1,5 +1,4 @@
 import fetchers from "../../src/fetchers/index";
-import { FetcherOpts } from "../../src/types";
 import { mockFetcherResponse } from "./_helpers";
 jest.mock("axios");
 
@@ -13,11 +12,7 @@ describe("CoinMarketCap fetcher", () => {
   });
 
   it("should properly fetch data", async () => {
-    const result = await sut.fetchAll(["BTC", "ETH", "AVAX", "USDT"], {
-      credentials: {
-        coinmarketcapApiKey: "coinmarketcap-api-key",
-      },
-    } as FetcherOpts);
+    const result = await sut.fetchAll(["BTC", "ETH", "AVAX", "USDT"]);
     expect(result).toEqual([
       {
         symbol: "BTC",

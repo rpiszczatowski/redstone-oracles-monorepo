@@ -46,7 +46,6 @@
     "lodash": "^4.17.21",
     "mongoose": "^6.7.0",
     "prompts": "^2.4.2",
-    "redstone-api": "^0.4.6",
     "redstone-smartweave": "^0.4.40",
     "sort-deep-object-arrays": "^1.1.2",
     "uuid": "^8.3.2",

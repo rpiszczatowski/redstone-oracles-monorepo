@@ -1,6 +1,7 @@
-import { FetcherOpts, PricesObj } from "../../types";
-import { BaseFetcher } from "../BaseFetcher";
 import axios from "axios";
+import { PricesObj } from "../../types";
+import { BaseFetcher } from "../BaseFetcher";
+import { config } from "../../config";
 
 const TWELVE_DATA_RATE_URL =
   "https://twelve-data1.p.rapidapi.com/exchange_rate";
@@ -19,17 +20,17 @@ export class TwelveDataFetcher extends BaseFetcher {
     return `${symbol}/USD`;
   }
 
-  async fetchData(ids: string[], opts: FetcherOpts): Promise<any> {
+  async fetchData(ids: string[]): Promise<any> {
     const symbolString = ids.join(",");
     return await axios.get(`${TWELVE_DATA_RATE_URL}?symbol=${symbolString}`, {
       headers: {
-        "RapidAPI-Key": opts.credentials.twelveDataRapidApiKey,
+        "RapidAPI-Key": config.twelveDataRapidApiKey,
       },
     });
   }
 
   async extractPrices(result: any): Promise<PricesObj> {
-    const pricesObj: { [id: string]: number } = {};
+    const pricesObj: PricesObj = {};
 
     const rates = result.data;
     for (const symbol of Object.keys(rates)) {

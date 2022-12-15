@@ -9,14 +9,31 @@ import YYMock from "./mocks/YYMock.json";
 import LPTokenMock from "./mocks/LPTokenMock.json";
 import MooTokenMock from "./mocks/MooTokenMock.json";
 import OracleAdaptersMock from "./mocks/OracleAdaptersMock.json";
-import { mockRedstoneApiPrice, mockRedstoneApiPrices } from "./_helpers";
+import { saveMockPriceInLocalDb, saveMockPricesInLocalDb } from "./_helpers";
 import { oracleAdaptersContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/oracle-adapters";
+import {
+  clearPricesSublevel,
+  closeLocalLevelDB,
+  setupLocalDb,
+} from "../../src/db/local-db";
 
 jest.setTimeout(15000);
 
 describe("Avalanche EVM fetcher", () => {
   let provider: MockProvider;
   let multicallContract: Contract;
+
+  beforeAll(() => {
+    setupLocalDb();
+  });
+
+  beforeEach(async () => {
+    await clearPricesSublevel();
+  });
+
+  afterAll(async () => {
+    await closeLocalLevelDB();
+  });
 
   describe("YY_AAVE_AVAX", () => {
     beforeAll(async () => {
@@ -42,7 +59,7 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockRedstoneApiPrice(17, "AVAX");
+      await saveMockPriceInLocalDb(17, "AVAX");
 
       const result = await fetcher.fetchAll(["YY_AAVE_AVAX"]);
       expect(result).toEqual([{ symbol: "YY_AAVE_AVAX", value: 17.28590481 }]);
@@ -73,7 +90,7 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockRedstoneApiPrice(23, "sAVAX");
+      await saveMockPriceInLocalDb(23, "sAVAX");
 
       const result = await fetcher.fetchAll(["YY_PTP_sAVAX"]);
       expect(result).toEqual([{ symbol: "YY_PTP_sAVAX", value: 23.38681239 }]);
@@ -105,7 +122,7 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockRedstoneApiPrices([17, 1], ["AVAX", "USDC"]);
+      await saveMockPricesInLocalDb([17, 1], ["AVAX", "USDC"]);
 
       const result = await fetcher.fetchAll(["TJ_AVAX_USDC_LP"]);
       expect(result).toEqual([
@@ -139,7 +156,7 @@ describe("Avalanche EVM fetcher", () => {
         multicallContract.address
       );
 
-      mockRedstoneApiPrice(11232453.706920957, "TJ_AVAX_USDC_LP");
+      await saveMockPriceInLocalDb(11232453.706920957, "TJ_AVAX_USDC_LP");
 
       const result = await fetcher.fetchAll(["MOO_TJ_AVAX_USDC_LP"]);
       expect(result).toEqual([
