@@ -114,14 +114,9 @@ export class StreamrListenerService {
     }
   }
 
+  // The function is left here to have it mockable in tests.
   getAllowedDataServiceIds(): string[] {
-    if (config.allowedStreamrDataServiceIds === undefined) {
-      return [];
-    }
-
-    return config.allowedStreamrDataServiceIds.map((dataServiceId) =>
-      dataServiceId.toLowerCase()
-    );
+    return config.allowedStreamrDataServiceIds;
   }
 
   private prepareActiveNodeEvmAddresses(oracleRegistryState: any): string[] {
@@ -129,7 +124,7 @@ export class StreamrListenerService {
     this.logger.log(`Found ${nodes.length} node evm addresses`);
 
     const allowedDataServiceIds = this.getAllowedDataServiceIds();
-    if (allowedDataServiceIds.length == 0) {
+    if (allowedDataServiceIds.length === 0) {
       this.logger.log(
         `Filter is empty - allowing all of the node evm addresses`
       );
@@ -139,7 +134,7 @@ export class StreamrListenerService {
     const result: string[] = [];
 
     for (const node of nodes) {
-      if (allowedDataServiceIds.includes(node.dataServiceId.toLowerCase())) {
+      if (allowedDataServiceIds.includes(node.dataServiceId)) {
         result.push(node.evmAddress);
       }
     }
