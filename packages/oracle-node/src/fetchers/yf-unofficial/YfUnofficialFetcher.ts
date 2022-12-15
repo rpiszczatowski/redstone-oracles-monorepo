@@ -28,7 +28,7 @@ export class YfUnofficialFetcher extends BaseFetcher {
   }
 
   async extractPrices(response: any): Promise<PricesObj> {
-    const pricesObj: { [symbol: string]: number } = {};
+    const pricesObj: PricesObj = {};
 
     for (const symbol of Object.keys(response)) {
       const details = response[symbol];

@@ -1,0 +1,32 @@
+{
+  "price_results": [
+    {
+      "symbol": "BTC",
+      "multiplier": 1000000000,
+      "px": 16841535000000,
+      "request_id": 14102274,
+      "resolve_time": 1670428669
+    },
+    {
+      "symbol": "ETH",
+      "multiplier": 1000000000,
+      "px": 1233226814260,
+      "request_id": 14102274,
+      "resolve_time": 1670428669
+    },
+    {
+      "symbol": "AAVE",
+      "multiplier": 1000000000,
+      "px": 62317499999,
+      "request_id": 14102274,
+      "resolve_time": 1670428669
+    },
+    {
+      "symbol": "UNI",
+      "multiplier": 1000000000,
+      "px": 5999859751,
+      "request_id": 14102275,
+      "resolve_time": 1670428669
+    }
+  ]
+}
