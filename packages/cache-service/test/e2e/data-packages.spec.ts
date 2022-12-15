@@ -17,6 +17,7 @@ import { ALL_FEEDS_KEY } from "../../src/data-packages/data-packages.service";
 import { RedstonePayloadParser } from "redstone-protocol/dist/src/redstone-payload/RedstonePayloadParser";
 import { ethers } from "ethers";
 import { ResponseFormat } from "../../src/data-packages/data-packages.controller";
+import { base64 } from "ethers/lib/utils";
 
 jest.mock("redstone-sdk", () => ({
   __esModule: true,
@@ -182,12 +183,14 @@ describe("Data packages (e2e)", () => {
       })
       .expect(200);
 
-    const payloadBytes = bytesProvider(testResponse);
     const expectedStreamLengthWithFeedsSpecified = 1662;
-    expect(payloadBytes.length).toBe(expectedStreamLengthWithFeedsSpecified);
-
-    const payload = new RedstonePayloadParser(payloadBytes).parse();
-    expect(payload.signedDataPackages.length).toBe(8); // 4*2
+    const expectedDataPackagesCountWithFeedSpecified = 8; // 4 * 2
+    verifyPayloadResponse(
+      testResponse,
+      bytesProvider,
+      expectedStreamLengthWithFeedsSpecified,
+      expectedDataPackagesCountWithFeedSpecified
+    );
 
     // Testing response for the case when there is no data feeds specified
     const testResponse2 = await request(httpServer)
@@ -199,12 +202,43 @@ describe("Data packages (e2e)", () => {
       })
       .expect(200);
 
-    const payloadBytes2 = bytesProvider(testResponse2);
     const expectedStreamLengthForAllFeeds = 838;
-    expect(payloadBytes2.length).toBe(expectedStreamLengthForAllFeeds);
+    const expectedDataPackagesCountForAllFeeds = 4;
+    verifyPayloadResponse(
+      testResponse2,
+      bytesProvider,
+      expectedStreamLengthForAllFeeds,
+      expectedDataPackagesCountForAllFeeds
+    );
+  }
 
-    const payload2 = new RedstonePayloadParser(payloadBytes2).parse();
-    expect(payload2.signedDataPackages.length).toBe(4);
+  function verifyPayloadResponse(
+    response: any,
+    bytesProvider: (response: request.Response) => Uint8Array,
+    expectedStreamLength: number,
+    expectedDataPackagesLength: number
+  ) {
+    const payloadBytes = bytesProvider(response);
+
+    expect(payloadBytes.length).toBe(expectedStreamLength);
+
+    const payload = new RedstonePayloadParser(payloadBytes).parse();
+    expect(payload.signedDataPackages.length).toBe(expectedDataPackagesLength);
+
+    const signedDataPackage = payload.signedDataPackages[0];
+    const mockDataPackage = mockDataPackages[0];
+    expect(base64.encode(signedDataPackage.serializeSignatureToHex())).toBe(
+      mockDataPackage.signature
+    );
+    expect(signedDataPackage.dataPackage.timestampMilliseconds).toBe(
+      mockDataPackage.timestampMilliseconds
+    );
+
+    const dataPoints: any[] = signedDataPackage.dataPackage.dataPoints;
+    expect(dataPoints.length).toBe(2);
+    expect(
+      dataPoints.map((dataPoint) => dataPoint.numericDataPointArgs)
+    ).toEqual(mockDataPackage.dataPoints);
   }
 
   it("/data-packages/payload (GET) - should return payload in hex format", async () => {
