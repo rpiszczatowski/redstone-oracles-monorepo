@@ -210,13 +210,13 @@ describe("Data packages (e2e)", () => {
   it("/data-packages/payload (GET) - should return payload in hex format", async () => {
     await performPayloadTests((response) => {
       return ethers.utils.arrayify(response.text);
-    }, ResponseFormat.hex);
+    }, "hex");
   });
 
   it("/data-packages/payload (GET) - should return payload in raw format", async () => {
     await performPayloadTests((response) => {
       return response.body;
-    }, ResponseFormat.raw);
+    }, "raw");
   });
 
   it("/data-packages/payload (GET) - should return payload in raw format when no format is specified", async () => {

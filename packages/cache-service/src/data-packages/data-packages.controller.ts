@@ -23,10 +23,7 @@ export interface BulkPostRequestBody {
   dataPackages: ReceivedDataPackage[];
 }
 
-export enum ResponseFormat {
-  "raw" = "raw",
-  "hex" = "hex",
-}
+export type ResponseFormat = "raw" | "hex";
 
 export interface GetLatestDataPackagesQuery {
   "data-service-id": string;
@@ -95,7 +92,7 @@ export class DataPackagesController {
     const payload = await this.dataPackagesService.getPayload(
       this.prepareDataPackagesRequestParams(query)
     );
-    this.sendResponse(res, payload, query.format);
+    this.sendSerializableResponse(res, payload, query.format);
   }
 
   @Get("stats")
@@ -148,18 +145,18 @@ export class DataPackagesController {
     }
   }
 
-  private sendResponse(
+  private sendSerializableResponse(
     res: Response,
     data: Serializable,
     format?: ResponseFormat
   ) {
-    switch (format || ResponseFormat.raw) {
-      case ResponseFormat.hex:
+    switch (format || "raw") {
+      case "hex":
         res.contentType(CONTENT_TYPE_TEXT);
         res.send(data.toBytesHex());
         return;
 
-      case ResponseFormat.raw:
+      case "raw":
         res.contentType(CONTENT_TYPE_OCTET_STREAM);
         duplexStream(data.toBytes()).pipe(res);
 
