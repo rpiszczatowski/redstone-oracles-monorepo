@@ -29,10 +29,14 @@ export class OnDemandRequestWrapper extends BaseWrapper {
     const timestamp = Date.now();
     const message = prepareMessageToSign(timestamp);
 
-    const signature = await UniversalSigner.signWithEthereumHashMessage(
-      this.signer,
-      message
-    );
+
+    let signature;
+    if (this.signer) {
+      signature = await UniversalSigner.signWithEthereumHashMessage(
+        this.signer,
+        message
+      );
+    }
 
     const params = { timestamp, signature, ...this.requestParams };
     const promises = this.nodeUrls.map((url) =>
