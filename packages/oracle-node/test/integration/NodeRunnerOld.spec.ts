@@ -196,6 +196,7 @@ describe("NodeRunnerOld", () => {
         source: { coingecko: 444, uniswap: 445 },
         symbol: "BTC",
         timestamp: 111111111,
+        roundedTimestamp: 111110000,
         value: 444.5,
         version: "0.4",
       },

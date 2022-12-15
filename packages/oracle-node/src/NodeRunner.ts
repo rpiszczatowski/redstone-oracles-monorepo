@@ -42,7 +42,7 @@ import ManifestConfigError from "./manifest/ManifestConfigError";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
-const schedule = require("node-schedule");
+const { ToadScheduler, SimpleIntervalJob, Task } = require("toad-scheduler");
 
 const MANIFEST_LOAD_TIMEOUT_MS = 25 * 1000;
 const DIAGNOSTIC_INFO_PRINTING_INTERVAL = 60 * 1000;
@@ -64,6 +64,7 @@ export default class NodeRunner {
   private newManifest: Manifest | null = null;
   private httpBroadcaster: Broadcaster;
   private streamrBroadcaster: Broadcaster;
+  private scheduler: typeof ToadScheduler;
 
   private constructor(
     private readonly arweaveService: ArweaveService,
@@ -89,6 +90,7 @@ export default class NodeRunner {
     // alternatively use arrow functions...
     this.runIteration = this.runIteration.bind(this);
     this.handleLoadedManifest = this.handleLoadedManifest.bind(this);
+    this.scheduler = new ToadScheduler();
   }
 
   static async create(nodeConfig: NodeConfig): Promise<NodeRunner> {
@@ -136,11 +138,14 @@ export default class NodeRunner {
       if (this.currentManifest!.interval % 1000 != 0) {
         throw new ManifestConfigError("Interval needs to be divisible by 1000");
       }
-      schedule.scheduleJob(
-        `*/${this.currentManifest!.interval / 1000} * * * * *`,
-        this.runIteration
+      const task = new Task("Iteration", this.runIteration);
+      const job = new SimpleIntervalJob(
+        { seconds: this.currentManifest!.interval / 1000 },
+        task
       );
+      this.scheduler.addSimpleIntervalJob(job);
     } catch (e: any) {
+      this.scheduler.stop();
       NodeRunner.reThrowIfManifestConfigError(e);
     }
   }
@@ -240,7 +245,7 @@ export default class NodeRunner {
       // Signing
       const signedDataPackages = this.signPrices(
         pricesForSigning,
-        pricesForSigning[0].timestamp
+        pricesForSigning[0].roundedTimestamp
       );
 
       // Broadcasting
@@ -256,7 +261,7 @@ export default class NodeRunner {
 
   private signPrices(
     prices: PriceDataAfterAggregation[],
-    timestamp: number
+    roundedTimestamp: number
   ): SignedDataPackage[] {
     const ethPrivKey = this.nodeConfig.privateKeys.ethereumPrivateKey;
 
@@ -272,8 +277,6 @@ export default class NodeRunner {
         );
       }
     }
-
-    let roundedTimestamp = roundTimestamp(timestamp);
 
     // Prepare signed data packages with single data point
     const signedDataPackages = dataPoints.map((dataPoint) => {
@@ -293,6 +296,7 @@ export default class NodeRunner {
     const fetchingAllTrackingId = trackStart("fetching-all");
 
     const fetchTimestamp = Date.now();
+    const roundedTimestamp = roundTimestamp(fetchTimestamp);
     const fetchedPrices = await this.pricesService!.fetchInParallel(
       this.tokensBySource!
     );
@@ -300,6 +304,7 @@ export default class NodeRunner {
     const pricesBeforeAggregation: PricesBeforeAggregation =
       PricesService.groupPricesByToken(
         fetchTimestamp,
+        roundedTimestamp,
         pricesData,
         this.version
       );
