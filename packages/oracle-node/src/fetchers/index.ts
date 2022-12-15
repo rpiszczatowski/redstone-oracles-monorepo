@@ -20,6 +20,7 @@ import { PlatypusFetcher } from "./platypus/PlatypusFetcher";
 import { LensFetcher } from "./lens/LensFetcher";
 import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
 import { XtFetcher } from "./xt/XtFetcher";
+import { BandFetcher } from "./band/BandFetcher";
 import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { config } from "../config";
 import { MockFetcher } from "./mock-fetcher/mock-fetcher";
@@ -41,6 +42,7 @@ export default {
   kyber: new KyberFetcher(),
   verto: new VertoFetcher(),
   ecb: new EcbFetcher(),
+  band: new BandFetcher(),
   "avalanche-evm-fetcher": new AvalancheEvmFetcher(
     new ethers.providers.StaticJsonRpcProvider(config.avalancheRpcUrl, {
       name: AVALANCHE_NETWORK_NAME,
