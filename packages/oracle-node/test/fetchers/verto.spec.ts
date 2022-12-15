@@ -1,11 +1,27 @@
 import axios from "axios";
+import {
+  clearPricesSublevel,
+  closeLocalLevelDB,
+  setupLocalDb,
+} from "../../src/db/local-db";
 import fetchers from "../../src/fetchers/index";
-import { mockFetcherResponse, mockRedstoneApiPrice } from "./_helpers";
+import { mockFetcherResponse, saveMockPriceInLocalDb } from "./_helpers";
 
 jest.mock("axios");
-mockRedstoneApiPrice(10, "AR");
 
 describe("verto fetcher", () => {
+  beforeAll(() => {
+    setupLocalDb();
+  });
+
+  beforeEach(async () => {
+    await clearPricesSublevel();
+  });
+
+  afterAll(async () => {
+    await closeLocalLevelDB();
+  });
+
   const sut = fetchers["verto"];
 
   beforeEach(() => {
@@ -13,12 +29,8 @@ describe("verto fetcher", () => {
   });
 
   it("should properly fetch data", async () => {
-    // Given
-
-    // When
+    await saveMockPriceInLocalDb(10, "AR");
     const result = await sut.fetchAll(["XYZ"]);
-
-    // Then
     expect(result).toEqual([
       {
         symbol: "XYZ",

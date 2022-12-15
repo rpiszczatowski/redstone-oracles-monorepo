@@ -1,56 +1,34 @@
-import { GetPriceOptions, PriceData } from "redstone-api/lib/types";
-import RedstoneApi from "redstone-api";
-import { MockProxy } from "jest-mock-extended";
+import { savePrices } from "../../src/db/local-db";
 import axios from "axios";
+import {
+  PriceDataAfterAggregation,
+  PriceDataBeforeAggregation,
+} from "../../src/types";
 
-export type GetSinglePrice = (
-  symbol: string,
-  opts?: GetPriceOptions
-) => Promise<PriceData>;
-
-export type GetPrices = (
-  symbol: string[],
-  opts?: GetPriceOptions
-) => Promise<{
-  [token: string]: PriceData;
-}>;
-
-export function mockRedstoneApiPrice(value: number, symbol: string = "USDT") {
-  jest.mock("redstone-api");
-  const mockedApi = RedstoneApi as MockProxy<typeof RedstoneApi>;
-
-  (mockedApi.getPrice as GetSinglePrice) = jest.fn((symbol: string) => {
-    return Promise.resolve({
-      symbol: symbol,
-      provider: "prov",
-      value: value,
-      permawebTx: "sdf",
-      timestamp: 111111,
-    });
+export const saveMockPriceInLocalDb = async (
+  value: number,
+  symbol: string = "USDT"
+) => {
+  const priceToSave = preparePrice({
+    symbol,
+    value,
   });
-}
+  await savePrices([priceToSave]);
+};
 
-export function mockRedstoneApiPrices(values: number[], symbols: string[]) {
-  jest.mock("redstone-api");
-  const mockedApi = RedstoneApi as MockProxy<typeof RedstoneApi>;
-
-  (mockedApi.getPrice as GetPrices) = jest.fn((symbols: string[]) => {
-    return Promise.resolve(
-      symbols.reduce((object, symbol, index) => {
-        return {
-          ...object,
-          [symbol]: {
-            symbol: symbol,
-            provider: "prov",
-            value: values[index],
-            permawebTx: "sdf",
-            timestamp: 111111,
-          },
-        };
-      }, {})
-    );
-  });
-}
+export const saveMockPricesInLocalDb = async (
+  values: number[],
+  symbols: string[]
+) => {
+  const pricesToPrepare = symbols.map((symbol, index) =>
+    preparePrice({
+      symbol,
+      value: values[index],
+    })
+  );
+  const pricesToSave = preparePrices(pricesToPrepare);
+  await savePrices(pricesToSave);
+};
 
 export function mockFetcherResponse(pathToResponseFile: string) {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -91,3 +69,24 @@ export function mockFetcherProxy(
     });
   });
 }
+
+export const preparePrice = (
+  partialPrice: Partial<PriceDataAfterAggregation>
+): any => {
+  const testTimestamp = Date.now();
+  const defaultPrice: PriceDataBeforeAggregation = {
+    id: "00000000-0000-0000-0000-000000000000",
+    symbol: "mock-symbol",
+    source: {},
+    timestamp: testTimestamp,
+    version: "3",
+  };
+  return {
+    ...defaultPrice,
+    ...partialPrice,
+  };
+};
+
+export const preparePrices = (
+  partialPrices: Partial<PriceDataAfterAggregation>[]
+): any[] => partialPrices.map(preparePrice);

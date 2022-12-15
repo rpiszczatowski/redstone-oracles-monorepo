@@ -2,6 +2,7 @@ import { Consola } from "consola";
 import NodeRunnerOld from "./src/NodeRunnerOld";
 import { config } from "./src/config";
 import NodeRunner from "./src/NodeRunner";
+import { closeLocalLevelDB, setupLocalDb } from "./src/db/local-db";
 
 const logger = require("./src/utils/logger")("index") as Consola;
 
@@ -21,9 +22,14 @@ async function main(): Promise<void> {
     ? NodeRunner
     : NodeRunnerOld;
   const runner = await SelectedNodeRunner.create(config);
+  setupLocalDb();
   await runner.run();
 }
 
 start();
 
 export = {};
+
+process.on("beforeExit", () => {
+  closeLocalLevelDB();
+});

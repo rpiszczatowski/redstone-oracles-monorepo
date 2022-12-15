@@ -52,7 +52,9 @@ export class AvalancheEvmFetcher extends BaseFetcher {
     const pricesObject: PricesObj = {};
     for (const id of ids) {
       const price = await extractPrice(response, id);
-      pricesObject[id] = Number(price);
+      if (price) {
+        pricesObject[id] = Number(price);
+      }
     }
     return pricesObject;
   }

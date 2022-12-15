@@ -1,6 +1,5 @@
 // const axios = require("axios");
 const Arweave = require("arweave/node");
-const redstone = require("redstone-api");
 const _ = require("lodash");
 
 const TX_COUNT = 500;
@@ -20,11 +19,7 @@ main();
 async function main() {
   for (let counter = 0; counter < TX_COUNT; counter++) {
     const timestamp = Date.now() - (STANDARD_OFFSET + counter * TIME_INTERVAL);
-    const price = await redstone.getHistoricalPrice("ETH", {
-      date: timestamp,
-      provider: "redstone",
-    });
-    const { permawebTx } = price;
+    const permawebTx = "";
     console.log(
       `\n${counter} (${new Date(timestamp).toUTCString()}): ${permawebTx}`
     );
