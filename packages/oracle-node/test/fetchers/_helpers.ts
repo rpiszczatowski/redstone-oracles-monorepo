@@ -4,6 +4,7 @@ import {
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
 } from "../../src/types";
+import { roundTimestamp } from "../../src/utils/timestamps";
 
 export const saveMockPriceInLocalDb = async (
   value: number,
@@ -74,11 +75,13 @@ export const preparePrice = (
   partialPrice: Partial<PriceDataAfterAggregation>
 ): any => {
   const testTimestamp = Date.now();
+  const roundedTimestamp = roundTimestamp(testTimestamp);
   const defaultPrice: PriceDataBeforeAggregation = {
     id: "00000000-0000-0000-0000-000000000000",
     symbol: "mock-symbol",
     source: {},
     timestamp: testTimestamp,
+    roundedTimestamp: roundedTimestamp,
     version: "3",
   };
   return {
