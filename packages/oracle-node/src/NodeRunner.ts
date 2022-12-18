@@ -127,6 +127,7 @@ export default class NodeRunner {
     this.maybeRunDiagnosticInfoPrinting();
 
     try {
+      await this.runIteration();
       const cronScheduleString = intervalMsToCronFormat(
         this.currentManifest!.interval
       );

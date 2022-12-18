@@ -10,19 +10,14 @@ import PricesService, {
   PriceValidationArgs,
 } from "../src/fetchers/PricesService";
 import emptyManifest from "../manifests/dev/empty.json";
-import {
-  PriceDataAfterAggregation,
-  PriceDataBeforeAggregation,
-} from "../src/types";
-import { roundTimestamp } from "../src/utils/timestamps";
+import { PriceDataBeforeAggregation } from "../src/types";
 import { preparePrices, preparePrice } from "./fetchers/_helpers";
 
 // Having hard time to mock uuid..so far only this solution is working: https://stackoverflow.com/a/61150430
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 const testTimestamp = Date.now();
-const roundedTimestamp = roundTimestamp(testTimestamp);
 
-const pricesService = new PricesService(emptyManifest, {});
+const pricesService = new PricesService(emptyManifest);
 
 describe("PricesService", () => {
   beforeAll(() => {
@@ -47,7 +42,7 @@ describe("PricesService", () => {
       const defaultPriceFields = {
         id: "00000000-0000-0000-0000-000000000000",
         timestamp: fetchTimestamp,
-        roundedTimestamp: 0,
+        roundedTimestamp: roundedTimestamp,
         version: nodeVersion,
       };
       const pricesData: PricesDataFetched = {
