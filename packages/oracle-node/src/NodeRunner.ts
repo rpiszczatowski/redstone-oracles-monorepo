@@ -38,11 +38,11 @@ import { config } from "./config";
 import { connectToDb } from "./db/remote-mongo/db-connector";
 import localDB from "./db/local-db";
 import { roundTimestamp } from "./utils/timestamps";
-import ManifestConfigError from "./manifest/ManifestConfigError";
+import { intervalMsToCronFormat } from "./utils/intervals";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
-const { ToadScheduler, SimpleIntervalJob, Task } = require("toad-scheduler");
+const schedule = require("node-schedule");
 
 const MANIFEST_LOAD_TIMEOUT_MS = 25 * 1000;
 const DIAGNOSTIC_INFO_PRINTING_INTERVAL = 60 * 1000;
@@ -64,7 +64,6 @@ export default class NodeRunner {
   private newManifest: Manifest | null = null;
   private httpBroadcaster: Broadcaster;
   private streamrBroadcaster: Broadcaster;
-  private scheduler: typeof ToadScheduler;
 
   private constructor(
     private readonly arweaveService: ArweaveService,
@@ -90,7 +89,6 @@ export default class NodeRunner {
     // alternatively use arrow functions...
     this.runIteration = this.runIteration.bind(this);
     this.handleLoadedManifest = this.handleLoadedManifest.bind(this);
-    this.scheduler = new ToadScheduler();
   }
 
   static async create(nodeConfig: NodeConfig): Promise<NodeRunner> {
@@ -134,18 +132,11 @@ export default class NodeRunner {
     this.maybeRunDiagnosticInfoPrinting();
 
     try {
-      await this.runIteration(); // Start immediately then repeat in manifest.interval
-      if (this.currentManifest!.interval % 1000 != 0) {
-        throw new ManifestConfigError("Interval needs to be divisible by 1000");
-      }
-      const task = new Task("Iteration", this.runIteration);
-      const job = new SimpleIntervalJob(
-        { seconds: this.currentManifest!.interval / 1000 },
-        task
+      const cronScheduleString = intervalMsToCronFormat(
+        this.currentManifest!.interval
       );
-      this.scheduler.addSimpleIntervalJob(job);
+      schedule.scheduleJob(cronScheduleString, this.runIteration);
     } catch (e: any) {
-      this.scheduler.stop();
       NodeRunner.reThrowIfManifestConfigError(e);
     }
   }
