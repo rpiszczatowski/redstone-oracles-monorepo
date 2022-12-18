@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import fetchers from "./index";
 import ManifestHelper, { TokensBySource } from "../manifest/ManifestHelper";
 import {
-  Credentials,
   DeviationCheckConfig,
   Manifest,
   PriceDataAfterAggregation,
@@ -41,7 +40,7 @@ interface PriceValidationResult {
 }
 
 export default class PricesService {
-  constructor(private manifest: Manifest, private credentials: Credentials) {}
+  constructor(private manifest: Manifest) {}
 
   async fetchInParallel(
     tokensBySource: TokensBySource
@@ -103,7 +102,6 @@ export default class PricesService {
 
     const fetchPromise = () =>
       fetchers[source].fetchAll(tokens, {
-        credentials: this.credentials,
         manifest: this.manifest,
       });
 

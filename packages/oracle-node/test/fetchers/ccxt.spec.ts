@@ -1,7 +1,10 @@
+import {
+  clearPricesSublevel,
+  closeLocalLevelDB,
+  setupLocalDb,
+} from "../../src/db/local-db";
 import fetchers from "../../src/fetchers/index";
-import { mockRedstoneApiPrice } from "./_helpers";
-
-mockRedstoneApiPrice(1, "USDT");
+import { saveMockPricesInLocalDb } from "./_helpers";
 
 jest.mock("ccxt", () => {
   const mockExchanges: any = {};
@@ -24,13 +27,24 @@ jest.mock("ccxt", () => {
 });
 
 describe("ccxt fetcher", () => {
+  beforeAll(() => {
+    setupLocalDb();
+  });
+
+  beforeEach(async () => {
+    await clearPricesSublevel();
+  });
+
+  afterAll(async () => {
+    await closeLocalLevelDB();
+  });
+
   const sut = fetchers["binance"];
 
   it("should properly fetch data", async () => {
-    // When
-    const result = await sut.fetchAll(["BTC", "ETH"]);
+    await saveMockPricesInLocalDb([1, 1], ["USDT", "BUSD"]);
 
-    // Then
+    const result = await sut.fetchAll(["BTC", "ETH"]);
     expect(result).toEqual([
       { symbol: "BTC", value: 32228.4 },
       { symbol: "ETH", value: 2008.25 },

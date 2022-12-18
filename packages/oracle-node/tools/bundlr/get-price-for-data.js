@@ -1,5 +1,4 @@
 const prompts = require("prompts");
-const redstone = require("redstone-api");
 const { default: Bundlr } = require("@bundlr-network/client");
 const bundlrDefaults = require("../../src/arweave/bundlr-defaults.json");
 
@@ -22,7 +21,8 @@ async function main() {
   // Get balance
   const cost = await bundlr.getPrice(bytesCount);
   const costAR = bigNumberToHumanReadableNumber(cost);
-  const costUSD = (await redstone.getPrice("AR")).value * costAR;
+  const arValue = 0;
+  const costUSD = arValue * costAR;
 
   // Print balance
   console.log(`Cost for ${bytesCount} bytes: ${costAR} AR ($${costUSD})`);

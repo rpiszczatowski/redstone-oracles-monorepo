@@ -22,11 +22,6 @@ export interface SourceTimeout {
   source: { [symbol: string]: number };
 }
 
-export interface Credentials {
-  twelveDataRapidApiKey?: string;
-  coinmarketcapApiKey?: string;
-}
-
 export interface TokenConfig {
   source?: string[];
   deviationCheck?: DeviationCheckConfig;
@@ -48,7 +43,6 @@ export interface CustomUrlDetails {
 }
 
 export interface FetcherOpts {
-  credentials: Credentials;
   manifest: Manifest;
 }
 
@@ -141,7 +135,6 @@ export interface NodeConfig {
   enablePerformanceTracking: boolean;
   printDiagnosticInfo: boolean;
   manifestRefreshInterval: number;
-  credentials: Credentials;
   privateKeys: PrivateKeys;
   overrideManifestUsingFile?: Manifest;
   ethereumAddress: string;
@@ -156,6 +149,8 @@ export interface NodeConfig {
   avalancheRpcUrl: string;
   enableStreamrBroadcasting: boolean;
   mockPricesUrl: string;
+  twelveDataRapidApiKey?: string;
+  coinmarketcapApiKey?: string;
 }
 
 export interface MulticallRequest {

@@ -1,6 +1,7 @@
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
+  setupLocalDb,
   savePrices,
 } from "../src/db/local-db";
 import PricesService, {
@@ -14,36 +15,20 @@ import {
   PriceDataBeforeAggregation,
 } from "../src/types";
 import { roundTimestamp } from "../src/utils/timestamps";
+import { preparePrices, preparePrice } from "./fetchers/_helpers";
 
 // Having hard time to mock uuid..so far only this solution is working: https://stackoverflow.com/a/61150430
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 const testTimestamp = Date.now();
 const roundedTimestamp = roundTimestamp(testTimestamp);
 
-const preparePrice = (
-  partialPrice: Partial<PriceDataAfterAggregation>
-): any => {
-  const defaultPrice: PriceDataBeforeAggregation = {
-    id: "00000000-0000-0000-0000-000000000000",
-    symbol: "mock-symbol",
-    source: {},
-    timestamp: testTimestamp,
-    roundedTimestamp: roundedTimestamp,
-    version: "3",
-  };
-  return {
-    ...defaultPrice,
-    ...partialPrice,
-  };
-};
-
-const preparePrices = (
-  partialPrices: Partial<PriceDataAfterAggregation>[]
-): any[] => partialPrices.map(preparePrice);
-
 const pricesService = new PricesService(emptyManifest, {});
 
 describe("PricesService", () => {
+  beforeAll(() => {
+    setupLocalDb();
+  });
+
   beforeEach(async () => {
     await clearPricesSublevel();
   });
@@ -127,7 +112,7 @@ describe("PricesService", () => {
         ...emptyManifest,
         defaultSource: ["mock"],
       };
-      const pricesService = new PricesService(manifest, {});
+      const pricesService = new PricesService(manifest);
 
       // Mocking `doFetchFromSource` function
       pricesService.doFetchFromSource = async (
@@ -192,18 +177,15 @@ describe("PricesService", () => {
 
   describe("filterPricesForSigning", () => {
     it("should properly filter prices for signing", () => {
-      const pricesService = new PricesService(
-        {
-          ...emptyManifest,
-          tokens: {
-            BTC: {
-              skipSigning: true,
-            },
-            ETH: {},
+      const pricesService = new PricesService({
+        ...emptyManifest,
+        tokens: {
+          BTC: {
+            skipSigning: true,
           },
+          ETH: {},
         },
-        {}
-      );
+      });
 
       const prices = preparePrices([
         {

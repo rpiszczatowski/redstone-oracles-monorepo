@@ -65,7 +65,7 @@ export class LensFetcher extends BaseFetcher {
   }
 
   async extractPrices(profiles: LensProfile[]): Promise<ReputationObject> {
-    const reputationObject: { [symbol: string]: number } = {};
+    const reputationObject: ReputationObject = {};
 
     for (const profile of profiles) {
       const symbol = profile.handle;

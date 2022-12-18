@@ -2,6 +2,7 @@ import {
   clearPricesSublevel,
   closeLocalLevelDB,
   getPrices,
+  setupLocalDb,
   PriceValuesInLocalDB,
   savePrices,
 } from "../../src/db/local-db";
@@ -42,6 +43,10 @@ const mockCurrentTimestamp = (newCurrentTimestamp: number) => {
 };
 
 describe("Local DB", () => {
+  beforeAll(() => {
+    setupLocalDb();
+  });
+
   beforeEach(async () => {
     await clearPricesSublevel();
   });

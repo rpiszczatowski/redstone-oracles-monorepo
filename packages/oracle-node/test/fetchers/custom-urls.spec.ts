@@ -43,7 +43,6 @@ describe("custom URL fetcher", () => {
           },
         },
       },
-      credentials: {},
     });
 
     // Then

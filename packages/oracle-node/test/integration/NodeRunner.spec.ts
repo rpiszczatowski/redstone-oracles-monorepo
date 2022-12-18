@@ -12,6 +12,7 @@ import { NodeConfig } from "../../src/types";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
+  setupLocalDb,
   savePrices,
 } from "../../src/db/local-db";
 import emptyManifest from "../../manifests/dev/empty.json";
@@ -84,6 +85,10 @@ describe("NodeRunner", () => {
     });
     await sut.run();
   };
+
+  beforeAll(() => {
+    setupLocalDb();
+  });
 
   beforeEach(async () => {
     await clearPricesSublevel();

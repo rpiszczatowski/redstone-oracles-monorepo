@@ -2,8 +2,9 @@ import axios from "axios";
 import _ from "lodash";
 import { BaseFetcher } from "../BaseFetcher";
 import { getRequiredPropValue } from "../../utils/objects";
-import { FetcherOpts, PricesObj } from "../../types";
+import { PricesObj } from "../../types";
 import symbolToId from "./symbol-to-id.json";
+import { config } from "../../config";
 const idToSymbol = _.invert(symbolToId);
 
 const url = "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest";
@@ -21,8 +22,8 @@ export class CoinMarketCapFetcher extends BaseFetcher {
     return getRequiredPropValue(symbolToId, symbol);
   }
 
-  async fetchData(ids: string[], opts: FetcherOpts): Promise<any> {
-    const apiKey = opts.credentials.coinmarketcapApiKey;
+  async fetchData(ids: string[]): Promise<any> {
+    const apiKey = config.coinmarketcapApiKey;
     if (!apiKey) {
       throw new Error("Missing Coinmarketcap API Key");
     }
@@ -38,7 +39,7 @@ export class CoinMarketCapFetcher extends BaseFetcher {
   }
 
   async extractPrices(response: any, ids: string[]): Promise<PricesObj> {
-    const pricesObj: { [id: string]: number } = {};
+    const pricesObj: PricesObj = {};
     const tokenData = response.data;
 
     for (const id of ids) {

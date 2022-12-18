@@ -31,7 +31,7 @@ export class PlatypusFetcher extends BaseFetcher {
   }
 
   async extractPrices(response: any): Promise<PricesObj> {
-    const pricesObj: { [symbol: string]: number } = {};
+    const pricesObj: PricesObj = {};
     for (const token of response.data.tokens) {
       const { symbol, lastPriceUSD } = token;
       pricesObj[symbol] = Number(lastPriceUSD);
