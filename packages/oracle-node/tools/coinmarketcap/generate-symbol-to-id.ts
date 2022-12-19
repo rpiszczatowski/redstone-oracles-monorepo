@@ -16,6 +16,9 @@ const PATH = "./src/fetchers/coinmarketcap/symbol-to-id.json";
   const coins = idMap.data.data;
   const result = {} as Record<string, number>;
   for (const coin of coins) {
+    if (coin.symbol === "QI" && coin.slug !== "benqi") {
+      continue;
+    }
     result[coin.symbol] = coin.id;
   }
   fs.writeFileSync(PATH, JSON.stringify(result));
