@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { SchedulerRegistry } from "@nestjs/schedule";
 import { ConfigService } from "@nestjs/config";
+import { exec } from "child_process";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { HttpService } from "@nestjs/axios";
@@ -85,6 +86,8 @@ export class CronService {
       if (dataService.checkEachSingleUrl) {
         this.startCheckingDataServiceForEachUrl(dataService);
       }
+
+      this.startCheckingPayloadsFromCacheLayer(dataService);
     }
   }
 
@@ -150,6 +153,18 @@ export class CronService {
     }
   };
 
+  startCheckingPayloadsFromCacheLayer = (dataService: DataServiceConfig) => {
+    Logger.log(`Starting checking payload from cache layer: ${dataService.id}`);
+    const job = new CronJob(dataService.schedule, () => {
+      this.checkPayloadsFromCacheLayer(dataService.id, dataService.urls);
+    });
+    this.schedulerRegistry.addCronJob(
+      `cache-layer-payloads-checker-${dataService.id}`,
+      job
+    );
+    job.start();
+  };
+
   checkDataService = async ({
     dataServiceId,
     dataFeedId,
@@ -197,7 +212,8 @@ export class CronService {
       await this.sendErrorMessageToUptimeKuma(
         dataServiceId,
         dataFeedId,
-        "data-service-failed"
+        "data-service-failed",
+        JSON.stringify(urls)
       );
     }
   };
@@ -275,7 +291,8 @@ export class CronService {
           await this.sendErrorMessageToUptimeKuma(
             dataServiceId,
             dataFeedId,
-            "no-data-package"
+            "no-data-package",
+            url
           );
         }
       }
@@ -292,7 +309,8 @@ export class CronService {
       await this.sendErrorMessageToUptimeKuma(
         dataServiceId,
         JSON.stringify(dataFeeds),
-        "one-url-failed"
+        "one-url-failed",
+        url
       );
     }
   };
@@ -320,9 +338,44 @@ export class CronService {
       await this.sendErrorMessageToUptimeKuma(
         dataServiceId,
         dataFeedId,
-        "invalid-signers-number"
+        "invalid-signers-number",
+        url
       );
     }
+  };
+
+  checkPayloadsFromCacheLayer = (dataServiceId: string, urls: string[]) => {
+    Logger.log(`Checking payloads: ${dataServiceId} from cache layers`);
+    exec(
+      `
+        [ ! -d "/path/to/dir" ] && git clone https://github.com/redstone-finance/redstone-evm-examples.git;
+        cd redstone-evm-examples &&
+        yarn &&
+        yarn test test/AvalancheProdExample.js
+      `,
+      async (error) => {
+        if (error) {
+          Logger.error(
+            `Invalid payloads for ${dataServiceId} from cache layers ${JSON.stringify(
+              urls
+            )}. Saving issue in DB`
+          );
+          await this.saveErrorInDb({
+            timestamp: Date.now(),
+            dataServiceId,
+            type: "cache-layer-payloads-failed",
+            url: JSON.stringify(urls),
+            comment: "Payloads received from cache layer payload failed",
+          });
+          await this.sendErrorMessageToUptimeKuma(
+            dataServiceId,
+            "data-feeds-from-evm-examples",
+            "cache-layer-payloads-failed",
+            JSON.stringify(urls)
+          );
+        }
+      }
+    );
   };
 
   safelySaveMetricInDB = async ({
@@ -370,10 +423,11 @@ export class CronService {
   sendErrorMessageToUptimeKuma = async (
     dataServiceId: string,
     symbol: string,
-    type: string
+    type: string,
+    urls: string
   ) => {
     const uptimeKumaUrl = this.configService.get("UPTIME_KUMA_URL");
-    const uptimeKumaUrlWithMessage = `${uptimeKumaUrl}&msg=${dataServiceId}-${symbol}-${type}`;
+    const uptimeKumaUrlWithMessage = `${uptimeKumaUrl}&msg=${dataServiceId}-${symbol}-${type}-${urls}`;
     if (uptimeKumaUrl) {
       await this.httpService.axiosRef.get(uptimeKumaUrlWithMessage);
     }

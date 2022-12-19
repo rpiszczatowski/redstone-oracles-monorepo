@@ -14,7 +14,8 @@ export class Issue {
     | "no-data-package"
     | "one-url-failed"
     | "data-service-failed"
-    | "invalid-signers-number";
+    | "invalid-signers-number"
+    | "cache-layer-payloads-failed";
 
   @Prop()
   symbol: string;
