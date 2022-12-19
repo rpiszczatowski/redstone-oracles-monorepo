@@ -16,6 +16,24 @@
       "https://cache-service-direct-1.b.redstone.finance",
       "https://cache-service-streamr-1.a.redstone.finance"
     ],
-    "uniqueSignersCount": 3
+    "uniqueSignersCount": 3,
+    "dataFeedsToCheckDeviation": {
+      "AVAX": {
+        "timePeriodInMilliseconds": 600000,
+        "deviationLimitToNotify": 10
+      },
+      "PNG": {
+        "timePeriodInMilliseconds": 600000,
+        "deviationLimitToNotify": 10
+      },
+      "TJ_AVAX_USDC_LP": {
+        "timePeriodInMilliseconds": 600000,
+        "deviationLimitToNotify": 10
+      },
+      "YY_PNG_AVAX_USDC_LP": {
+        "timePeriodInMilliseconds": 600000,
+        "deviationLimitToNotify": 10
+      }
+    }
   }
 ]
