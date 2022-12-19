@@ -21,6 +21,9 @@ interface DataServiceConfig {
   schedule: string;
   urls: string[];
   uniqueSignersCount: number;
+  dataFeedsToCheckDeviation: {
+    [dataFeed in string]: DataFeedToCheckDeviationDetails;
+  };
 }
 
 interface CheckDataServiceInput {
@@ -63,6 +66,11 @@ interface SaveErrorInput {
   comment: string;
 }
 
+interface DataFeedToCheckDeviationDetails {
+  timePeriodInMilliseconds: number;
+  deviationLimitToNotify: number;
+}
+
 @Injectable()
 export class CronService {
   constructor(
@@ -88,6 +96,8 @@ export class CronService {
       }
 
       this.startCheckingPayloadsFromCacheLayer(dataService);
+
+      this.startCheckingDataFeedsDeviationIn(dataService);
     }
   }
 
@@ -163,6 +173,27 @@ export class CronService {
       job
     );
     job.start();
+  };
+
+  startCheckingDataFeedsDeviationIn = (dataService: DataServiceConfig) => {
+    const { dataFeedsToCheckDeviation } = dataService;
+    for (const [dataFeedId, dataFeedDetails] of Object.entries(
+      dataFeedsToCheckDeviation
+    )) {
+      Logger.log(`Starting data feed deviation checker job for: ${dataFeedId}`);
+      const job = new CronJob(dataService.schedule, () => {
+        this.checkDataFeedDeviationInTime(
+          dataFeedId,
+          dataFeedDetails,
+          dataService.id
+        );
+      });
+      this.schedulerRegistry.addCronJob(
+        `data-feed-deviation-checker-${dataFeedId}`,
+        job
+      );
+      job.start();
+    }
   };
 
   checkDataService = async ({
@@ -344,6 +375,51 @@ export class CronService {
     }
   };
 
+  checkDataFeedDeviationInTime = async (
+    dataFeedId: string,
+    dataFeedDetails: DataFeedToCheckDeviationDetails,
+    dataServiceId: string
+  ) => {
+    const apiUrl = "https://api.redstone.finance/prices";
+    const currentTimestamp = Date.now();
+    const currentPriceResponse = await this.httpService.axiosRef.get(apiUrl, {
+      params: {
+        symbol: dataFeedId,
+        provider: `${dataServiceId}-1`,
+        limit: 1,
+        toTimestamp: currentTimestamp,
+      },
+    });
+    const currentPrice = currentPriceResponse.data[0].value;
+    const pastTimestamp =
+      currentTimestamp - dataFeedDetails.timePeriodInMilliseconds;
+    const pastPriceResponse = await this.httpService.axiosRef.get(apiUrl, {
+      params: {
+        symbol: dataFeedId,
+        provider: `${dataServiceId}-1`,
+        limit: 1,
+        toTimestamp: pastTimestamp,
+      },
+    });
+    const pastPrice = pastPriceResponse.data[0].value;
+    const pricesDifference = pastPrice - currentPrice;
+    const pricesMin = Math.min(pastPrice, currentPrice);
+    const deviation = (100 * Math.abs(pricesDifference)) / pricesMin;
+    if (deviation >= dataFeedDetails.deviationLimitToNotify) {
+      const isPriceIncreasing = pricesDifference > 0;
+      const priceMsg = `${isPriceIncreasing ? "increased" : "decreased"}`;
+      Logger.error(
+        `Deviation for ${dataFeedId} is higher than limit ${dataFeedDetails.deviationLimitToNotify}. Price ${priceMsg} ${deviation}.`
+      );
+      await this.sendErrorMessageToUptimeKuma(
+        dataServiceId,
+        dataFeedId,
+        `deviation-higher-than-limit`,
+        `price-${priceMsg}-${deviation.toFixed(2)}%`
+      );
+    }
+  };
+
   checkPayloadsFromCacheLayer = (dataServiceId: string, urls: string[]) => {
     Logger.log(`Checking payloads: ${dataServiceId} from cache layers`);
     exec(
@@ -424,10 +500,10 @@ export class CronService {
     dataServiceId: string,
     symbol: string,
     type: string,
-    urls: string
+    urlOrOther: string
   ) => {
     const uptimeKumaUrl = this.configService.get("UPTIME_KUMA_URL");
-    const uptimeKumaUrlWithMessage = `${uptimeKumaUrl}&msg=${dataServiceId}-${symbol}-${type}-${urls}`;
+    const uptimeKumaUrlWithMessage = `${uptimeKumaUrl}&msg=${dataServiceId}-${symbol}-${type}-${urlOrOther}`;
     if (uptimeKumaUrl) {
       await this.httpService.axiosRef.get(uptimeKumaUrlWithMessage);
     }
