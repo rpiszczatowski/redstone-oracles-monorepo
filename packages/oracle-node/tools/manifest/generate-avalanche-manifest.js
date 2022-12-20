@@ -32,6 +32,7 @@ const SYMBOLS = [
   "YAK",
   "YYAV3SA1",
   "GMX",
+  "GLP",
 ];
 
 generateSubManifest(SYMBOLS, OUTPUT_FILE_PATH);
