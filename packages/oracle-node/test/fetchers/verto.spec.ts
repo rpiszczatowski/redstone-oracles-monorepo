@@ -30,6 +30,7 @@ describe("verto fetcher", () => {
 
   it("should properly fetch data", async () => {
     await saveMockPriceInLocalDb(10, "AR");
+
     const result = await sut.fetchAll(["XYZ"]);
     expect(result).toEqual([
       {
