@@ -1,7 +1,7 @@
-const axios = require("axios");
-
+import { MultiRequestFetcher } from "../MultiRequestFetcher";
 import { PricesObj } from "../../types";
-import { BaseFetcher } from "../BaseFetcher";
+
+const axios = require("axios");
 
 const DIA_BASE_URL = "https://api.diadata.org/v1";
 const DIA_QUOTATION_PATH = "quotation";
@@ -11,36 +11,18 @@ interface Quotation {
   Price: number;
 }
 
-export class DiaFetcher extends BaseFetcher {
+export class DiaFetcher extends MultiRequestFetcher {
   constructor() {
     super("dia");
   }
 
-  async fetchData(ids: string[]): Promise<any> {
-    return await Promise.allSettled(ids.map(this.getQuotationResponse));
+  makeRequest(id: string): Promise<any> {
+    return axios.get(`${DIA_BASE_URL}/${DIA_QUOTATION_PATH}/${id}`);
   }
 
-  async extractPrices(responses: any): Promise<PricesObj> {
-    const result: PricesObj = {};
+  processData(quotation: Quotation, pricesObj: PricesObj): PricesObj {
+    pricesObj[quotation.Symbol] = quotation.Price;
 
-    for (const response of responses) {
-      if (response.status === "rejected") {
-        continue;
-      }
-
-      const quotation = response.value.data as Quotation;
-
-      if (quotation === undefined) {
-        continue;
-      }
-
-      result[quotation.Symbol] = quotation.Price;
-    }
-
-    return result;
-  }
-
-  private async getQuotationResponse(id: string): Promise<any> {
-    return await axios.get(`${DIA_BASE_URL}/${DIA_QUOTATION_PATH}/${id}`);
+    return pricesObj;
   }
 }
