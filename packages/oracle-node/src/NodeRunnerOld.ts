@@ -222,8 +222,7 @@ export default class NodeRunnerOld {
   private async fetchPrices(): Promise<PriceDataAfterAggregation[]> {
     const fetchingAllTrackingId = trackStart("fetching-all");
 
-    const fetchTimestamp = Date.now();
-    const roundedTimestamp = roundTimestamp(fetchTimestamp);
+    const fetchTimestamp = roundTimestamp(Date.now());
     const fetchedPrices = await this.pricesService!.fetchInParallel(
       this.tokensBySource!
     );
@@ -231,7 +230,6 @@ export default class NodeRunnerOld {
     const pricesBeforeAggregation: PricesBeforeAggregation =
       PricesService.groupPricesByToken(
         fetchTimestamp,
-        roundedTimestamp,
         pricesData,
         this.version
       );

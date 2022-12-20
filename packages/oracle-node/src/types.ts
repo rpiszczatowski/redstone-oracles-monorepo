@@ -81,7 +81,6 @@ export interface PriceDataBeforeAggregation {
   symbol: string;
   source: { [sourceName: string]: any };
   timestamp: number;
-  roundedTimestamp: number;
   version: string;
 }
 

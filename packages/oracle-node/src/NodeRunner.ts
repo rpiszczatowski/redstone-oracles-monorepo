@@ -232,7 +232,7 @@ export default class NodeRunner {
       // Signing
       const signedDataPackages = this.signPrices(
         pricesForSigning,
-        pricesForSigning[0].roundedTimestamp
+        pricesForSigning[0].timestamp
       );
 
       // Broadcasting
@@ -248,7 +248,7 @@ export default class NodeRunner {
 
   private signPrices(
     prices: PriceDataAfterAggregation[],
-    roundedTimestamp: number
+    timestamp: number
   ): SignedDataPackage[] {
     const ethPrivKey = this.nodeConfig.privateKeys.ethereumPrivateKey;
 
@@ -267,12 +267,12 @@ export default class NodeRunner {
 
     // Prepare signed data packages with single data point
     const signedDataPackages = dataPoints.map((dataPoint) => {
-      const dataPackage = new DataPackage([dataPoint], roundedTimestamp);
+      const dataPackage = new DataPackage([dataPoint], timestamp);
       return dataPackage.sign(ethPrivKey);
     });
 
     // Adding a data package with all data points
-    const bigDataPackage = new DataPackage(dataPoints, roundedTimestamp);
+    const bigDataPackage = new DataPackage(dataPoints, timestamp);
     const signedBigDataPackage = bigDataPackage.sign(ethPrivKey);
     signedDataPackages.push(signedBigDataPackage);
 
@@ -282,8 +282,7 @@ export default class NodeRunner {
   private async fetchPrices(): Promise<PriceDataAfterAggregation[]> {
     const fetchingAllTrackingId = trackStart("fetching-all");
 
-    const fetchTimestamp = Date.now();
-    const roundedTimestamp = roundTimestamp(fetchTimestamp);
+    const fetchTimestamp = roundTimestamp(Date.now());
     const fetchedPrices = await this.pricesService!.fetchInParallel(
       this.tokensBySource!
     );
@@ -291,7 +290,6 @@ export default class NodeRunner {
     const pricesBeforeAggregation: PricesBeforeAggregation =
       PricesService.groupPricesByToken(
         fetchTimestamp,
-        roundedTimestamp,
         pricesData,
         this.version
       );
