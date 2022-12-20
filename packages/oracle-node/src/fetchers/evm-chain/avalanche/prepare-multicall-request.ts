@@ -9,49 +9,67 @@ import {
   yyTokenIds,
   oracleAdaptersTokens,
   OracleAdaptersDetailsKeys,
+  glpToken,
+  GlpManagerDetailsKeys,
 } from "./AvalancheEvmFetcher";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
+import { glpManagerContractsDetails } from "./contracts-details/glp-manager";
+
+interface FunctionNamesWithValues {
+  name: string;
+  values?: any[];
+}
 
 export const prepareMulticallRequests = (id: string) => {
   let abi: string | readonly (string | Fragment | JsonFragment)[];
   let address: string;
-  let functionsNames: string[] = [];
+  let functionsNamesWithValues: FunctionNamesWithValues[] = [];
 
   if (yyTokenIds.includes(id)) {
     ({ abi, address } = yieldYakContractsDetails[id as YieldYakDetailsKeys]);
-    functionsNames.push(...["totalDeposits", "totalSupply"]);
+    functionsNamesWithValues = [
+      { name: "totalDeposits" },
+      { name: "totalSupply" },
+    ];
   } else if (lpTokensIds.includes(id)) {
     ({ abi, address } = lpTokensContractsDetails[id as LpTokensDetailsKeys]);
-    functionsNames.push(...["getReserves", "totalSupply"]);
+    functionsNamesWithValues = [
+      { name: "getReserves" },
+      { name: "totalSupply" },
+    ];
   } else if (mooTokens.includes(id)) {
     ({ abi, address } =
       mooTokensContractsDetails[id as MooJoeTokensDetailsKeys]);
-    functionsNames.push(...["balance", "totalSupply"]);
+    functionsNamesWithValues = [{ name: "balance" }, { name: "totalSupply" }];
   } else if (oracleAdaptersTokens.includes(id)) {
     ({ abi, address } =
       oracleAdaptersContractsDetails[id as OracleAdaptersDetailsKeys]);
-    functionsNames.push("latestAnswer");
+    functionsNamesWithValues = [{ name: "latestAnswer" }];
+  } else if (glpToken.includes(id)) {
+    ({ abi, address } =
+      glpManagerContractsDetails[id as GlpManagerDetailsKeys]);
+    functionsNamesWithValues = [{ name: "getPrice", values: [false] }];
   } else {
     throw new Error(`Asset ${id} not supported by Avalanche multicall builder`);
   }
 
-  return buildMulticallRequests(abi, address, functionsNames);
+  return buildMulticallRequests(abi, address, functionsNamesWithValues);
 };
 
 const buildMulticallRequests = (
   abi: string | readonly (string | Fragment | JsonFragment)[],
   address: string,
-  functionsNames: string[]
+  functionsNamesWithValues: FunctionNamesWithValues[]
 ) => {
-  return functionsNames.map((functionName) => {
-    const functionData = new Interface(abi).encodeFunctionData(functionName);
+  return Object.values(functionsNamesWithValues).map(({ name, values }) => {
+    const functionData = new Interface(abi).encodeFunctionData(name, values);
     return {
       address,
       data: functionData,
-      name: functionName,
+      name,
     };
   });
 };
