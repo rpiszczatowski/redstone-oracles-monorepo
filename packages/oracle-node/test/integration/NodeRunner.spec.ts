@@ -191,7 +191,7 @@ describe("NodeRunner", () => {
           {
             signature:
               "Qm4FMKLEMfuD2SwHQWL1AK9viW9O80ok1y4PKvCkKu8b6c4xMyOjSU1CiLjDB3PPimPUJN7AKE7RUTVuBI8TNhw=",
-            timestampMilliseconds: 111110000,
+            timestampMilliseconds: 111111000,
             dataPoints: [
               {
                 dataFeedId: "BTC",
@@ -202,7 +202,7 @@ describe("NodeRunner", () => {
           {
             signature:
               "nYugX5486D0AEiZaoV8I+yxzcottFH+giz0U6maSeckCICN5tSPytiUF+/6UDePsZSN87vBZp7JWVSih8HX/3hs=",
-            timestampMilliseconds: 111110000,
+            timestampMilliseconds: 111111000,
             dataPoints: [
               {
                 dataFeedId: "ETH",
@@ -213,7 +213,7 @@ describe("NodeRunner", () => {
           {
             signature:
               "LzvfZOMlkn619o297BO/4G51aFhpbUSpt+umC2ja1TV5QxKRyANoA8MGesw9hINi6hqDqcBqUlxw6r03gK3g2xs=",
-            timestampMilliseconds: 111110000,
+            timestampMilliseconds: 111111000,
             dataPoints: [
               {
                 dataFeedId: "BTC",
