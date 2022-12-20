@@ -54,7 +54,6 @@ describe("medianAggregator", () => {
       },
       symbol: "BTC",
       timestamp: 0,
-      roundedTimestamp: 0,
       version: "",
     };
 
@@ -75,7 +74,6 @@ describe("medianAggregator", () => {
       },
       symbol: "BTC",
       timestamp: 0,
-      roundedTimestamp: 0,
       version: "",
     };
 
