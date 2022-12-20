@@ -2,6 +2,7 @@ import { AbstractBatchPutOperation, AbstractSublevel } from "abstract-level";
 import { Level } from "level";
 import { config } from "../../config";
 import { PriceDataAfterAggregation } from "../../types";
+import { roundTimestamp } from "../../utils/timestamps";
 
 const PRICES_SUBLEVEL = "prices";
 const DEFAULT_LEVEL_OPTS = {
@@ -76,7 +77,7 @@ export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
     PriceValueInLocalDB[]
   >[] = [];
 
-  const currentTimestamp = Date.now();
+  const currentTimestamp = roundTimestamp(Date.now());
 
   for (const price of prices) {
     const priceForSymbolToAdd: PriceValueInLocalDB = {
@@ -113,8 +114,8 @@ const lastPrices: LastPrices = {};
 
 const setLastPrices = (prices: PriceDataAfterAggregation[]) => {
   for (const price of prices) {
-    const { symbol, value, roundedTimestamp } = price;
-    lastPrices[symbol] = { value, timestamp: roundedTimestamp };
+    const { symbol, value, timestamp } = price;
+    lastPrices[symbol] = { value, timestamp };
   }
 };
 
