@@ -158,7 +158,7 @@ export interface NodeConfig {
 
 export interface Warp {
   dreNodeUrl: string,
-  reactionsContract: string
+  lensContract: string,
 }
 
 export interface MulticallRequest {

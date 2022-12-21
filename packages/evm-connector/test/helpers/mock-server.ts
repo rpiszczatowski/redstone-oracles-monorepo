@@ -26,7 +26,7 @@ const getPostIdFromRequest = (req: RestRequest) => utils.hexZeroPad(getParam(req
 export const handlers = [
 
   rest.get<OnDemandRequestResponse>(
-    "http://first-node.com/lens-reactions",
+    "http://first-node.com/lens/likes",
     async (req, res, ctx) => {
       const signedDataPackage = getSignedDataPackage({
         request: req,
@@ -40,7 +40,7 @@ export const handlers = [
   ),
 
   rest.get<OnDemandRequestResponse>(
-    "http://second-node.com/lens-reactions",
+    "http://second-node.com/lens/likes",
     async (req, res, ctx) => {
       const signedDataPackage = getSignedDataPackage({
         request: req,
@@ -54,7 +54,7 @@ export const handlers = [
   ),
 
   rest.get<OnDemandRequestResponse>(
-    "http://invalid-node.com/lens-reactions",
+    "http://invalid-node.com/lens/likes",
     async (req, res, ctx) => {
       const signedDataPackage = getSignedDataPackage({
         request: req,
@@ -68,7 +68,7 @@ export const handlers = [
   ),
 
   rest.get<OnDemandRequestResponse>(
-    "http://invalid-value-node.com/lens-reactions",
+    "http://invalid-value-node.com/lens/likes",
     async (req, res, ctx) => {
       const signedDataPackage = getSignedDataPackage({
         request: req,

@@ -21,8 +21,8 @@ describe("SampleLensReactionsConsumer", () => {
 
         const wrappedContract = WrapperBuilder.wrap(contract).usingOnDemandRequest(
             [
-                "http://first-node.com/lens-reactions",
-                "http://second-node.com/lens-reactions",
+                "http://first-node.com/lens/likes",
+                "http://second-node.com/lens/likes",
             ],
             { postId }
         );
@@ -42,8 +42,8 @@ describe("SampleLensReactionsConsumer", () => {
 
         const wrappedContract = WrapperBuilder.wrap(contract).usingOnDemandRequest(
             [
-                "http://invalid-node.com/lens-reactions",
-                "http://second-node.com/lens-reactions",
+                "http://invalid-node.com/lens/likes",
+                "http://second-node.com/lens/likes",
             ],
             { postId }
         );
@@ -60,8 +60,8 @@ describe("SampleLensReactionsConsumer", () => {
 
         const wrappedContract = WrapperBuilder.wrap(contract).usingOnDemandRequest(
             [
-                "http://first-node.com/lens-reactions",
-                "http://invalid-value-node.com/lens-reactions",
+                "http://first-node.com/lens/likes",
+                "http://invalid-value-node.com/lens/likes",
             ],
             { postId }
         );
@@ -77,8 +77,8 @@ describe("SampleLensReactionsConsumer", () => {
 
         const wrappedContract = WrapperBuilder.wrap(contract).usingOnDemandRequest(
             [
-                "http://first-node.com/lens-reactions",
-                "http://first-node.com/lens-reactions",
+                "http://first-node.com/lens/likes",
+                "http://first-node.com/lens/likes",
             ],
             { postId }
         );

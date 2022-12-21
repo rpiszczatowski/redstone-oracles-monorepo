@@ -5,9 +5,9 @@ import { Wallet } from 'ethers';
 import { prepareMessageToSign, UniversalSigner } from "redstone-protocol";
 import { hexZeroPad } from "ethers/lib/utils";
 
-jest.mock("../../src/routes/lens-reactions.ts", () => ({
-    ...jest.requireActual("../../src/routes/lens-reactions.ts"),
-    fetchReactions: () => Promise.resolve(100) // 100 likes 
+jest.mock("../../src/routes/lens.ts", () => ({
+    ...jest.requireActual("../../src/routes/lens.ts"),
+    fetchLikes: () => Promise.resolve(100) // 100 likes 
 }))
 
 const mockedTimestamp = 1666082293466;
@@ -28,7 +28,7 @@ describe("Lens reactions on demand request", () => {
 
     const getLensReactions = async (postId: string) => {
         const response = await request(app)
-            .get("/lens-reactions")
+            .get("/lens/likes")
             .query({
                 timestamp,
                 signature,

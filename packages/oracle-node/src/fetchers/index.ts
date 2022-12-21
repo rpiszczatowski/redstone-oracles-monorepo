@@ -39,6 +39,7 @@ export default {
   ),
   platypus: new PlatypusFetcher(),
   chainlink: new ChainlinkFetcher(),
+
   lens: new LensFetcher(),
   xt: new XtFetcher(),
   coinmarketcap: new CoinMarketCapFetcher(),
