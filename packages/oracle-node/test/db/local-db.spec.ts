@@ -128,7 +128,7 @@ describe("Local DB", () => {
           ...defaultPriceProps,
           symbol,
           value: assetIndex,
-          timestamp,
+          timestamp: roundedTimestamp,
         });
       }
       return prices;
