@@ -15,7 +15,6 @@ const SYMBOLS = [
   "GOOG",
   "COST",
   "DIS",
-  "FB",
   "MA",
   "MSFT",
   "NFLX",
