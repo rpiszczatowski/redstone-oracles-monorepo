@@ -186,11 +186,11 @@ describe("NodeRunner", () => {
 
       expect(axios.post).toHaveBeenCalledWith(broadcastingUrl, {
         requestSignature:
-          "0x86f00b6f14e46844e653f3ec4adc41ac51498063276b7869bfeef3a5a11e673d6471a0d728174e9e7965ecc891925c1e7d9a62dd2f39e392edb1100c693aeec71c",
+          "0x262eda99c935322d84d2431b5d81adfc9b7cc46169240c43ea8973cb3d6e48cd29fb2a4f2df58ba1b0ff785b94cdc700f1f8a2ba7a24394e212dffd0d8fa653f1c",
         dataPackages: [
           {
             signature:
-              "Qm4FMKLEMfuD2SwHQWL1AK9viW9O80ok1y4PKvCkKu8b6c4xMyOjSU1CiLjDB3PPimPUJN7AKE7RUTVuBI8TNhw=",
+              "sdW2jBaPdAExmaq00AIpqMZu2Dv4NqD0rSn1w9oJcsINKfpxHfS3f+PP1V/5ReBuBF7cxBlkK3ary1g3SPcRchs=",
             timestampMilliseconds: 111111000,
             dataPoints: [
               {
@@ -201,7 +201,7 @@ describe("NodeRunner", () => {
           },
           {
             signature:
-              "nYugX5486D0AEiZaoV8I+yxzcottFH+giz0U6maSeckCICN5tSPytiUF+/6UDePsZSN87vBZp7JWVSih8HX/3hs=",
+              "bC4RSM4PQ+GNydZEGANTeH+5ciIsgNKtV7oKud0Qks0bAvKCexTVZHpB15CIdH07EYpB1ZvmN6HEQVYA8ousvhw=",
             timestampMilliseconds: 111111000,
             dataPoints: [
               {
@@ -212,7 +212,7 @@ describe("NodeRunner", () => {
           },
           {
             signature:
-              "LzvfZOMlkn619o297BO/4G51aFhpbUSpt+umC2ja1TV5QxKRyANoA8MGesw9hINi6hqDqcBqUlxw6r03gK3g2xs=",
+              "BUQ0bTRTcvwX0HZJRYtts9bXOvlSNCaObSYxHnpyTok6zWggZTDIwxThyd5rcsn5+9gDUNrSVT2ujhy5Ur+O0Rw=",
             timestampMilliseconds: 111111000,
             dataPoints: [
               {
