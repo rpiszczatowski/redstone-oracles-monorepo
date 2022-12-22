@@ -15,6 +15,8 @@ export const DEFAULT_CACHE_SERVICE_URLS = [
   "https://cache-2-streamr.redstone.finance",
 ];
 
+const ALL_FEEDS_KEY = "___ALL_FEEDS___";
+
 export interface DataPackagesRequestParams {
   dataServiceId: string;
   uniqueSignersCount: number;
@@ -43,15 +45,24 @@ export const getDataServiceIdForSigner = (
   throw new Error(`Data service not found for ${signerAddress}`);
 };
 
-const parseDataPackagesResponse = (dpResponse: {
-  [dataFeedId: string]: SignedDataPackagePlainObj[];
-}): DataPackagesResponse => {
+const parseDataPackagesResponse = (
+  dpResponse: {
+    [dataFeedId: string]: SignedDataPackagePlainObj[];
+  },
+  reqParams: DataPackagesRequestParams
+): DataPackagesResponse => {
   const parsedResponse: DataPackagesResponse = {};
+
+  const dataFeedIds = reqParams.dataFeeds ?? [ALL_FEEDS_KEY];
+
   for (const [dataFeedId, dataFeedPackages] of Object.entries(dpResponse)) {
-    parsedResponse[dataFeedId] = dataFeedPackages.map(
-      (dataPackage: SignedDataPackagePlainObj) =>
-        SignedDataPackage.fromObj(dataPackage)
-    );
+    if (dataFeedIds.includes(dataFeedId)) {
+      parsedResponse[dataFeedId] = dataFeedPackages
+        .slice(0, reqParams.uniqueSignersCount)
+        .map((dataPackage: SignedDataPackagePlainObj) =>
+          SignedDataPackage.fromObj(dataPackage)
+        );
+    }
   }
   return parsedResponse;
 };
@@ -82,10 +93,24 @@ export const requestDataPackages = async (
   reqParams: DataPackagesRequestParams,
   urls: string[] = DEFAULT_CACHE_SERVICE_URLS
 ): Promise<DataPackagesResponse> => {
+  // Old version
+  // const promises = prepareDataPackagePromises(reqParams, urls);
+  // try {
+  //   const response = await Promise.any(promises);
+  //   return parseDataPackagesResponse(response.data);
+  // } catch (e: any) {
+  //   const errMessage = `Request failed ${JSON.stringify({
+  //     reqParams,
+  //     urls,
+  //   })}, Original error: ${errToString(e)}`;
+  //   throw new Error(errMessage);
+  // }
+
+  // New version
   const promises = prepareDataPackagePromises(reqParams, urls);
   try {
     const response = await Promise.any(promises);
-    return parseDataPackagesResponse(response.data);
+    return parseDataPackagesResponse(response.data, reqParams);
   } catch (e: any) {
     const errMessage = `Request failed ${JSON.stringify({
       reqParams,
@@ -99,14 +124,20 @@ const prepareDataPackagePromises = (
   reqParams: DataPackagesRequestParams,
   urls: string[]
 ) => {
+  // Old version
+  // return urls.map((url) =>
+  //   axios.get(url + "/data-packages/latest", {
+  //     params: {
+  //       "data-service-id": reqParams.dataServiceId,
+  //       "unique-signers-count": reqParams.uniqueSignersCount,
+  //       "data-feeds": reqParams.dataFeeds?.join(","),
+  //     },
+  //   })
+  // );
+
+  // New version
   return urls.map((url) =>
-    axios.get(url + "/data-packages/latest", {
-      params: {
-        "data-service-id": reqParams.dataServiceId,
-        "unique-signers-count": reqParams.uniqueSignersCount,
-        "data-feeds": reqParams.dataFeeds?.join(","),
-      },
-    })
+    axios.get(`${url}/data-packages/latest/${reqParams.dataServiceId}`)
   );
 };
 
