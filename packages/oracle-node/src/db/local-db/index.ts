@@ -77,7 +77,7 @@ export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
     PriceValueInLocalDB[]
   >[] = [];
 
-  const currentTimestamp = roundTimestamp(Date.now());
+  const currentTimestamp = Date.now();
 
   for (const price of prices) {
     const priceForSymbolToAdd: PriceValueInLocalDB = {

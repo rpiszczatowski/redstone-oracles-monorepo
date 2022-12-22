@@ -13,7 +13,7 @@ const PRICES_TTL_MILLISECONDS = 15 * 60 * 1000; // 15 minutes
 
 const source = {};
 const id = "mock-id";
-const timestamp = roundTimestamp(Date.now());
+const timestamp = Date.now();
 const version = "mock-version";
 const defaultPriceProps = {
   source,
