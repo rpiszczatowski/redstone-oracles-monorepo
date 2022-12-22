@@ -21,6 +21,7 @@ import { CachedDataPackage, DataPackage } from "./data-packages.model";
 import { makePayload } from "../utils/make-redstone-payload";
 
 export const ALL_FEEDS_KEY = "___ALL_FEEDS___";
+const ALLOWED_TIMESTAMP_DELAY = 120 * 1000; // 2 minutes in milliseconds
 
 export interface StatsRequestParams {
   fromTimestamp: number;
@@ -31,6 +32,63 @@ export interface StatsRequestParams {
 export class DataPackagesService {
   async saveManyDataPackagesInDB(dataPackages: CachedDataPackage[]) {
     await DataPackage.insertMany(dataPackages);
+  }
+
+  async getAllLatestDataPackages(
+    dataServiceId: string
+  ): Promise<DataPackagesResponse> {
+    dataServiceId;
+    const fetchedPackagesPerDataFeed: {
+      [dataFeedId: string]: CachedDataPackage[];
+    } = {};
+
+    // TODO: remove
+    console.log(`\n\nSending request to the database\n\n`);
+
+    const groupedDataPackages = await DataPackage.aggregate([
+      {
+        $match: {
+          dataServiceId,
+          // isSignatureValid: true,
+          timestampMilliseconds: { $gte: Date.now() - ALLOWED_TIMESTAMP_DELAY },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            signerAddress: "$signerAddress",
+            dataFeedId: "$dataFeedId",
+          },
+          timestampMilliseconds: { $first: "$timestampMilliseconds" },
+          signature: { $first: "$signature" },
+          dataPoints: { $first: "$dataPoints" },
+          dataServiceId: { $first: "$dataServiceId" },
+          dataFeedId: { $first: "$dataFeedId" },
+          sources: { $first: "$sources" },
+        },
+      },
+      {
+        $sort: { timestampMilliseconds: -1 },
+      },
+    ]);
+
+    // Parse DB response
+    for (const dataPackage of groupedDataPackages) {
+      const { _id, __v, ...rest } = dataPackage;
+      __v;
+      const dataFeedId = _id.dataFeedId;
+      if (!fetchedPackagesPerDataFeed[dataFeedId]) {
+        fetchedPackagesPerDataFeed[dataFeedId] = [];
+      }
+
+      fetchedPackagesPerDataFeed[dataFeedId].push({
+        ...rest,
+        dataFeedId,
+        signerAddress: _id.signerAddress,
+      });
+    }
+
+    return fetchedPackagesPerDataFeed;
   }
 
   // TODO: try to replace current implementation using only one aggregation call

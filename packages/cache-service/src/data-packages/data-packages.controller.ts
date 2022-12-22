@@ -7,8 +7,14 @@ import {
   Post,
   Query,
   Res,
+  Param,
+  CACHE_MANAGER,
+  Inject,
 } from "@nestjs/common";
-import { DataPackagesRequestParams } from "redstone-sdk";
+import {
+  DataPackagesRequestParams,
+  getOracleRegistryState,
+} from "redstone-sdk";
 import config from "../config";
 import { ReceivedDataPackage } from "./data-packages.interface";
 import { DataPackagesService } from "./data-packages.service";
@@ -17,6 +23,7 @@ import { BundlrService } from "../bundlr/bundlr.service";
 import type { Response } from "express";
 import { duplexStream } from "../utils/streams";
 import { Serializable } from "redstone-protocol";
+import { Cache } from "cache-manager";
 
 export interface BulkPostRequestBody {
   requestSignature: string;
@@ -52,6 +59,7 @@ export interface DataPackagesStatsResponse {
   };
 }
 
+const CACHE_TTL = 5000;
 const CONTENT_TYPE_OCTET_STREAM = "application/octet-stream";
 const CONTENT_TYPE_TEXT = "text/html";
 
@@ -59,7 +67,10 @@ const CONTENT_TYPE_TEXT = "text/html";
 export class DataPackagesController {
   private bundlrService = new BundlrService();
 
-  constructor(private dataPackagesService: DataPackagesService) {}
+  constructor(
+    private dataPackagesService: DataPackagesService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
+  ) {}
 
   private prepareDataPackagesRequestParams(
     query: GetLatestDataPackagesQuery
@@ -84,6 +95,46 @@ export class DataPackagesController {
     return await this.dataPackagesService.getDataPackages(
       this.prepareDataPackagesRequestParams(query)
     );
+  }
+
+  // TODO: implement application level caching for 5 seconds
+  @Get("latest/:DATA_SERVICE_ID")
+  async getAllLatest(
+    @Param("DATA_SERVICE_ID") dataServiceId: string
+  ): Promise<DataPackagesResponse> {
+    // TODO: remove
+    console.log(
+      `\n\n\n\n\nReceived latest request with data service id: ${dataServiceId}\n\n\n\n\n`
+    );
+
+    // TODO: refactor
+    const oracleRegistryState = await getOracleRegistryState();
+    if (!oracleRegistryState.dataServices[dataServiceId]) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: "Data service id is invalid",
+        },
+        HttpStatus.BAD_REQUEST
+      );
+    }
+
+    const cacheKey = `latest/${dataServiceId}`;
+    const dataPackegesFromCache = await this.cacheManager.get(cacheKey);
+
+    if (!dataPackegesFromCache) {
+      const dataPackages =
+        await this.dataPackagesService.getAllLatestDataPackages(dataServiceId);
+      await this.cacheManager.set(cacheKey, dataPackages, CACHE_TTL);
+      return dataPackages;
+    } else {
+      return dataPackegesFromCache as DataPackagesResponse;
+    }
+
+    // TODO: remove
+    // const dataPackages =
+    //   await this.dataPackagesService.getAllLatestDataPackages(dataServiceId);
+    // return dataPackages;
   }
 
   @Get("payload")
