@@ -21,7 +21,7 @@ import { CachedDataPackage, DataPackage } from "./data-packages.model";
 import { makePayload } from "../utils/make-redstone-payload";
 
 export const ALL_FEEDS_KEY = "___ALL_FEEDS___";
-const ALLOWED_TIMESTAMP_DELAY = 120 * 1000; // 2 minutes in milliseconds
+const MAX_ALLOWED_TIMESTAMP_DELAY = 120 * 1000; // 2 minutes in milliseconds
 
 export interface StatsRequestParams {
   fromTimestamp: number;
@@ -34,7 +34,7 @@ export class DataPackagesService {
     await DataPackage.insertMany(dataPackages);
   }
 
-  async getAllLatestDataPackages(
+  async getAllLatestDataPackagesForDataService(
     dataServiceId: string
   ): Promise<DataPackagesResponse> {
     dataServiceId;
@@ -42,15 +42,13 @@ export class DataPackagesService {
       [dataFeedId: string]: CachedDataPackage[];
     } = {};
 
-    // TODO: remove
-    console.log(`\n\nSending request to the database\n\n`);
-
     const groupedDataPackages = await DataPackage.aggregate([
       {
         $match: {
           dataServiceId,
-          // isSignatureValid: true,
-          timestampMilliseconds: { $gte: Date.now() - ALLOWED_TIMESTAMP_DELAY },
+          timestampMilliseconds: {
+            $gte: Date.now() - MAX_ALLOWED_TIMESTAMP_DELAY,
+          },
         },
       },
       {

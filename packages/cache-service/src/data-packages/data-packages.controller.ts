@@ -88,26 +88,11 @@ export class DataPackagesController {
     return requestParams;
   }
 
-  @Get("latest")
-  async getLatest(
-    @Query() query: GetLatestDataPackagesQuery
-  ): Promise<DataPackagesResponse> {
-    return await this.dataPackagesService.getDataPackages(
-      this.prepareDataPackagesRequestParams(query)
-    );
-  }
-
-  // TODO: implement application level caching for 5 seconds
   @Get("latest/:DATA_SERVICE_ID")
   async getAllLatest(
     @Param("DATA_SERVICE_ID") dataServiceId: string
   ): Promise<DataPackagesResponse> {
-    // TODO: remove
-    console.log(
-      `\n\n\n\n\nReceived latest request with data service id: ${dataServiceId}\n\n\n\n\n`
-    );
-
-    // TODO: refactor
+    // Validate dataServiceId param
     const oracleRegistryState = await getOracleRegistryState();
     if (!oracleRegistryState.dataServices[dataServiceId]) {
       throw new HttpException(
@@ -119,22 +104,30 @@ export class DataPackagesController {
       );
     }
 
-    const cacheKey = `latest/${dataServiceId}`;
-    const dataPackegesFromCache = await this.cacheManager.get(cacheKey);
+    // Checking if data packages for this data service are
+    // presented in the application memory cache
+    const cacheKey = `data-packages/latest/${dataServiceId}`;
+    const dataPackagesFromCache = await this.cacheManager.get(cacheKey);
 
-    if (!dataPackegesFromCache) {
+    if (!dataPackagesFromCache) {
       const dataPackages =
-        await this.dataPackagesService.getAllLatestDataPackages(dataServiceId);
+        await this.dataPackagesService.getAllLatestDataPackagesForDataService(
+          dataServiceId
+        );
       await this.cacheManager.set(cacheKey, dataPackages, CACHE_TTL);
       return dataPackages;
     } else {
-      return dataPackegesFromCache as DataPackagesResponse;
+      return dataPackagesFromCache as DataPackagesResponse;
     }
+  }
 
-    // TODO: remove
-    // const dataPackages =
-    //   await this.dataPackagesService.getAllLatestDataPackages(dataServiceId);
-    // return dataPackages;
+  @Get("latest")
+  async getLatest(
+    @Query() query: GetLatestDataPackagesQuery
+  ): Promise<DataPackagesResponse> {
+    return await this.dataPackagesService.getDataPackages(
+      this.prepareDataPackagesRequestParams(query)
+    );
   }
 
   @Get("payload")
