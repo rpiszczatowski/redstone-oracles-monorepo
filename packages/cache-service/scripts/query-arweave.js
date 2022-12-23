@@ -1,24 +1,24 @@
 #!/usr/bin/env node
 
-const {request, gql} = require('graphql-request');
-const prompts = require('prompts');
+const { request, gql } = require("graphql-request");
+const prompts = require("prompts");
 
-const ARWEAVE_GRAPHQL_API_ENDPOINT = 'https://arweave.net/graphql'
+const ARWEAVE_GRAPHQL_API_ENDPOINT = "https://arweave.net/graphql";
 
 const getPromptQuestions = () => {
-  return  [
+  return [
     {
-      type: 'text',
-      name: 'nodeAddress',
-      message: 'Specify oracle node address'
+      type: "text",
+      name: "nodeAddress",
+      message: "Specify oracle node address",
     },
     {
-      type: 'number',
-      name: 'timestamp',
-      message: 'Specify timestamp used in data package'
+      type: "number",
+      name: "timestamp",
+      message: "Specify timestamp used in data package",
     },
   ];
-}
+};
 
 const buildGraphQlQuery = (timestamp, nodeAddress) => {
   return gql`
@@ -53,17 +53,19 @@ const buildGraphQlQuery = (timestamp, nodeAddress) => {
     }
 }
   `;
-}
+};
 
-async function queryArweave(){
-  const {timestamp, nodeAddress} = await prompts(getPromptQuestions());
+async function queryArweave() {
+  const { timestamp, nodeAddress } = await prompts(getPromptQuestions());
   const query = buildGraphQlQuery(timestamp, nodeAddress);
-  await request(ARWEAVE_GRAPHQL_API_ENDPOINT, query).then((data) => console.log(JSON.stringify(data, null, 4)))
+  await request(ARWEAVE_GRAPHQL_API_ENDPOINT, query).then((data) =>
+    console.log(JSON.stringify(data, null, 4))
+  );
 }
 
-
-queryArweave().then(() => process.exit(0))
-.catch((error) => {
-  console.error(error);
-  process.exit(1);
-})
+queryArweave()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
