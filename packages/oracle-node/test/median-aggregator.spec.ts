@@ -11,30 +11,30 @@ const NAN_VALUES_ERR =
 
 describe("getMedianValue", () => {
   it("should throw for empty array", () => {
-    expect(() => getMedianValue([])).toThrow();
+    expect(() => getMedianValue([], "ETH")).toThrow();
   });
 
   it("should throw array with NaN values", () => {
-    expect(() => getMedianValue([42, 43, undefined] as any)).toThrow(
+    expect(() => getMedianValue([42, 43, undefined] as any, "ETH")).toThrow(
       NAN_VALUES_ERR
     );
-    expect(() => getMedianValue([42, "error", 45] as any)).toThrow(
+    expect(() => getMedianValue([42, "error", 45] as any, "ETH")).toThrow(
       NAN_VALUES_ERR
     );
   });
 
   it("should properly calculate median for odd number of elements", () => {
-    expect(getMedianValue([3, 7, 2, 6, 5, 4, 9])).toEqual(5);
-    expect(getMedianValue([-3, 0, 3])).toEqual(0);
-    expect(getMedianValue([3, 0, -3])).toEqual(0);
-    expect(getMedianValue([-7, -5, -11, -4, -8])).toEqual(-7);
+    expect(getMedianValue([3, 7, 2, 6, 5, 4, 9], "ETH")).toEqual(5);
+    expect(getMedianValue([-3, 0, 3], "ETH")).toEqual(0);
+    expect(getMedianValue([3, 0, -3], "ETH")).toEqual(0);
+    expect(getMedianValue([-7, -5, -11, -4, -8], "ETH")).toEqual(-7);
   });
 
   it("should properly calculate median for even number of elements", () => {
-    expect(getMedianValue([3, 7, 2, 6, 5, 4])).toEqual(4.5);
-    expect(getMedianValue([-3, 0])).toEqual(-1.5);
-    expect(getMedianValue([0, -3])).toEqual(-1.5);
-    expect(getMedianValue([-7, -5, -4, -8])).toEqual(-6);
+    expect(getMedianValue([3, 7, 2, 6, 5, 4], "ETH")).toEqual(4.5);
+    expect(getMedianValue([-3, 0], "ETH")).toEqual(-1.5);
+    expect(getMedianValue([0, -3], "ETH")).toEqual(-1.5);
+    expect(getMedianValue([-7, -5, -4, -8], "ETH")).toEqual(-6);
   });
 });
 

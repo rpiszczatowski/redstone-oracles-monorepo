@@ -1,4 +1,3 @@
-import { Consola } from "consola";
 import {
   Aggregator,
   PriceDataAfterAggregation,
@@ -11,18 +10,18 @@ const medianAggregator: Aggregator = {
   ): PriceDataAfterAggregation {
     return {
       ...price,
-      value: getMedianValue(Object.values(price.source)),
+      value: getMedianValue(Object.values(price.source), price.symbol),
     };
   },
 };
 
-export function getMedianValue(arr: number[]): number {
+export function getMedianValue(arr: number[], symbol: string): number {
   if (arr.length === 0) {
-    throw new Error("Cannot get median value of an empty array");
+    throw new Error(`Cannot get median value of an empty array for ${symbol}`);
   }
   if (arr.some(isNaN)) {
     throw new Error(
-      "Cannot get median value of an array that contains NaN value"
+      `Cannot get median value of an array that contains NaN value for ${symbol}`
     );
   }
 
