@@ -78,35 +78,12 @@ const errToString = (e: any): string => {
   } else {
     return e.message;
   }
-  //   let errMessage = "";
-  //   errMessage += "Aggregate error: ";
-  //   e.forEach((oneOfErrors, index) => {
-  //     errMessage += `${index}: ${oneOfErrors.message}, `;
-  //   });
-  //   return errMessage;
-  // } else {
-  //   return e.message;
-  // }
 };
 
 export const requestDataPackages = async (
   reqParams: DataPackagesRequestParams,
   urls: string[] = DEFAULT_CACHE_SERVICE_URLS
 ): Promise<DataPackagesResponse> => {
-  // Old version
-  // const promises = prepareDataPackagePromises(reqParams, urls);
-  // try {
-  //   const response = await Promise.any(promises);
-  //   return parseDataPackagesResponse(response.data);
-  // } catch (e: any) {
-  //   const errMessage = `Request failed ${JSON.stringify({
-  //     reqParams,
-  //     urls,
-  //   })}, Original error: ${errToString(e)}`;
-  //   throw new Error(errMessage);
-  // }
-
-  // New version
   const promises = prepareDataPackagePromises(reqParams, urls);
   try {
     const response = await Promise.any(promises);
@@ -124,18 +101,6 @@ const prepareDataPackagePromises = (
   reqParams: DataPackagesRequestParams,
   urls: string[]
 ) => {
-  // Old version
-  // return urls.map((url) =>
-  //   axios.get(url + "/data-packages/latest", {
-  //     params: {
-  //       "data-service-id": reqParams.dataServiceId,
-  //       "unique-signers-count": reqParams.uniqueSignersCount,
-  //       "data-feeds": reqParams.dataFeeds?.join(","),
-  //     },
-  //   })
-  // );
-
-  // New version
   return urls.map((url) =>
     axios.get(`${url}/data-packages/latest/${reqParams.dataServiceId}`)
   );
