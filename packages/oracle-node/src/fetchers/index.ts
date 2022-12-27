@@ -21,6 +21,7 @@ import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
 import { XtFetcher } from "./xt/XtFetcher";
 import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { config } from "../config";
+import { LensProfileOwnershipFetcher } from "./lens/LensProfileOwnerShipFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -39,7 +40,9 @@ export default {
   ),
   platypus: new PlatypusFetcher(),
   chainlink: new ChainlinkFetcher(),
-
+  "lens-profiles": LensProfileOwnershipFetcher.create(
+    new ethers.providers.JsonRpcProvider(config.polygonRpcUrl)
+  ),
   lens: new LensFetcher(),
   xt: new XtFetcher(),
   coinmarketcap: new CoinMarketCapFetcher(),

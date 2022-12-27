@@ -41,7 +41,7 @@ interface PriceValidationResult {
 }
 
 export default class PricesService {
-  constructor(private manifest: Manifest, private credentials: Credentials) {}
+  constructor(private manifest: Manifest, private credentials: Credentials) { }
 
   async fetchInParallel(
     tokensBySource: TokensBySource
@@ -212,16 +212,16 @@ export default class PricesService {
     const newSources: { [symbol: string]: number } = {};
 
     for (const [sourceName, valueFromSource] of Object.entries(price.source)) {
-      const valueFromSourceNum = safelyConvertAnyValueToNumber(valueFromSource);
+      // const valueFromSourceNum = safelyConvertAnyValueToNumber(valueFromSource);
       const { isValid, reason } = this.validatePrice({
-        value: valueFromSourceNum,
+        value: valueFromSource,
         timestamp: price.timestamp,
         deviationConfig: deviationCheckConfig,
         recentPrices: recentPricesInLocalDBForSymbol,
       });
 
       if (isValid) {
-        newSources[sourceName] = valueFromSourceNum;
+        newSources[sourceName] = valueFromSource;
       } else {
         logger.warn(
           `Excluding ${price.symbol} value for source: ${sourceName}. Reason: ${reason}`
@@ -257,6 +257,13 @@ export default class PricesService {
 
     let isValid = false;
     let reason = "";
+
+    if (typeof value === 'string') {
+      return {
+        isValid: true,
+        reason: ""
+      }
+    }
 
     if (isNaN(value)) {
       reason = "Value is not a number";
@@ -301,7 +308,7 @@ export default class PricesService {
   filterPricesForSigning(
     prices: PriceDataAfterAggregation[]
   ): PriceDataAfterAggregation[] {
-    return prices.filter((p) => !this.manifest.tokens[p.symbol].skipSigning);
+    return prices.filter((p) => !this.manifest.tokens[p.symbol]?.skipSigning || true);
   }
 
   preparePricesForSigning(
@@ -331,7 +338,7 @@ export default class PricesService {
     if (!deviationCheckConfig) {
       throw new ManifestConfigError(
         `Could not determine deviationCheckConfig for ${priceSymbol}. ` +
-          `Did you forget to add deviationCheck parameter in the manifest file?`
+        `Did you forget to add deviationCheck parameter in the manifest file?`
       );
     }
     return deviationCheckConfig;

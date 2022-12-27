@@ -10,7 +10,7 @@ export class HttpBroadcaster implements Broadcaster {
   constructor(
     private readonly broadcasterURLs: string[],
     private readonly ethereumPrivateKey: string
-  ) {}
+  ) { }
 
   async broadcast(dataPackages: SignedDataPackage[]): Promise<void> {
     const dataPackagesObjects = dataPackages.map((dp) => dp.toObj());

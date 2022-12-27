@@ -125,7 +125,6 @@ const createDataFeedIdFromPost = (postId: string) => {
 const validateFollowersRequestParams = (
     request: FollowersRequestParams
 ) => {
-    console.log(request)
     if (!(request.firstProfileId) && !(request.secondProfileId)) {
         throw new Error(`Invalid request, missing query parameter "firstProfileId" or "secondProfileId"`);
     }

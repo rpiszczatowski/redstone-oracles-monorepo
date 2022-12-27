@@ -16,6 +16,7 @@ const DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS = "900000";
 const DEFAULT_ETHERSCAN_API_URL = "";
 const DEFAULT_ETHERSCAN_API_KEY = "";
 const DEFAULT_AVALANCHE_RPC_URL = "https://api.avax.network/ext/bc/C/rpc";
+const DEFAULT_POLYGON_RPC_URL = "https://polygon-testnet.blastapi.io/";
 const WARP_DRE_NODE_URL = "https://dre-1.warp.cc/";
 const WARP_LENS_CONTRACT_ID = "FKhlSgZWwjuzndqUtI9JAGre2NYrYX2u-MpWW695sio";
 
@@ -139,6 +140,7 @@ export const config: NodeConfig = Object.freeze({
     )
   ),
   avalancheRpcUrl: getFromEnv("AVALANCHE_RPC_URL", DEFAULT_AVALANCHE_RPC_URL),
+  polygonRpcUrl: getFromEnv("POLYGON_RPC_URL", DEFAULT_POLYGON_RPC_URL),
   warp: {
     dreNodeUrl: getFromEnv("WARP_DRE_NODE_URL", WARP_DRE_NODE_URL),
     lensContract: getFromEnv("WARP_LENS_CONTRACT_ID", WARP_LENS_CONTRACT_ID),

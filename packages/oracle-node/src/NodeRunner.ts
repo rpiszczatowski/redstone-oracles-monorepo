@@ -19,20 +19,20 @@ import {
   Broadcaster,
   HttpBroadcaster,
   StreamrBroadcaster,
+  WarpBroadcaster
 } from "./broadcasters";
 import {
   Manifest,
   NodeConfig,
   PriceDataAfterAggregation,
-  PriceDataBeforeSigning,
 } from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
 import { ArweaveProxy } from "./arweave/ArweaveProxy";
 import {
   DataPackage,
   DataPoint,
-  NumericDataPoint,
   SignedDataPackage,
+  StringDataPoint,
 } from "redstone-protocol";
 import { config } from "./config";
 import { connectToDb } from "./db/remote-mongo/db-connector";
@@ -48,6 +48,7 @@ const DEFAULT_HTTP_BROADCASTER_URLS = [
   "https://direct-2.cache-service.redstone.finance",
   "https://direct-3.cache-service.redstone.finance",
 ];
+const DEFAULT_WARP_CONTRACT = "xIJy5h0v5rlsdYI_xwhILo9a9EbU1K98pcjz-I1ahPU";
 
 export default class NodeRunner {
   private readonly version: string;
@@ -61,6 +62,7 @@ export default class NodeRunner {
   private newManifest: Manifest | null = null;
   private httpBroadcaster: Broadcaster;
   private streamrBroadcaster: Broadcaster;
+  private warpBroadcaster: Broadcaster;
 
   private constructor(
     private readonly arweaveService: ArweaveService,
@@ -81,6 +83,7 @@ export default class NodeRunner {
       ethereumPrivKey
     );
     this.streamrBroadcaster = new StreamrBroadcaster(ethereumPrivKey);
+    this.warpBroadcaster = new WarpBroadcaster(DEFAULT_WARP_CONTRACT, ethereumPrivKey);
 
     // https://www.freecodecamp.org/news/the-complete-guide-to-this-in-javascript/
     // alternatively use arrow functions...
@@ -157,8 +160,8 @@ export default class NodeRunner {
       } else {
         logger.info(
           `Git details: ${commit.hash} (latest commit), ` +
-            `${commit.branch} (branch), ` +
-            `${commit.subject} (latest commit message)`
+          `${commit.branch} (branch), ` +
+          `${commit.subject} (latest commit message)`
         );
       }
     });
@@ -172,11 +175,10 @@ export default class NodeRunner {
         const activeHandles = (process as any)._getActiveHandles();
         logger.info(
           `Diagnostic info: ` +
-            `Active requests count: ${activeRequests.length}. ` +
-            `Active handles count: ${activeHandles.length}. ` +
-            `Memory usage: ${JSON.stringify(memoryUsage)}. `
+          `Active requests count: ${activeRequests.length}. ` +
+          `Active handles count: ${activeHandles.length}. ` +
+          `Memory usage: ${JSON.stringify(memoryUsage)}. `
         );
-        console.log({ activeRequests });
       };
 
       printDiagnosticInfo();
@@ -286,6 +288,7 @@ export default class NodeRunner {
       this.tokensBySource!
     );
     const pricesData: PricesDataFetched = mergeObjects(fetchedPrices);
+
     const pricesBeforeAggregation: PricesBeforeAggregation =
       PricesService.groupPricesByToken(
         fetchTimestamp,
@@ -293,12 +296,15 @@ export default class NodeRunner {
         this.version
       );
 
+
     const aggregatedPrices: PriceDataAfterAggregation[] =
       await this.pricesService!.calculateAggregatedValues(
         Object.values(pricesBeforeAggregation)
       );
+
     NodeRunner.printAggregatedPrices(aggregatedPrices);
     trackEnd(fetchingAllTrackingId);
+
     return aggregatedPrices;
   }
 
@@ -308,6 +314,7 @@ export default class NodeRunner {
     try {
       const promises = [];
       promises.push(this.httpBroadcaster.broadcast(signedDataPackages));
+      promises.push(this.warpBroadcaster.broadcast(signedDataPackages))
       const enableStreamrBroadcaster =
         !!this.currentManifest?.enableStreamrBroadcaster;
       if (enableStreamrBroadcaster) {
@@ -427,10 +434,10 @@ export default class NodeRunner {
   }
 }
 
-function priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
-  return new NumericDataPoint({
+function priceToDataPoint(price: PriceDataAfterAggregation): DataPoint {
+  return new StringDataPoint({
     dataFeedId: price.symbol,
-    value: price.value,
+    value: price.value.toString(),
   });
 }
 

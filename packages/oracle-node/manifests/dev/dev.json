@@ -1,8 +1,8 @@
 {
-  "interval": 10000,
-  "priceAggregator": "median",
-  "defaultSource": ["binance", "currencycom", "coingecko"],
-  "sourceTimeout": 8000,
+  "interval": 1000,
+  "priceAggregator": "allEqual",
+  "defaultSource": [],
+  "sourceTimeout": 60000,
   "deviationCheck": {
     "deviationWithRecentValues": {
       "maxPercent": 25,
@@ -14,8 +14,8 @@
   "enableArweaveBackup": false,
   "evmChainId": 1,
   "tokens": {
-    "BTC": {},
-    "ETH": {},
-    "BNB": {}
+    "lens-profiles": {
+      "source": ["lens-profiles"]
+    }
   }
 }
