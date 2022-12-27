@@ -10,7 +10,7 @@ export class MockFetcher extends BaseFetcher {
   }
 
   async fetchData() {
-    const isMockPricesUrl = config.mockPricesUrlOrPath.includes("http");
+    const isMockPricesUrl = config.mockPricesUrlOrPath.startsWith("http");
     if (isMockPricesUrl) {
       return (await axios.get(config.mockPricesUrlOrPath)).data;
     }

@@ -5,6 +5,7 @@ import readline from "readline";
 /*
   To run this script you need to add to .env file:
   MOCK_PRICES_URL_OR_PATH = ./src/fetchers/mock-fetcher/deviation-test-response.json
+  OVERRIDE_MANIFEST_USING_FILE=./manifests/dev/avalanche-mock.json
 */
 
 const pathToDeviationTestResponse =
