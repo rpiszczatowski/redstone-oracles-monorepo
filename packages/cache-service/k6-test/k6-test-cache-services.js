@@ -1,11 +1,11 @@
-// import { group } from "k6";
+import { group } from "k6";
 // import { check } from "k6";
 import http from "k6/http";
 // import { Trend } from "k6/metrics";
 // import { Trend /*, Rate, Counter */ } from "k6/metrics";
 // import { Counter } from "k6/metrics";
 
-const cachServicesURL = [
+const cacheServicesURL = [
   "https://cache-service-direct-1.a.redstone.finance",
   "https://cache-service-direct-2.a.redstone.finance",
   "https://cache-service-streamr-1.a.redstone.finance",
@@ -19,7 +19,7 @@ const cachServicesURL = [
 
 // }
 
-// const myTrend = new Trend("accumulated_waiting_time_cs?");
+// const myTrend = new Trend("accumulated_waiting_time_for?");
 // // // const myCounter = new Counter("total_time_cs1");
 // export const TrendRTT = new Trend("RTT");
 
@@ -31,8 +31,8 @@ export const options = {
   // vus: 10,
   // duration: "30s",
   stages: [
-    { duration: "10s", target: 100 }, // simulate ramp-up of traffic from 1 to 100 users over 10 seconds.
-    { duration: "10s", target: 100 }, // stay at 100 users for 10 seconds.
+    { duration: "10s", target: 15 }, // simulate ramp-up of traffic from 1 to 15 users over 10 seconds.
+    { duration: "10s", target: 15 }, // stay at 15 users for 10 seconds.
     { duration: "5s", target: 0 }, // ramp-down to 0 users
   ],
   thresholds: {
@@ -93,14 +93,53 @@ export const options = {
 //   }
 // }
 export default function () {
-  for (const cacheServiceURL of cachServicesURL) {
-    // group(cachServicesURL, function () {
-    /*const res =*/ http.get(cacheServiceURL);
-    // check(res, {
-    //   "is status 200": (r) => r.status === 200,
-    // });
-    // myTrend.add(res.timings.waiting);
-    // TrendRTT.add(res.timings.duration);
-    // });
+  // let i = 1;
+  for (const cacheServiceURL of cacheServicesURL) {
+    group(cacheServiceURL, function () {
+      /*const res =*/ http.get(cacheServiceURL);
+      // check(res, {
+      //   "is status 200": (r) => r.status === 200,
+      // });
+      // myTrend.add(res.timings.waiting);
+      // TrendRTT.add(res.timings.duration);
+    });
   }
+  // group("gaga", function () {
+  //   http.get(cacheServicesURL[0]);
+  //   // http.get(cacheServicesURL[1]);
+  // });
 }
+
+// export default function () {
+//   for (const cacheServiceURL of cacheServicesURL) {
+//     http.get(cacheServiceURL, {
+//       tags: { name: cacheServiceURL },
+//     });
+//   }
+// }
+
+// export default function () {
+//   group("request 1", function () {
+//     let res = http.get(cacheServicesURL[0]);
+//     check(res, {
+//       "status was 200": (r) => r.status == 200,
+//     });
+//   });
+
+//   group("request 2", function () {
+//     let res = http.get(cacheServicesURL[1]);
+//     check(res, {
+//       "status was 200": (r) => r.status == 200,
+//     });
+//   });
+// }
+
+// // console.log(
+// //   "Request 1 response time (50th percentile):",
+// //   data.response_time.percentile(50).request1
+// // );
+// // console.log(
+// //   "Request 2 response time (50th percentile):",
+// //   data.response_time.percentile(50).request2
+// // );
+// // console.log("Request 3 response time (50th percentile):", data.response_time.percentile(50).request3);
