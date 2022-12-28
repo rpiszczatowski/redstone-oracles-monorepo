@@ -1,11 +1,10 @@
 import axios from "axios";
 import { PricesObj } from "../../types";
-import EvmPriceSignerOld from "../../signers/EvmPriceSignerOld";
+import EvmPriceSigner from "../../signers/EvmPriceSigner";
 import { MultiRequestFetcher } from "../MultiRequestFetcher";
 
 const PRICES_URL = "https://api.redstone.finance/prices";
 const MAX_LIMIT = 1000;
-const EVM_CHAIN_ID = 1;
 
 interface ShortPrice {
   timestamp: number;
@@ -71,7 +70,7 @@ export class TwapFetcher extends MultiRequestFetcher {
   }
 
   private async verifySignature(price: HistoricalPrice) {
-    const evmSigner = new EvmPriceSignerOld(price.version, EVM_CHAIN_ID);
+    const evmSigner = new EvmPriceSigner();
     const isSignatureValid = evmSigner.verifyLiteSignature({
       pricePackage: {
         prices: [

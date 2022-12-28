@@ -1,6 +1,6 @@
 import { Consola } from "consola";
 import _ from "lodash";
-import EvmPriceSignerOld from "./EvmPriceSignerOld";
+import EvmPriceSigner from "./EvmPriceSigner";
 import {
   PriceDataBeforeSigning,
   PriceDataSigned,
@@ -10,20 +10,12 @@ import { trackStart, trackEnd } from "../utils/performance-tracker";
 
 const logger = require("../utils/logger")("ArweaveService") as Consola;
 
-interface PriceSignerConfig {
-  version: string;
-  evmChainId: number;
-  ethereumPrivateKey: string;
-}
-
 // Business service that supplies signing operations required by Redstone-Node
 export default class PriceSignerService {
-  private evmSigner: EvmPriceSignerOld;
-  private ethereumPrivateKey: string;
+  private evmSigner: EvmPriceSigner;
 
-  constructor(config: PriceSignerConfig) {
-    this.evmSigner = new EvmPriceSignerOld(config.version, config.evmChainId);
-    this.ethereumPrivateKey = config.ethereumPrivateKey;
+  constructor(private readonly ethereumPrivateKey: string) {
+    this.evmSigner = new EvmPriceSigner();
   }
 
   async signPrices(

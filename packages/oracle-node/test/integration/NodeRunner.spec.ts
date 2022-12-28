@@ -20,6 +20,7 @@ import emptyManifest from "../../manifests/dev/empty.json";
 /****** MOCKS START ******/
 const broadcastingUrl =
   "http://mock-direct-cache-service-url/data-packages/bulk";
+const priceDataBroadcastingUrl = "http://mock-price-cache-service-url/prices";
 const mockArProxy = {
   getAddress: () => Promise.resolve("mockArAddress"),
 };
@@ -29,7 +30,7 @@ jest.mock("../../src/arweave/ArweaveProxy", () => {
   };
 });
 
-jest.mock("../../src/signers/EvmPriceSignerOld", () => {
+jest.mock("../../src/signers/EvmPriceSigner", () => {
   return jest.fn().mockImplementation(() => {
     return {
       signPricePackage: (pricePackage: any) => ({
@@ -73,10 +74,7 @@ describe("NodeRunner", () => {
     n: "n",
   };
 
-  const nodeConfig: NodeConfig = {
-    ...MOCK_NODE_CONFIG,
-    useNewSigningAndBroadcasting: true,
-  };
+  const nodeConfig: NodeConfig = MOCK_NODE_CONFIG;
 
   const runTestNode = async () => {
     const sut = await NodeRunner.create({
@@ -228,6 +226,35 @@ describe("NodeRunner", () => {
         ],
       });
     });
+
+    it("should broadcast fetched and signed price data", async () => {
+      await runTestNode();
+
+      expect(axios.post).toHaveBeenCalledWith(priceDataBroadcastingUrl, [
+        {
+          liteEvmSignature: "mock_evm_signed_lite",
+          id: "00000000-0000-0000-0000-000000000000",
+          permawebTx: "mock-permaweb-tx",
+          provider: "mockArAddress",
+          source: { coingecko: 444, uniswap: 445 },
+          symbol: "BTC",
+          timestamp: 111111000,
+          value: 444.5,
+          version: "0.4",
+        },
+        {
+          liteEvmSignature: "mock_evm_signed_lite",
+          id: "00000000-0000-0000-0000-000000000000",
+          permawebTx: "mock-permaweb-tx",
+          provider: "mockArAddress",
+          source: { uniswap: 42 },
+          symbol: "ETH",
+          timestamp: 111111000,
+          value: 42,
+          version: "0.4",
+        },
+      ]);
+    });
   });
 
   describe("invalid values handling", () => {
@@ -305,6 +332,10 @@ describe("NodeRunner", () => {
       await runTestNode();
 
       expect(axios.post).not.toHaveBeenCalledWith(broadcastingUrl, any());
+      expect(axios.post).not.toHaveBeenCalledWith(
+        priceDataBroadcastingUrl,
+        any()
+      );
     });
   });
 
@@ -376,6 +407,7 @@ describe("NodeRunner", () => {
       );
       expect(fetchers.uniswap.fetchAll).toHaveBeenCalled();
       expect(axios.post).toHaveBeenCalledWith(broadcastingUrl, any());
+      expect(axios.post).toHaveBeenCalledWith(priceDataBroadcastingUrl, any());
       arServiceSpy.mockClear();
     });
   });
