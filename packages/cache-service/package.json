@@ -20,7 +20,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "query": "node scripts/queryArweave.ts"
+    "query-arweave": "node scripts/query-arweave.js",
+    "measure-troughoutput": "node scripts/measure-troughoutput.js"
   },
   "dependencies": {
     "@bundlr-network/client": "^0.8.4",

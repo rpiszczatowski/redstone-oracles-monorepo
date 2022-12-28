@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 const { request, gql } = require("graphql-request");
 const prompts = require("prompts");
 
@@ -58,14 +56,12 @@ const buildGraphQlQuery = (timestamp, nodeAddress) => {
 async function queryArweave() {
   const { timestamp, nodeAddress } = await prompts(getPromptQuestions());
   const query = buildGraphQlQuery(timestamp, nodeAddress);
-  await request(ARWEAVE_GRAPHQL_API_ENDPOINT, query).then((data) =>
-    console.log(JSON.stringify(data, null, 4))
-  );
+  const arweaveResponse = await request(ARWEAVE_GRAPHQL_API_ENDPOINT, query);
+  console.log(JSON.stringify(arweaveResponse, null, 4));
 }
 
-queryArweave()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+try {
+  await queryArweave();
+} catch (error) {
+  console.log(error);
+}
