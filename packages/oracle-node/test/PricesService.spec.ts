@@ -438,6 +438,18 @@ describe("PricesService", () => {
       ).toBe(50);
     });
 
+    it("should properly calculate deviations for big recent prices arrays", () => {
+      expect(
+        getDeviation({
+          value: 210000,
+          recentPrices: Array(30000).fill({
+            value: 420000,
+            timestamp: testTimestamp - 1,
+          }),
+        })
+      ).toBe(50);
+    });
+
     it("should properly calculate deviation with negative values", () => {
       expect(
         getDeviation({
