@@ -30,7 +30,7 @@ Next, in the Connection Parameters drop-down menu, click Connection string. The 
 
 ![](mongo5.png)
 
-The connection string contains the placeholder value . If you don’t know the password for your cluster’s admin user, you can reset the password in the cluster’s Users and Databases tab.
+The connection string contains the placeholder value. If you don’t know the password for your cluster’s admin user, you can reset the password in the cluster’s Users and Databases tab.
 
 ![](mongo6.png)
 
