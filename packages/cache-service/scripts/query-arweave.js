@@ -60,8 +60,12 @@ async function queryArweave() {
   console.log(JSON.stringify(arweaveResponse, null, 4));
 }
 
-try {
-  await queryArweave();
-} catch (error) {
-  console.log(error);
-}
+const run = async () => {
+  try {
+    await queryArweave();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+run();
