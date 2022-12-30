@@ -5,8 +5,10 @@ import { PricesObj } from "../../types";
 import { readJSON } from "../../utils/objects";
 
 export class MockFetcher extends BaseFetcher {
+  index: number;
   constructor() {
     super("mock");
+    this.index = 0;
   }
 
   async fetchData() {
@@ -14,7 +16,10 @@ export class MockFetcher extends BaseFetcher {
     if (isMockPricesUrl) {
       return (await axios.get(config.mockPricesUrlOrPath)).data;
     }
-    return readJSON(config.mockPricesUrlOrPath);
+    const data = readJSON(config.mockPricesUrlOrPath);
+    const value = data[this.index].rate_high;
+    this.index = this.index + 1;
+    return { LUNA: value };
   }
 
   async extractPrices(response: any, ids: string[]): Promise<PricesObj> {
