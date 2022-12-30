@@ -11,10 +11,7 @@ import {
   CACHE_MANAGER,
   Inject,
 } from "@nestjs/common";
-import {
-  DataPackagesRequestParams,
-  getOracleRegistryState,
-} from "redstone-sdk";
+import { DataPackagesRequestParams } from "redstone-sdk";
 import config from "../config";
 import { ReceivedDataPackage } from "./data-packages.interface";
 import { DataPackagesService } from "./data-packages.service";
@@ -59,7 +56,6 @@ export interface DataPackagesStatsResponse {
   };
 }
 
-const CACHE_TTL = 5000;
 const CONTENT_TYPE_OCTET_STREAM = "application/octet-stream";
 const CONTENT_TYPE_TEXT = "text/html";
 
@@ -68,8 +64,8 @@ export class DataPackagesController {
   private bundlrService = new BundlrService();
 
   constructor(
-    private dataPackagesService: DataPackagesService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private dataPackagesService: DataPackagesService
   ) {}
 
   private prepareDataPackagesRequestParams(
@@ -93,8 +89,9 @@ export class DataPackagesController {
     @Param("DATA_SERVICE_ID") dataServiceId: string
   ): Promise<DataPackagesResponse> {
     // Validate dataServiceId param
-    const oracleRegistryState = await getOracleRegistryState();
-    if (!oracleRegistryState.dataServices[dataServiceId]) {
+    const isDataServiceIdValid =
+      await this.dataPackagesService.isDataServiceIdValid(dataServiceId);
+    if (!isDataServiceIdValid) {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
@@ -104,21 +101,10 @@ export class DataPackagesController {
       );
     }
 
-    // Checking if data packages for this data service are
-    // presented in the application memory cache
-    const cacheKey = `data-packages/latest/${dataServiceId}`;
-    const dataPackagesFromCache = await this.cacheManager.get(cacheKey);
-
-    if (!dataPackagesFromCache) {
-      const dataPackages =
-        await this.dataPackagesService.getAllLatestDataPackagesForDataService(
-          dataServiceId
-        );
-      await this.cacheManager.set(cacheKey, dataPackages, CACHE_TTL);
-      return dataPackages;
-    } else {
-      return dataPackagesFromCache as DataPackagesResponse;
-    }
+    return this.dataPackagesService.getAllLatestDataWithCache(
+      dataServiceId,
+      this.cacheManager
+    );
   }
 
   @Get("latest")

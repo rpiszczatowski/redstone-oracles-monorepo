@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-
+import { Cache } from "cache-manager";
 import {
   RedstonePayload,
   UniversalSigner,
@@ -20,8 +20,13 @@ import { ReceivedDataPackage } from "./data-packages.interface";
 import { CachedDataPackage, DataPackage } from "./data-packages.model";
 import { makePayload } from "../utils/make-redstone-payload";
 
+// Cache TTL can slightly increase the data delay, but having efficient
+// caching is crucial for the app performance. Assuming, that we have 10s
+// update frequency in nodes, 5s cache TTL on the app level, and 5s cache TTL
+// on the CDN level - then the max data delay is ~20s, which is still good enough :)
+const CACHE_TTL = 5000;
+const MAX_ALLOWED_TIMESTAMP_DELAY = 180 * 1000; // 3 minutes in milliseconds
 export const ALL_FEEDS_KEY = "___ALL_FEEDS___";
-const MAX_ALLOWED_TIMESTAMP_DELAY = 120 * 1000; // 2 minutes in milliseconds
 
 export interface StatsRequestParams {
   fromTimestamp: number;
@@ -34,7 +39,34 @@ export class DataPackagesService {
     await DataPackage.insertMany(dataPackages);
   }
 
-  async getAllLatestDataPackagesForDataService(
+  async getAllLatestDataWithCache(
+    dataServiceId: string,
+    cacheManager: Cache
+  ): Promise<DataPackagesResponse> {
+    // Checking if data packages for this data service are
+    // presented in the application memory cache
+    const cacheKey = `data-packages/latest/${dataServiceId}`;
+    const dataPackagesFromCache = await cacheManager.get<DataPackagesResponse>(
+      cacheKey
+    );
+
+    if (!dataPackagesFromCache) {
+      const dataPackages = await this.getAllLatestDataPackagesFromDB(
+        dataServiceId
+      );
+      await cacheManager.set(cacheKey, dataPackages, CACHE_TTL);
+      return dataPackages;
+    } else {
+      return dataPackagesFromCache;
+    }
+  }
+
+  async isDataServiceIdValid(dataServiceId: string): Promise<boolean> {
+    const oracleRegistryState = await getOracleRegistryState();
+    return !!oracleRegistryState.dataServices[dataServiceId];
+  }
+
+  async getAllLatestDataPackagesFromDB(
     dataServiceId: string
   ): Promise<DataPackagesResponse> {
     dataServiceId;
