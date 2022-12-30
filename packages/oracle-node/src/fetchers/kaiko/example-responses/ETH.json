@@ -1,0 +1,52 @@
+{
+  "access": {
+    "access_range": {
+      "end_timestamp": 1672963199000,
+      "start_timestamp": 1671667200000
+    },
+    "data_range": {
+      "end_timestamp": 1672963199000,
+      "start_timestamp": 1666396800000
+    }
+  },
+  "continuation_token": "",
+  "data": [
+    {
+      "price": "1200.376158885697",
+      "timestamp": 1672315260000
+    }
+  ],
+  "next_url": "https://eu.market-api.kaiko.io/v2/data/trades.v1/spot_exchange_rate/eth/usd?continuation_token=",
+  "query": {
+    "base_asset": "eth",
+    "ch": true,
+    "commodity": "trades",
+    "data_version": "v1",
+    "exclude_exchanges": [],
+    "include_exchanges": ["*"],
+    "instruments": [
+      "huob:spot:eth-usdt",
+      "cbse:spot:eth-usdt",
+      "okex:spot:eth-usdt",
+      "kcon:spot:eth-usdt",
+      "krkn:spot:eth-usdt",
+      "polo:spot:eth-usdt",
+      "binc:spot:eth-usdt",
+      "bfnx:spot:eth-usdt",
+      "bgon:spot:eth-usdt",
+      "bbsp:spot:eth-usdt",
+      "bnus:spot:eth-usdt",
+      "bfnx:spot:usdt-usd",
+      "cbse:spot:usdt-usd"
+    ],
+    "interval": "1m",
+    "page_size": 1,
+    "quote_asset": "usd",
+    "request_time": "2022-12-29T12:01:33.313Z",
+    "sort": "desc",
+    "sources": false
+  },
+  "result": "success",
+  "time": "2022-12-29T12:01:33.365Z",
+  "timestamp": 1672315293365
+}

@@ -24,6 +24,7 @@ import { BandFetcher } from "./band/BandFetcher";
 import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { config } from "../config";
 import { MockFetcher } from "./mock-fetcher/mock-fetcher";
+import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 
 const AVALANCHE_NETWORK_NAME = "Avalanche Network";
 const AVALANCHE_CHAIN_ID = 43114;
@@ -54,6 +55,7 @@ export default {
   lens: new LensFetcher(),
   xt: new XtFetcher(),
   coinmarketcap: new CoinMarketCapFetcher(),
+  kaiko: new KaikoFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...twapFetchers,
