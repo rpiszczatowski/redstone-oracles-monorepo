@@ -15,8 +15,11 @@ import ManifestConfigError from "../manifest/ManifestConfigError";
 import { promiseTimeout } from "../utils/promise-timeout";
 import aggregators from "../aggregators";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
-import { calculateDeviationPercent } from "../utils/calculate-deviation";
-import { safelyConvertAnyValueToNumber } from "../utils/numbers";
+import {
+  calculateAverageValue,
+  safelyConvertAnyValueToNumber,
+  calculateDeviationPercent,
+} from "../utils/numbers";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -261,7 +264,7 @@ export default class PricesService {
     } else if (value < 0) {
       reason = "Value is less than 0";
     } else {
-      const deviationPercent = this.getDeviationPercentWithRecentValues(args);
+      const deviationPercent = this.getDeviationWithRecentValuesAverage(args);
 
       if (deviationPercent > deviationWithRecentValues.maxPercent) {
         reason = `Value is too deviated (${deviationPercent}%)`;
@@ -276,24 +279,28 @@ export default class PricesService {
     };
   }
 
-  // Calculates max deviation from all recent values
-  getDeviationPercentWithRecentValues(args: PriceValidationArgs): number {
+  // Calculates max deviation from average of recent values
+  getDeviationWithRecentValuesAverage(args: PriceValidationArgs): number {
     const { value, timestamp, deviationConfig, recentPrices } = args;
     const { deviationWithRecentValues } = deviationConfig;
-    let resultDeviation = 0;
 
-    for (const recentPrice of recentPrices) {
-      const timestampDelay = timestamp - recentPrice.timestamp;
-      if (timestampDelay <= deviationWithRecentValues.maxDelayMilliseconds) {
-        const deviationPercent = calculateDeviationPercent({
-          measuredValue: value,
-          trueValue: recentPrice.value,
-        });
-        resultDeviation = Math.max(deviationPercent, resultDeviation);
-      }
+    const priceValuesToCompareWith = recentPrices
+      .filter(
+        (recentPrice) =>
+          timestamp - recentPrice.timestamp <=
+          deviationWithRecentValues.maxDelayMilliseconds
+      )
+      .map((recentPrice) => recentPrice.value);
+
+    if (priceValuesToCompareWith.length === 0) {
+      return 0;
+    } else {
+      const recentPricesAvg = calculateAverageValue(priceValuesToCompareWith);
+      return calculateDeviationPercent({
+        measuredValue: value,
+        trueValue: recentPricesAvg,
+      });
     }
-
-    return resultDeviation;
   }
 
   filterPricesForSigning(

@@ -368,7 +368,7 @@ describe("PricesService", () => {
     });
   });
 
-  describe("getDeviationPercentWithRecentValues", () => {
+  describe("getDeviationWithRecentValuesAverage", () => {
     const getDeviation = (
       partialPriceValidationArgs: Partial<PriceValidationArgs>
     ) => {
@@ -378,7 +378,7 @@ describe("PricesService", () => {
         deviationConfig: emptyManifest.deviationCheck,
         recentPrices: [],
       };
-      return pricesService.getDeviationPercentWithRecentValues({
+      return pricesService.getDeviationWithRecentValuesAverage({
         ...defaultPriceValidationArgs,
         ...partialPriceValidationArgs,
       });
@@ -424,7 +424,7 @@ describe("PricesService", () => {
         getDeviation({
           value: 11,
           recentPrices: [
-            { value: 10, timestamp: testTimestamp - 1 },
+            { value: 9.5, timestamp: testTimestamp - 1 },
             { value: 10.5, timestamp: testTimestamp - 2 },
           ],
         })
@@ -438,13 +438,25 @@ describe("PricesService", () => {
       ).toBe(50);
     });
 
+    it("should properly calculate deviations for big recent prices arrays", () => {
+      expect(
+        getDeviation({
+          value: 210000,
+          recentPrices: Array(30000).fill({
+            value: 420000,
+            timestamp: testTimestamp - 1,
+          }),
+        })
+      ).toBe(50);
+    });
+
     it("should properly calculate deviation with negative values", () => {
       expect(
         getDeviation({
           value: 42,
           recentPrices: [{ value: -42, timestamp: testTimestamp - 1 }],
         })
-      ).toBe(0);
+      ).toBe(200);
     });
 
     it("should exclude too old values from the deviation calculation", () => {
@@ -453,6 +465,8 @@ describe("PricesService", () => {
           value: 21,
           recentPrices: [
             { value: 42, timestamp: testTimestamp - 2 * 60 * 1000 },
+            { value: 41, timestamp: testTimestamp - 3 * 60 * 1000 },
+            { value: 43, timestamp: testTimestamp - 4 * 60 * 1000 },
             { value: 1, timestamp: testTimestamp - 180 * 60 * 1000 },
           ],
         })
