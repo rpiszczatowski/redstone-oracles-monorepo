@@ -33,37 +33,28 @@ describe("kaiko fetcher", () => {
   const sut = fetchers["kaiko"];
 
   it("should properly fetch data with proper tokens", async () => {
-    // Given
     mock(properTokens);
 
-    // When
     const result = await sut.fetchAll(properTokens);
 
-    // Then
     expect(result).toEqual(expectedResult);
   });
 
   it("should properly fetch data with one improper token", async () => {
-    // Given
     let tokens = properTokens;
     properTokens.push(wrongToken);
     mock(tokens);
 
-    // When
     const result = await sut.fetchAll(tokens);
 
-    // Then
     expect(result).toEqual(expectedResult);
   });
 
   it("should properly fetch data with an improper token only", async () => {
-    // Given
     mock([wrongToken]);
 
-    // When
     const result = await sut.fetchAll([wrongToken]);
 
-    // Then
     expect(result).toEqual([]);
   });
 });
