@@ -264,8 +264,7 @@ export default class PricesService {
     } else if (value < 0) {
       reason = "Value is less than 0";
     } else {
-      const deviationPercent =
-        this.getDeviationPercentWithRecentValuesAVG(args);
+      const deviationPercent = this.getDeviationWithRecentValuesAverage(args);
 
       if (deviationPercent > deviationWithRecentValues.maxPercent) {
         reason = `Value is too deviated (${deviationPercent}%)`;
@@ -281,7 +280,7 @@ export default class PricesService {
   }
 
   // Calculates max deviation from average of recent values
-  getDeviationPercentWithRecentValuesAVG(args: PriceValidationArgs): number {
+  getDeviationWithRecentValuesAverage(args: PriceValidationArgs): number {
     const { value, timestamp, deviationConfig, recentPrices } = args;
     const { deviationWithRecentValues } = deviationConfig;
 

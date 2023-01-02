@@ -368,7 +368,7 @@ describe("PricesService", () => {
     });
   });
 
-  describe("getDeviationPercentWithRecentValuesAVG", () => {
+  describe("getDeviationWithRecentValuesAverage", () => {
     const getDeviation = (
       partialPriceValidationArgs: Partial<PriceValidationArgs>
     ) => {
@@ -378,7 +378,7 @@ describe("PricesService", () => {
         deviationConfig: emptyManifest.deviationCheck,
         recentPrices: [],
       };
-      return pricesService.getDeviationPercentWithRecentValuesAVG({
+      return pricesService.getDeviationWithRecentValuesAverage({
         ...defaultPriceValidationArgs,
         ...partialPriceValidationArgs,
       });
