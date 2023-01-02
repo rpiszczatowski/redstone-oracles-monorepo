@@ -1,28 +1,19 @@
 import axios from "axios";
 import { config } from "../config";
 
-enum ContractStatus {
-    OK = "evaluated",
+type PostReactions = {
+    likes: number;
+    dislikes: number;
+    voters: string[];
 }
 
-type ReactionsState = {
-    [postId: string]: {
-        likes: number;
-        dislikes: number;
-        voters: string[];
-    }
+type FollowProfile = {
+    following: string[],
+    followers: string[]
 }
 
-type FollowState = {
-    [profileId: string]: {
-        following: string[],
-        followers: string[]
-    }
-}
-
-type DreReactionStateResponse<S> = {
-    state: S,
-    status: ContractStatus
+type DreKVResponse = {
+    value: string,
 };
 
 export enum LensFollowRelation {
@@ -34,11 +25,9 @@ export enum LensFollowRelation {
 
 export async function fetchLensLikesByPostId(postId: string): Promise<number> {
     const { dreNodeUrl, lensContract } = getConfig();
-    const state = await fetchStateFromDreNode<ReactionsState>(lensContract, dreNodeUrl);
+    const post = await fetchStorageValueFromDre<PostReactions>(`reactions:${postId}`, lensContract, dreNodeUrl);
 
-    const post = state[postId];
-
-    if (post === undefined) {
+    if (!post) {
         return 0;
     }
 
@@ -51,9 +40,7 @@ export async function fetchLensLikesByPostId(postId: string): Promise<number> {
 export async function fetchFollowRelationBetweenProfiles(firstProfileId: string, secondProfileId: string): Promise<LensFollowRelation> {
     const { dreNodeUrl, lensContract } = getConfig();
 
-    const state = await fetchStateFromDreNode<FollowState>(lensContract, dreNodeUrl);
-
-    const firstProfile = state[firstProfileId];
+    const firstProfile = await fetchStorageValueFromDre<FollowProfile>(`follows:${firstProfileId}`, lensContract, dreNodeUrl);
 
     if (!firstProfile) {
         return LensFollowRelation.NoRelation;
@@ -78,17 +65,21 @@ export async function fetchFollowRelationBetweenProfiles(firstProfileId: string,
 }
 
 
-async function fetchStateFromDreNode<S>(contractAddress: string, dreNodeUrl: string): Promise<S> {
-    const { data } = await axios.get<DreReactionStateResponse<S>>(dreNodeUrl + "contract", {
+async function fetchStorageValueFromDre<S>(key: string, contractAddress: string, dreNodeUrl: string): Promise<S | null> {
+    const { data } = await axios.get<DreKVResponse>(dreNodeUrl + "kv", {
         params: {
             id: contractAddress,
-            state: true
+            key
         }
     });
 
-    if (data.status !== ContractStatus.OK) { throw new Error(`State wasn't evaluated`) }
+    console.error({ data })
 
-    return data.state;
+    if (data.value === null) {
+        return null;
+    }
+
+    return JSON.parse(data.value);
 }
 
 
