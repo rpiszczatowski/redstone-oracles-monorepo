@@ -16,9 +16,23 @@ contract SampleProxyConnector is ProxyConnector {
   error ExpectedMsgValueNotToBePassed();
 
   SampleRedstoneConsumerNumericMock sampleRedstoneConsumer;
+  uint256 someStorageVar = 0;
 
   constructor() {
     sampleRedstoneConsumer = new SampleRedstoneConsumerNumericMock();
+  }
+  
+  function getOracleValueBenchmark(bytes32 dataFeedId) external {
+    uint256 value =  getOracleValueUsingProxy(dataFeedId);
+    value;
+    someStorageVar = 1;
+  }
+
+  function emptyGetOracleValueBenchmark(bytes32 dataFeedId) external {
+    dataFeedId;
+    uint256 value;
+    value;
+    someStorageVar = 1;
   }
 
   function getOracleValueUsingProxy(bytes32 dataFeedId) public view returns (uint256) {
