@@ -1,5 +1,4 @@
 [
-  "aax",
   "ascendex",
   "bequant",
   "binance",
@@ -35,5 +34,7 @@
   "mexc",
   "latoken",
   "wazirx",
-  "btcex"
+  "btcex",
+  "bitrue",
+  "bitget"
 ]

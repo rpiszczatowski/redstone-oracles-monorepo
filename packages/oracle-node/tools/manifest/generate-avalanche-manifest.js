@@ -33,6 +33,7 @@ const SYMBOLS = [
   "YYAV3SA1",
   "GMX",
   "GLP",
+  "JOE",
 ];
 
 generateSubManifest(SYMBOLS, OUTPUT_FILE_PATH);
