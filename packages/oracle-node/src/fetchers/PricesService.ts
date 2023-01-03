@@ -196,7 +196,7 @@ export default class PricesService {
 
         aggregatedPrices.push(priceAfterAggregation);
       } catch (e: any) {
-        logger.error(e.stack);
+        logger.error(`Symbol ${price.symbol}, ${e.stack}`);
       }
     }
 
@@ -225,7 +225,7 @@ export default class PricesService {
         newSources[sourceName] = valueFromSourceNum;
       } else {
         logger.warn(
-          `Excluding ${price.symbol} value for source: ${sourceName}. Reason: ${reason}`
+          `Excluding ${price.symbol} value ${valueFromSourceNum} for source: ${sourceName}. Reason: ${reason}`
         );
       }
     }
