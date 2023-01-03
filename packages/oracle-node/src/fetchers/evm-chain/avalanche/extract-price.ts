@@ -110,8 +110,7 @@ const calculateReserveTokensPrices = async (tokenReserves: TokenReserve) => {
   const areAllTokensFetched =
     Object.keys(tokensPrices).length === Object.keys(tokenReserves).length;
   if (areAllTokensFetched) {
-    const tokensReservesSerialized =
-      serializeStableCoinsDecimals(tokenReserves);
+    const tokensReservesSerialized = serializeDecimals(tokenReserves);
     const tokensReservesPrices = {} as TokenReserve;
     for (const tokenName of Object.keys(tokenReserves)) {
       const tokenReservePrice = tokensReservesSerialized[tokenName].mul(
@@ -123,17 +122,20 @@ const calculateReserveTokensPrices = async (tokenReserves: TokenReserve) => {
   }
 };
 
-const serializeStableCoinsDecimals = (tokenReserves: TokenReserve) => {
+const serializeDecimals = (tokenReserves: TokenReserve) => {
   const serializedTokenReserves = {} as TokenReserve;
   for (const tokenName of Object.keys(tokenReserves)) {
-    if (!["USDC", "USDT"].includes(tokenName)) {
-      serializedTokenReserves[tokenName] = tokenReserves[tokenName];
-    } else {
-      const tokenReserveSerialized = tokenReserves[tokenName].mul(
+    let tokenReserveSerialized = tokenReserves[tokenName];
+    if (["USDC", "USDT"].includes(tokenName)) {
+      tokenReserveSerialized = tokenReserves[tokenName].mul(
         ethers.utils.parseUnits("1.0", 12)
       );
-      serializedTokenReserves[tokenName] = tokenReserveSerialized;
+    } else if (tokenName === "BTC") {
+      tokenReserveSerialized = tokenReserves[tokenName].mul(
+        ethers.utils.parseUnits("1.0", 10)
+      );
     }
+    serializedTokenReserves[tokenName] = tokenReserveSerialized;
   }
   return serializedTokenReserves;
 };
