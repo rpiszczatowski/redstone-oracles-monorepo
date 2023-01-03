@@ -33,7 +33,7 @@ describe("PricesService", () => {
   });
 
   describe("groupPricesByToken", () => {
-    const fetchTimestamp = 555;
+    const fetchTimestamp = 0;
     const nodeVersion = "3";
 
     it("should assign values from different sources to tokens/symbols", () => {

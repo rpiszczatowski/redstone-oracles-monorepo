@@ -7,6 +7,7 @@ import {
   savePrices,
 } from "../../src/db/local-db";
 import { PriceDataAfterAggregation } from "../../src/types";
+import { roundTimestamp } from "../../src/utils/timestamps";
 
 const PRICES_TTL_MILLISECONDS = 15 * 60 * 1000; // 15 minutes
 
@@ -119,6 +120,7 @@ describe("Local DB", () => {
     const getTestSymbol = (assetIndex: number) => `SYMBOL-${assetIndex}`;
 
     const preparePrices = (timestamp: number): PriceDataAfterAggregation[] => {
+      const roundedTimestamp = roundTimestamp(timestamp);
       const prices: PriceDataAfterAggregation[] = [];
       for (let assetIndex = 0; assetIndex < testAssetsCount; assetIndex++) {
         const symbol = getTestSymbol(assetIndex);
@@ -126,7 +128,7 @@ describe("Local DB", () => {
           ...defaultPriceProps,
           symbol,
           value: assetIndex,
-          timestamp,
+          timestamp: roundedTimestamp,
         });
       }
       return prices;

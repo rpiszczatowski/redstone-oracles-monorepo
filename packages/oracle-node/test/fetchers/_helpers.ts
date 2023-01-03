@@ -4,6 +4,7 @@ import {
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
 } from "../../src/types";
+import { roundTimestamp } from "../../src/utils/timestamps";
 
 export const saveMockPriceInLocalDb = async (
   value: number,
