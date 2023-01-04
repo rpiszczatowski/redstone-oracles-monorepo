@@ -11,7 +11,7 @@ const KAIKO_REQUEST_HEADERS = {
 };
 const KAIKO_REQUEST_PARAMS = {
   page_size: 1,
-  interval: "10s",
+  interval: "1m",
   sort: "desc",
 };
 const KAIKO_CONFIG = {
