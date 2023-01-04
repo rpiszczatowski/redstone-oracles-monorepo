@@ -20136,7 +20136,7 @@ walker@^1.0.7, walker@^1.0.8:
     makeerror "1.0.12"
 
 "warp-contracts-plugin-signature@file:../warp-contracts-plugins/warp-contracts-plugin-signature":
-  version "1.0.7"
+  version "1.0.8"
   dependencies:
     "@metamask/onboarding" "^1.0.1"
     "@metamask/providers" "^10.0.0"
@@ -20144,7 +20144,7 @@ walker@^1.0.7, walker@^1.0.8:
     ethers "^5.7.2"
     safe-stable-stringify "^2.4.1"
 
-warp-contracts@1.2.43:
+warp-contracts@^1.2.43:
   version "1.2.43"
   resolved "https://registry.yarnpkg.com/warp-contracts/-/warp-contracts-1.2.43.tgz#a7c09db2e1dca9b3e4f6cb12fdffa4fda00494e6"
   integrity sha512-WxHZw8iH4ZHRQfw1btN8WrYtaIRsm4eVscWUb+65bn2t+sIBZSYRuInf9dFwUKGXpypoZlveIvsidtk3lfEoWw==

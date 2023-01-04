@@ -1,9 +1,10 @@
 import { SignedDataPackage } from "redstone-protocol";
 import { Broadcaster } from "../Broadcaster";
-// @ts-ignore  
-import { evmSignature } from "warp-contracts-plugin-signature/server"
+// @ts-ignore
+import { buildEvmSignature } from "warp-contracts-plugin-signature/server"
 import { Wallet } from "ethers";
 import { Contract, WarpFactory } from 'warp-contracts';
+
 
 export class WarpBroadcaster implements Broadcaster {
     private readonly contract: Contract;
@@ -12,10 +13,11 @@ export class WarpBroadcaster implements Broadcaster {
         private readonly contractAddress: string,
         private readonly evmPrivateKey: string
     ) {
-        const signer = evmSignature(new Wallet(this.evmPrivateKey))
+        const signer = buildEvmSignature(new Wallet(this.evmPrivateKey))
         const warp = WarpFactory.forMainnet();
         this.contract = warp
             .contract(this.contractAddress)
+            // @ts-ignore
             .setEvaluationOptions({ useKVStorage: true })
             .connect({
                 signer,
@@ -34,12 +36,12 @@ export class WarpBroadcaster implements Broadcaster {
 
                     // should never happen only single data source
                     if (data.dataPoints.length !== 1) {
-                        return false;
+                        throw Error(`failed to broadcast profiles because it contains more than one dataPoints: ${data.dataPoints.length}`);
                     }
 
-                    // omit errors
+                    // throw errors
                     if (data.dataPoints[0].value === 'error') {
-                        return false;
+                        throw Error(`failed to broadcast new lens profile ${data.dataPoints[0]}, because it contains error`);
                     }
 
                     return true;
@@ -62,7 +64,6 @@ export class WarpBroadcaster implements Broadcaster {
             try {
                 await this.contract.writeInteraction(
                     { function: 'newProfiles', profiles },
-                    { strict: true }
                 );
             } catch (e) {
                 console.error(e);

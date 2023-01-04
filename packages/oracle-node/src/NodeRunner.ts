@@ -48,7 +48,7 @@ const DEFAULT_HTTP_BROADCASTER_URLS = [
   "https://direct-2.cache-service.redstone.finance",
   "https://direct-3.cache-service.redstone.finance",
 ];
-const DEFAULT_WARP_CONTRACT = "xIJy5h0v5rlsdYI_xwhILo9a9EbU1K98pcjz-I1ahPU";
+const DEFAULT_WARP_CONTRACT = "Gol-5kxmBDPgZwn8sMKlXydrKjG1BBkJEID1NCO2RL4";
 
 export default class NodeRunner {
   private readonly version: string;
