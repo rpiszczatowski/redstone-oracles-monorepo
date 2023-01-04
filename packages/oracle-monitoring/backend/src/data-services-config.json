@@ -10,7 +10,7 @@
     ],
     "checkEachSingleUrl": true,
     "minTimestampDiffForWarning": 40000,
-    "schedule": "*/30 * * * * *",
+    "schedule": "*/20 * * * * *",
     "urls": [
       "https://oracle-gateway-1.a.redstone.finance",
       "https://oracle-gateway-2.a.redstone.finance"

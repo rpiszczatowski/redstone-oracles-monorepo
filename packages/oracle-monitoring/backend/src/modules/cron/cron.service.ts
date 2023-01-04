@@ -83,21 +83,21 @@ export class CronService {
 
   addCronJobs() {
     for (const dataService of dataServicesToCheck) {
-      if (dataService.checkWithoutSymbol) {
-        this.startCheckingDataServiceForAllDataFeeds(dataService);
-      }
+      // if (dataService.checkWithoutSymbol) {
+      //   this.startCheckingDataServiceForAllDataFeeds(dataService);
+      // }
 
-      if (dataService.symbolsToCheck && dataService.symbolsToCheck.length > 0) {
-        this.startCheckingDataServiceForEachDataFeed(dataService);
-      }
+      // if (dataService.symbolsToCheck && dataService.symbolsToCheck.length > 0) {
+      //   this.startCheckingDataServiceForEachDataFeed(dataService);
+      // }
 
-      if (dataService.checkEachSingleUrl) {
-        this.startCheckingDataServiceForEachUrl(dataService);
-      }
+      // if (dataService.checkEachSingleUrl) {
+      //   this.startCheckingDataServiceForEachUrl(dataService);
+      // }
 
       this.startCheckingPayloadsFromCacheLayer(dataService);
 
-      this.startCheckingDataFeedsDeviationIn(dataService);
+      // this.startCheckingDataFeedsDeviationIn(dataService);
     }
   }
 
@@ -420,6 +420,7 @@ export class CronService {
     }
   };
 
+  // TODO: Hmm, why do we have urls here?
   checkPayloadsFromCacheLayer = (dataServiceId: string, urls: string[]) => {
     Logger.log(`Checking payloads: ${dataServiceId} from cache layers`);
     exec(
