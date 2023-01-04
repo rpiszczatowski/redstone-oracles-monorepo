@@ -50,6 +50,12 @@ export function mockFetcherResponseWithFunction(getResponse: () => any) {
   mockedAxios.post.mockResolvedValue({ data: getResponse() });
 }
 
+export function mockFetcherResponseOnceWithFunction(getResponse: () => any) {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  mockedAxios.get.mockResolvedValueOnce({ data: getResponse() });
+  mockedAxios.post.mockResolvedValueOnce({ data: getResponse() });
+}
+
 // TODO: find out why this does not work...
 export function mockFetcherProxy(
   proxyModule: string,
