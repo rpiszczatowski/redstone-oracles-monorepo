@@ -15,4 +15,8 @@ contract SampleContract {
   function getValueForDataFeedId(bytes32 dataFeedId) public view returns (uint256) {
     return sampleStorageProxy.getOracleValue(dataFeedId);
   }
+
+  function getValuesForDataFeedIds(bytes32[] memory dataFeedIds) public view returns (uint256[] memory) {
+    return sampleStorageProxy.getOracleValues(dataFeedIds);
+  }
 }

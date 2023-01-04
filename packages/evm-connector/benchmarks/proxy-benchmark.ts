@@ -17,8 +17,10 @@ interface BenchmarkTestCaseParams {
 }
 
 interface GasReport {
-  storageProxy: number | string;
-  proxyConnector: number | string;
+  storageProxyOneAsset: number | string;
+  proxyConnectorOneAsset: number | string;
+  storageProxyManyAssets: number | string;
+  proxyConnectorManyAssets: number | string;
 }
 
 // Change this array to configure your custom benchmark test cases
@@ -89,8 +91,8 @@ describe("Benchmark", function () {
     benchmarkParams: BenchmarkTestCaseParams,
     gasReport: GasReport
   ) => {
-    const becnhmarkCaseKey = getBenchmarkCaseShortTitle(benchmarkParams);
-    fullGasReport[becnhmarkCaseKey] = gasReport;
+    const benchmarkCaseKey = getBenchmarkCaseShortTitle(benchmarkParams);
+    fullGasReport[benchmarkCaseKey] = gasReport;
   };
 
   const getBenchmarkCaseShortTitle = (
@@ -127,40 +129,70 @@ describe("Benchmark", function () {
       proxyConnector
     ).usingMockDataPackages(mockDataPackagesConfig);
 
+    // Run benchmarks
     try {
-      let storageProxyGas = 0;
-      let proxyConnectorGas = 0;
+      // Get value of one assets
+      const emptyWrappedProxyConnectorOneAssetTx =
+        await wrappedProxyConnector.emptyGetOracleValueBenchmark(
+          bytes32Symbols[0]
+        );
+      const emptyWrappedProxyConnectorOneAssetTxReceipt =
+        await emptyWrappedProxyConnectorOneAssetTx.wait();
 
-      for (const dataFeedId of bytes32Symbols) {
-        const emptyWrappedProxyConnectorTx =
-          await wrappedProxyConnector.emptyGetOracleValueBenchmark(dataFeedId);
-        const emptyWrappedProxyConnectorTxReceipt =
-          await emptyWrappedProxyConnectorTx.wait();
+      const wrappedProxyConnectorOneAssetTx =
+        await wrappedProxyConnector.getOracleValueBenchmark(bytes32Symbols[0]);
+      const wrappedProxyConnectorOneAssetTxReceipt =
+        await wrappedProxyConnectorOneAssetTx.wait();
 
-        const wrappedProxyConnectorTx =
-          await wrappedProxyConnector.getOracleValueBenchmark(dataFeedId);
-        const wrappedProxyConnectorTxReceipt =
-          await wrappedProxyConnectorTx.wait();
-        const emptyWrappedStorageProxyTx =
-          await wrappedStorageProxy.emptyGetOracleValueBenchmark(dataFeedId);
-        const emptyWrappedStorageProxyTxReceipt =
-          await emptyWrappedStorageProxyTx.wait();
+      const emptyWrappedStorageProxyOneAssetTx =
+        await wrappedStorageProxy.emptyGetOracleValueBenchmark(
+          bytes32Symbols[0]
+        );
+      const emptyWrappedStorageProxyOneAssetTxReceipt =
+        await emptyWrappedStorageProxyOneAssetTx.wait();
 
-        const wrappedStorageProxyTx =
-          await wrappedStorageProxy.getOracleValueBenchmark(dataFeedId);
-        const wrappedStorageProxyTxReceipt = await wrappedStorageProxyTx.wait();
+      const wrappedStorageProxyOneAssetTx =
+        await wrappedStorageProxy.getOracleValueBenchmark(bytes32Symbols[0]);
+      const wrappedStorageProxyOneAssetTxReceipt =
+        await wrappedStorageProxyOneAssetTx.wait();
 
-        storageProxyGas += wrappedStorageProxyTxReceipt.gasUsed
-          .sub(emptyWrappedStorageProxyTxReceipt.gasUsed)
-          .toNumber();
-        proxyConnectorGas += wrappedProxyConnectorTxReceipt.gasUsed
-          .sub(emptyWrappedProxyConnectorTxReceipt.gasUsed)
-          .toNumber();
-      }
+      // Get value of many assets
+      const emptyWrappedProxyConnectorManyAssetsTx =
+        await wrappedProxyConnector.emptyGetOracleValuesBenchmark(
+          bytes32Symbols
+        );
+      const emptyWrappedProxyConnectorManyAssetsTxReceipt =
+        await emptyWrappedProxyConnectorManyAssetsTx.wait();
+
+      const wrappedProxyConnectorManyAssetsTx =
+        await wrappedProxyConnector.getOracleValuesBenchmark(bytes32Symbols);
+      const wrappedProxyConnectorManyAssetsTxReceipt =
+        await wrappedProxyConnectorManyAssetsTx.wait();
+
+      const emptyWrappedStorageProxyManyAssetsTx =
+        await wrappedStorageProxy.emptyGetOracleValuesBenchmark(bytes32Symbols);
+      const emptyWrappedStorageProxyManyAssetsTxReceipt =
+        await emptyWrappedStorageProxyManyAssetsTx.wait();
+
+      const wrappedStorageProxyManyAssetsTx =
+        await wrappedStorageProxy.getOracleValuesBenchmark(bytes32Symbols);
+      const wrappedStorageProxyManyAssetsTxReceipt =
+        await wrappedStorageProxyManyAssetsTx.wait();
 
       const gasReport: GasReport = {
-        storageProxy: storageProxyGas,
-        proxyConnector: proxyConnectorGas,
+        proxyConnectorOneAsset: wrappedProxyConnectorOneAssetTxReceipt.gasUsed
+          .sub(emptyWrappedProxyConnectorOneAssetTxReceipt.gasUsed)
+          .toNumber(),
+        storageProxyOneAsset: wrappedStorageProxyOneAssetTxReceipt.gasUsed
+          .sub(emptyWrappedStorageProxyOneAssetTxReceipt.gasUsed)
+          .toNumber(),
+        proxyConnectorManyAssets:
+          wrappedProxyConnectorManyAssetsTxReceipt.gasUsed
+            .sub(emptyWrappedProxyConnectorManyAssetsTxReceipt.gasUsed)
+            .toNumber(),
+        storageProxyManyAssets: wrappedStorageProxyManyAssetsTxReceipt.gasUsed
+          .sub(emptyWrappedStorageProxyManyAssetsTxReceipt.gasUsed)
+          .toNumber(),
       };
 
       console.log({ gasReport });
@@ -170,28 +202,27 @@ describe("Benchmark", function () {
       console.log("Most probably gas ran out of gas");
       console.error(e);
       updateFullGasReport(benchmarkParams, {
-        storageProxy: "error-too-much-gas",
-        proxyConnector: "error-too-much-gas",
+        proxyConnectorOneAsset: "error-too-much-gas",
+        storageProxyOneAsset: "error-too-much-gas",
+        proxyConnectorManyAssets: "error-too-much-gas",
+        storageProxyManyAssets: "error-too-much-gas",
       });
     }
   };
 
   for (const requiredSignersCount of TEST_CASES.requiredSignersCount) {
     for (const requestedSymbolsCount of TEST_CASES.requestedSymbolsCount) {
-      for (const dataPointsCount of TEST_CASES.dataPointsCount) {
-        if (dataPointsCount >= requestedSymbolsCount || dataPointsCount == 1) {
-          const benchmarkParams: BenchmarkTestCaseParams = {
-            requiredSignersCount,
-            requestedSymbolsCount,
-            dataPointsCount,
-          };
-          it(`Benchmark: ${getBenchmarkCaseShortTitle(
-            benchmarkParams
-          )}`, async () => {
-            await runBenchmarkTestCase(benchmarkParams);
-          });
-        }
-      }
+      const dataPointsCount = 1;
+      const benchmarkParams: BenchmarkTestCaseParams = {
+        requiredSignersCount,
+        requestedSymbolsCount,
+        dataPointsCount,
+      };
+      it(`Benchmark: ${getBenchmarkCaseShortTitle(
+        benchmarkParams
+      )}`, async () => {
+        await runBenchmarkTestCase(benchmarkParams);
+      });
     }
   }
 });
