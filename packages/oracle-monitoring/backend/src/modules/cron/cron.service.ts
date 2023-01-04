@@ -17,6 +17,7 @@ interface DataServiceConfig {
   checkWithoutSymbol: boolean;
   dataFeedsToCheck: string[];
   checkEachSingleUrl: boolean;
+  minTimestampDiffForNotification: number;
   minTimestampDiffForWarning: number;
   schedule: string;
   urls: string[];
@@ -36,6 +37,7 @@ interface CheckDataServiceInput {
 interface CheckSingleSourceInput {
   dataServiceId: string;
   minTimestampDiffForWarning: number;
+  minTimestampDiffForNotification: number;
   url: string;
   dataFeeds: string[];
   uniqueSignersCount: number;
@@ -83,13 +85,14 @@ export class CronService {
 
   addCronJobs() {
     for (const dataService of dataServicesToCheck) {
-      if (dataService.checkWithoutSymbol) {
-        this.startCheckingDataServiceForAllDataFeeds(dataService);
-      }
-
-      if (dataService.symbolsToCheck && dataService.symbolsToCheck.length > 0) {
-        this.startCheckingDataServiceForEachDataFeed(dataService);
-      }
+      // TODO: think about removing these jobs, as they don't have added
+      // value comparing to checking each single URL
+      // if (dataService.checkWithoutSymbol) {
+      //   this.startCheckingDataServiceForAllDataFeeds(dataService);
+      // }
+      // if (dataService.symbolsToCheck && dataService.symbolsToCheck.length > 0) {
+      //   this.startCheckingDataServiceForEachDataFeed(dataService);
+      // }
 
       if (dataService.checkEachSingleUrl) {
         this.startCheckingDataServiceForEachUrl(dataService);
@@ -149,6 +152,8 @@ export class CronService {
       const job = new CronJob(dataService.schedule, () => {
         this.checkSingleUrl({
           dataServiceId: dataService.id,
+          minTimestampDiffForNotification:
+            dataService.minTimestampDiffForNotification,
           minTimestampDiffForWarning: dataService.minTimestampDiffForWarning,
           url,
           dataFeeds: dataService.dataFeedsToCheck,
@@ -251,6 +256,7 @@ export class CronService {
 
   checkSingleUrl = async ({
     dataServiceId,
+    minTimestampDiffForNotification,
     minTimestampDiffForWarning,
     url,
     dataFeeds,
@@ -267,7 +273,7 @@ export class CronService {
       const dataPackageResponse = await requestDataPackages(
         {
           dataServiceId,
-          uniqueSignersCount: uniqueSignersCount,
+          uniqueSignersCount,
           dataFeeds,
         },
         [url]
@@ -295,6 +301,8 @@ export class CronService {
             dataServiceId,
             url,
           });
+
+          // Saving an issue to DB if needed
           if (timestampDiff > minTimestampDiffForWarning) {
             Logger.warn(
               `Timestamp diff is quite big: ${timestampDiff}. Saving issue in DB`
@@ -308,6 +316,18 @@ export class CronService {
               timestampDiffMilliseconds: timestampDiff,
             }).save();
           }
+
+          // Sending notification if timestamp diff is too big
+          if (timestampDiff > minTimestampDiffForNotification) {
+            await this.sendErrorMessageToUptimeKuma(
+              dataServiceId,
+              dataFeedId,
+              "timestamp-too-big",
+              url + `-diff-${timestampDiff}`
+            );
+          }
+
+          // Sending notification if timestamp diff is too big
         } else {
           Logger.error(
             `Error occurred: no data package for ${dataFeedId}. Saving issue in DB`
@@ -500,10 +520,10 @@ export class CronService {
     dataServiceId: string,
     symbol: string,
     type: string,
-    urlOrOther: string
+    messagePostfix: string
   ) => {
     const uptimeKumaUrl = this.configService.get("UPTIME_KUMA_URL");
-    const uptimeKumaUrlWithMessage = `${uptimeKumaUrl}&msg=${dataServiceId}-${symbol}-${type}-${urlOrOther}`;
+    const uptimeKumaUrlWithMessage = `${uptimeKumaUrl}&msg=${dataServiceId}-${symbol}-${type}-${messagePostfix}`;
     if (uptimeKumaUrl) {
       await this.httpService.axiosRef.get(uptimeKumaUrlWithMessage);
     }
