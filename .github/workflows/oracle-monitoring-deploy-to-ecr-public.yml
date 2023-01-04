@@ -3,6 +3,7 @@
 
 name: Deploy monitoring to Amazon ECR Public
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
