@@ -424,7 +424,7 @@ export class CronService {
     Logger.log(`Checking payloads: ${dataServiceId} from cache layers`);
     exec(
       `
-        [ ! -d "/path/to/dir" ] && git clone https://github.com/redstone-finance/redstone-evm-examples.git;
+        [ ! -d "/path/to/dir" ] && git clone -b tests-for-monitoring-service https://github.com/redstone-finance/redstone-evm-examples.git;
         cd redstone-evm-examples &&
         yarn &&
         yarn test test/AvalancheProdExample.js
