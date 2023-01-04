@@ -203,13 +203,13 @@ describe("NodeRunnerOld", () => {
         provider: "mockArAddress",
         source: { coingecko: 444, uniswap: 445 },
         symbol: "BTC",
-        timestamp: 111111111,
+        timestamp: 111111000,
         value: 444.5,
         version: "0.4",
       },
     ]);
     expect(axios.post).toHaveBeenCalledWith(`${mockCacheServiceUrl}/packages`, {
-      timestamp: 111111111,
+      timestamp: 111111000,
       liteSignature: "mock_evm_signed_lite",
       signerAddress: "mock_evm_signer_address",
       provider: "mockArAddress",

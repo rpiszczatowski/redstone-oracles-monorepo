@@ -270,49 +270,54 @@
     "color": "#6a5bcb"
   },
   "pangolin-png": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-png.png",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/pangolin.png",
     "url": "https://pangolin.exchange/",
-    "color": "#e87a35"
+    "color": "#f6ca45"
   },
   "pangolin-qi": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-qi.png",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/pangolin.png",
     "url": "https://pangolin.exchange/",
-    "color": "#4fb1e8"
+    "color": "#f6ca45"
   },
   "pangolin-ave": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-ave.png",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/pangolin.png",
     "url": "https://pangolin.exchange/",
-    "color": "#000000"
+    "color": "#f6ca45"
   },
   "pangolin-wavax": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-wavax.png",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/pangolin.png",
+    "url": "https://pangolin.exchange/",
+    "color": "#f6ca45"
+  },
+  "pangolin-aablock": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/pangolin.png",
+    "url": "https://pangolin.exchange/",
+    "color": "#f6ca45"
+  },
+  "pangolin-spore": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/pangolin.png",
+    "url": "https://pangolin.exchange/",
+    "color": "#f6ca45"
+  },
+  "pangolin-usdt": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/pangolin.png",
+    "url": "https://pangolin.exchange/",
+    "color": "#f6ca45"
+  },
+  "pangolin-usdc": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/pangolin.png",
     "url": "https://pangolin.exchange/",
     "color": "#000000"
   },
-  "pangolin-aablock": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-aablock.png",
-    "url": "https://pangolin.exchange/",
-    "color": "#265fb0"
-  },
-  "pangolin-spore": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-spore.png",
-    "url": "https://pangolin.exchange/",
-    "color": "#424a88"
-  },
-  "pangolin-usdt": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-usdt.png",
-    "url": "https://pangolin.exchange/",
-    "color": "#48a07c"
-  },
   "pangolin-pefi": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-pefi.png",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/pangolin.png",
     "url": "https://pangolin.exchange/",
-    "color": "#e74342"
+    "color": "#f6ca45"
   },
   "pangolin-snob": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-snob.png",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/pangolin.png",
     "url": "https://pangolin.exchange/",
-    "color": "#4aa8f8"
+    "color": "#f6ca45"
   },
   "custom-urls": {
     "logoURI": "https://cdn.redstone.finance/sources/custom-urls.svg",
@@ -358,5 +363,35 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bkex.png",
     "url": "https://h5.bkex.com/",
     "color": "#e0552f"
+  },
+  "bitrue": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bitrue.png",
+    "url": "https://www.bitrue.com/",
+    "color": "#ECEC62"
+  },
+  "bitget": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bitget.png",
+    "url": "https://www.bitget.com/",
+    "color": "#4DA0B1"
+  },
+  "mexc": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/mexc.png",
+    "url": "https://www.mexc.com/",
+    "color": "#3360bc"
+  },
+  "coinmarketcap": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/coinmarketcap.png",
+    "url": "https://coinmarketcap.com/",
+    "color": "#4260f2"
+  },
+  "avalanche-evm-fetcher": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/avax.svg",
+    "url": "",
+    "color": "#E84142"
+  },
+  "latoken": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/latoken.png",
+    "url": "https://latoken.com/",
+    "color": "#5861f6"
   }
 }

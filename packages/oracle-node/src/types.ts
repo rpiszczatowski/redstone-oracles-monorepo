@@ -147,7 +147,7 @@ export interface NodeConfig {
   ttlForPricesInLocalDBInMilliseconds: number;
   avalancheRpcUrl: string;
   enableStreamrBroadcasting: boolean;
-  mockPricesUrl: string;
+  mockPricesUrlOrPath: string;
   twelveDataRapidApiKey?: string;
   coinmarketcapApiKey?: string;
   kaikoApiKey?: string;

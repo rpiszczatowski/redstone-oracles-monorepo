@@ -144,6 +144,17 @@ describe("NodeRunner", () => {
       expect(mockedArProxy).toHaveBeenCalledWith(jwk);
     });
 
+    it("should throw if interval not divisble by 1000", async () => {
+      manifest.interval = 60001;
+      const sut = await NodeRunner.create({
+        ...nodeConfig,
+        overrideManifestUsingFile: manifest,
+      });
+      await expect(sut.run()).rejects.toThrowError(
+        "Interval needs to be divisible by 1000"
+      );
+    });
+
     it("should throw if no maxDeviationPercent configured for token", async () => {
       const { deviationCheck, ...manifestWithoutDeviationCheck } = manifest;
 
@@ -175,12 +186,12 @@ describe("NodeRunner", () => {
 
       expect(axios.post).toHaveBeenCalledWith(broadcastingUrl, {
         requestSignature:
-          "0xdd8c162ee49b5a506cc6afbe5d0d9a7aabd1c0e8946900e3601a5eacd96439e56db8419660b4508c9f35db4b1d4716ec58011101c9744f6f812d7b742124a3ff1c",
+          "0x262eda99c935322d84d2431b5d81adfc9b7cc46169240c43ea8973cb3d6e48cd29fb2a4f2df58ba1b0ff785b94cdc700f1f8a2ba7a24394e212dffd0d8fa653f1c",
         dataPackages: [
           {
             signature:
-              "osKzrnqb87XX51p1TDLZAM2KLoIlgf1JK8SC1OnOjCBGOxFpJG4Yjg6eQuvoLMpA1owO0aMQGO7pge+bjY6gxhw=",
-            timestampMilliseconds: 111111111,
+              "sdW2jBaPdAExmaq00AIpqMZu2Dv4NqD0rSn1w9oJcsINKfpxHfS3f+PP1V/5ReBuBF7cxBlkK3ary1g3SPcRchs=",
+            timestampMilliseconds: 111111000,
             dataPoints: [
               {
                 dataFeedId: "BTC",
@@ -190,8 +201,8 @@ describe("NodeRunner", () => {
           },
           {
             signature:
-              "WF1VFvLYv+Nd0PGAi3y1zPBp6fADtyUKREYEwuhl4k1hHZ+2MWnvztrxLK2NPeSryZXU9sgNLG5SJwhwqHV5ohs=",
-            timestampMilliseconds: 111111111,
+              "bC4RSM4PQ+GNydZEGANTeH+5ciIsgNKtV7oKud0Qks0bAvKCexTVZHpB15CIdH07EYpB1ZvmN6HEQVYA8ousvhw=",
+            timestampMilliseconds: 111111000,
             dataPoints: [
               {
                 dataFeedId: "ETH",
@@ -201,8 +212,8 @@ describe("NodeRunner", () => {
           },
           {
             signature:
-              "VjPF6m+SYKTv4gEBWEqRSR1Ppje0xrRg0gluaQB5vf96YLyHLVdaloSRcypaoHNCu0nSmlxlJWtye7EReGB7vhw=",
-            timestampMilliseconds: 111111111,
+              "BUQ0bTRTcvwX0HZJRYtts9bXOvlSNCaObSYxHnpyTok6zWggZTDIwxThyd5rcsn5+9gDUNrSVT2ujhy5Ur+O0Rw=",
+            timestampMilliseconds: 111111000,
             dataPoints: [
               {
                 dataFeedId: "BTC",

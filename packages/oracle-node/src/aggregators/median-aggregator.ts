@@ -1,4 +1,3 @@
-import { Consola } from "consola";
 import {
   Aggregator,
   PriceDataAfterAggregation,

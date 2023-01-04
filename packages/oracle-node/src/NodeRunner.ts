@@ -32,9 +32,12 @@ import {
 import { config } from "./config";
 import { connectToDb } from "./db/remote-mongo/db-connector";
 import localDB from "./db/local-db";
+import { roundTimestamp } from "./utils/timestamps";
+import { intervalMsToCronFormat } from "./utils/intervals";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
+const schedule = require("node-schedule");
 
 const MANIFEST_LOAD_TIMEOUT_MS = 25 * 1000;
 const DIAGNOSTIC_INFO_PRINTING_INTERVAL = 60 * 1000;
@@ -124,8 +127,11 @@ export default class NodeRunner {
     this.maybeRunDiagnosticInfoPrinting();
 
     try {
-      await this.runIteration(); // Start immediately then repeat in manifest.interval
-      setInterval(this.runIteration, this.currentManifest!.interval);
+      await this.runIteration();
+      const cronScheduleString = intervalMsToCronFormat(
+        this.currentManifest!.interval
+      );
+      schedule.scheduleJob(cronScheduleString, this.runIteration);
     } catch (e: any) {
       NodeRunner.reThrowIfManifestConfigError(e);
     }
@@ -276,7 +282,7 @@ export default class NodeRunner {
   private async fetchPrices(): Promise<PriceDataAfterAggregation[]> {
     const fetchingAllTrackingId = trackStart("fetching-all");
 
-    const fetchTimestamp = Date.now();
+    const fetchTimestamp = roundTimestamp(Date.now());
     const fetchedPrices = await this.pricesService!.fetchInParallel(
       this.tokensBySource!
     );
