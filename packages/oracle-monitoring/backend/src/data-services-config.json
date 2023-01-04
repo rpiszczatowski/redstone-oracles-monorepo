@@ -38,7 +38,6 @@
       "GLP"
     ],
     "checkEachSingleUrl": true,
-    "minTimestampDiffForNotification": 120000,
     "minTimestampDiffForWarning": 40000,
     "schedule": "*/10 * * * * *",
     "urls": [
