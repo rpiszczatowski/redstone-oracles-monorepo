@@ -150,6 +150,7 @@ export interface NodeConfig {
   mockPricesUrlOrPath: string;
   twelveDataRapidApiKey?: string;
   coinmarketcapApiKey?: string;
+  kaikoApiKey?: string;
 }
 
 export interface MulticallRequest {
