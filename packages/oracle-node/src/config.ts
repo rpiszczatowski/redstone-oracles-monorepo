@@ -18,7 +18,7 @@ const DEFAULT_ETHERSCAN_API_KEY = "";
 const DEFAULT_AVALANCHE_RPC_URL = "https://api.avax.network/ext/bc/C/rpc";
 const DEFAULT_POLYGON_RPC_URL = "https://polygon-testnet.blastapi.io/";
 const WARP_DRE_NODE_URL = "http://165.22.89.117:8080/";
-const WARP_LENS_CONTRACT_ID = "xIJy5h0v5rlsdYI_xwhILo9a9EbU1K98pcjz-I1ahPU";
+const WARP_LENS_CONTRACT_ID = "Gol-5kxmBDPgZwn8sMKlXydrKjG1BBkJEID1NCO2RL4";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];

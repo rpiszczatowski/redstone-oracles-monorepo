@@ -69,17 +69,17 @@ async function fetchStorageValueFromDre<S>(key: string, contractAddress: string,
     const { data } = await axios.get<DreKVResponse>(dreNodeUrl + "kv", {
         params: {
             id: contractAddress,
-            key
+            keys: key
         }
     });
 
-    console.error({ data })
+    const values = new Map(JSON.parse(data.value));
 
-    if (data.value === null) {
+    if (!values.has(key)) {
         return null;
     }
 
-    return JSON.parse(data.value);
+    return JSON.parse(values.get(key) as string);
 }
 
 
