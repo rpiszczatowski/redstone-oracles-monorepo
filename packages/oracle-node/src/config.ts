@@ -21,6 +21,7 @@ const DEFAULT_MOCK_PRICES_URL_OR_PATH =
   "https://raw.githubusercontent.com/redstone-finance/redstone-mock-prices/main/mock-prices.json";
 const DEFAULT_COINBASE_INDEXER_MONGODB_URL = "";
 const DEFAULT_COINMARKETCAP_API_KEY = "";
+const DEFAULT_KAIKO_API_KEY = "";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -120,6 +121,7 @@ export const config: NodeConfig = Object.freeze({
     "COINMARKETCAP_API_KEY",
     DEFAULT_COINMARKETCAP_API_KEY
   ),
+  kaikoApiKey: getFromEnv("KAIKO_API_KEY", DEFAULT_KAIKO_API_KEY),
   privateKeys: {
     arweaveJwk: getArweaveWallet(),
     ethereumPrivateKey,
