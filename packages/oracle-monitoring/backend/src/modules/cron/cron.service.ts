@@ -430,13 +430,19 @@ export class CronService {
         yarn &&
         yarn test test/AvalancheProdExample.js
       `,
-      async (error) => {
+      async (error, stdout, stderr) => {
         if (error) {
           Logger.error(
-            `Invalid payloads for ${dataServiceId} from cache layers ${JSON.stringify(
-              urls
-            )}. Saving issue in DB`
+            `Tests from evm-examples failed. Stdout: ${stdout}. Stderr: ${stderr}`
           );
+
+          await this.sendErrorMessageToUptimeKuma(
+            dataServiceId,
+            "data-feeds-from-evm-examples",
+            "cache-layer-payloads-failed",
+            JSON.stringify(urls)
+          );
+
           await this.saveErrorInDb({
             timestamp: Date.now(),
             dataServiceId,
@@ -444,12 +450,6 @@ export class CronService {
             url: JSON.stringify(urls),
             comment: "Payloads received from cache layer payload failed",
           });
-          await this.sendErrorMessageToUptimeKuma(
-            dataServiceId,
-            "data-feeds-from-evm-examples",
-            "cache-layer-payloads-failed",
-            JSON.stringify(urls)
-          );
         }
       }
     );
