@@ -11,7 +11,7 @@ describe("SDK tests", () => {
   const reqParams: DataPackagesRequestParams = {
     dataFeeds: ["BTC", "ETH"],
     dataServiceId: "mock-data-service-id",
-    uniqueSignersCount: 4,
+    uniqueSignersCount: 2,
   };
 
   beforeAll(() => server.listen());
@@ -40,7 +40,7 @@ describe("SDK tests", () => {
     const dataPackages = await requestDataPackages(reqParams, [
       "https://bad-url-1.com",
       "https://bad-url-2.com",
-      "https://cache-2.redstone.finance",
+      "https://good-url-1.com",
     ]);
     expect(mockSignedDataPackages.ETH[0]).toMatchObject(
       dataPackages["ETH"][0].toObj()
@@ -53,10 +53,8 @@ describe("SDK tests", () => {
         "https://bad-url-1.com",
         "https://bad-url-2.com",
       ])
-    ).rejects.toEqual(
-      new Error(
-        `Request failed {"reqParams":{"dataFeeds":["BTC","ETH"],"dataServiceId":"mock-data-service-id","uniqueSignersCount":4},"urls":["https://bad-url-1.com","https://bad-url-2.com"]}, Original error: All promises were rejected: 0: Request failed with status code 400, 1: Request failed with status code 400, `
-      )
+    ).rejects.toThrow(
+      `Request failed {\"reqParams\":{\"dataFeeds\":[\"BTC\",\"ETH\"],\"dataServiceId\":\"mock-data-service-id\",\"uniqueSignersCount\":2},\"urls\":[\"https://bad-url-1.com\",\"https://bad-url-2.com\"]}, Original error: All promises were rejected: 0: Request failed with status code 400, 1: Request failed with status code 400, `
     );
   });
 });

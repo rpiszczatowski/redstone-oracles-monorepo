@@ -4,6 +4,7 @@ import { mockSignedDataPackages } from "./mock-packages";
 
 export const handlers = [
   ...DEFAULT_CACHE_SERVICE_URLS,
+  "https://good-url-1.com",
   "https://bad-url-1.com",
   "https://bad-url-2.com",
 ].map((url) =>
