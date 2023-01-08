@@ -9,8 +9,7 @@
     "build": "rm -rf dist && tsc -build",
     "benchmark": "hardhat test benchmarks/run-benchmarks.ts",
     "compile": "hardhat compile",
-    "preversion": "yarn build",
-    "postversion": "git commit -a -m \"build: $npm_package_name@$npm_package_version\" && git push"
+    "postversion": "yarn build && git commit -a -m \"build: $npm_package_name@$npm_package_version\" && git push"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.7.3",
