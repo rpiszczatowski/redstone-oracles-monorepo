@@ -83,21 +83,21 @@ export class CronService {
 
   addCronJobs() {
     for (const dataService of dataServicesToCheck) {
-      if (dataService.checkWithoutSymbol) {
-        this.startCheckingDataServiceForAllDataFeeds(dataService);
-      }
+      // if (dataService.checkWithoutSymbol) {
+      //   this.startCheckingDataServiceForAllDataFeeds(dataService);
+      // }
 
-      if (dataService.symbolsToCheck && dataService.symbolsToCheck.length > 0) {
-        this.startCheckingDataServiceForEachDataFeed(dataService);
-      }
+      // if (dataService.symbolsToCheck && dataService.symbolsToCheck.length > 0) {
+      //   this.startCheckingDataServiceForEachDataFeed(dataService);
+      // }
 
-      if (dataService.checkEachSingleUrl) {
-        this.startCheckingDataServiceForEachUrl(dataService);
-      }
+      // if (dataService.checkEachSingleUrl) {
+      //   this.startCheckingDataServiceForEachUrl(dataService);
+      // }
 
       this.startCheckingPayloadsFromCacheLayer(dataService);
 
-      this.startCheckingDataFeedsDeviationIn(dataService);
+      // this.startCheckingDataFeedsDeviationIn(dataService);
     }
   }
 
@@ -267,7 +267,7 @@ export class CronService {
       const dataPackageResponse = await requestDataPackages(
         {
           dataServiceId,
-          uniqueSignersCount: uniqueSignersCount,
+          uniqueSignersCount,
           dataFeeds,
         },
         [url]
@@ -420,22 +420,29 @@ export class CronService {
     }
   };
 
+  // TODO: Hmm, why do we have urls here?
   checkPayloadsFromCacheLayer = (dataServiceId: string, urls: string[]) => {
     Logger.log(`Checking payloads: ${dataServiceId} from cache layers`);
     exec(
       `
-        [ ! -d "/path/to/dir" ] && git clone https://github.com/redstone-finance/redstone-evm-examples.git;
+        [ ! -d "/path/to/dir" ] && git clone -b tests-for-monitoring-service https://github.com/redstone-finance/redstone-evm-examples.git;
         cd redstone-evm-examples &&
         yarn &&
         yarn test test/AvalancheProdExample.js
       `,
-      async (error) => {
+      async (error, stdout, stderr) => {
         if (error) {
           Logger.error(
-            `Invalid payloads for ${dataServiceId} from cache layers ${JSON.stringify(
-              urls
-            )}. Saving issue in DB`
+            `Tests from evm-examples failed. Stdout: ${stdout}. Stderr: ${stderr}`
           );
+
+          await this.sendErrorMessageToUptimeKuma(
+            dataServiceId,
+            "data-feeds-from-evm-examples",
+            "cache-layer-payloads-failed",
+            JSON.stringify(urls)
+          );
+
           await this.saveErrorInDb({
             timestamp: Date.now(),
             dataServiceId,
@@ -443,12 +450,6 @@ export class CronService {
             url: JSON.stringify(urls),
             comment: "Payloads received from cache layer payload failed",
           });
-          await this.sendErrorMessageToUptimeKuma(
-            dataServiceId,
-            "data-feeds-from-evm-examples",
-            "cache-layer-payloads-failed",
-            JSON.stringify(urls)
-          );
         }
       }
     );
