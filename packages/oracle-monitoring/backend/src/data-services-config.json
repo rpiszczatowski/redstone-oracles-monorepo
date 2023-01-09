@@ -9,14 +9,13 @@
       "YY_PNG_AVAX_USDC_LP"
     ],
     "checkEachSingleUrl": true,
-    "minTimestampDiffForWarning": 20000,
-    "schedule": "*/10 * * * * *",
+    "minTimestampDiffForWarning": 40000,
+    "schedule": "*/20 * * * * *",
     "urls": [
-      "https://cache-service-direct-1.a.redstone.finance",
-      "https://cache-service-direct-2.a.redstone.finance",
-      "https://cache-service-streamr-1.a.redstone.finance"
+      "https://oracle-gateway-1.a.redstone.finance",
+      "https://oracle-gateway-2.a.redstone.finance"
     ],
-    "uniqueSignersCount": 3,
+    "uniqueSignersCount": 5,
     "dataFeedsToCheckDeviation": {
       "AVAX": {
         "timePeriodInMilliseconds": 600000,
