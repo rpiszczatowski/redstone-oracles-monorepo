@@ -18,6 +18,19 @@ import {
   MockSignerIndex,
 } from "../../src/helpers/test-utils";
 
+const dataPoints = [
+  { dataFeedId: "ETH", value: 4000 },
+  { dataFeedId: "AVAX", value: 5 },
+  { dataFeedId: "BTC", value: 100000 },
+  { dataFeedId: "LINK", value: 2 },
+  { dataFeedId: "UNI", value: 200 },
+  { dataFeedId: "FRAX", value: 1 },
+  { dataFeedId: "OMG", value: 0.00003 },
+  { dataFeedId: "DOGE", value: 2 },
+  { dataFeedId: "SOL", value: 11 },
+  { dataFeedId: "BNB", value: 31 },
+];
+
 describe("SampleProxyConnector", function () {
   let contract: SampleProxyConnector;
   const ethDataFeedId = convertStringToBytes32("ETH");
@@ -52,19 +65,6 @@ describe("SampleProxyConnector", function () {
   });
 
   it("Should return correct oracle values for 10 assets", async () => {
-    const dataPoints = [
-      { dataFeedId: "ETH", value: 4000 },
-      { dataFeedId: "AVAX", value: 5 },
-      { dataFeedId: "BTC", value: 100000 },
-      { dataFeedId: "LINK", value: 2 },
-      { dataFeedId: "UNI", value: 200 },
-      { dataFeedId: "FRAX", value: 1 },
-      { dataFeedId: "OMG", value: 0.00003 },
-      { dataFeedId: "DOGE", value: 2 },
-      { dataFeedId: "SOL", value: 11 },
-      { dataFeedId: "BNB", value: 31 },
-    ];
-
     const mockNumericPackages = getRange({
       start: 0,
       length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
@@ -89,19 +89,6 @@ describe("SampleProxyConnector", function () {
   });
 
   it("Should return correct oracle values for 10 assets simultaneously", async () => {
-    const dataPoints = [
-      { dataFeedId: "ETH", value: 4000 },
-      { dataFeedId: "AVAX", value: 5 },
-      { dataFeedId: "BTC", value: 100000 },
-      { dataFeedId: "LINK", value: 2 },
-      { dataFeedId: "UNI", value: 200 },
-      { dataFeedId: "FRAX", value: 1 },
-      { dataFeedId: "OMG", value: 0.00003 },
-      { dataFeedId: "DOGE", value: 2 },
-      { dataFeedId: "SOL", value: 11 },
-      { dataFeedId: "BNB", value: 31 },
-    ];
-
     const mockNumericPackages = getRange({
       start: 0,
       length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,

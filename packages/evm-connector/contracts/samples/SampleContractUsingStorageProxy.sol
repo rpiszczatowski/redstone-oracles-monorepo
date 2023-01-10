@@ -4,10 +4,9 @@ pragma solidity ^0.8.4;
 
 import "./SampleStorageProxy.sol";
 
-contract SampleContract {
-
+contract SampleContractUsingStorageProxy {
   SampleStorageProxy sampleStorageProxy;
-  
+
   constructor(address _sampleStorageProxy) {
     sampleStorageProxy = SampleStorageProxy(_sampleStorageProxy);
   }
@@ -16,7 +15,11 @@ contract SampleContract {
     return sampleStorageProxy.getOracleValue(dataFeedId);
   }
 
-  function getValuesForDataFeedIds(bytes32[] memory dataFeedIds) public view returns (uint256[] memory) {
+  function getValuesForDataFeedIds(bytes32[] memory dataFeedIds)
+    public
+    view
+    returns (uint256[] memory)
+  {
     return sampleStorageProxy.getOracleValues(dataFeedIds);
   }
 }

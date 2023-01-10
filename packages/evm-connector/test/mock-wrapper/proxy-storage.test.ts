@@ -14,6 +14,19 @@ import {
   MockSignerIndex,
 } from "../../src/helpers/test-utils";
 
+const dataPoints = [
+  { dataFeedId: "ETH", value: 4000 },
+  { dataFeedId: "AVAX", value: 5 },
+  { dataFeedId: "BTC", value: 100000 },
+  { dataFeedId: "LINK", value: 2 },
+  { dataFeedId: "UNI", value: 200 },
+  { dataFeedId: "FRAX", value: 1 },
+  { dataFeedId: "OMG", value: 0.00003 },
+  { dataFeedId: "DOGE", value: 2 },
+  { dataFeedId: "SOL", value: 11 },
+  { dataFeedId: "BNB", value: 31 },
+];
+
 describe("SampleStorageProxy", function () {
   let contract: SampleStorageProxy;
   const ethDataFeedId = convertStringToBytes32("ETH");
@@ -35,24 +48,10 @@ describe("SampleStorageProxy", function () {
     const fetchedValue = await wrappedContract.getOracleValueUsingProxy(
       ethDataFeedId
     );
-    console.log(fetchedValue);
     expect(fetchedValue).to.eq(expectedNumericValues.ETH);
   });
 
   it("Should return correct oracle values for 10 assets", async () => {
-    const dataPoints = [
-      { dataFeedId: "ETH", value: 4000 },
-      { dataFeedId: "AVAX", value: 5 },
-      { dataFeedId: "BTC", value: 100000 },
-      { dataFeedId: "LINK", value: 2 },
-      { dataFeedId: "UNI", value: 200 },
-      { dataFeedId: "FRAX", value: 1 },
-      { dataFeedId: "OMG", value: 0.00003 },
-      { dataFeedId: "DOGE", value: 2 },
-      { dataFeedId: "SOL", value: 11 },
-      { dataFeedId: "BNB", value: 31 },
-    ];
-
     const mockNumericPackages = getRange({
       start: 0,
       length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
@@ -80,19 +79,6 @@ describe("SampleStorageProxy", function () {
   });
 
   it("Should return correct oracle values for 10 assets simultaneously", async () => {
-    const dataPoints = [
-      { dataFeedId: "ETH", value: 4000 },
-      { dataFeedId: "AVAX", value: 5 },
-      { dataFeedId: "BTC", value: 100000 },
-      { dataFeedId: "LINK", value: 2 },
-      { dataFeedId: "UNI", value: 200 },
-      { dataFeedId: "FRAX", value: 1 },
-      { dataFeedId: "OMG", value: 0.00003 },
-      { dataFeedId: "DOGE", value: 2 },
-      { dataFeedId: "SOL", value: 11 },
-      { dataFeedId: "BNB", value: 31 },
-    ];
-
     const mockNumericPackages = getRange({
       start: 0,
       length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,

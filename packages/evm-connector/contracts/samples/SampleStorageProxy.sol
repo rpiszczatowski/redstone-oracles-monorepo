@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 import "../mocks/RedstoneConsumerNumericMock.sol";
-import "./SampleContract.sol";
+import "./SampleContractUsingStorageProxy.sol";
 import "hardhat/console.sol";
 
 contract SampleStorageProxy is RedstoneConsumerNumericMock {
@@ -12,13 +12,13 @@ contract SampleStorageProxy is RedstoneConsumerNumericMock {
   error ExpectedMsgValueToBePassed();
   error ExpectedMsgValueNotToBePassed();
 
-  SampleContract sampleContract;
+  SampleContractUsingStorageProxy sampleContract;
 
   uint256 someStorageVar = 0;
   mapping(bytes32 => uint256) public oracleValues;
 
   constructor() {
-    sampleContract = new SampleContract(address(this));
+    sampleContract = new SampleContractUsingStorageProxy(address(this));
   }
 
   function getOracleValuesBenchmark(bytes32[] memory dataFeedIds) external {
@@ -37,7 +37,7 @@ contract SampleStorageProxy is RedstoneConsumerNumericMock {
 
   function getOracleValueBenchmark(bytes32 dataFeedId) external {
     saveOracleValueInContractStorage(dataFeedId);
-    uint256 value =  getOracleValueUsingProxy(dataFeedId);
+    uint256 value = getOracleValueUsingProxy(dataFeedId);
     value;
     someStorageVar = 1;
   }
@@ -76,7 +76,11 @@ contract SampleStorageProxy is RedstoneConsumerNumericMock {
     return sampleContract.getValueForDataFeedId(dataFeedId);
   }
 
-  function getOracleValuesUsingProxy(bytes32[] memory dataFeedIds) public view returns (uint256[] memory) {
+  function getOracleValuesUsingProxy(bytes32[] memory dataFeedIds)
+    public
+    view
+    returns (uint256[] memory)
+  {
     return sampleContract.getValuesForDataFeedIds(dataFeedIds);
   }
 
@@ -87,7 +91,10 @@ contract SampleStorageProxy is RedstoneConsumerNumericMock {
     }
   }
 
-  function checkOracleValues(bytes32[] memory dataFeedIds, uint256[] memory expectedValues) external view {
+  function checkOracleValues(bytes32[] memory dataFeedIds, uint256[] memory expectedValues)
+    external
+    view
+  {
     uint256[] memory values = getOracleValuesUsingProxy(dataFeedIds);
     for (uint256 i = 0; i < values.length; i++) {
       if (values[i] != expectedValues[i]) {
