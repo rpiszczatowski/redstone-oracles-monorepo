@@ -422,15 +422,19 @@ export class CronService {
 
   // TODO: Hmm, why do we have urls here?
   checkPayloadsFromCacheLayer = (dataServiceId: string, urls: string[]) => {
-    Logger.log(`Checking payloads: ${dataServiceId} from cache layers`);
+    const timestamp = Date.now();
+    Logger.log(
+      `Checking payloads: ${dataServiceId} from cache layers. ${timestamp}`
+    );
     exec(
       `
-        [ ! -d "/path/to/dir" ] && git clone -b tests-for-monitoring-service https://github.com/redstone-finance/redstone-evm-examples.git;
+        [ ! -d "redstone-evm-examples" ] && git clone -b tests-for-monitoring-service https://github.com/redstone-finance/redstone-evm-examples.git;
         cd redstone-evm-examples &&
-        yarn &&
+        [ ! -d "node_modules" ] && yarn;
         yarn test test/AvalancheProdExample.js
       `,
       async (error, stdout, stderr) => {
+        Logger.log(stdout);
         if (error) {
           Logger.error(
             `Tests from evm-examples failed. Stdout: ${stdout}. Stderr: ${stderr}`
@@ -450,6 +454,8 @@ export class CronService {
             url: JSON.stringify(urls),
             comment: "Payloads received from cache layer payload failed",
           });
+        } else {
+          Logger.log(`Tests passed. ${timestamp}`);
         }
       }
     );
