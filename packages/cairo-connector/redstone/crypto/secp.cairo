@@ -1,27 +1,19 @@
 from starkware.cairo.common.alloc import alloc
+from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
 from starkware.cairo.common.serialize import serialize_word
+from starkware.cairo.common.uint256 import Uint256, uint256_and, SHIFT, ALL_ONES
+
+from starkware.cairo.common.cairo_secp.bigint import BigInt3, bigint_to_uint256
+from starkware.cairo.common.cairo_secp.ec import EcPoint
 from starkware.cairo.common.cairo_secp.signature import (
     recover_public_key as secp_recover_public_key,
 )
-from starkware.cairo.common.cairo_builtins import HashBuiltin, BitwiseBuiltin
-from starkware.cairo.common.cairo_secp.bigint import BigInt3, bigint_to_uint256
-from starkware.cairo.common.cairo_secp.ec import EcPoint
-from starkware.cairo.common.uint256 import Uint256, uint256_and, SHIFT, ALL_ONES
 
-from redstone.protocol.signature import Signature
-from redstone.utils.bigint import serialize_bigint, bigint_to_bytes
+from redstone.crypto.signature import Signature
 from redstone.crypto.keccak import keccak
+
 from redstone.utils.array import Array, array_join, serialize_safe_array
-
-func verify_message{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
-    signable_arr: Array, signature: Signature, eth_address: felt
-) {
-    let address = recover_address(signable_arr=signable_arr, signature=signature);
-
-    assert address = eth_address;
-
-    return ();
-}
+from redstone.utils.bigint import serialize_bigint, bigint_to_bytes
 
 func recover_address{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
     signable_arr: Array, signature: Signature

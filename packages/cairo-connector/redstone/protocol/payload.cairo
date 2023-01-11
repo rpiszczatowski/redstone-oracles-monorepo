@@ -17,21 +17,16 @@ struct Payload {
     data_packages: DataPackageArray,
 }
 
-func get_payload{range_check_ptr}(data_ptr: felt*, data_length: felt) -> Payload {
+func get_payload{range_check_ptr}(bytes_arr: Array) -> Payload {
     alloc_locals;
 
-    assert_nn(data_length);
-
-    local payload_arr: Array = Array(ptr=data_ptr, len=data_length);
-    local payload: Payload;
-
     let (redstone_marker_rest, redstone_marker) = array_slice_number(
-        payload_arr, len=REDSTONE_MARKER_BS
+        arr=bytes_arr, len=REDSTONE_MARKER_BS
     );
     assert redstone_marker = REDSTONE_MARKER;
 
     let (unsigned_metadata_size_rest, unsigned_metadata_size) = array_slice_number(
-        redstone_marker_rest, len=UNSIGNED_METADATA_BYTE_SIZE_BS
+        arr=redstone_marker_rest, len=UNSIGNED_METADATA_BYTE_SIZE_BS
     );
     assert unsigned_metadata_size = 0;
 
@@ -40,7 +35,7 @@ func get_payload{range_check_ptr}(data_ptr: felt*, data_length: felt) -> Payload
         len=DATA_PACKAGES_COUNT_BS,
         tail_offset=unsigned_metadata_size,
     );
-    let data_package_count = array_to_number(data_package_count_arr);
+    let data_package_count = array_to_number(arr=data_package_count_arr);
 
     let data_packages = get_data_packages(arr=data_package_count_rest, count=data_package_count);
     assert data_packages.len = data_package_count;
