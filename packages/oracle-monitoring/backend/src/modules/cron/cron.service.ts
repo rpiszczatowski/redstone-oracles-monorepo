@@ -428,12 +428,13 @@ export class CronService {
     );
     exec(
       `
-        [ ! -d "/path/to/dir" ] && git clone -b tests-for-monitoring-service https://github.com/redstone-finance/redstone-evm-examples.git;
+        [ ! -d "redstone-evm-examples" ] && git clone -b tests-for-monitoring-service https://github.com/redstone-finance/redstone-evm-examples.git;
         cd redstone-evm-examples &&
-        yarn &&
+        [ ! -d "node_modules" ] && yarn;
         yarn test test/AvalancheProdExample.js
       `,
       async (error, stdout, stderr) => {
+        Logger.log(stdout);
         if (error) {
           Logger.error(
             `Tests from evm-examples failed. Stdout: ${stdout}. Stderr: ${stderr}`
