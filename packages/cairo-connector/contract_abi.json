@@ -1,0 +1,29 @@
+[
+    {
+        "inputs": [
+            {
+                "name": "data_ptr_len",
+                "type": "felt"
+            },
+            {
+                "name": "data_ptr",
+                "type": "felt*"
+            }
+        ],
+        "name": "process_payload",
+        "outputs": [],
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_btc_price",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    }
+]
