@@ -39,12 +39,18 @@ export class LensProfileOwnershipFetcher implements Fetcher {
         const currentBlock = await this.lensHub.currentBlock();
         const toBlock = Math.min(currentBlock, maxNextBlock);
 
+        // skip no blocks produced since last time
+        if (toBlock < fromBlock) {
+            return [];
+        }
+
+        // this ranges are inclusive <>
         const occurredEvents = await this.lensHub.fetchProfiles(
             fromBlock,
             toBlock
         );
 
-        await this.blockCheckpointer.checkpoint(toBlock);
+        await this.blockCheckpointer.checkpoint(toBlock + 1);
 
         return occurredEvents.map(event => ({
             symbol: event.profileId,

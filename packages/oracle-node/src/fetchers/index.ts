@@ -21,7 +21,7 @@ import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
 import { XtFetcher } from "./xt/XtFetcher";
 import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { config } from "../config";
-import { LensProfileOwnershipFetcher } from "./lens/LensProfileOwnerShipFetcher";
+import { LensProfileOwnershipFetcher } from "./lens/LensProfileOwnershipFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
