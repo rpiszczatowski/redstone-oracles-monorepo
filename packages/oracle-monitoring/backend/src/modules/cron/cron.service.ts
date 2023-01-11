@@ -434,7 +434,6 @@ export class CronService {
         yarn test test/AvalancheProdExample.js
       `,
       async (error, stdout, stderr) => {
-        Logger.log(stdout);
         if (error) {
           Logger.error(
             `Tests from evm-examples failed. Stdout: ${stdout}. Stderr: ${stderr}`
