@@ -14,7 +14,7 @@ from redstone.protocol.data_point import (
     serialize_data_point_array,
     get_data_points,
 )
-from redstone.protocol.signature import Signature, get_signature, serialize_signature
+from redstone.crypto.signature import Signature, get_signature, serialize_signature
 from redstone.protocol.constants import (
     DATA_FEED_ID_BS,
     DATA_POINTS_COUNT_BS,

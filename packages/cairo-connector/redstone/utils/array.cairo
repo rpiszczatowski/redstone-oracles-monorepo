@@ -1,11 +1,21 @@
 from starkware.cairo.common.serialize import serialize_word
-from starkware.cairo.common.math import assert_nn, split_felt
+from starkware.cairo.common.math import assert_nn
 from starkware.cairo.common.alloc import alloc
-from starkware.cairo.common.cairo_secp.bigint import BigInt3, bigint_to_uint256
 
 struct Array {
     ptr: felt*,
     len: felt,
+}
+
+func array_new{range_check_ptr}(len: felt) -> Array {
+    alloc_locals;
+
+    assert_nn(len);
+
+    let (ptr) = alloc();
+    local array: Array = Array(ptr=ptr, len=len);
+
+    return array;
 }
 
 func array_slice_tail_offset{range_check_ptr}(arr: Array, len: felt, tail_offset: felt) -> (
@@ -117,6 +127,22 @@ func array_join_rec(offset: felt, join: Array, index: felt, res: Array) {
     assert res.ptr[offset + index] = join.ptr[index];
 
     return array_join_rec(offset=offset, join=join, index=index + 1, res=res);
+}
+
+func array_index{range_check_ptr}(arr: Array, key: felt) -> felt {
+    return _array_index(arr=arr, key=key, index=0);
+}
+
+func _array_index{range_check_ptr}(arr: Array, key: felt, index: felt) -> felt {
+    if (index == arr.len) {
+        return -1;
+    }
+
+    if (arr.ptr[index] == key) {
+        return index;
+    }
+
+    return _array_index(arr=arr, key=key, index=index + 1);
 }
 
 func serialize_safe_array{output_ptr: felt*, range_check_ptr}(arr: Array, index: felt) {

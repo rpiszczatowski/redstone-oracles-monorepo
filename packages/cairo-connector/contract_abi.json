@@ -2,6 +2,21 @@
     {
         "inputs": [
             {
+                "name": "addresses_len",
+                "type": "felt"
+            },
+            {
+                "name": "addresses",
+                "type": "felt*"
+            }
+        ],
+        "name": "constructor",
+        "outputs": [],
+        "type": "constructor"
+    },
+    {
+        "inputs": [
+            {
                 "name": "data_ptr_len",
                 "type": "felt"
             },
@@ -21,6 +36,18 @@
             {
                 "name": "res",
                 "type": "felt"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "get_signer_addresses",
+        "outputs": [
+            {
+                "name": "res",
+                "type": "(felt, felt, felt, felt, felt, felt)"
             }
         ],
         "stateMutability": "view",

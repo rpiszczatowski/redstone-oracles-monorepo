@@ -4,7 +4,9 @@ from starkware.cairo.common.serialize import serialize_word
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
 
 from redstone.protocol.payload import get_payload, serialize_payload, get_price
-from redstone.crypto.secp import verify_message
+from redstone.processor import Config, process_payload
+
+from redstone.utils.array import array_new
 
 func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
     alloc_locals;
@@ -20,16 +22,15 @@ func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
         ids.payload_data_length = len(program_input)
     %}
 
-    let payload = get_payload(data_ptr=payload_data_ptr, data_length=payload_data_length);
-    get_price(payload, 0, 1);
+    let allowed_signer_addresses = array_new(len=1);
+    assert allowed_signer_addresses.ptr[0] = 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB;
 
-    let address = 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB;
+    local config: Config = Config(allowed_signer_addresses=allowed_signer_addresses);
 
-    verify_message(
-        signable_arr=payload.data_packages.ptr[0].signable_arr,
-        signature=payload.data_packages.ptr[0].signature,
-        eth_address=address,
+    let payload = process_payload(
+        data_ptr=payload_data_ptr, data_length=payload_data_length, config=config
     );
+    get_price(payload, 0, 1);
 
     return ();
 }
