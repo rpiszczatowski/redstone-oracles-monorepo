@@ -26,7 +26,7 @@ interface GasReport {
 
 // Change this array to configure your custom benchmark test cases
 const TEST_CASES = {
-  requiredSignersCount: [10],
+  requiredSignersCount: [3, 10],
   requestedSymbolsCount: [1, 2, 10, 20],
   proxyChainLength: [2, 3, 4, 5],
 };
@@ -39,7 +39,10 @@ describe("Benchmark", function () {
     console.log(JSON.stringify(fullGasReport, null, 2));
   });
 
-  const initializeStorageProxyChain = async (chainLength: number) => {
+  const initializeStorageProxyChain = async (
+    chainLength: number,
+    requiredSignersCount: number
+  ) => {
     const StorageProxyFactory = await ethers.getContractFactory(
       "SampleChainableStorageProxy"
     );
@@ -48,8 +51,9 @@ describe("Benchmark", function () {
       "SampleChainableStorageProxyConsumer"
     );
     const initialProxy = await StorageProxyFactory.deploy();
-
     await initialProxy.deployed();
+
+    await initialProxy.updateUniqueSignersThreshold(requiredSignersCount);
 
     let currentProxy = initialProxy;
     for (let i = 0; i < chainLength - 2; i++) {
@@ -68,7 +72,10 @@ describe("Benchmark", function () {
     return initialProxy;
   };
 
-  const initializeProxyConnectorChain = async (chainLength: number) => {
+  const initializeProxyConnectorChain = async (
+    chainLength: number,
+    requiredSignersCount: number
+  ) => {
     const ProxyConnectorFactory = await ethers.getContractFactory(
       "SampleChainableProxyConnector"
     );
@@ -89,6 +96,8 @@ describe("Benchmark", function () {
 
     const consumerContract = await ProxyConnectorConsumer.deploy();
     await consumerContract.deployed();
+    await consumerContract.updateUniqueSignersThreshold(requiredSignersCount);
+
     await currentProxy.registerConsumer(consumerContract.address);
 
     return initialProxy;
@@ -142,7 +151,7 @@ describe("Benchmark", function () {
       benchmarkParams.requestedSymbolsCount +
       " symbols, " +
       benchmarkParams.dataPointsCount +
-      " points " +
+      " points, " +
       benchmarkParams.proxyChainLength +
       " proxy chain length"
     );
@@ -164,17 +173,21 @@ describe("Benchmark", function () {
 
     // Initialize storage proxy chain
     const storageProxyForOneValue = await initializeStorageProxyChain(
-      benchmarkParams.proxyChainLength
+      benchmarkParams.proxyChainLength,
+      benchmarkParams.requiredSignersCount
     );
     const proxyConnectorForOneValue = await initializeProxyConnectorChain(
-      benchmarkParams.proxyChainLength
+      benchmarkParams.proxyChainLength,
+      benchmarkParams.requiredSignersCount
     );
 
     const storageProxyForManyValues = await initializeStorageProxyChain(
-      benchmarkParams.proxyChainLength
+      benchmarkParams.proxyChainLength,
+      benchmarkParams.requiredSignersCount
     );
     const proxyConnectorForManyValues = await initializeProxyConnectorChain(
-      benchmarkParams.proxyChainLength
+      benchmarkParams.proxyChainLength,
+      benchmarkParams.requiredSignersCount
     );
 
     const wrappedStorageProxyForOneValue = WrapperBuilder.wrap(
