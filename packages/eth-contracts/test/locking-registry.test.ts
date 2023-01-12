@@ -137,7 +137,7 @@ describe("Locking registry", () => {
     ).to.be.revertedWith("Tx sender is not authorised to slash locks");
   });
 
-  it("Should unlock after slashing", async () => {
+  it("Should not unlock after slashing", async () => {
     const delayForUnlockingInSeconds = 0;
     await deployContracts(delayForUnlockingInSeconds);
     await lockTokens(100);
@@ -164,16 +164,9 @@ describe("Locking registry", () => {
     expect(slasherBalance.toNumber()).to.eql(10);
 
     // Complete unlock
-    const unlockTx = await locking.completeUnlock();
-    await unlockTx.wait();
-    const lockedBalance = await locking.getMaxSlashableAmount(
-      signers[0].address
+    await expect(locking.completeUnlock()).to.be.revertedWith(
+      "Can not unlock more than locked"
     );
-    expect(lockedBalance.toNumber()).to.eql(0);
-    const contractBalance = await token.balanceOf(locking.address);
-    expect(contractBalance.toNumber()).to.eql(0);
-    const userBalance = await token.balanceOf(signers[0].address);
-    expect(userBalance.toNumber()).to.eql(90);
   });
 
   // TODO: Test unlocks with simulating passed time
