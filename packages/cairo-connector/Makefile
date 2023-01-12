@@ -6,7 +6,8 @@ ABI=contract_abi.json
 ACC=testac5
 MAX_FEE=915193871434328
 DATA_DIR=./data
-PAYLOAD_URL=http://localhost:3000/data-packages/payload\?unique-signers-count\=1\&data-service-id\=redstone-avalanche-prod\&format\=
+DATA_NAME=payload
+PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=1&data-service-id=redstone-avalanche-prod&format=
 
 SHELL := /bin/bash
 
@@ -17,7 +18,8 @@ compile: format
 	cairo-compile $(SRC) --output $(OBJ) --cairo_path="/"
 
 run: $(OBJ)
-	cairo-run --program=$(OBJ) --print_output --layout=perpetual_with_bitwise --program_input=$(DATA_DIR)/payload.bytes \
+	cairo-run --program=$(OBJ) --print_output --layout=perpetual_with_bitwise \
+	--program_input=$(DATA_DIR)/${DATA_NAME}.input \
 	--print_info
 
 $(OBJ): compile
@@ -36,7 +38,10 @@ $(CNC): contract
 $(ABI): contract
 
 deploy:
-	starknet deploy --account=$(ACC) --class_hash $(CLASS_HASH) --max_fee=$(MAX_FEE) --inputs 2 555 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB
+	starknet deploy --account=$(ACC) \
+	--class_hash $(CLASS_HASH) \
+	--max_fee=$(MAX_FEE) \
+	--inputs 3 0x12470f7aba85c8b81d63137dd5925d6ee114952b 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB 0x1ea62d73edf8ac05dfcea1a34b9796e937a29eff
 
 process_payload:
 	starknet invoke --account=$(ACC) \
@@ -44,7 +49,7 @@ process_payload:
 	--abi $(ABI) \
 	--function process_payload \
 	--max_fee=$(MAX_FEE) \
-	--inputs 2140 $(shell cat $(DATA_DIR)/payload.splitted)
+	--inputs 2204 $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
 
 get_btc_price:
 	starknet call --account=$(ACC) \
@@ -61,11 +66,17 @@ get_signer_addresses:
 clean:
 	rm $(OBJ) $(CNC) $(ABI)
 
-data:
-	curl $(PAYLOAD_URL)bytes  > $(DATA_DIR)/payload.bytes & \
-	curl $(PAYLOAD_URL)json  > $(DATA_DIR)/payload.json & \
-	curl $(PAYLOAD_URL)hex  > $(DATA_DIR)/payload.hex
-	cat $(DATA_DIR)/payload.hex | fold -w2 | paste -sd' ' -  | sed -E 's/[[:space:]]+/ 0x/g' > $(DATA_DIR)/payload.splitted
+prepare_data:
+	curl "$(PAYLOAD_URL)hex" > $(DATA_DIR)/${DATA_NAME}.hex &
+	curl "$(PAYLOAD_URL)json" | cut -c 2- | sed 's/\\"/"/g' | sed 's/.$$//g' > $(DATA_DIR)/${DATA_NAME}.json &
+	curl "$(PAYLOAD_URL)bytes" > $(DATA_DIR)/${DATA_NAME}.tmp  
+
+	printf '{"bytes":' > $(DATA_DIR)/${DATA_NAME}.input 
+	cat $(DATA_DIR)/${DATA_NAME}.tmp >> $(DATA_DIR)/${DATA_NAME}.input 
+	rm $(DATA_DIR)/${DATA_NAME}.tmp
+	echo ',' >> $(DATA_DIR)/${DATA_NAME}.input 
+	curl -L -H "Accept: application/json" unixtimesta.mp | cut -c 2- >> $(DATA_DIR)/${DATA_NAME}.input 
+	cat $(DATA_DIR)/${DATA_NAME}.hex | fold -w2 | paste -sd' ' -  | sed -E 's/[[:space:]]+/ 0x/g' | cut -c 3- >> $(DATA_DIR)/${DATA_NAME}.input > $(DATA_DIR)/${DATA_NAME}.splitted
 
 
 #init:

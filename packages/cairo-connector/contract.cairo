@@ -50,7 +50,7 @@ func process_payload{
         data_ptr=data_ptr, data_length=data_ptr_len, config=config
     );
 
-    let price = get_price(payload=payload, package_index=0, dp_index=2);
+    let price = get_price(payload=payload, package_index=0, dp_index=1);
     btc_price.write(price);
 
     return ();
@@ -67,20 +67,11 @@ func get_btc_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_p
 
 @view
 func get_signer_addresses{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-    res: (felt, felt, felt, felt, felt, felt)
+    res_len: felt, res: felt*
 ) {
     let addresses = get_allowed_signer_addresses();
 
-    return (
-        res=(
-            addresses.ptr[0],
-            addresses.ptr[1],
-            addresses.ptr[2],
-            addresses.ptr[3],
-            addresses.ptr[4],
-            addresses.ptr[5],
-        ),
-    );
+    return (res_len=addresses.len, res=addresses.ptr);
 }
 
 func write_addresses{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
@@ -102,45 +93,20 @@ func get_allowed_signer_addresses{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*
     let (addresses_len) = signer_address_len.read();
     let arr = array_new(len=addresses_len);
 
-    let index = 0;
-    let (address) = signer_address.read(index);
-    arr.ptr[index] = address;
-
-    let index = 1;
-    let (address) = signer_address.read(index);
-    arr.ptr[index] = address;
-
-    let index = 2;
-    let (address) = signer_address.read(index);
-    arr.ptr[index] = address;
-
-    let index = 3;
-    let (address) = signer_address.read(index);
-    arr.ptr[index] = address;
-
-    let index = 4;
-    let (address) = signer_address.read(index);
-    arr.ptr[index] = address;
-
-    let index = 5;
-    let (address) = signer_address.read(index);
-    arr.ptr[index] = address;
-
-    // _get_allowed_signer_addresses(index=0, res=addresses_arr);
+    _get_allowed_signer_addresses(index=0, res=arr);
 
     return arr;
 }
 
-// Causes: Expected a constant offset in the range [-2^15, 2^15).
-// func _get_allowed_signer_addresses{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-//     index: felt, res: Array
-// ) {
-//     if (index == res.len) {
-//         return ();
-//     }
+func _get_allowed_signer_addresses{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    index: felt, res: Array
+) {
+    if (index == res.len) {
+        return ();
+    }
 
-// let (address) = signer_address.read(index);
-//     res.ptr[index] = address;
+    let (address) = signer_address.read(index);
+    assert res.ptr[index] = address;
 
-// return _get_allowed_signer_addresses(index=index + 1, res=res);
-// }
+    return _get_allowed_signer_addresses(index=index + 1, res=res);
+}
