@@ -16,50 +16,9 @@ contract SampleProxyConnector is ProxyConnector {
   error ExpectedMsgValueNotToBePassed();
 
   SampleRedstoneConsumerNumericMock sampleRedstoneConsumer;
-  uint256 someStorageVar = 0;
 
   constructor() {
     sampleRedstoneConsumer = new SampleRedstoneConsumerNumericMock();
-  }
-  
-  function getOracleValueBenchmark(bytes32 dataFeedId) external {
-    uint256 value =  getOracleValueUsingProxy(dataFeedId);
-    value;
-    someStorageVar = 1;
-  }
-
-  function emptyGetOracleValueBenchmark(bytes32 dataFeedId) external {
-    dataFeedId;
-    uint256 value;
-    value;
-    someStorageVar = 1;
-  }
-
-  function getOracleValuesBenchmark(bytes32[] memory dataFeedIds) external {
-    uint256[] memory values = getOracleValuesUsingProxy(dataFeedIds);
-    values;
-    someStorageVar = 1;
-  }
-
-  function emptyGetOracleValuesBenchmark(bytes32[] memory dataFeedIds) external {
-    dataFeedIds;
-    uint256[] memory values;
-    values;
-    someStorageVar = 1;
-  }
-
-  function getOracleValuesUsingProxy(bytes32[] memory dataFeedIds) public view returns (uint256[] memory) {
-    bytes memory encodedFunction = abi.encodeWithSelector(
-      SampleRedstoneConsumerNumericMock.getValuesForDataFeedIds.selector,
-      dataFeedIds
-    );
-
-    bytes memory encodedResult = proxyCalldataView(
-      address(sampleRedstoneConsumer),
-      encodedFunction
-    );
-
-    return abi.decode(encodedResult, (uint256[]));
   }
 
   function getOracleValueUsingProxy(bytes32 dataFeedId) public view returns (uint256) {
@@ -94,16 +53,6 @@ contract SampleProxyConnector is ProxyConnector {
     uint256 oracleValue = getOracleValueUsingProxy(dataFeedId);
     if (oracleValue != expectedValue) {
       revert UnexpectedOracleValue();
-    }
-  }
-
-  function checkOracleValues(bytes32[] memory dataFeedIds, uint256[] memory expectedValues) external view {
-    uint256[] memory oracleValues = getOracleValuesUsingProxy(dataFeedIds);
-
-    for (uint256 i = 0; i < oracleValues.length; i++) {
-      if (oracleValues[i] != expectedValues[i]) {
-        revert UnexpectedOracleValue();
-      }
     }
   }
 

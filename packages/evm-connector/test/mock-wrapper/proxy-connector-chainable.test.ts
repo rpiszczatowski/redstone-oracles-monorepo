@@ -1,8 +1,8 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import {
-  SampleStorageProxyConsumer,
-  SampleStorageProxy,
+  SampleChainableProxyConnector,
+  SampleProxyConnectorConsumer,
 } from "../../typechain-types";
 import { WrapperBuilder } from "../../src";
 import { convertStringToBytes32 } from "redstone-protocol/src/common/utils";
@@ -30,41 +30,43 @@ const dataPoints = [
   { dataFeedId: "BNB", value: 31 },
 ];
 
-describe("SampleStorageProxy", function () {
-  let contract: SampleStorageProxy;
-  let consumerContract: SampleStorageProxyConsumer;
+describe("SampleChainableProxyConnector", function () {
+  let contract: SampleChainableProxyConnector;
+  let consumerContract: SampleProxyConnectorConsumer;
   const ethDataFeedId = convertStringToBytes32("ETH");
 
   this.beforeEach(async () => {
-    const SampleStorageFactory = await ethers.getContractFactory(
-      "SampleStorageProxy"
+    const ContractFactory = await ethers.getContractFactory(
+      "SampleChainableProxyConnector"
     );
-    contract = await SampleStorageFactory.deploy();
+    contract = await ContractFactory.deploy();
     await contract.deployed();
 
-    const SampleStorageProxyConsumer = await ethers.getContractFactory(
-      "SampleStorageProxyConsumer"
-    );
+    const contractB = await ContractFactory.deploy();
+    await contractB.deployed();
 
-    consumerContract = await SampleStorageProxyConsumer.deploy(
-      contract.address
+    await contract.registerNextConnector(contractB.address);
+
+    const ConsumerContractFactory = await ethers.getContractFactory(
+      "SampleProxyConnectorConsumer"
     );
+    consumerContract = await ConsumerContractFactory.deploy();
     await consumerContract.deployed();
 
-    await contract.register(consumerContract.address);
+    await contractB.registerConsumer(consumerContract.address);
   });
 
-  it("Should return correct oracle value for one asset", async () => {
+  it("Should process oracle value for one asset", async () => {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
 
-    await wrappedContract.saveOracleValueInContractStorage(ethDataFeedId);
+    await wrappedContract.processOracleValue(ethDataFeedId);
 
-    const fetchedValue = await consumerContract.getOracleValue(ethDataFeedId);
-    expect(fetchedValue).to.eq(expectedNumericValues.ETH);
+    const fetchedValue = await consumerContract.getComputationResult();
+    expect(fetchedValue).to.eq(expectedNumericValues.ETH * 42);
   });
 
-  it("Should return correct oracle values for 10 assets", async () => {
+  it("Should process oracle values for 10 assets", async () => {
     const mockNumericPackages = getRange({
       start: 0,
       length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
@@ -78,20 +80,22 @@ describe("SampleStorageProxy", function () {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
 
+    const dataValues = dataPoints.map((dataPoint) =>
+      Math.round(dataPoint.value * 10 ** 8)
+    );
+
     for (const dataPoint of dataPoints) {
-      await wrappedContract.saveOracleValueInContractStorage(
+      await wrappedContract.processOracleValue(
         convertStringToBytes32(dataPoint.dataFeedId)
       );
-      await expect(
-        consumerContract.checkOracleValue(
-          convertStringToBytes32(dataPoint.dataFeedId),
-          Math.round(dataPoint.value * 10 ** 8)
-        )
-      ).not.to.be.reverted;
     }
+
+    const computationResult = await consumerContract.getComputationResult();
+
+    expect(computationResult).to.eq(dataValues.reduce((a, b) => a + b, 0) * 42);
   });
 
-  it("Should return correct oracle values for 10 assets simultaneously", async () => {
+  it("Should process oracle values for 10 assets simultaneously", async () => {
     const mockNumericPackages = getRange({
       start: 0,
       length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
@@ -111,9 +115,9 @@ describe("SampleStorageProxy", function () {
       Math.round(dataPoint.value * 10 ** 8)
     );
 
-    await wrappedContract.saveOracleValuesInContractStorage(dataFeedIdsBytes);
-    await expect(
-      consumerContract.checkOracleValues(dataFeedIdsBytes, dataValues)
-    ).not.to.be.reverted;
+    await wrappedContract.processOracleValues(dataFeedIdsBytes);
+    const computationResult = await consumerContract.getComputationResult();
+
+    expect(computationResult).to.eq(dataValues.reduce((a, b) => a + b, 0) * 42);
   });
 });

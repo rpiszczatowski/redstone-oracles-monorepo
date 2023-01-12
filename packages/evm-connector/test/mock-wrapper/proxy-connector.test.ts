@@ -18,19 +18,6 @@ import {
   MockSignerIndex,
 } from "../../src/helpers/test-utils";
 
-const dataPoints = [
-  { dataFeedId: "ETH", value: 4000 },
-  { dataFeedId: "AVAX", value: 5 },
-  { dataFeedId: "BTC", value: 100000 },
-  { dataFeedId: "LINK", value: 2 },
-  { dataFeedId: "UNI", value: 200 },
-  { dataFeedId: "FRAX", value: 1 },
-  { dataFeedId: "OMG", value: 0.00003 },
-  { dataFeedId: "DOGE", value: 2 },
-  { dataFeedId: "SOL", value: 11 },
-  { dataFeedId: "BNB", value: 31 },
-];
-
 describe("SampleProxyConnector", function () {
   let contract: SampleProxyConnector;
   const ethDataFeedId = convertStringToBytes32("ETH");
@@ -65,6 +52,19 @@ describe("SampleProxyConnector", function () {
   });
 
   it("Should return correct oracle values for 10 assets", async () => {
+    const dataPoints = [
+      { dataFeedId: "ETH", value: 4000 },
+      { dataFeedId: "AVAX", value: 5 },
+      { dataFeedId: "BTC", value: 100000 },
+      { dataFeedId: "LINK", value: 2 },
+      { dataFeedId: "UNI", value: 200 },
+      { dataFeedId: "FRAX", value: 1 },
+      { dataFeedId: "OMG", value: 0.00003 },
+      { dataFeedId: "DOGE", value: 2 },
+      { dataFeedId: "SOL", value: 11 },
+      { dataFeedId: "BNB", value: 31 },
+    ];
+
     const mockNumericPackages = getRange({
       start: 0,
       length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
@@ -86,31 +86,6 @@ describe("SampleProxyConnector", function () {
         )
       ).not.to.be.reverted;
     }
-  });
-
-  it("Should return correct oracle values for 10 assets simultaneously", async () => {
-    const mockNumericPackages = getRange({
-      start: 0,
-      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-    }).map((i) =>
-      getMockNumericPackage({
-        dataPoints,
-        mockSignerIndex: i as MockSignerIndex,
-      })
-    );
-
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-
-    const dataFeedIds = dataPoints.map((dataPoint) => dataPoint.dataFeedId);
-    const dataFeedIdsBytes = dataFeedIds.map(convertStringToBytes32);
-    const dataValues = dataPoints.map((dataPoint) =>
-      Math.round(dataPoint.value * 10 ** 8)
-    );
-
-    await expect(
-      wrappedContract.checkOracleValues(dataFeedIdsBytes, dataValues)
-    ).not.to.be.reverted;
   });
 
   it("Should forward msg.value", async () => {

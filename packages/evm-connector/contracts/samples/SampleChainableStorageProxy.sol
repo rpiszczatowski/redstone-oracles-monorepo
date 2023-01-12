@@ -3,15 +3,25 @@
 pragma solidity ^0.8.4;
 
 import "../mocks/RedstoneConsumerNumericMock.sol";
-import "./SampleStorageProxyConsumer.sol";
+import "./SampleChainableStorageProxyConsumer.sol";
 
-contract SampleStorageProxy is RedstoneConsumerNumericMock {
-  SampleStorageProxyConsumer sampleContract;
+contract SampleChainableStorageProxy is RedstoneConsumerNumericMock {
+  SampleChainableStorageProxyConsumer sampleContract;
 
   mapping(bytes32 => uint256) public oracleValues;
 
   function register(address _sampleContract) external {
-    sampleContract = SampleStorageProxyConsumer(_sampleContract);
+    sampleContract = SampleChainableStorageProxyConsumer(_sampleContract);
+  }
+
+  function processOracleValue(bytes32 dataFeedId) public {
+    saveOracleValueInContractStorage(dataFeedId);
+    sampleContract.processOracleValue(dataFeedId);
+  }
+
+  function processOracleValues(bytes32[] memory dataFeedIds) public {
+    saveOracleValuesInContractStorage(dataFeedIds);
+    sampleContract.processOracleValues(dataFeedIds);
   }
 
   function saveOracleValueInContractStorage(bytes32 dataFeedId) public {
