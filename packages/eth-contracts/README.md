@@ -11,8 +11,6 @@ This package contains an implementation of the main RedStone contracts with the 
 
 A standard implementation of ERC20 token with an ability to mint more tokens by the authorised minter. Minter role can be passed to another address only by the existing minter. There is no limit for max token supply.
 
-#### Upgradability
-
 This contract is not upgradable.
 
 ### LockingRegistry.sol
@@ -36,8 +34,6 @@ There is a possibility that a data provider is not able to complete unlock if so
 The LockingRegistry contract has a mechanism of slashing (`slash(address slashedAddress, uint256 slashedAmount)` method), which can be performed only by a special authorised address (authorised slasher address). The authorised slasher can slash any amount from any user that locked their funds. This mechanism is created to "punish" misbehaved data providers.
 
 Initially, we'll specify the RedStone team multisig wallet as the authorised slasher. In future the DisputeResolutionContract will become the authorised slasher and it will be able to slash tokens automatically after the dispute settlement.
-
-#### Upgradability
 
 This contract is upgradable.
 
@@ -66,8 +62,6 @@ As mentioned earlier, all the RedStone tokens on the VestingWallet contract bala
 #### Releasing tokens
 
 Only the beneficiary wallet can release vested tokens that are not currently locked in the LockingRegistry using the `release(uint256 amount)` method.
-
-#### Upgradability
 
 This contract is upgradable.
 
