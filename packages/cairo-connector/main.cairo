@@ -23,9 +23,12 @@ func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
     %}
 
     let allowed_signer_addresses = array_new(len=1);
+    let block_ts = 1673007000;
     assert allowed_signer_addresses.ptr[0] = 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB;
 
-    local config: Config = Config(allowed_signer_addresses=allowed_signer_addresses);
+    local config: Config = Config(
+        block_ts=block_ts, allowed_signer_addresses=allowed_signer_addresses
+    );
 
     let payload = process_payload(
         data_ptr=payload_data_ptr, data_length=payload_data_length, config=config

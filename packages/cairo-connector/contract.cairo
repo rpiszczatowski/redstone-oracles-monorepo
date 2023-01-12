@@ -3,6 +3,8 @@
 from starkware.cairo.common.cairo_builtins import HashBuiltin, BitwiseBuiltin
 from starkware.cairo.common.math import assert_nn, assert_le
 
+from starkware.starknet.common.syscalls import get_block_timestamp
+
 from redstone.protocol.payload import Payload, get_price
 from redstone.processor import Config, process_payload as redstone_process_payload
 
@@ -39,7 +41,10 @@ func process_payload{
     alloc_locals;
 
     let allowed_signer_addresses = get_allowed_signer_addresses();
-    local config: Config = Config(allowed_signer_addresses=allowed_signer_addresses);
+    let (block_ts) = get_block_timestamp();
+    local config: Config = Config(
+        block_ts=block_ts, allowed_signer_addresses=allowed_signer_addresses
+    );
 
     let payload = redstone_process_payload(
         data_ptr=data_ptr, data_length=data_ptr_len, config=config
