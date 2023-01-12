@@ -46,8 +46,12 @@
         "name": "get_signer_addresses",
         "outputs": [
             {
+                "name": "res_len",
+                "type": "felt"
+            },
+            {
                 "name": "res",
-                "type": "(felt, felt, felt, felt, felt, felt)"
+                "type": "felt*"
             }
         ],
         "stateMutability": "view",

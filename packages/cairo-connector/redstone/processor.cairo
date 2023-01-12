@@ -46,13 +46,14 @@ func validate_data_packages{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
         signable_arr=package.signable_arr,
         signature=package.signature,
         allowed_signer_addresses=config.allowed_signer_addresses,
+        index=index,
     );
 
     return validate_data_packages(arr=arr, index=index + 1, config=config);
 }
 
 func validate_signature{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
-    signable_arr: Array, signature: Signature, allowed_signer_addresses: Array
+    signable_arr: Array, signature: Signature, allowed_signer_addresses: Array, index: felt
 ) {
     alloc_locals;
 
@@ -61,7 +62,8 @@ func validate_signature{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
 
     local addr = address;
 
-    with_attr error_message("signer_index must be nonnegative (address={addr})") {
+    with_attr error_message(
+            "signer_index for package #{index} must be nonnegative (address={addr})") {
         assert_nn(signer_index);
     }
 
@@ -75,7 +77,7 @@ func validate_timestamp{range_check_ptr}(package_ts_ms: felt, block_ts: felt) {
     let max_ts = (block_ts + MAX_DATA_TIMESTAMP_AHEAD_SECONDS) * 1000 + 1;
 
     with_attr error_message(
-            "The package timestamp (package_ts={package_ts_ms}) must be in range {min_ts} =< package_ts_ms < {max_ts}") {
+            "The package timestamp (package_ts_ms={package_ts_ms}) must be in range {min_ts} =< package_ts_ms < {max_ts}") {
         assert_in_range(package_ts_ms, min_ts, max_ts);
     }
 
