@@ -137,7 +137,6 @@ describe("Locking registry", () => {
     ).to.be.revertedWith("Tx sender is not authorised to slash locks");
   });
 
-  //TODO: Consider explicitly specifying amount to unlock
   it("Should unlock after slashing", async () => {
     const delayForUnlockingInSeconds = 0;
     await deployContracts(delayForUnlockingInSeconds);
@@ -151,7 +150,7 @@ describe("Locking registry", () => {
     );
     expect(lockingDetails.pendingAmountToUnlock.toNumber()).to.eql(100);
 
-    //Slash
+    // Slash
     const tx = await locking
       .connect(authorisedSlasher)
       .slash(signers[0].address, 10);
@@ -164,7 +163,6 @@ describe("Locking registry", () => {
     expect(userLockedBalance.toNumber()).to.eql(90);
     expect(slasherBalance.toNumber()).to.eql(10);
 
-    //Complete unlock
     // Complete unlock
     const unlockTx = await locking.completeUnlock();
     await unlockTx.wait();
@@ -178,9 +176,6 @@ describe("Locking registry", () => {
     expect(userBalance.toNumber()).to.eql(90);
   });
 
-  //TODO: Test unlocks with simulating passed time
-  //Could we skip this test on Goerli?
-
-
-
+  // TODO: Test unlocks with simulating passed time
+  // Could we skip this test on Goerli?
 });
