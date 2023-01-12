@@ -136,4 +136,51 @@ describe("Locking registry", () => {
       locking.connect(signers[1]).slash(signers[0].address, 99)
     ).to.be.revertedWith("Tx sender is not authorised to slash locks");
   });
+
+  //TODO: Consider explicitly specifying amount to unlock
+  it("Should unlock after slashing", async () => {
+    const delayForUnlockingInSeconds = 0;
+    await deployContracts(delayForUnlockingInSeconds);
+    await lockTokens(100);
+
+    // Request unlock
+    const reqTx = await locking.requestUnlock(100);
+    await reqTx.wait();
+    const lockingDetails = await locking.getUserLockingDetails(
+      signers[0].address
+    );
+    expect(lockingDetails.pendingAmountToUnlock.toNumber()).to.eql(100);
+
+    //Slash
+    const tx = await locking
+      .connect(authorisedSlasher)
+      .slash(signers[0].address, 10);
+    await tx.wait();
+
+    const userLockedBalance = await locking.getMaxSlashableAmount(
+      signers[0].address
+    );
+    const slasherBalance = await token.balanceOf(authorisedSlasher.address);
+    expect(userLockedBalance.toNumber()).to.eql(90);
+    expect(slasherBalance.toNumber()).to.eql(10);
+
+    //Complete unlock
+    // Complete unlock
+    const unlockTx = await locking.completeUnlock();
+    await unlockTx.wait();
+    const lockedBalance = await locking.getMaxSlashableAmount(
+      signers[0].address
+    );
+    expect(lockedBalance.toNumber()).to.eql(0);
+    const contractBalance = await token.balanceOf(locking.address);
+    expect(contractBalance.toNumber()).to.eql(0);
+    const userBalance = await token.balanceOf(signers[0].address);
+    expect(userBalance.toNumber()).to.eql(90);
+  });
+
+  //TODO: Test unlocks with simulating passed time
+  //Could we skip this test on Goerli?
+
+
+
 });
