@@ -64,14 +64,14 @@ export abstract class BaseFetcher implements Fetcher {
 
   // This method converts internal asset id (asset identifier on fetcher level)
   // to an asset symbol (asset identifier on manifest level)
-  // It can be overriden by any fetcher
+  // It can be overridden by any fetcher
   protected convertIdToSymbol(id: string): string {
     return id;
   }
 
   // This method converts asset symbol (asset identifier on manifest level)
   // to an internal asset id (asset identifier on fetcher level)
-  // It can be overriden by any fetcher
+  // It can be overridden by any fetcher
   protected convertSymbolToId(symbol: string): string {
     return symbol;
   }
