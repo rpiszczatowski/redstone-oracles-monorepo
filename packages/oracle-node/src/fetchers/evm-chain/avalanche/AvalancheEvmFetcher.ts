@@ -26,6 +26,8 @@ export const glpToken = Object.keys(glpManagerContractsDetails);
 const MUTLICALL_CONTRACT_ADDRESS = "0x8755b94F88D120AB2Cc13b1f6582329b067C760d";
 
 export class AvalancheEvmFetcher extends BaseFetcher {
+  protected retryForInvalidResponse: boolean = true;
+
   private evmMulticallService: EvmMulticallService;
 
   constructor(
@@ -39,13 +41,21 @@ export class AvalancheEvmFetcher extends BaseFetcher {
     );
   }
 
+  override validateResponse(response: any): boolean {
+    return !(response === undefined || response instanceof Error);
+  }
+
   async fetchData(ids: string[]) {
     const requests = [];
     for (const id of ids) {
       const requestsPerId = prepareMulticallRequests(id);
       requests.push(...requestsPerId);
     }
-    return await this.evmMulticallService.performMulticall(requests);
+    try {
+      return await this.evmMulticallService.performMulticall(requests);
+    } catch (error) {
+      return error;
+    }
   }
 
   async extractPrices(
