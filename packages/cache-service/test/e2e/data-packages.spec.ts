@@ -20,6 +20,7 @@ import { RedstonePayloadParser } from "redstone-protocol/dist/src/redstone-paylo
 import { ethers } from "ethers";
 import { ResponseFormat } from "../../src/data-packages/data-packages.controller";
 import { base64 } from "ethers/lib/utils";
+import { recoverSignerAddress } from "redstone-protocol";
 
 jest.mock("redstone-sdk", () => ({
   __esModule: true,
@@ -259,12 +260,14 @@ describe("Data packages (e2e)", () => {
 
     const signedDataPackage = payload.signedDataPackages[0];
     const mockDataPackage = mockDataPackages[0];
-    expect(base64.encode(signedDataPackage.serializeSignatureToHex())).toBe(
-      mockDataPackage.signature
-    );
+    const signatureHex = signedDataPackage.serializeSignatureToHex();
+    expect(base64.encode(signatureHex)).toBe(mockDataPackage.signature);
     expect(signedDataPackage.dataPackage.timestampMilliseconds).toBe(
       mockDataPackage.timestampMilliseconds
     );
+
+    const signerAddress = recoverSignerAddress(signedDataPackage);
+    expect(signerAddress).toBe(MOCK_SIGNER_ADDRESS);
 
     const dataPoints: any[] = signedDataPackage.dataPackage.dataPoints;
     expect(dataPoints.length).toBe(2);
@@ -283,6 +286,12 @@ describe("Data packages (e2e)", () => {
     await performPayloadTests((response) => {
       return response.body;
     }, "raw");
+  });
+
+  it("/data-packages/payload (GET) - should return payload in bytes format", async () => {
+    await performPayloadTests((response) => {
+      return response.body;
+    }, "bytes");
   });
 
   it("/data-packages/payload (GET) - should return payload in raw format when no format is specified", async () => {

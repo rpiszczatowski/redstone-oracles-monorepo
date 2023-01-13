@@ -27,7 +27,7 @@ export interface BulkPostRequestBody {
   dataPackages: ReceivedDataPackage[];
 }
 
-export type ResponseFormat = "raw" | "hex";
+export type ResponseFormat = "raw" | "hex" | "bytes" | "json";
 
 export interface GetLatestDataPackagesQuery {
   "data-service-id": string;
@@ -58,6 +58,7 @@ export interface DataPackagesStatsResponse {
 
 const CONTENT_TYPE_OCTET_STREAM = "application/octet-stream";
 const CONTENT_TYPE_TEXT = "text/html";
+const CONTENT_TYPE_JSON = "application/json";
 
 @Controller("data-packages")
 export class DataPackagesController {
@@ -191,6 +192,16 @@ export class DataPackagesController {
       case "raw":
         res.contentType(CONTENT_TYPE_OCTET_STREAM);
         duplexStream(data.toBytes()).pipe(res);
+        return;
+
+      case "bytes":
+        res.contentType(CONTENT_TYPE_JSON);
+        res.send(Array.from(data.toBytes()));
+        return;
+
+      case "json":
+        res.contentType(CONTENT_TYPE_JSON);
+        res.send(data);
         return;
 
       default:
