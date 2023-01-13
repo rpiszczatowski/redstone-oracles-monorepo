@@ -27,6 +27,7 @@ import {
 import { fetchIp } from "./utils/ip-fetcher";
 import { ArweaveProxy } from "./arweave/ArweaveProxy";
 import { roundTimestamp } from "./utils/timestamps";
+import localDB from "./db/local-db";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -204,6 +205,10 @@ export default class NodeRunnerOld {
     const aggregatedPrices: PriceDataAfterAggregation[] =
       await this.fetchPrices();
 
+    // Saving prices in local db
+    // (they can be used for building TWAPs and checking recent deviations)
+    await this.savePricesInLocalDB(aggregatedPrices);
+
     const pricesReadyForSigning = this.pricesService!.preparePricesForSigning(
       aggregatedPrices,
       "",
@@ -217,6 +222,12 @@ export default class NodeRunnerOld {
     // Broadcasting
     await this.broadcastPrices(signedPrices);
     await this.broadcastEvmPricePackage(signedPrices);
+  }
+
+  private async savePricesInLocalDB(prices: PriceDataAfterAggregation[]) {
+    logger.info(`Saving ${prices.length} prices in local db`);
+    await localDB.savePrices(prices);
+    logger.info("Prices saved in local db");
   }
 
   private async fetchPrices(): Promise<PriceDataAfterAggregation[]> {
