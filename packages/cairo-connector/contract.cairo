@@ -42,15 +42,19 @@ func process_payload{
 
     let allowed_signer_addresses = get_allowed_signer_addresses();
     let (block_ts) = get_block_timestamp();
+    let requested_feed_ids = array_new(len=1);
+    assert requested_feed_ids.ptr[0] = 'BTC';
     local config: Config = Config(
-        block_ts=block_ts, allowed_signer_addresses=allowed_signer_addresses
+        block_ts=block_ts,
+        allowed_signer_addresses=allowed_signer_addresses,
+        requested_feed_ids=requested_feed_ids,
     );
 
-    let payload = redstone_process_payload(
+    let (payload, _) = redstone_process_payload(
         data_ptr=data_ptr, data_length=data_ptr_len, config=config
     );
 
-    let price = get_price(payload=payload, package_index=0, dp_index=1);
+    let price = get_price(payload=payload, package_index=0, feed_id='BTC');
     btc_price.write(price);
 
     return ();

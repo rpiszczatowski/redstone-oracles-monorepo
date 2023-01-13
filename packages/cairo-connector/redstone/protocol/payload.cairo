@@ -1,5 +1,6 @@
 from starkware.cairo.common.math import assert_nn
 
+from redstone.protocol.data_point import data_point_array_index
 from redstone.protocol.data_package import (
     DataPackageArray,
     get_data_packages,
@@ -45,10 +46,11 @@ func get_payload{range_check_ptr}(bytes_arr: Array) -> Payload {
     return payload;
 }
 
-func get_price{range_check_ptr}(payload: Payload, package_index: felt, dp_index: felt) -> felt {
+func get_price{range_check_ptr}(payload: Payload, package_index: felt, feed_id: felt) -> felt {
     assert_nn(payload.data_packages.len - package_index);
 
     let package = payload.data_packages.ptr[package_index];
+    let dp_index = data_point_array_index(arr=package.data_points, feed_id=feed_id);
 
     assert_nn(package.data_points.len - dp_index);
     let dp = package.data_points.ptr[dp_index];

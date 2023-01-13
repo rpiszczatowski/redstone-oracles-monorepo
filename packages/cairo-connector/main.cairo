@@ -1,12 +1,16 @@
 %builtins output range_check bitwise
 
+from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.serialize import serialize_word
-from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
+from starkware.cairo.common.cairo_builtins import HashBuiltin, BitwiseBuiltin
 
-from redstone.protocol.payload import get_payload, serialize_payload, get_price
-from redstone.processor import Config, process_payload
+from redstone.protocol.payload import serialize_payload
 
-from redstone.utils.array import array_new
+from redstone.utils.array import array_new, serialize_array
+
+from redstone.config import Config
+from redstone.processor import process_payload
+from redstone.results import serialize_results
 
 func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
     alloc_locals;
@@ -30,17 +34,24 @@ func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
     assert allowed_signer_addresses.ptr[1] = 0x12470f7aba85c8b81d63137dd5925d6ee114952b;
     assert allowed_signer_addresses.ptr[2] = 0x1ea62d73edf8ac05dfcea1a34b9796e937a29eff;
 
+    let requested_feed_ids = array_new(len=3);
+    assert requested_feed_ids.ptr[0] = 'BTC';
+    assert requested_feed_ids.ptr[1] = 'ETH';
+    assert requested_feed_ids.ptr[2] = 'sth_wrong';
+
     local config: Config = Config(
-        block_ts=block_ts, allowed_signer_addresses=allowed_signer_addresses
+        block_ts=block_ts,
+        allowed_signer_addresses=allowed_signer_addresses,
+        requested_feed_ids=requested_feed_ids,
+        signer_count_treshold=1,
     );
 
-    let payload = process_payload(
+    let (payload, results) = process_payload(
         data_ptr=payload_data_ptr, data_length=payload_data_length, config=config
     );
-    get_price(payload=payload, package_index=0, dp_index=1);
-    serialize_word([ap - 1]);
 
     serialize_payload(payload);
+    serialize_results(arr=results, index=0);
 
     return ();
 }

@@ -3,6 +3,8 @@ from starkware.cairo.common.math import assert_nn
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.registers import get_label_location
 
+from redstone.utils.dict import Dict
+
 from redstone.utils.array import (
     Array,
     array_slice_tail_offset,

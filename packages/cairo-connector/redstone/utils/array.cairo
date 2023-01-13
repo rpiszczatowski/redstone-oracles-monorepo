@@ -1,6 +1,9 @@
 from starkware.cairo.common.serialize import serialize_word
 from starkware.cairo.common.math import assert_nn
+from starkware.cairo.common.math_cmp import is_not_zero
 from starkware.cairo.common.alloc import alloc
+
+const ARRAY_UNKNOWN_INDEX = -1;
 
 struct Array {
     ptr: felt*,
@@ -52,22 +55,17 @@ func array_to_number{range_check_ptr}(arr: Array) -> felt {
 
     assert_nn(arr.len);
 
-    let (res_ptr) = alloc();
-    array_to_number_rec(ptr=arr.ptr, len=arr.len, mlt=1, acc=0, res=res_ptr);
-
-    return [res_ptr];
+    return _array_to_number(ptr=arr.ptr, len=arr.len, mlt=1, acc=0);
 }
 
-func array_to_number_rec{range_check_ptr}(ptr: felt*, len: felt, mlt: felt, acc: felt, res: felt*) {
+func _array_to_number{range_check_ptr}(ptr: felt*, len: felt, mlt: felt, acc: felt) -> felt {
     if (len == 0) {
-        [res] = acc;
-
-        return ();
+        return acc;
     }
 
     let last = [ptr + len - 1];
 
-    return array_to_number_rec(ptr=ptr, len=len - 1, mlt=mlt * 256, acc=acc + mlt * last, res=res);
+    return _array_to_number(ptr=ptr, len=len - 1, mlt=mlt * 256, acc=acc + mlt * last);
 }
 
 func array_to_string{range_check_ptr}(arr: Array) -> felt {
@@ -91,21 +89,16 @@ func array_trunc{range_check_ptr}(arr: Array) -> Array {
 func _array_trunc{range_check_ptr}(ptr: felt*, len: felt, last_is_zero: felt, res: Array*) {
     alloc_locals;
 
-    if (len * last_is_zero == 0) {
-        assert res.len = len;
+    if ((len + 1) * last_is_zero == 0) {
+        assert res.len = len + 1;
 
         return ();
     }
 
-    let last = [ptr + len - 1];
-    local is_zero;
-    if (last == 0) {
-        is_zero = 1;
-    } else {
-        is_zero = 0;
-    }
+    let last = ptr[len - 1];
+    let isnt_zero = is_not_zero(last);
 
-    return _array_trunc(ptr=ptr, len=len - 1, last_is_zero=is_zero, res=res);
+    return _array_trunc(ptr=ptr, len=len - 1, last_is_zero=1 - isnt_zero, res=res);
 }
 
 func array_join{range_check_ptr}(arr: Array, join: Array) -> Array {
