@@ -4,7 +4,7 @@ from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_secp.bigint import BigInt3, uint256_to_bigint
 from starkware.cairo.common.uint256 import Uint256
 
-from redstone.utils.array import Array, array_to_number
+from redstone.utils.array import Array, array_new, array_to_number
 
 const KECCAK_WORD_SIZE = 16;
 
@@ -24,9 +24,8 @@ func keccak{range_check_ptr}(bytes_arr: Array) -> BigInt3 {
 func keccak_words{range_check_ptr}(arr: Array) -> Array {
     alloc_locals;
 
-    let (ptr) = alloc();
     let (q, _) = unsigned_div_rem(arr.len, KECCAK_WORD_SIZE);
-    local res: Array = Array(ptr=ptr, len=q + 1);
+    let res = array_new(len=q + 1);
 
     _keccak_words(arr=arr, count=0, res=res);
 

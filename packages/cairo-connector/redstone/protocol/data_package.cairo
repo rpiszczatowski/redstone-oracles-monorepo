@@ -1,6 +1,7 @@
-from starkware.cairo.common.serialize import serialize_word
+from starkware.cairo.common.serialize import serialize_word, array_rfold
 from starkware.cairo.common.math import assert_nn
 from starkware.cairo.common.alloc import alloc
+from starkware.cairo.common.registers import get_label_location
 
 from redstone.utils.array import (
     Array,
