@@ -12,8 +12,8 @@ from redstone.utils.array import (
 from redstone.protocol.constants import DATA_FEED_ID_BS
 
 struct DataPoint {
+    feed_id: felt,
     value: felt,
-    data_feed_id_arr: Array,
 }
 
 struct DataPointArray {
@@ -30,11 +30,11 @@ func get_data_points{range_check_ptr}(arr: Array, value_size: felt, count: felt)
     let (ptr: DataPoint*) = alloc();
     local res: DataPointArray = DataPointArray(ptr=ptr, len=count);
 
-    _get_data_points_rec(arr=arr, value_size=value_size, count=count, res=res);
+    _get_data_points(arr=arr, value_size=value_size, count=count, res=res);
     return res;
 }
 
-func _get_data_points_rec{range_check_ptr}(
+func _get_data_points{range_check_ptr}(
     arr: Array, value_size: felt, count: felt, res: DataPointArray
 ) {
     alloc_locals;
@@ -44,16 +44,33 @@ func _get_data_points_rec{range_check_ptr}(
     }
 
     let (value_rest, value) = array_slice_number(arr=arr, len=value_size);
-    let (data_feed_id_rest, data_feed_id_arr) = array_slice_tail(
-        arr=value_rest, len=DATA_FEED_ID_BS
-    );
+    let (feed_id_rest, feed_id_arr) = array_slice_tail(arr=value_rest, len=DATA_FEED_ID_BS);
 
-    local dp: DataPoint = DataPoint(value=value, data_feed_id_arr=data_feed_id_arr);
+    let feed_id = array_to_string(feed_id_arr);
+    local dp: DataPoint = DataPoint(feed_id=feed_id, value=value);
     assert res.ptr[count - 1] = dp;
 
-    return _get_data_points_rec(
-        arr=data_feed_id_rest, value_size=value_size, count=count - 1, res=res
-    );
+    return _get_data_points(arr=feed_id_rest, value_size=value_size, count=count - 1, res=res);
+}
+
+func data_point_array_index{range_check_ptr}(arr: DataPointArray, feed_id: felt) -> felt {
+    return _data_point_array_index(arr=arr, feed_id=feed_id, index=0);
+}
+
+func _data_point_array_index{range_check_ptr}(
+    arr: DataPointArray, feed_id: felt, index: felt
+) -> felt {
+    if (index == arr.len) {
+        return -1;
+    }
+
+    let dp = arr.ptr[index];
+
+    if (dp.feed_id == feed_id) {
+        return index;
+    }
+
+    return _data_point_array_index(arr=arr, feed_id=feed_id, index=index + 1);
 }
 
 func serialize_data_point_array{output_ptr: felt*, range_check_ptr}(
@@ -64,16 +81,13 @@ func serialize_data_point_array{output_ptr: felt*, range_check_ptr}(
     }
 
     serialize_word(index);
-    serialize_data_point(arr.ptr + index * DataPoint.SIZE);
+    serialize_data_point(arr.ptr[index]);
 
     return serialize_data_point_array(arr=arr, index=index + 1);
 }
 
-func serialize_data_point{output_ptr: felt*, range_check_ptr}(dp: DataPoint*) {
-    alloc_locals;
-
-    array_to_string(dp.data_feed_id_arr);
-    serialize_word([ap - 1]);
+func serialize_data_point{output_ptr: felt*, range_check_ptr}(dp: DataPoint) {
+    serialize_word(dp.feed_id);
     serialize_word(dp.value);
 
     return ();

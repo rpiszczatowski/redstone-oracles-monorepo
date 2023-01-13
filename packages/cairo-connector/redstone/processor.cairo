@@ -1,25 +1,24 @@
+from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin, HashBuiltin
-from starkware.cairo.common.math import assert_nn, assert_in_range
+from starkware.cairo.common.math import assert_nn
+from starkware.cairo.common.dict import dict_write, dict_read
+from starkware.cairo.common.dict_access import DictAccess
+from starkware.cairo.common.serialize import serialize_word
 
-from redstone.crypto.secp import recover_address
-from redstone.crypto.signature import Signature
+from redstone.validation import validate_timestamp, validate_signature
+from redstone.config import Config
+from redstone.results import Results, make_results
 
 from redstone.protocol.payload import Payload, get_payload
 from redstone.protocol.data_package import DataPackageArray
+from redstone.protocol.data_point import DataPointArray
 
-from redstone.utils.array import Array, array_index
-
-const MAX_DATA_TIMESTAMP_DELAY_SECONDS = 3 * 60;
-const MAX_DATA_TIMESTAMP_AHEAD_SECONDS = 1 * 60;
-
-struct Config {
-    block_ts: felt,
-    allowed_signer_addresses: Array,
-}
+from redstone.utils.array import ARRAY_UNKNOWN_INDEX, Array, array_index, array_new
+from redstone.utils.dict import DICT_UNKNOWN_VALUE, Dict, dict_new
 
 func process_payload{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
     data_ptr: felt*, data_length: felt, config: Config
-) -> Payload {
+) -> (payload: Payload, results: Results) {
     alloc_locals;
 
     assert_nn(data_length);
@@ -27,14 +26,20 @@ func process_payload{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
     local payload_arr: Array = Array(ptr=data_ptr, len=data_length);
     let payload = get_payload(bytes_arr=payload_arr);
 
-    validate_data_packages(arr=payload.data_packages, index=0, config=config);
+    let matrix = dict_new();
+    local dict_ptr: DictAccess* = matrix.ptr;
+    process_data_packages{dict_ptr=dict_ptr}(arr=payload.data_packages, config=config, index=0);
 
-    return payload;
+    let results = make_results{dict_ptr=dict_ptr}(config=config);
+
+    return (payload=payload, results=results);
 }
 
-func validate_data_packages{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
-    arr: DataPackageArray, index: felt, config: Config
+func process_data_packages{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, dict_ptr: DictAccess*}(
+    arr: DataPackageArray, config: Config, index: felt
 ) {
+    alloc_locals;
+
     if (index == arr.len) {
         return ();
     }
@@ -42,44 +47,41 @@ func validate_data_packages{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
     let package = arr.ptr[index];
 
     validate_timestamp(package_ts_ms=package.timestamp, block_ts=config.block_ts);
-    validate_signature(
+    let signer_index = validate_signature(
         signable_arr=package.signable_arr,
         signature=package.signature,
         allowed_signer_addresses=config.allowed_signer_addresses,
         index=index,
     );
 
-    return validate_data_packages(arr=arr, index=index + 1, config=config);
+    process_data_package(
+        data_points=package.data_points, signer_index=signer_index, config=config, index=0
+    );
+
+    return process_data_packages(arr=arr, config=config, index=index + 1);
 }
 
-func validate_signature{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
-    signable_arr: Array, signature: Signature, allowed_signer_addresses: Array, index: felt
+func process_data_package{range_check_ptr, dict_ptr: DictAccess*}(
+    data_points: DataPointArray, signer_index: felt, config: Config, index: felt
 ) {
     alloc_locals;
 
-    let address = recover_address(signable_arr=signable_arr, signature=signature);
-    let signer_index = array_index(arr=allowed_signer_addresses, key=address);
-
-    local addr = address;
-
-    with_attr error_message(
-            "signer_index for package #{index} must be nonnegative (address={addr})") {
-        assert_nn(signer_index);
+    if (index == data_points.len) {
+        return ();
     }
 
-    return ();
-}
+    let dp = data_points.ptr[index];
+    let price_index = array_index(arr=config.requested_feed_ids, key=dp.feed_id);
 
-func validate_timestamp{range_check_ptr}(package_ts_ms: felt, block_ts: felt) {
-    alloc_locals;
+    if (price_index == ARRAY_UNKNOWN_INDEX) {
+        tempvar dict_ptr = dict_ptr;
+    } else {
+        let key = config.requested_feed_ids.len * price_index + signer_index;
 
-    let min_ts = (block_ts - MAX_DATA_TIMESTAMP_DELAY_SECONDS) * 1000;
-    let max_ts = (block_ts + MAX_DATA_TIMESTAMP_AHEAD_SECONDS) * 1000 + 1;
-
-    with_attr error_message(
-            "The package timestamp (package_ts_ms={package_ts_ms}) must be in range {min_ts} =< package_ts_ms < {max_ts}") {
-        assert_in_range(package_ts_ms, min_ts, max_ts);
+        dict_write(key, dp.value);
     }
 
-    return ();
+    return process_data_package(
+        data_points=data_points, signer_index=signer_index, config=config, index=index + 1
+    );
 }
