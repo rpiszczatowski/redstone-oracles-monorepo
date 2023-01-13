@@ -5,7 +5,8 @@ from starkware.cairo.common.cairo_secp.bigint import BigInt3, bigint_to_uint256
 from starkware.cairo.common.cairo_secp.constants import BASE
 from starkware.cairo.common.serialize import serialize_word
 
-from redstone.utils.array import Array, array_slice_tail, array_to_number, array_join
+from redstone.utils.array import Array, array_new, array_slice_tail, array_to_number, array_join
+from redstone.utils.shortint import shortint_to_bytes
 
 // signature from 32-length array of bytes
 func bigint_from_array{range_check_ptr}(arr: Array) -> BigInt3 {
@@ -40,40 +41,15 @@ func bigint_to_bytes{range_check_ptr}(num: BigInt3) -> Array {
     alloc_locals;
 
     let (num_256) = bigint_to_uint256(num);
-    let high_bytes = number_to_bytes(num_256.high);
-    let low_bytes = number_to_bytes(num_256.low);
+    let high_bytes = shortint_to_bytes(num_256.high);
+    let low_bytes = shortint_to_bytes(num_256.low);
 
     let res = array_join(high_bytes, low_bytes);
 
     return res;
 }
 
-func number_to_bytes{range_check_ptr}(num: felt) -> Array {
-    alloc_locals;
-
-    assert_nn(num);
-
-    let (ptr) = alloc();
-    local res: Array = Array(ptr=ptr, len=16);
-
-    _number_to_bytes(num=num, index=16, res=res);
-
-    return res;
-}
-
-func _number_to_bytes{range_check_ptr}(num: felt, index: felt, res: Array) {
-    if (index == 0) {
-        return ();
-    }
-
-    let (q, r) = unsigned_div_rem(num, 256);
-    assert res.ptr[index - 1] = r;
-
-    return _number_to_bytes(num=q, index=index - 1, res=res);
-}
-
 func serialize_bigint{output_ptr: felt*}(num: BigInt3) {
-    serialize_word('aaa');
     serialize_word(num.d2);
     serialize_word(num.d1);
     serialize_word(num.d0);

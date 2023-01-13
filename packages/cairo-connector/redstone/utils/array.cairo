@@ -108,7 +108,7 @@ func _array_trunc{range_check_ptr}(ptr: felt*, len: felt, last_is_zero: felt, re
     return _array_trunc(ptr=ptr, len=len - 1, last_is_zero=is_zero, res=res);
 }
 
-func array_join(arr: Array, join: Array) -> Array {
+func array_join{range_check_ptr}(arr: Array, join: Array) -> Array {
     alloc_locals;
 
     let (ptr) = alloc();
@@ -145,12 +145,12 @@ func _array_index{range_check_ptr}(arr: Array, key: felt, index: felt) -> felt {
     return _array_index(arr=arr, key=key, index=index + 1);
 }
 
-func serialize_safe_array{output_ptr: felt*, range_check_ptr}(arr: Array, index: felt) {
+func serialize_array{output_ptr: felt*, range_check_ptr}(arr: Array, index: felt) {
     if (index == arr.len) {
         return ();
     }
 
     serialize_word(arr.ptr[index]);
 
-    return serialize_safe_array(arr=arr, index=index + 1);
+    return serialize_array(arr=arr, index=index + 1);
 }

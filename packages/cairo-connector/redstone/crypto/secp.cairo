@@ -12,7 +12,7 @@ from starkware.cairo.common.cairo_secp.signature import (
 from redstone.crypto.signature import Signature
 from redstone.crypto.keccak import keccak
 
-from redstone.utils.array import Array, array_join, serialize_safe_array
+from redstone.utils.array import Array, array_join, serialize_array
 from redstone.utils.bigint import serialize_bigint, bigint_to_bytes
 
 func recover_address{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(

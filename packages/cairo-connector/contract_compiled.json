@@ -58931,8 +58931,8 @@
                 "destination": "redstone.utils.bigint.serialize_bigint",
                 "type": "alias"
             },
-            "redstone.crypto.secp.serialize_safe_array": {
-                "destination": "redstone.utils.array.serialize_safe_array",
+            "redstone.crypto.secp.serialize_array": {
+                "destination": "redstone.utils.array.serialize_array",
                 "type": "alias"
             },
             "redstone.crypto.secp.serialize_word": {
