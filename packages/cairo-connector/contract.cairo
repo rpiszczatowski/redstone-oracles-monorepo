@@ -6,9 +6,11 @@ from starkware.cairo.common.math import assert_nn, assert_le
 from starkware.starknet.common.syscalls import get_block_timestamp
 
 from redstone.protocol.payload import Payload, get_price
-from redstone.processor import Config, process_payload as redstone_process_payload
 
 from redstone.utils.array import Array, array_new
+
+from redstone.process.config import Config
+from redstone.process.processor import process_payload as redstone_process_payload
 
 @storage_var
 func btc_price() -> (res: felt) {
@@ -48,6 +50,7 @@ func process_payload{
         block_ts=block_ts,
         allowed_signer_addresses=allowed_signer_addresses,
         requested_feed_ids=requested_feed_ids,
+        signer_count_treshold=1,
     );
 
     let (payload, _) = redstone_process_payload(

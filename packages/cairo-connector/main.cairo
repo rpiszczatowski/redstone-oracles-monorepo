@@ -8,9 +8,9 @@ from redstone.protocol.payload import serialize_payload
 
 from redstone.utils.array import array_new, serialize_array
 
-from redstone.config import Config
-from redstone.processor import process_payload
-from redstone.results import serialize_results
+from redstone.process.config import Config
+from redstone.process.processor import process_payload
+from redstone.process.results import serialize_results
 
 func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
     alloc_locals;
@@ -29,15 +29,20 @@ func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
         ids.block_ts = program_input['timestamp']
     %}
 
-    let allowed_signer_addresses = array_new(len=3);
+    let allowed_signer_addresses = array_new(len=8);
     assert allowed_signer_addresses.ptr[0] = 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB;
     assert allowed_signer_addresses.ptr[1] = 0x12470f7aba85c8b81d63137dd5925d6ee114952b;
     assert allowed_signer_addresses.ptr[2] = 0x1ea62d73edf8ac05dfcea1a34b9796e937a29eff;
+    assert allowed_signer_addresses.ptr[3] = 0x83cba8c619fb629b81a65c2e67fe15cf3e3c9747;
+    assert allowed_signer_addresses.ptr[4] = 0x2c59617248994D12816EE1Fa77CE0a64eEB456BF;
 
-    let requested_feed_ids = array_new(len=3);
+    assert allowed_signer_addresses.ptr[5] = 0xe3a067be7cef681d3c8424f6b2ad6520fa4ad0c9;
+    assert allowed_signer_addresses.ptr[6] = 0x4e2eb22eba9f3f3a8c4cb7f84f2102f9eb28bace;
+    assert allowed_signer_addresses.ptr[7] = 0xbdde27275a968e8ac4ecbf40e98fe4f804ff7641;
+
+    let requested_feed_ids = array_new(len=2);
     assert requested_feed_ids.ptr[0] = 'BTC';
     assert requested_feed_ids.ptr[1] = 'ETH';
-    assert requested_feed_ids.ptr[2] = 'sth_wrong';
 
     local config: Config = Config(
         block_ts=block_ts,

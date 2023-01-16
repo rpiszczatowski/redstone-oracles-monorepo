@@ -35,6 +35,7 @@ func recover_address{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
 
 func recover_public_key{range_check_ptr}(signable_arr: Array, signature: Signature) -> EcPoint {
     let message_hash = keccak(bytes_arr=signable_arr);
+
     let (key) = secp_recover_public_key(message_hash, signature.r, signature.s, signature.v - 27);
 
     return key;
