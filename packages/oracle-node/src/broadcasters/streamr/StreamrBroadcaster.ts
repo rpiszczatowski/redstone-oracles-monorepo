@@ -31,6 +31,9 @@ export class StreamrBroadcaster implements Broadcaster {
   constructor(ethereumPrivateKey: string) {
     this.streamrClient = new StreamrClient({
       auth: { privateKey: ethereumPrivateKey },
+      network: {
+        webrtcDisallowPrivateAddresses: false,
+      },
     });
     this.address = new Wallet(ethereumPrivateKey).address;
     this.streamId = getStreamIdForNodeByEvmAddress(this.address);
