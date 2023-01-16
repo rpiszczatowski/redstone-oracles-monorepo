@@ -10,6 +10,7 @@
     }
   },
   "evmChainId": 1,
+  "minValidSourcesPercentage": 50,
   "tokens": {
     "SWINGBY": {},
     "DOGE": {},

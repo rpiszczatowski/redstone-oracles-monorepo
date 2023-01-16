@@ -13,6 +13,7 @@
   "enableStreamrBroadcaster": false,
   "enableArweaveBackup": false,
   "evmChainId": 1,
+  "minValidSourcesPercentage": 50,
   "tokens": {
     "BTC": {},
     "ETH": {},

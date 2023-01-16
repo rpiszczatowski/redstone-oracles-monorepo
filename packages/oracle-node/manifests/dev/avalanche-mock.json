@@ -13,6 +13,7 @@
   "httpBroadcasterURLs": [],
   "enableStreamrBroadcaster": true,
   "enableArweaveBackup": false,
+  "minValidSourcesPercentage": 50,
   "tokens": {
     "ETH": {
       "source": ["binance", "kraken", "coingecko", "mock"]

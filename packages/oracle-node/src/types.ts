@@ -11,6 +11,7 @@ export interface Manifest {
   tokens: TokensConfig;
   httpBroadcasterURLs?: string[];
   enableStreamrBroadcaster?: boolean;
+  minValidSourcesPercentage?: number;
 }
 
 export interface TokensConfig {

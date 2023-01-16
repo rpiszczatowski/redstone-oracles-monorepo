@@ -17,6 +17,7 @@
   ],
   "enableStreamrBroadcaster": false,
   "enableArweaveBackup": false,
+  "minValidSourcesPercentage": 50,
   "tokens": {
     "TSLA": {},
     "AAPL": {},
@@ -33,7 +34,6 @@
     "SHOP": {},
     "SPOT": {},
     "TDOC": {},
-
     "SPY": {},
     "QQQ": {},
     "ONEQ": {},
@@ -42,7 +42,6 @@
     "VGK": {},
     "INDA": {},
     "RSX": {},
-
     "ZC=F": {},
     "ZS=F": {},
     "ZM=F": {},
@@ -50,19 +49,16 @@
     "KE=F": {},
     "ZO=F": {},
     "ZR=F": {},
-
     "CL=F": {},
     "RB=F": {},
     "NG=F": {},
     "QA=F": {},
     "EH=F": {},
-
     "GC=F": {},
     "SI=F": {},
     "HG=F": {},
     "PL=F": {},
     "PA=F": {},
-
     "LE=F": {},
     "GF=F": {},
     "HE=F": {},
@@ -71,14 +67,12 @@
     "GNF=F": {},
     "CB=F": {},
     "CSC=F": {},
-
     "CHF": {},
     "PEN": {},
     "MXN": {},
     "ARS": {},
     "BRLUSD=X": {},
     "COPUSD=X": {},
-
     "BBBY": {},
     "UPST": {},
     "BIG": {},

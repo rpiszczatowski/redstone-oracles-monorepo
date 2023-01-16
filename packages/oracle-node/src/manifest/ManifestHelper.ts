@@ -1,6 +1,8 @@
-import { Manifest, SourceTimeout } from "../types";
+import { Manifest } from "../types";
 
 export type TokensBySource = { [source: string]: string[] };
+
+const DEFAULT_MIN_VALID_SOURCE_PERCENTAGE = 50;
 
 export default class ManifestHelper {
   // This function converts tokens from manifest to object with the following
@@ -60,5 +62,21 @@ export default class ManifestHelper {
 
   static getAllTokensCount(manifest: Manifest) {
     return Object.keys(manifest.tokens).length;
+  }
+
+  static getAllSourceCount(symbol: string, manifest: Manifest) {
+    const allSourcesCount =
+      manifest.tokens?.[symbol]?.source?.length ??
+      manifest?.defaultSource?.length;
+    if (!allSourcesCount) {
+      throw new Error(`Cannot define all sources count for symbol ${symbol}`);
+    }
+    return allSourcesCount;
+  }
+
+  static getMinValidSourcesPercentage(manifest: Manifest) {
+    return (
+      manifest?.minValidSourcesPercentage ?? DEFAULT_MIN_VALID_SOURCE_PERCENTAGE
+    );
   }
 }
