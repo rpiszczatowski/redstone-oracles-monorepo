@@ -6,13 +6,13 @@ ABI=contract_abi.json
 ACC=testac5
 MAX_FEE=915193871434328
 DATA_DIR=./data
-DATA_NAME=payload
-PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=1&data-service-id=redstone-avalanche-prod&format=
+DATA_NAME=payload_3sig
+PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=3&data-service-id=redstone-avalanche-prod&format=
 
 SHELL := /bin/bash
 
 format:
-	cairo-format --one_item_per_line -i *.cairo **/*.cairo **/**/*.cairo
+	cairo-format --one_item_per_line -i *.cairo **/**/*.cairo  # **/*.cairo
 
 compile: format
 	cairo-compile $(SRC) --output $(OBJ) --cairo_path="/"
@@ -41,7 +41,7 @@ deploy:
 	starknet deploy --account=$(ACC) \
 	--class_hash $(CLASS_HASH) \
 	--max_fee=$(MAX_FEE) \
-	--inputs 3 0x12470f7aba85c8b81d63137dd5925d6ee114952b 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB 0x1ea62d73edf8ac05dfcea1a34b9796e937a29eff
+	--inputs 5 0x12470f7aba85c8b81d63137dd5925d6ee114952b 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB 0x1ea62d73edf8ac05dfcea1a34b9796e937a29eff 0x2c59617248994D12816EE1Fa77CE0a64eEB456BF 0x83cba8c619fb629b81a65c2e67fe15cf3e3c9747
 
 process_payload:
 	starknet invoke --account=$(ACC) \

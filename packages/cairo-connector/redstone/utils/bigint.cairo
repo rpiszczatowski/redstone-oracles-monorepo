@@ -49,10 +49,11 @@ func bigint_to_bytes{range_check_ptr}(num: BigInt3) -> Array {
     return res;
 }
 
-func serialize_bigint{output_ptr: felt*}(num: BigInt3) {
-    serialize_word(num.d2);
-    serialize_word(num.d1);
-    serialize_word(num.d0);
+func serialize_bigint{output_ptr: felt*, range_check_ptr}(num: BigInt3) {
+    let (num_256) = bigint_to_uint256(num);
+
+    serialize_word(num_256.high);
+    serialize_word(num_256.low);
 
     return ();
 }
