@@ -151,6 +151,7 @@ export interface NodeConfig {
   twelveDataRapidApiKey?: string;
   coinmarketcapApiKey?: string;
   kaikoApiKey?: string;
+  minDataFeedsPercentageForBigPackage: number;
 }
 
 export interface MulticallRequest {

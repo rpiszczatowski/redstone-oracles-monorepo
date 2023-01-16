@@ -57,4 +57,8 @@ export default class ManifestHelper {
   static getDeviationCheckConfigForSymbol(symbol: string, manifest: Manifest) {
     return manifest.tokens[symbol]?.deviationCheck || manifest.deviationCheck;
   }
+
+  static getAllTokensCount(manifest: Manifest) {
+    return Object.keys(manifest.tokens).length;
+  }
 }
