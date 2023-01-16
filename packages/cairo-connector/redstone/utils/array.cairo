@@ -2,6 +2,7 @@ from starkware.cairo.common.serialize import serialize_word
 from starkware.cairo.common.math import assert_nn
 from starkware.cairo.common.math_cmp import is_not_zero
 from starkware.cairo.common.alloc import alloc
+from starkware.cairo.common.usort import usort
 
 const ARRAY_UNKNOWN_INDEX = -1;
 
@@ -136,6 +137,62 @@ func _array_index{range_check_ptr}(arr: Array, key: felt, index: felt) -> felt {
     }
 
     return _array_index(arr=arr, key=key, index=index + 1);
+}
+
+func array_sort{range_check_ptr}(arr: Array) -> Array {
+    alloc_locals;
+
+    let (output_len, output, multiplicities) = usort(input_len=arr.len, input=arr.ptr);
+
+    let (ptr) = alloc();
+    let res = Array(ptr=ptr, len=arr.len);
+
+    _array_sort(
+        arr=output,
+        multiplicities=multiplicities,
+        mult_index_acc=ARRAY_UNKNOWN_INDEX,
+        mult_left_acc=0,
+        index=0,
+        res=res,
+    );
+
+    return res;
+}
+
+func _array_sort{range_check_ptr}(
+    arr: felt*,
+    multiplicities: felt*,
+    mult_index_acc: felt,
+    mult_left_acc: felt,
+    index: felt,
+    res: Array,
+) {
+    alloc_locals;
+
+    if (index == res.len) {
+        return ();
+    }
+
+    local mult_index;
+    local mult_left;
+    if (mult_left_acc == 0) {
+        assert mult_index = mult_index_acc + 1;
+        assert mult_left = multiplicities[mult_index];
+    } else {
+        assert mult_index = mult_index_acc;
+        assert mult_left = mult_left_acc;
+    }
+
+    assert res.ptr[index] = arr[mult_index];
+
+    return _array_sort(
+        arr=arr,
+        multiplicities=multiplicities,
+        mult_index_acc=mult_index,
+        mult_left_acc=mult_left - 1,
+        index=index + 1,
+        res=res,
+    );
 }
 
 func serialize_array{output_ptr: felt*, range_check_ptr}(arr: Array, index: felt) {

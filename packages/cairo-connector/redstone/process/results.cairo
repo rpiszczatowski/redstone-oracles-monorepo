@@ -3,7 +3,14 @@ from starkware.cairo.common.dict import dict_write, dict_read
 from starkware.cairo.common.dict_access import DictAccess
 from starkware.cairo.common.serialize import serialize_word
 
-from redstone.utils.array import ARRAY_UNKNOWN_INDEX, Array, array_index, array_new, serialize_array
+from redstone.utils.array import (
+    ARRAY_UNKNOWN_INDEX,
+    Array,
+    array_index,
+    array_new,
+    serialize_array,
+    array_sort,
+)
 from redstone.utils.dict import DICT_UNKNOWN_VALUE
 
 from redstone.process.config import (

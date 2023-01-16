@@ -53,7 +53,7 @@ func process_payload{
         signer_count_treshold=1,
     );
 
-    let (payload, _) = redstone_process_payload(
+    let (payload, _, _) = redstone_process_payload(
         data_ptr=data_ptr, data_length=data_ptr_len, config=config
     );
 

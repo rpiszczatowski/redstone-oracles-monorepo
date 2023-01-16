@@ -1,6 +1,6 @@
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin, HashBuiltin
-from starkware.cairo.common.math import assert_nn
+from starkware.cairo.common.math import assert_nn, unsigned_div_rem
 from starkware.cairo.common.dict_access import DictAccess
 from starkware.cairo.common.serialize import serialize_word
 
@@ -8,7 +8,7 @@ from redstone.protocol.payload import Payload, get_payload
 from redstone.protocol.data_package import DataPackageArray
 from redstone.protocol.data_point import DataPointArray
 
-from redstone.utils.array import ARRAY_UNKNOWN_INDEX, Array, array_index, array_new
+from redstone.utils.array import ARRAY_UNKNOWN_INDEX, Array, array_index, array_new, array_sort
 from redstone.utils.dict import Dict, dict_new
 
 from redstone.process.config import Config
@@ -21,7 +21,7 @@ from redstone.process.validation import (
 
 func process_payload{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
     data_ptr: felt*, data_length: felt, config: Config
-) -> (payload: Payload, results: Results) {
+) -> (payload: Payload, results: Results, aggregated: Array) {
     alloc_locals;
 
     assert_nn(data_length);
@@ -34,9 +34,11 @@ func process_payload{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
     process_data_packages{dict_ptr=dict_ptr}(arr=payload.data_packages, config=config, index=0);
 
     let results = make_results{dict_ptr=dict_ptr}(config=config);
-    validate_signer_count_treshold(results=results, treshold=config.signer_count_treshold, index=0);
+    let aggregated: Array = array_new(len=results.len);
 
-    return (payload=payload, results=results);
+    process_results(results=results, config=config, index=0, res=aggregated);
+
+    return (payload=payload, results=results, aggregated=aggregated);
 }
 
 func process_data_packages{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, dict_ptr: DictAccess*}(
@@ -84,4 +86,39 @@ func process_data_package{range_check_ptr, dict_ptr: DictAccess*}(
     return process_data_package(
         data_points=data_points, signer_index=signer_index, config=config, index=index + 1
     );
+}
+
+func process_results{range_check_ptr}(results: Results, config: Config, index: felt, res: Array) {
+    alloc_locals;
+
+    if (index == results.len) {
+        return ();
+    }
+
+    validate_signer_count_treshold(
+        count=results.len, treshold=config.signer_count_treshold, index=index
+    );
+    let median = calculate_median(results.ptr[index]);
+
+    assert res.ptr[index] = median;
+
+    return process_results(results=results, config=config, index=index + 1, res=res);
+}
+
+func calculate_median{range_check_ptr}(arr: Array) -> felt {
+    alloc_locals;
+
+    let sorted_arr = array_sort(arr);
+
+    let (q, r) = unsigned_div_rem(arr.len, 2);
+    if (r == 1) {
+        return sorted_arr.ptr[q];
+    } else {
+        let a = sorted_arr.ptr[q];
+        let b = sorted_arr.ptr[q - 1];
+
+        let (_, s) = unsigned_div_rem(a + b, 2);
+
+        return (a + b + s) / 2;
+    }
 }

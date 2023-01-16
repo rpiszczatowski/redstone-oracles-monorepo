@@ -5,7 +5,6 @@ from redstone.crypto.secp import recover_address
 from redstone.crypto.signature import Signature
 
 from redstone.utils.array import Array, array_index
-from redstone.process.results import Results
 
 const MAX_DATA_TIMESTAMP_DELAY_SECONDS = 3 * 60;
 const MAX_DATA_TIMESTAMP_AHEAD_SECONDS = 1 * 60;
@@ -41,20 +40,11 @@ func validate_timestamp{range_check_ptr}(package_ts_ms: felt, block_ts: felt) {
     return ();
 }
 
-func validate_signer_count_treshold{range_check_ptr}(
-    results: Results, treshold: felt, index: felt
-) {
-    alloc_locals;
-
-    if (index == results.len) {
-        return ();
-    }
-
-    local count = results.ptr[index].len;
+func validate_signer_count_treshold{range_check_ptr}(count: felt, treshold: felt, index: felt) {
     with_attr error_message(
             "Unique signer count treshold (required: {treshold}) for data feed #{index} not achieved (currently: {count})") {
         assert_le(treshold, count);
     }
 
-    return validate_signer_count_treshold(results=results, treshold=treshold, index=index + 1);
+    return ();
 }
