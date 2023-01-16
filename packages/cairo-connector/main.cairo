@@ -51,12 +51,13 @@ func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
         signer_count_treshold=1,
     );
 
-    let (payload, results) = process_payload(
+    let (payload, results, aggregated) = process_payload(
         data_ptr=payload_data_ptr, data_length=payload_data_length, config=config
     );
 
-    serialize_payload(payload);
+    // serialize_payload(payload);
     serialize_results(arr=results, index=0);
+    serialize_array(arr=aggregated, index=0);
 
     return ();
 }
