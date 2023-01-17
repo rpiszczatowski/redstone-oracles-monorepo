@@ -2,6 +2,10 @@
     {
         "inputs": [
             {
+                "name": "signer_count_treshold",
+                "type": "felt"
+            },
+            {
                 "name": "addresses_len",
                 "type": "felt"
             },
@@ -17,41 +21,56 @@
     {
         "inputs": [
             {
-                "name": "data_ptr_len",
+                "name": "feed_ids_len",
                 "type": "felt"
             },
             {
-                "name": "data_ptr",
+                "name": "feed_ids",
+                "type": "felt*"
+            },
+            {
+                "name": "payload_data_len",
+                "type": "felt"
+            },
+            {
+                "name": "payload_data",
                 "type": "felt*"
             }
         ],
-        "name": "process_payload",
-        "outputs": [],
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "get_btc_price",
+        "name": "get_oracle_values",
         "outputs": [
             {
-                "name": "res",
+                "name": "values_len",
                 "type": "felt"
+            },
+            {
+                "name": "values",
+                "type": "felt*"
             }
         ],
         "stateMutability": "view",
         "type": "function"
     },
     {
-        "inputs": [],
-        "name": "get_signer_addresses",
-        "outputs": [
+        "inputs": [
             {
-                "name": "res_len",
+                "name": "feed_id",
                 "type": "felt"
             },
             {
-                "name": "res",
+                "name": "payload_data_len",
+                "type": "felt"
+            },
+            {
+                "name": "payload_data",
                 "type": "felt*"
+            }
+        ],
+        "name": "get_oracle_value",
+        "outputs": [
+            {
+                "name": "value",
+                "type": "felt"
             }
         ],
         "stateMutability": "view",

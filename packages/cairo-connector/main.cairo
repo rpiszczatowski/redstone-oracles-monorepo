@@ -8,15 +8,15 @@ from redstone.protocol.payload import serialize_payload
 
 from redstone.utils.array import array_new, serialize_array
 
-from redstone.process.config import Config
-from redstone.process.processor import process_payload
-from redstone.process.results import serialize_results
+from redstone.core.config import Config
+from redstone.core.processor import process_payload
+from redstone.core.results import serialize_results
 
 func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
     alloc_locals;
 
     local payload_data_ptr: felt*;
-    local payload_data_length;
+    local payload_data_len;
     local block_ts;
 
     %{
@@ -25,7 +25,7 @@ func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
         for i, val in enumerate(bytes):
             memory[payload_data_ptr + i] = val
 
-        ids.payload_data_length = len(bytes)
+        ids.payload_data_len = len(bytes)
         ids.block_ts = program_input['timestamp']
     %}
 
@@ -48,10 +48,10 @@ func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
     );
 
     let (payload, results, aggregated) = process_payload(
-        data_ptr=payload_data_ptr, data_length=payload_data_length, config=config
+        data_ptr=payload_data_ptr, data_len=payload_data_len, config=config
     );
 
-    // serialize_payload(payload);
+    serialize_payload(payload);
     serialize_results(arr=results, index=0);
     serialize_array(arr=aggregated, index=0);
 

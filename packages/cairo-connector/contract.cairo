@@ -9,11 +9,11 @@ from redstone.protocol.payload import Payload, get_price
 
 from redstone.utils.array import Array, array_new
 
-from redstone.process.config import Config
-from redstone.process.processor import process_payload as redstone_process_payload
+from redstone.core.config import Config
+from redstone.core.processor import process_payload as redstone_process_payload
 
 @storage_var
-func btc_price() -> (res: felt) {
+func unique_signer_count_treshold() -> (res: felt) {
 }
 
 @storage_var
@@ -26,71 +26,77 @@ func signer_address_len() -> (res: felt) {
 
 @constructor
 func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    addresses_len: felt, addresses: felt*
+    signer_count_treshold: felt, addresses_len: felt, addresses: felt*
 ) {
     assert_nn(addresses_len);
 
+    unique_signer_count_treshold.write(signer_count_treshold);
     signer_address_len.write(addresses_len);
     write_addresses(ptr=addresses, len=addresses_len, index=0);
 
     return ();
 }
 
-@external
-func process_payload{
+@view
+func get_oracle_values{
     syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBuiltin*, range_check_ptr
-}(data_ptr_len: felt, data_ptr: felt*) {
+}(feed_ids_len: felt, feed_ids: felt*, payload_data_len: felt, payload_data: felt*) -> (
+    values_len: felt, values: felt*
+) {
     alloc_locals;
 
-    let allowed_signer_addresses = get_allowed_signer_addresses();
-    let (block_ts) = get_block_timestamp();
+    let requested_feed_ids = Array(ptr=feed_ids, len=feed_ids_len);
+
+    let values = _get_oracle_values(
+        requested_feed_ids=requested_feed_ids,
+        payload_data_len=payload_data_len,
+        payload_data=payload_data,
+    );
+
+    return (values_len=values.len, values=values.ptr);
+}
+
+@view
+func get_oracle_value{
+    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBuiltin*, range_check_ptr
+}(feed_id: felt, payload_data_len: felt, payload_data: felt*) -> (value: felt) {
+    alloc_locals;
+
     let requested_feed_ids = array_new(len=1);
-    assert requested_feed_ids.ptr[0] = 'BTC';
+    assert requested_feed_ids.ptr[0] = feed_id;
+
+    let values = _get_oracle_values(
+        requested_feed_ids=requested_feed_ids,
+        payload_data_len=payload_data_len,
+        payload_data=payload_data,
+    );
+
+    let value = values.ptr[0];
+
+    return (value=value);
+}
+
+func _get_oracle_values{
+    syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, bitwise_ptr: BitwiseBuiltin*, range_check_ptr
+}(requested_feed_ids: Array, payload_data_len: felt, payload_data: felt*) -> Array {
+    alloc_locals;
+
+    let (block_ts) = get_block_timestamp();
+    let allowed_signer_addresses = get_allowed_signer_addresses();
+    let (signer_count_treshold) = unique_signer_count_treshold.read();
+
     local config: Config = Config(
         block_ts=block_ts,
         allowed_signer_addresses=allowed_signer_addresses,
         requested_feed_ids=requested_feed_ids,
-        signer_count_treshold=1,
+        signer_count_treshold=signer_count_treshold,
     );
 
-    let (payload, _, _) = redstone_process_payload(
-        data_ptr=data_ptr, data_length=data_ptr_len, config=config
+    let (_, _, aggregated) = redstone_process_payload(
+        data_ptr=payload_data, data_len=payload_data_len, config=config
     );
 
-    let price = get_price(payload=payload, package_index=0, feed_id='BTC');
-    btc_price.write(price);
-
-    return ();
-}
-
-@view
-func get_btc_price{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-    res: felt
-) {
-    let (price) = btc_price.read();
-
-    return (res=price);
-}
-
-@view
-func get_signer_addresses{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}() -> (
-    res_len: felt, res: felt*
-) {
-    let addresses = get_allowed_signer_addresses();
-
-    return (res_len=addresses.len, res=addresses.ptr);
-}
-
-func write_addresses{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    ptr: felt*, len: felt, index: felt
-) {
-    if (len == index) {
-        return ();
-    }
-
-    signer_address.write(index, ptr[index]);
-
-    return write_addresses(ptr=ptr, len=len, index=index + 1);
+    return aggregated;
 }
 
 func get_allowed_signer_addresses{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
@@ -116,4 +122,16 @@ func _get_allowed_signer_addresses{syscall_ptr: felt*, pedersen_ptr: HashBuiltin
     assert res.ptr[index] = address;
 
     return _get_allowed_signer_addresses(index=index + 1, res=res);
+}
+
+func write_addresses{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
+    ptr: felt*, len: felt, index: felt
+) {
+    if (len == index) {
+        return ();
+    }
+
+    signer_address.write(index, ptr[index]);
+
+    return write_addresses(ptr=ptr, len=len, index=index + 1);
 }
