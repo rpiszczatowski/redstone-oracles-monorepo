@@ -4,10 +4,12 @@ CNT=contract.cairo
 CNC=contract_compiled.json
 ABI=contract_abi.json
 ACC=testac5
-MAX_FEE=915193871434328
+MAX_FEE=1000000000000000
 DATA_DIR=./data
 DATA_NAME=payload_3sig
 PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=3&data-service-id=redstone-avalanche-prod&format=
+BTC=4346947
+ETH=4543560
 
 SHELL := /bin/bash
 
@@ -30,38 +32,34 @@ contract: format
         --abi $(ABI) --cairo_path="/"
 
 declare: $(CNC)
-	starknet declare --account=$(ACC) --contract $(CNC) \
+	starknet declare --account=$(ACC) --contract $(CNC) --max_fee=$(MAX_FEE) \
 	--wallet=starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount \
 	--network=alpha-goerli
 
 $(CNC): contract
 $(ABI): contract
 
+#invoke: 'make CLASS_HASH=0xabc deploy' or define the variable CLASS_HASH above
 deploy:
-	starknet deploy --account=$(ACC) \
+	starknet deploy --account=$(ACC) --max_fee=$(MAX_FEE) \
 	--class_hash $(CLASS_HASH) \
-	--max_fee=$(MAX_FEE) \
-	--inputs 5 0x12470f7aba85c8b81d63137dd5925d6ee114952b 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB 0x1ea62d73edf8ac05dfcea1a34b9796e937a29eff 0x2c59617248994D12816EE1Fa77CE0a64eEB456BF 0x83cba8c619fb629b81a65c2e67fe15cf3e3c9747
+	--inputs 1 5 0x12470f7aba85c8b81d63137dd5925d6ee114952b 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB 0x1ea62d73edf8ac05dfcea1a34b9796e937a29eff 0x2c59617248994D12816EE1Fa77CE0a64eEB456BF 0x83cba8c619fb629b81a65c2e67fe15cf3e3c9747
 
-process_payload:
-	starknet invoke --account=$(ACC) \
-	--address ${CONTRACT_ADDRESS} \
-	--abi $(ABI) \
-	--function process_payload \
-	--max_fee=$(MAX_FEE) \
-	--inputs 2204 $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
-
-get_btc_price:
+#invoke: 'make CONTRACT_ADDRESS=0xabc get_oracle_values' or define the variable CONTRACT_ADDRESS above
+get_oracle_values:
 	starknet call --account=$(ACC) \
-	--address ${CONTRACT_ADDRESS} \
 	--abi $(ABI) \
-	--function get_btc_price
+	--address ${CONTRACT_ADDRESS} \
+	--function get_oracle_values \
+	--inputs 2 $(BTC) $(ETH) $(shell (ls -lf $(DATA_DIR)/${DATA_NAME}.splitted | awk '{print  $$5}' | awk '{print ($$1-1)/5}')) $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
 
-get_signer_addresses:
+#invoke: 'make CONTRACT_ADDRESS=0xabc get_oracle_value' or define the variable CONTRACT_ADDRESS above
+get_oracle_value:
 	starknet call --account=$(ACC) \
-	--address ${CONTRACT_ADDRESS} \
 	--abi $(ABI) \
-	--function get_signer_addresses
+	--address ${CONTRACT_ADDRESS} \
+	--function get_oracle_value \
+	--inputs $(BTC) $(shell (ls -lf $(DATA_DIR)/${DATA_NAME}.splitted | awk '{print  $$5}' | awk '{print ($$1-1)/5}')) $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
 
 clean:
 	rm $(OBJ) $(CNC) $(ABI)
@@ -79,7 +77,7 @@ prepare_data:
 	cat $(DATA_DIR)/${DATA_NAME}.hex | fold -w2 | paste -sd' ' -  | sed -E 's/[[:space:]]+/ 0x/g' | cut -c 3- >> $(DATA_DIR)/${DATA_NAME}.input > $(DATA_DIR)/${DATA_NAME}.splitted
 
 
-#init:
+#You may have needed:
 #	python3.9 -m venv /Users/lukaszkalbarczyk/cairo_venv
 #	source /Users/lukaszkalbarczyk/cairo_venv/bin/activate
 #	brew install gmp
