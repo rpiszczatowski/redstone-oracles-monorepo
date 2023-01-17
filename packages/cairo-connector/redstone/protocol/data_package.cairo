@@ -58,11 +58,11 @@ func _get_data_packages{range_check_ptr}(arr: Array, count: felt, res: DataPacka
         return ();
     }
 
-    let (signable_arr, signature_arr) = array_slice_tail(arr=arr, len=SIGNATURE_BS);
+    let (signature_rest, signature_arr) = array_slice_tail(arr=arr, len=SIGNATURE_BS);
     let signature = get_signature(bytes_arr=signature_arr);
 
     let (datapoint_count_rest, datapoint_count) = array_slice_number(
-        arr=signable_arr, len=DATA_POINTS_COUNT_BS
+        arr=signature_rest, len=DATA_POINTS_COUNT_BS
     );
     let (data_point_value_size_rest, data_point_value_size) = array_slice_number(
         arr=datapoint_count_rest, len=DATA_POINT_VALUE_BYTE_SIZE_BS
@@ -78,6 +78,10 @@ func _get_data_packages{range_check_ptr}(arr: Array, count: felt, res: DataPacka
         arr=data_points_arr, value_size=data_point_value_size, count=datapoint_count
     );
     assert data_points.len = datapoint_count;
+
+    let signable_arr_len = DATA_POINTS_COUNT_BS + DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS +
+        datapoint_count * (data_point_value_size + DATA_FEED_ID_BS);
+    let (_, signable_arr) = array_slice_tail(arr=signature_rest, len=signable_arr_len);
 
     local package: DataPackage = DataPackage(
         timestamp=timestamp, signable_arr=signable_arr, signature=signature, data_points=data_points
