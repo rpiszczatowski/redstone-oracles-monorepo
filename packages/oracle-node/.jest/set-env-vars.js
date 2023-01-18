@@ -10,3 +10,4 @@ process.env.ETHERSCAN_API_KEY = "test-api-key";
 process.env.LEVEL_DB_LOCATION = "level-db-for-tests";
 process.env.AVALANCHE_RPC_URL = "http://mock-avalanche-rpc-url";
 process.env.COINMARKETCAP_API_KEY = "coinmarketcap-api-key";
+process.env.MOCK_PRICES_URL_OR_PATH = "http://mock-fetcher";

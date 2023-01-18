@@ -51,25 +51,17 @@ export class CcxtFetcher extends BaseFetcher {
   }
 
   async extractPrices(response: any): Promise<PricesObj> {
-    const lastUsdtPrice = getLastPrice("USDT")?.value;
-    const lastBusdPrice = getLastPrice("BUSD")?.value;
-
     const pricesObj: PricesObj = {};
 
     for (const ticker of Object.values(response) as Ticker[]) {
       let pairSymbol = ticker.symbol;
       pairSymbol = this.serializePairSymbol(pairSymbol);
       const lastPrice = ticker.last as number;
-      const isSymbolInUsdt =
-        pairSymbol.endsWith("/USDT") || pairSymbol.endsWith("USDT");
-      const isSymbolInBusd = pairSymbol.endsWith("/BUSD");
       if (pairSymbol.endsWith("/USD")) {
         pricesObj[pairSymbol] = lastPrice;
-      } else if (isSymbolInUsdt || isSymbolInBusd) {
+      } else {
         if (!pricesObj[pairSymbol]) {
-          const lastUsdInStablePrice = isSymbolInUsdt
-            ? lastUsdtPrice
-            : lastBusdPrice;
+          const lastUsdInStablePrice = this.getStableCoinPrice(pairSymbol);
           if (lastUsdInStablePrice) {
             pricesObj[pairSymbol] = lastPrice * lastUsdInStablePrice;
           }
@@ -77,6 +69,11 @@ export class CcxtFetcher extends BaseFetcher {
       }
     }
     return pricesObj;
+  }
+
+  getStableCoinPrice(pairSymbol: string) {
+    let stableCoinSymbol = pairSymbol.slice(-4);
+    return getLastPrice(stableCoinSymbol)?.value;
   }
 
   serializePairSymbol(pairSymbol: string) {

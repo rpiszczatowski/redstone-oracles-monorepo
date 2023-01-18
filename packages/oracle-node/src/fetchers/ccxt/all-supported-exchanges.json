@@ -1,5 +1,4 @@
 [
-  "aax",
   "ascendex",
   "bequant",
   "binance",
@@ -30,10 +29,11 @@
   "okx",
   "poloniex",
   "probit",
-  "qtrade",
   "stex",
   "mexc",
   "latoken",
   "wazirx",
-  "btcex"
+  "btcex",
+  "bitrue",
+  "bitget"
 ]

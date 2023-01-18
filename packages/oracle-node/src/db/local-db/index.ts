@@ -2,6 +2,7 @@ import { AbstractBatchPutOperation, AbstractSublevel } from "abstract-level";
 import { Level } from "level";
 import { config } from "../../config";
 import { PriceDataAfterAggregation } from "../../types";
+import { roundTimestamp } from "../../utils/timestamps";
 
 const PRICES_SUBLEVEL = "prices";
 const DEFAULT_LEVEL_OPTS = {

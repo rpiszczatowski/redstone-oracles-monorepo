@@ -1,15 +1,20 @@
-import { BaseFetcher } from "../BaseFetcher";
-import { PricesObj } from "../../types";
-import { config } from "../../config";
 import axios from "axios";
+import { BaseFetcher } from "../BaseFetcher";
+import { config } from "../../config";
+import { PricesObj } from "../../types";
+import { readJSON } from "../../utils/objects";
 
 export class MockFetcher extends BaseFetcher {
   constructor() {
     super("mock");
   }
 
-  async fetchData(ids: string[]) {
-    return (await axios.get(config.mockPricesUrl)).data;
+  async fetchData() {
+    const isMockPricesUrl = config.mockPricesUrlOrPath.startsWith("http");
+    if (isMockPricesUrl) {
+      return (await axios.get(config.mockPricesUrlOrPath)).data;
+    }
+    return readJSON(config.mockPricesUrlOrPath);
   }
 
   async extractPrices(response: any, ids: string[]): Promise<PricesObj> {

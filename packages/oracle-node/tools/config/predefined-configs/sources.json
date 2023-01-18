@@ -293,5 +293,15 @@
     "logoURI": "https://drand.love/images/logo-drand-text-bottom-dark.svg",
     "url": "https://drand.love/",
     "color": "#4d9fd1"
+  },
+  "bitrue": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bitrue.png",
+    "url": "https://www.bitrue.com/",
+    "color": "#ECEC62"
+  },
+  "bitget": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bitget.png",
+    "url": "https://www.bitget.com/",
+    "color": "#4DA0B1"
   }
 }

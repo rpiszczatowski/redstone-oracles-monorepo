@@ -32,7 +32,6 @@
         "bittrex",
         "btcturk",
         "cex",
-        "chainlink",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -49,7 +48,6 @@
         "okx",
         "poloniex",
         "probit",
-        "qtrade",
         "stex"
       ]
     },
@@ -80,14 +78,12 @@
         "coingecko",
         "coinmarketcap",
         "gate",
-        "lbank",
         "pangolin-wavax",
         "trader-joe"
       ]
     },
     "AVAX": {
       "source": [
-        "aax",
         "binance",
         "binanceusdm",
         "bitfinex",
@@ -167,7 +163,6 @@
         "okx",
         "poloniex",
         "probit",
-        "qtrade",
         "stex"
       ]
     },
@@ -184,7 +179,6 @@
     },
     "USDC": {
       "source": [
-        "binance",
         "binanceus",
         "bitfinex",
         "bitfinex2",
@@ -219,6 +213,7 @@
         "coinex",
         "coingecko",
         "coinmarketcap",
+        "mexc",
         "pangolin-wavax",
         "trader-joe"
       ]
@@ -312,6 +307,34 @@
     },
     "GLP": {
       "source": ["avalanche-evm-fetcher"]
+    },
+    "JOE": {
+      "source": [
+        "binance",
+        "bitget",
+        "bitrue",
+        "bkex",
+        "coingecko",
+        "coinmarketcap",
+        "gate",
+        "mexc",
+        "trader-joe"
+      ]
+    },
+    "BUSD": {
+      "source": [
+        "binance",
+        "binanceus",
+        "bitcoincom",
+        "cex",
+        "coinbaseprime",
+        "coinbasepro",
+        "coingecko",
+        "hitbtc",
+        "lbank",
+        "oceanex",
+        "poloniex"
+      ]
     }
   }
 }

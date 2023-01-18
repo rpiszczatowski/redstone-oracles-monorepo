@@ -1,0 +1,14 @@
+{
+  "name": "data-analytics",
+  "version": "1.0.0",
+  "prettier": "redstone-prettier-config",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "statistics": "node scripts/transactions-stats.js"
+  },
+  "dependencies": {
+    "hashset": "^0.0.6",
+    "ethers": "^5.6.9"
+  }
+}
