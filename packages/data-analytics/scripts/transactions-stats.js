@@ -1,10 +1,16 @@
 const prompts = require("prompts");
 const Web3 = require("web3");
 const cliProgress = require("cli-progress");
-var HashSet = require("hashset");
-const { default: web } = require("@bundlr-network/client/build/web");
+const HashSet = require("hashset");
 
 const REDSTONE_MARKER_HEX = "000002ed57011e0000";
+
+const progressBar = new cliProgress.SingleBar(
+  {},
+  cliProgress.Presets.shades_classic
+);
+
+const web3 = new Web3("https://api.avax.network/ext/bc/C/rpc");
 
 const getPromptQuestions = (latestBlockNumber) => {
   return [
@@ -15,9 +21,9 @@ const getPromptQuestions = (latestBlockNumber) => {
     },
   ];
 };
-function range(start, stop, step) {
+
+const range = (start, stop, step) => {
   if (typeof stop == "undefined") {
-    // one param defined
     stop = start;
     start = 0;
   }
@@ -36,14 +42,7 @@ function range(start, stop, step) {
   }
 
   return result;
-}
-
-const progressBar = new cliProgress.SingleBar(
-  {},
-  cliProgress.Presets.shades_classic
-);
-
-const web3 = new Web3("https://api.avax.network/ext/bc/C/rpc");
+};
 
 async function getTransactionsByCallData(
   latestBlock,
@@ -87,7 +86,7 @@ async function getTransactionsByCallData(
   return matchingTransactions;
 }
 
-const countUniqueAddresses = async (transactions) => {
+const countUniqueAddresses = (transactions) => {
   let addresses = new HashSet();
   transactions.forEach((tx) => {
     addresses.add(tx.from);
@@ -96,7 +95,7 @@ const countUniqueAddresses = async (transactions) => {
   return addresses.length;
 };
 
-const getTotalGasPriceFromTransactions = async (transactions) => {
+const getTotalGasPriceFromTransactions = (transactions) => {
   let totalGasPrice = web3.utils.toBN(0);
   transactions.forEach((tx) => {
     totalGasPrice = totalGasPrice.add(web3.utils.toBN(tx.gasPrice));
@@ -104,7 +103,7 @@ const getTotalGasPriceFromTransactions = async (transactions) => {
   return totalGasPrice.toString();
 };
 
-const getCallDataSizeFromTransactions = async (transactions) => {
+const getCallDataSizeFromTransactions = (transactions) => {
   let totalCallDataSizeInBits = 0;
 
   transactions.forEach((tx) => {
@@ -113,7 +112,7 @@ const getCallDataSizeFromTransactions = async (transactions) => {
   return totalCallDataSizeInBits;
 };
 
-const getNumberOfFailedTx = async (transactions) => {
+const getNumberOfFailedTx = (transactions) => {
   let invalidTransactions = 0;
   transactions.forEach((transaction) => {
     if (transaction.status === "0x0") {
@@ -139,12 +138,12 @@ const printStatistics = (
   );
 };
 
-async function getStatisticsFromTransactions(transactions) {
+const getStatisticsFromTransactions = (transactions) => {
   const totalTransactions = transactions.length;
-  const invalidTransactions = await getNumberOfFailedTx(transactions);
-  const uniqueAddresses = await countUniqueAddresses(transactions);
-  const totalGasPrice = await getTotalGasPriceFromTransactions(transactions);
-  const totalCallDataSize = await getCallDataSizeFromTransactions(transactions);
+  const invalidTransactions = getNumberOfFailedTx(transactions);
+  const uniqueAddresses = countUniqueAddresses(transactions);
+  const totalGasPrice = getTotalGasPriceFromTransactions(transactions);
+  const totalCallDataSize = getCallDataSizeFromTransactions(transactions);
   printStatistics(
     totalTransactions,
     invalidTransactions,
@@ -154,7 +153,7 @@ async function getStatisticsFromTransactions(transactions) {
   );
 
   return;
-}
+};
 
 async function query() {
   const latestBlock = await web3.eth.getBlockNumber();
@@ -165,7 +164,7 @@ async function query() {
     REDSTONE_MARKER_HEX,
     50
   );
-  await getStatisticsFromTransactions(transactions);
+  getStatisticsFromTransactions(transactions);
 }
 
 const run = async () => {
