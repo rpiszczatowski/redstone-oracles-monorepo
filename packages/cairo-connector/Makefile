@@ -3,9 +3,10 @@ OBJ=main_compiled.json
 CNT=contract.cairo
 CNC=contract_compiled.json
 ABI=contract_abi.json
-ACC=testac5
 MAX_FEE=1000000000000000
 DATA_DIR=./data
+
+ACC=__default__
 DATA_NAME=payload_3sig
 PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=3&data-service-id=redstone-avalanche-prod&format=
 BTC=4346947

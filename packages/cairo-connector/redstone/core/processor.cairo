@@ -72,6 +72,10 @@ func process_data_package{range_check_ptr, dict_ptr: DictAccess*}(
 ) {
     alloc_locals;
 
+    if (signer_index == ARRAY_UNKNOWN_INDEX) {
+        return ();
+    }
+
     if (index == data_points.len) {
         return ();
     }

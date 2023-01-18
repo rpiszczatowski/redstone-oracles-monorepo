@@ -1,7 +1,7 @@
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin, BitwiseBuiltin
-from starkware.cairo.common.math import assert_nn, assert_le
+from starkware.cairo.common.math import assert_nn, assert_le, assert_in_range
 
 from starkware.starknet.common.syscalls import get_block_timestamp
 
@@ -28,7 +28,8 @@ func signer_address_len() -> (res: felt) {
 func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
     signer_count_treshold: felt, addresses_len: felt, addresses: felt*
 ) {
-    assert_nn(addresses_len);
+    assert_nn(signer_count_treshold);
+    assert_in_range(signer_count_treshold, 0, addresses_len);
 
     unique_signer_count_treshold.write(signer_count_treshold);
     signer_address_len.write(addresses_len);
