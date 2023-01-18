@@ -799,7 +799,6 @@
         "coingecko",
         "hitbtc",
         "huobipro",
-        "kaiko",
         "kraken",
         "kucoin",
         "lbank",
@@ -828,30 +827,6 @@
         "okx",
         "poloniex",
         "probit"
-      ]
-    },
-    "USDC": {
-      "source": [
-        "binanceus",
-        "bitfinex",
-        "bitfinex2",
-        "bittrex",
-        "btcturk",
-        "cex",
-        "coingecko",
-        "coinmarketcap",
-        "currencycom",
-        "huobipro",
-        "kaiko",
-        "kraken",
-        "kucoin",
-        "lbank",
-        "liquid",
-        "oceanex",
-        "okx",
-        "probit",
-        "sushiswap",
-        "uniswap"
       ]
     },
     "ZRX": {
@@ -1200,26 +1175,6 @@
         "lbank",
         "okx",
         "probit"
-      ]
-    },
-    "AVAX": {
-      "source": [
-        "binance",
-        "binanceusdm",
-        "bitfinex",
-        "bitfinex2",
-        "bittrex",
-        "btcturk",
-        "bybit",
-        "coinbaseprime",
-        "coinbasepro",
-        "coingecko",
-        "coinmarketcap",
-        "huobipro",
-        "kaiko",
-        "kucoin",
-        "lbank",
-        "okx"
       ]
     },
     "SAND": {
