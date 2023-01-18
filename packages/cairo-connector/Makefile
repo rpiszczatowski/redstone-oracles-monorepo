@@ -1,5 +1,5 @@
-SRC=main.cairo
-OBJ=main_compiled.json
+SRC=src/main.cairo
+OBJ=src/main_compiled.json
 CNT=contract.cairo
 CNC=contract_compiled.json
 ABI=contract_abi.json
@@ -15,22 +15,25 @@ ETH=4543560
 SHELL := /bin/bash
 
 format:
-	cairo-format --one_item_per_line -i *.cairo **/**/*.cairo  # **/*.cairo
+	protostar format src test
 
 compile: format
-	cairo-compile $(SRC) --output $(OBJ) --cairo_path="/"
+	cairo-compile $(SRC) --output $(OBJ) --cairo_path=src
 
 run: $(OBJ)
 	cairo-run --program=$(OBJ) --print_output --layout=perpetual_with_bitwise \
 	--program_input=$(DATA_DIR)/${DATA_NAME}.input \
 	--print_info
 
+tests: format
+	protostar test test --cairo-path=src
+
 $(OBJ): compile
 
 contract: format
 	starknet-compile $(CNT) \
         --output $(CNC) \
-        --abi $(ABI) --cairo_path="/"
+        --abi $(ABI) --cairo_path=src
 
 declare: $(CNC)
 	starknet declare --account=$(ACC) --contract $(CNC) --max_fee=$(MAX_FEE) \
