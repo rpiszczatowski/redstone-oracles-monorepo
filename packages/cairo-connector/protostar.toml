@@ -1,0 +1,22 @@
+[project]
+protostar-version = "0.9.1"
+lib-path = "lib"
+
+[contracts]
+contract = ["src/contract.cairo"]
+
+# Command Configuration Profile
+[profile.integration.test]
+target = ["test/integration"]
+report-slowest-tests = 5
+
+[test]
+target = ["src"]
+
+# Shared Configuration Profile
+[profile.devnet.project]
+gateway-url = "http://127.0.0.1:5050/"
+chain-id = 1536727068981429685321
+
+[profile.testnet.project]
+network = "testnet"
