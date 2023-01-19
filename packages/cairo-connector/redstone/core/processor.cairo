@@ -100,7 +100,7 @@ func process_results{range_check_ptr}(results: Results, config: Config, index: f
     }
 
     validate_signer_count_treshold(
-        count=results.len, treshold=config.signer_count_treshold, index=index
+        count=results.ptr[index].len, treshold=config.signer_count_treshold, index=index
     );
     let median = calculate_median(results.ptr[index]);
 
@@ -111,6 +111,10 @@ func process_results{range_check_ptr}(results: Results, config: Config, index: f
 
 func calculate_median{range_check_ptr}(arr: Array) -> felt {
     alloc_locals;
+
+    if (arr.len == 0) {
+        return 0;
+    }
 
     let sorted_arr = array_sort(arr);
 
