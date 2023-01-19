@@ -9,7 +9,7 @@ from redstone.utils.array import Array, array_index
 const MAX_DATA_TIMESTAMP_DELAY_SECONDS = 5 * 60;
 const MAX_DATA_TIMESTAMP_AHEAD_SECONDS = 1 * 60;
 
-func validate_signature{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
+func validate_signature{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
     signable_arr: Array, signature: Signature, allowed_signer_addresses: Array, index: felt
 ) -> felt {
     alloc_locals;
