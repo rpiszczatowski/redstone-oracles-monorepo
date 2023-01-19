@@ -1,0 +1,34 @@
+{
+  "5 array length": {
+    "sortMedian": 30017.62,
+    "quickSelectMedian": 30165.95
+  },
+  "10 array length": {
+    "sortMedian": 35151.72,
+    "quickSelectMedian": 37558.88
+  },
+  "15 array length": {
+    "sortMedian": 42106.2,
+    "quickSelectMedian": 42913.15
+  },
+  "20 array length": {
+    "sortMedian": 51932.84,
+    "quickSelectMedian": 51524.16
+  },
+  "30 array length": {
+    "sortMedian": 78103.82,
+    "quickSelectMedian": 65047.48
+  },
+  "40 array length": {
+    "sortMedian": 113830.44,
+    "quickSelectMedian": 80908.95
+  },
+  "50 array length": {
+    "sortMedian": 158711.82,
+    "quickSelectMedian": 87949.83
+  },
+  "100 array length": {
+    "sortMedian": 524443.56,
+    "quickSelectMedian": 158321.53
+  }
+}

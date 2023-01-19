@@ -96,6 +96,13 @@ describe("SampleNumericArrayLib", function () {
     expect(selectedMedian.toNumber()).to.eq(12);
   });
 
+  it("Should correctly pick median from 1-elem array using linear median selection algorithm", async () => {
+    const tx = await contract.testMedianSelectionLinear([12]);
+    await tx.wait();
+    const selectedMedian = await contract.cachedMedian();
+    expect(selectedMedian.toNumber()).to.eq(12);
+  });
+
   it("Should properly sort 2-elem array", async () => {
     const sortTx = await contract.testSortTx([42, 12]);
     await sortTx.wait();
@@ -110,6 +117,13 @@ describe("SampleNumericArrayLib", function () {
     expect(selectedMedian.toNumber()).to.eq(27);
   });
 
+  it("Should correctly pick median from 2-elem array using linear median selection algorithm", async () => {
+    const tx = await contract.testMedianSelectionLinear([42, 12]);
+    await tx.wait();
+    const selectedMedian = await contract.cachedMedian();
+    expect(selectedMedian.toNumber()).to.eq(27);
+  });
+
   it("Should properly sort 100-elem array", async () => {
     const arr = prepareRandomArray(100);
     const sortTx = await contract.testSortTx(arr);
@@ -119,12 +133,68 @@ describe("SampleNumericArrayLib", function () {
     expect(cachedArray.map((el) => el.toNumber())).to.eql(arr);
   });
 
-  it("Should correctly pick median from 100-elem array", async () => {
+  it("Should correctly pick median from 101-elem array using linear median selection algorithm", async () => {
+    const arr = prepareRandomArray(101);
+    const tx = await contract.testMedianSelectionLinear(arr);
+    await tx.wait();
+    const selectedMedian = await contract.cachedMedian();
+    arr.sort((a, b) => a - b);
+    expect(selectedMedian.toNumber()).to.eq(arr[50]);
+  });
+
+  it("Should correctly pick median from 101-elem array", async () => {
     const arr = prepareRandomArray(101);
     const tx = await contract.testMedianSelection(arr);
     await tx.wait();
     const selectedMedian = await contract.cachedMedian();
     arr.sort((a, b) => a - b);
     expect(selectedMedian.toNumber()).to.eq(arr[50]);
+  });
+
+  it("Should correctly pick median from 100-elem array using linear median selection algorithm", async () => {
+    const arr = prepareRandomArray(100);
+    const tx = await contract.testMedianSelectionLinear(arr);
+    await tx.wait();
+    const selectedMedian = await contract.cachedMedian();
+    arr.sort((a, b) => a - b);
+    expect(selectedMedian.toNumber()).to.eq(
+      Math.floor((arr[49] + arr[50]) / 2)
+    );
+  });
+
+  it("Should correctly pick median from 100-elem array", async () => {
+    const arr = prepareRandomArray(100);
+    const tx = await contract.testMedianSelection(arr);
+    await tx.wait();
+    const selectedMedian = await contract.cachedMedian();
+    arr.sort((a, b) => a - b);
+    expect(selectedMedian.toNumber()).to.eq(
+      Math.floor((arr[49] + arr[50]) / 2)
+    );
+  });
+
+  it("Should correctly partition an array", async () => {
+    const arr = [3, 1, 4, 5, 2, 9, 8, 7, 4];
+    const pivotIdx = 3;
+    const tx = await contract.testPartition(arr, 0, arr.length - 1, pivotIdx);
+    await tx.wait();
+    const cachedArray = await contract.getCachedArray();
+
+    const pivot = arr[pivotIdx];
+    const left = arr.filter((el) => el < pivot);
+    const right = arr.filter((el) => el >= pivot);
+
+    expect(
+      cachedArray
+        .slice(0, left.length)
+        .map((el) => el.toNumber())
+        .sort()
+    ).to.eql(left.sort());
+    expect(
+      cachedArray
+        .slice(left.length, left.length + right.length)
+        .map((el) => el.toNumber())
+        .sort()
+    ).to.eql(right.sort());
   });
 });

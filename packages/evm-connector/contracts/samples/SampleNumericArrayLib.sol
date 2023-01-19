@@ -25,4 +25,18 @@ contract SampleNumericArrayLib {
   function testMedianSelection(uint256[] memory arr) public {
     cachedMedian = NumericArrayLib.pickMedian(arr);
   }
+
+  function testMedianSelectionLinear(uint256[] memory arr) public {
+    cachedMedian = NumericArrayLib.pickMedianLinear(arr);
+  }
+
+  function testPartition(
+    uint256[] memory arr,
+    uint256 lo,
+    uint256 high,
+    uint256 pivotIdx
+  ) public {
+    NumericArrayLib.partition(arr, lo, high, pivotIdx);
+    cachedArray = arr;
+  }
 }
