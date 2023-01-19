@@ -4,7 +4,7 @@ lib-path = "lib"
 
 [contracts]
 oracle_values = ["src/contracts/oracle_values.cairo"]
-prices = ["src/contracts/price.cairo"]
+price = ["src/contracts/price.cairo"]
 
 # Command Configuration Profile
 [profile.integration.test]
