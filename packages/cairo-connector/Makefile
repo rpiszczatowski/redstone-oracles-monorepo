@@ -1,15 +1,16 @@
 ACC=testac5
-DATA_NAME=payload_3sig
-PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=3&data-service-id=redstone-avalanche-prod&format=
+DATA_NAME=prices
+PAYLOAD_URL=http://localhost:3000/data-packages/payload?data-feeds=ETH,BTC&unique-signers-count=2&data-service-id=redstone-avalanche-prod&format=
 BTC=4346947
 ETH=4543560
+CONTRACT=price
+MAX_FEE=1000000000000000
 
 SRC=src/demo/main.cairo
 OBJ=build/main_compiled.json
-CNT=src/contracts/oracle_values.cairo
-CNC=build/oracle_values_compiled.json
-ABI=build/oracle_values_abi.json
-MAX_FEE=1000000000000000
+CNT=src/contracts/$(CONTRACT).cairo
+CNC=build/$(CONTRACT)_compiled.json
+ABI=build/$(CONTRACT)_abi.json
 DATA_DIR=./data
 
 SHELL := /bin/bash
@@ -23,15 +24,13 @@ build_dir:
 compile: format build_dir
 	cairo-compile $(SRC) --output $(OBJ) --cairo_path=src
 
-run: $(OBJ)
+run: compile
 	cairo-run --program=$(OBJ) --print_output --layout=perpetual_with_bitwise \
 	--program_input=$(DATA_DIR)/${DATA_NAME}.input \
 	--print_info
 
 tests: format
 	protostar test test --cairo-path=src
-
-$(OBJ): compile
 
 contract: format build_dir
 	starknet-compile $(CNT) \
@@ -58,18 +57,41 @@ deploy:
 #invoke: 'make CONTRACT_ADDRESS=0xabc get_oracle_values' or define the variable CONTRACT_ADDRESS above
 get_oracle_values:
 	starknet call --account=$(ACC) \
-	--abi $(ABI) \
+	--abi build/oracle_values_abi.json \
 	--address ${CONTRACT_ADDRESS} \
 	--function get_oracle_values \
-	--inputs 2 $(BTC) $(ETH) $(shell (ls -lf $(DATA_DIR)/${DATA_NAME}.splitted | awk '{print  $$5}' | awk '{print ($$1-1)/5}')) $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
+	--inputs 2 $(BTC) $(ETH) $(shell (ls -lf $(DATA_DIR)/${DATA_NAME}.splitted | awk '{print $$5}' | awk '{print ($$1-1)/5}')) $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
 
 #invoke: 'make CONTRACT_ADDRESS=0xabc get_oracle_value' or define the variable CONTRACT_ADDRESS above
 get_oracle_value:
 	starknet call --account=$(ACC) \
-	--abi $(ABI) \
+	--abi build/oracle_values_abi.json \
 	--address ${CONTRACT_ADDRESS} \
 	--function get_oracle_value \
-	--inputs $(BTC) $(shell (ls -lf $(DATA_DIR)/${DATA_NAME}.splitted | awk '{print  $$5}' | awk '{print ($$1-1)/5}')) $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
+	--inputs $(BTC) $(shell (ls -lf $(DATA_DIR)/${DATA_NAME}.splitted | awk '{print $$5}' | awk '{print ($$1-1)/5}')) $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
+
+#invoke: 'make CONTRACT_ADDRESS=0xabc set_prices' or define the variable CONTRACT_ADDRESS above
+set_prices:
+	starknet invoke --account=$(ACC) \
+	--abi build/price_abi.json \
+	--address ${CONTRACT_ADDRESS} \
+	--function set_prices \
+	--inputs 2 $(BTC) $(ETH) $(shell (ls -lf $(DATA_DIR)/${DATA_NAME}.splitted | awk '{print $$5}' | awk '{print ($$1-1)/5}')) $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
+
+#invoke: 'make CONTRACT_ADDRESS=0xabc get_price' or define the variable CONTRACT_ADDRESS above
+get_eth_price:
+	starknet call --account=$(ACC) \
+	--abi build/price_abi.json \
+	--address ${CONTRACT_ADDRESS} \
+	--function get_price \
+	--inputs $(ETH) 
+
+get_btc_price:
+	starknet call --account=$(ACC) \
+	--abi build/price_abi.json \
+	--address ${CONTRACT_ADDRESS} \
+	--function get_price \
+	--inputs $(BTC) 
 
 clean:
 	rm -rf build
