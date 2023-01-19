@@ -47,9 +47,8 @@
     "mongoose": "^6.7.0",
     "node-schedule": "^2.1.0",
     "prompts": "^2.4.2",
-    "redstone-smartweave": "^0.4.40",
     "sort-deep-object-arrays": "^1.1.2",
-    "uuid": "^8.3.2",
+    "uuid": "^9.0.0",
     "yahoo-finance": "^0.3.7"
   },
   "devDependencies": {
@@ -70,7 +69,6 @@
     "dateformat": "^4.5.1",
     "deep-sort-object": "^1.0.2",
     "download": "^8.0.0",
-    "esbuild": "^0.14.34",
     "ethereum-waffle": "^3.4.4",
     "jest": "^27.0.4",
     "jest-mock-extended": "^1.0.16",
