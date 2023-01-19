@@ -1,23 +1,26 @@
-SRC=src/main.cairo
-OBJ=src/main_compiled.json
-CNT=contract.cairo
-CNC=contract_compiled.json
-ABI=contract_abi.json
-MAX_FEE=1000000000000000
-DATA_DIR=./data
-
-ACC=__default__
+ACC=testac5
 DATA_NAME=payload_3sig
 PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=3&data-service-id=redstone-avalanche-prod&format=
 BTC=4346947
 ETH=4543560
+
+SRC=src/demo/main.cairo
+OBJ=build/main_compiled.json
+CNT=src/contracts/oracle_values.cairo
+CNC=build/oracle_values_compiled.json
+ABI=build/oracle_values_abi.json
+MAX_FEE=1000000000000000
+DATA_DIR=./data
 
 SHELL := /bin/bash
 
 format:
 	protostar format src test
 
-compile: format
+build_dir:
+	mkdir -p build
+
+compile: format build_dir
 	cairo-compile $(SRC) --output $(OBJ) --cairo_path=src
 
 run: $(OBJ)
@@ -30,10 +33,13 @@ tests: format
 
 $(OBJ): compile
 
-contract: format
+contract: format build_dir
 	starknet-compile $(CNT) \
         --output $(CNC) \
         --abi $(ABI) --cairo_path=src
+
+contracts: format build_dir
+	protostar build  --cairo-path=src
 
 declare: $(CNC)
 	starknet declare --account=$(ACC) --contract $(CNC) --max_fee=$(MAX_FEE) \
@@ -66,7 +72,7 @@ get_oracle_value:
 	--inputs $(BTC) $(shell (ls -lf $(DATA_DIR)/${DATA_NAME}.splitted | awk '{print  $$5}' | awk '{print ($$1-1)/5}')) $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
 
 clean:
-	rm $(OBJ) $(CNC) $(ABI)
+	rm -rf build
 
 prepare_data:
 	curl "$(PAYLOAD_URL)hex" > $(DATA_DIR)/${DATA_NAME}.hex &
