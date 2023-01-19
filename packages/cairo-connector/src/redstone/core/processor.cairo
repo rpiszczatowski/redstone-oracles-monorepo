@@ -11,6 +11,8 @@ from redstone.protocol.data_point import DataPointArray
 from redstone.utils.array import ARRAY_UNKNOWN_INDEX, Array, array_index, array_new, array_sort
 from redstone.utils.dict import Dict, dict_new
 
+from redstone.crypto.keccak import keccak_finalize
+
 from redstone.core.config import Config
 from redstone.core.results import Results, make_results, write_results_value
 from redstone.core.validation import (
@@ -31,7 +33,14 @@ func process_payload{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
 
     let results_dic = dict_new();
     local dict_ptr: DictAccess* = results_dic.ptr;
-    process_data_packages{dict_ptr=dict_ptr}(arr=payload.data_packages, config=config, index=0);
+
+    let (keccak_ptr: felt*) = alloc();
+    local keccak_ptr_start: felt* = keccak_ptr;
+
+    with keccak_ptr {
+        process_data_packages{dict_ptr=dict_ptr}(arr=payload.data_packages, config=config, index=0);
+    }
+    keccak_finalize(keccak_ptr_start=keccak_ptr_start, keccak_ptr_end=keccak_ptr);
 
     let results = make_results{dict_ptr=dict_ptr}(config=config);
     let aggregated: Array = array_new(len=results.len);
@@ -41,9 +50,9 @@ func process_payload{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
     return (payload=payload, results=results, aggregated=aggregated);
 }
 
-func process_data_packages{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, dict_ptr: DictAccess*}(
-    arr: DataPackageArray, config: Config, index: felt
-) {
+func process_data_packages{
+    range_check_ptr, bitwise_ptr: BitwiseBuiltin*, dict_ptr: DictAccess*, keccak_ptr: felt*
+}(arr: DataPackageArray, config: Config, index: felt) {
     alloc_locals;
 
     if (index == arr.len) {
