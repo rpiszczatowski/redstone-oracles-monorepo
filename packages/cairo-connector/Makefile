@@ -5,6 +5,15 @@ BTC=4346947
 ETH=4543560
 CONTRACT=price
 MAX_FEE=1000000000000000
+OWNER_ADDRESS=0x59db5a6dfad67ad1da7276f5ddc9ef0640a9f633f5dc2fc8a207bac3abb2108
+
+BASE_PARAMS=1 5 0x12470f7aba85c8b81d63137dd5925d6ee114952b 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB 0x1ea62d73edf8ac05dfcea1a34b9796e937a29eff 0x2c59617248994D12816EE1Fa77CE0a64eEB456BF 0x83cba8c619fb629b81a65c2e67fe15cf3e3c9747
+
+ifeq ($(CONTRACT), price)
+CONSTRUCTOR_PARAMS=$(OWNER_ADDRESS) $(BASE_PARAMS)
+else
+CONSTRUCTOR_PARAMS=$(BASE_PARAMS)
+endif
 
 SRC=src/demo/main.cairo
 OBJ=build/main_compiled.json
@@ -52,8 +61,7 @@ $(ABI): contract
 deploy:
 	starknet deploy --account=$(ACC) --max_fee=$(MAX_FEE) \
 	--class_hash $(CLASS_HASH) \
-	--inputs 1 5 0x12470f7aba85c8b81d63137dd5925d6ee114952b 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB 0x1ea62d73edf8ac05dfcea1a34b9796e937a29eff 0x2c59617248994D12816EE1Fa77CE0a64eEB456BF 0x83cba8c619fb629b81a65c2e67fe15cf3e3c9747
-
+	--inputs $(CONSTRUCTOR_PARAMS)
 #invoke: 'make CONTRACT_ADDRESS=0xabc get_oracle_values' or define the variable CONTRACT_ADDRESS above
 get_oracle_values:
 	starknet call --account=$(ACC) \
@@ -92,6 +100,12 @@ get_btc_price:
 	--address ${CONTRACT_ADDRESS} \
 	--function get_price \
 	--inputs $(BTC) 
+
+get_owner_and_caller:
+	starknet call --account=$(ACC) \
+	--abi build/price_abi.json \
+	--address ${CONTRACT_ADDRESS} \
+	--function get_owner_and_caller
 
 clean:
 	rm -rf build
