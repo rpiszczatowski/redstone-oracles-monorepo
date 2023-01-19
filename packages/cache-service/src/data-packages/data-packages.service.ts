@@ -188,9 +188,6 @@ export class DataPackagesService {
       requestParams
     );
 
-    console.log("XXX");
-    console.log(cachedDataPackagesResponse);
-
     return makePayload(cachedDataPackagesResponse);
   }
 
