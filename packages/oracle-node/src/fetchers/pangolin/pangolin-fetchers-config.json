@@ -1,17 +1,8 @@
 {
-  "pangolin-png": {
-    "baseToken": "PNG"
-  },
-  "pangolin-qi": {
-    "baseToken": "QI"
-  },
   "pangolin-wavax": {
-    "baseToken": "WAVAX"
-  },
-  "pangolin-usdt": {
-    "baseToken": "USDT.e"
+    "symbolToPairIdFile": "./symbol-to-pair-id/pangolin-wavax-symbol-to-pair-id.json"
   },
   "pangolin-usdc": {
-    "baseToken": "USDC"
+    "symbolToPairIdFile": "./symbol-to-pair-id/pangolin-usdc-symbol-to-pair-id.json"
   }
 }
