@@ -52,4 +52,5 @@ export const MOCK_NODE_CONFIG = {
   avalancheRpcUrl: "",
   enableStreamrBroadcasting: false,
   mockPricesUrlOrPath: "",
+  minDataFeedsPercentageForBigPackage: 50,
 };

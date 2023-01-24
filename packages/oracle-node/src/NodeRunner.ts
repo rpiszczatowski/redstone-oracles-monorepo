@@ -34,6 +34,7 @@ import { connectToDb } from "./db/remote-mongo/db-connector";
 import localDB from "./db/local-db";
 import { roundTimestamp } from "./utils/timestamps";
 import { intervalMsToCronFormat } from "./utils/intervals";
+import { validateDataPointsForBigPackage } from "./validators/validate-data-feed-for-big-package";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -272,9 +273,15 @@ export default class NodeRunner {
     });
 
     // Adding a data package with all data points
-    const bigDataPackage = new DataPackage(dataPoints, timestamp);
-    const signedBigDataPackage = bigDataPackage.sign(ethPrivKey);
-    signedDataPackages.push(signedBigDataPackage);
+    const areEnoughDataPoint = validateDataPointsForBigPackage(
+      dataPoints,
+      this?.currentManifest
+    );
+    if (areEnoughDataPoint) {
+      const bigDataPackage = new DataPackage(dataPoints, timestamp);
+      const signedBigDataPackage = bigDataPackage.sign(ethPrivKey);
+      signedDataPackages.push(signedBigDataPackage);
+    }
 
     return signedDataPackages;
   }
