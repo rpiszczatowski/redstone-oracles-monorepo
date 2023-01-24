@@ -112,3 +112,4 @@ typechain-types
 
 # IDE
 .idea
+worktree-*/

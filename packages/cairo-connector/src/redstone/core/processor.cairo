@@ -1,5 +1,5 @@
 from starkware.cairo.common.alloc import alloc
-from starkware.cairo.common.cairo_builtins import BitwiseBuiltin, HashBuiltin
+from starkware.cairo.common.cairo_builtins import BitwiseBuiltin, HashBuiltin, SignatureBuiltin
 from starkware.cairo.common.math import assert_nn, unsigned_div_rem
 from starkware.cairo.common.dict_access import DictAccess
 from starkware.cairo.common.serialize import serialize_word
@@ -21,7 +21,7 @@ from redstone.core.validation import (
     validate_signer_count_treshold,
 )
 
-func process_payload{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
+func process_payload{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, ecdsa_ptr: SignatureBuiltin*}(
     data_ptr: felt*, data_len: felt, config: Config
 ) -> (payload: Payload, results: Results, aggregated: Array) {
     alloc_locals;
@@ -51,7 +51,11 @@ func process_payload{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
 }
 
 func process_data_packages{
-    range_check_ptr, bitwise_ptr: BitwiseBuiltin*, dict_ptr: DictAccess*, keccak_ptr: felt*
+    range_check_ptr,
+    bitwise_ptr: BitwiseBuiltin*,
+    dict_ptr: DictAccess*,
+    keccak_ptr: felt*,
+    ecdsa_ptr: SignatureBuiltin*,
 }(arr: DataPackageArray, config: Config, index: felt) {
     alloc_locals;
 

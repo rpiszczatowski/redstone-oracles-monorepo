@@ -3,7 +3,6 @@ import {
   arrayify,
   base64,
   concat,
-  joinSignature,
   splitSignature,
 } from "ethers/lib/utils";
 import { Serializable } from "../common/Serializable";
@@ -14,6 +13,7 @@ import {
   recoverSignerPublicKey,
   SignedDataPackageLike,
 } from "./signed-package-deserializing";
+const BN = require('bn.js');
 
 export interface SignedDataPackagePlainObj extends DataPackagePlainObj {
   signature: string; // base64-encoded joined signature
@@ -42,7 +42,14 @@ export class SignedDataPackage
   }
 
   serializeSignatureToHex(): string {
-    return joinSignature(this.signature);
+    const f = BN.prototype.toString;
+
+    const x=
+        `0x0${f.call(this.signature.r, 'hex')}0${f.call(this.signature.s, 'hex')}${this.signature.recoveryParam ? "1c": "1b"}`;
+    console.log(`==> ${x}`);
+    console.log(arrayify(x).length);
+
+    return x;
   }
 
   recoverSignerPublicKey(): Uint8Array {

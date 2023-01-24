@@ -1,8 +1,8 @@
-%builtins output range_check bitwise
+%builtins output range_check ecdsa bitwise
 
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.serialize import serialize_word
-from starkware.cairo.common.cairo_builtins import HashBuiltin, BitwiseBuiltin
+from starkware.cairo.common.cairo_builtins import HashBuiltin, BitwiseBuiltin, SignatureBuiltin
 
 from redstone.protocol.payload import serialize_payload
 
@@ -12,7 +12,9 @@ from redstone.core.config import Config
 from redstone.core.processor import process_payload
 from redstone.core.results import serialize_results
 
-func main{output_ptr: felt*, range_check_ptr, bitwise_ptr: BitwiseBuiltin*}() {
+func main{
+    output_ptr: felt*, range_check_ptr, ecdsa_ptr: SignatureBuiltin*, bitwise_ptr: BitwiseBuiltin*
+}() {
     alloc_locals;
 
     local payload_data_ptr: felt*;

@@ -1,6 +1,6 @@
 ACC=testac5
-DATA_NAME=prices
-PAYLOAD_URL=http://localhost:3000/data-packages/payload?data-feeds=ETH,BTC&unique-signers-count=2&data-service-id=redstone-avalanche-prod&format=
+DATA_NAME=starkcurve
+PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=5&data-service-id=redstone-avalanche-prod&format=
 BTC=4346947
 ETH=4543560
 CONTRACT=price
