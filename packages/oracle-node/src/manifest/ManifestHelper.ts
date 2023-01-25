@@ -70,4 +70,9 @@ export default class ManifestHelper {
     }
     return this.getDefaultAggregator(manifest);
   }
+
+  static getAggregatorName(manifest: Manifest, symbol: string) {
+    const priceAggregator = manifest.tokens[symbol]?.priceAggregator;
+    return priceAggregator ? priceAggregator : manifest.priceAggregator;
+  }
 }

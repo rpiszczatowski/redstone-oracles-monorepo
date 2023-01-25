@@ -6,6 +6,10 @@ interface SymbolToPairId {
   [symbol: string]: string;
 }
 
+interface LiquiditiesPerDataFeedId {
+  [dataFeedId: string]: number;
+}
+
 export class DexFetcher extends BaseFetcher {
   protected retryForInvalidResponse: boolean = true;
 
@@ -91,10 +95,16 @@ export class DexFetcher extends BaseFetcher {
     return pairIds;
   }
 
-  public async getLiquidityForPair(dataFeedId: string): Promise<number> {
-    const pairId = this.symbolToPairIdObj[dataFeedId];
+  public async getLiquidityForDataFeedsIds(
+    dataFeedsIds: string[]
+  ): Promise<LiquiditiesPerDataFeedId> {
+    const pairIds = this.convertSymbolsToPairIds(
+      dataFeedsIds,
+      this.symbolToPairIdObj
+    );
+
     const query = `{
-      pair(id: ${JSON.stringify(pairId)}) {
+      pairs(where: { id_in: ${JSON.stringify(pairIds)} }) {
         id
         reserveUSD
       }
@@ -105,12 +115,25 @@ export class DexFetcher extends BaseFetcher {
       query
     );
 
-    const liquidity = liquidityResult?.data?.pair?.reserveUSD;
-    if (isNaN(liquidity)) {
+    const pairs = liquidityResult.data?.pairs;
+    if (!pairs || pairs.length === 0) {
       throw new Error(
-        `Liquidity for ${dataFeedId} is NaN, cannot calculate LWAP.`
+        "Cannot get LWAP value from an liquidity array that is empty"
       );
     }
-    return Number(liquidity);
+    const liquidityPerDataFeedId: LiquiditiesPerDataFeedId = {};
+    for (const dataFeedId of dataFeedsIds) {
+      const pairId = this.symbolToPairIdObj[dataFeedId];
+      const pair = pairs.find((p: any) => p.id === pairId);
+      const liquidity = pair.reserveUSD;
+      if (isNaN(liquidity)) {
+        throw new Error(
+          "Cannot get LWAP value form an liquidity array that contains NaN value"
+        );
+      }
+      liquidityPerDataFeedId[dataFeedId] = Number(liquidity);
+    }
+
+    return liquidityPerDataFeedId;
   }
 }

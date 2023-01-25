@@ -13,13 +13,13 @@ import {
 import { trackEnd, trackStart } from "../utils/performance-tracker";
 import ManifestConfigError from "../manifest/ManifestConfigError";
 import { promiseTimeout } from "../utils/promise-timeout";
-import aggregators from "../aggregators";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import {
   calculateAverageValue,
   safelyConvertAnyValueToNumber,
   calculateDeviationPercent,
 } from "../utils/numbers";
+import { fetchLiquidityForDataFeeds } from "../aggregators/lwap/fetch-liquidity-for-data-feeds";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -186,8 +186,9 @@ export default class PricesService {
           price.symbol
         );
         // Calculating final aggregated value based on the values from the "valid" sources
-        const priceAfterAggregation = await aggregator.getAggregatedValue(
-          sanitizedPriceBeforeAggregation
+        const priceAfterAggregation = aggregator.getAggregatedValue(
+          sanitizedPriceBeforeAggregation,
+          await this.getLiquidityIfNecessary(price.symbol, prices)
         );
 
         // Throwing an error if price is invalid or too deviated
@@ -343,5 +344,18 @@ export default class PricesService {
       );
     }
     return deviationCheckConfig;
+  }
+
+  private async getLiquidityIfNecessary(
+    symbol: string,
+    prices: PriceDataBeforeAggregation[]
+  ) {
+    const aggregatorName = ManifestHelper.getAggregatorName(
+      this.manifest,
+      symbol
+    );
+    if (aggregatorName === "lwap") {
+      return await fetchLiquidityForDataFeeds(prices);
+    }
   }
 }

@@ -1,12 +1,8 @@
-import axios from "axios";
-import lwapAggregator from "../../src/aggregators/lwap-aggregator";
+import lwapAggregator from "../../src/aggregators/lwap/lwap-aggregator";
 import { PriceDataBeforeAggregation } from "../../src/types";
 
-jest.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-
 describe("lwapAggregator", () => {
-  test("should throw error if no dex sources", async () => {
+  test("should throw error if no dex sources", () => {
     const input: PriceDataBeforeAggregation = {
       id: "",
       source: {
@@ -14,16 +10,16 @@ describe("lwapAggregator", () => {
         src2: 7,
         src3: 2,
       },
-      symbol: "BTC",
+      symbol: "WAVAX",
       timestamp: 0,
       version: "",
     };
-    await expect(lwapAggregator.getAggregatedValue(input)).rejects.toThrowError(
+    expect(() => lwapAggregator.getAggregatedValue(input)).toThrowError(
       "Cannot get LWAP value from empty array of values"
     );
   });
 
-  test("should throw error if values from dex sources contain NaN", async () => {
+  test("should throw error if values from dex sources contain NaN", () => {
     const inputWithNan: PriceDataBeforeAggregation = {
       id: "",
       source: {
@@ -31,9 +27,15 @@ describe("lwapAggregator", () => {
         uniswap: NaN,
         src3: 2,
       },
-      symbol: "BTC",
+      symbol: "WAVAX",
       timestamp: 0,
       version: "",
+    };
+    const liquidityPerSourceAndToken = {
+      "trader-joe": { WAVAX: 43542.3241241 },
+      "pangolin-wavax": { WAVAX: 321.123 },
+      sushiswap: { WAVAX: 12234.5467 },
+      uniswap: { WAVAX: 234563.5467 },
     };
 
     const inputWithError: PriceDataBeforeAggregation = {
@@ -43,28 +45,27 @@ describe("lwapAggregator", () => {
         "trader-joe": 7,
         sushiswap: "error",
       },
-      symbol: "BTC",
+      symbol: "WAVAX",
       timestamp: 0,
       version: "",
     };
 
-    await expect(
-      lwapAggregator.getAggregatedValue(inputWithNan)
-    ).rejects.toThrowError(
-      "Cannot get LWAP value of an array that contains NaN value"
-    );
+    expect(() =>
+      lwapAggregator.getAggregatedValue(
+        inputWithNan,
+        liquidityPerSourceAndToken
+      )
+    ).toThrowError("Cannot get LWAP value of an array that contains NaN value");
 
-    await expect(
-      lwapAggregator.getAggregatedValue(inputWithError)
-    ).rejects.toThrowError(
-      "Cannot get LWAP value of an array that contains NaN value"
-    );
+    expect(() =>
+      lwapAggregator.getAggregatedValue(
+        inputWithError,
+        liquidityPerSourceAndToken
+      )
+    ).toThrowError("Cannot get LWAP value of an array that contains NaN value");
   });
 
-  test("should throw error if liquidity from dex sources is NaN", async () => {
-    mockedAxios.post.mockResolvedValue({
-      data: { data: { pair: { reserveUSD: undefined } } },
-    });
+  test("should throw error if no liquidation per source and token", () => {
     const input: PriceDataBeforeAggregation = {
       id: "",
       source: {
@@ -72,25 +73,16 @@ describe("lwapAggregator", () => {
         uniswap: 7,
         sushiswap: 2,
       },
-      symbol: "BTC",
+      symbol: "WAVAX",
       timestamp: 0,
       version: "",
     };
-    await expect(lwapAggregator.getAggregatedValue(input)).rejects.toThrowError(
-      "Liquidity for BTC is NaN, cannot calculate LWAP."
-    );
-    mockedAxios.post.mockResolvedValue({
-      data: { data: { errors: "" } },
-    });
-    await expect(lwapAggregator.getAggregatedValue(input)).rejects.toThrowError(
-      "Liquidity for BTC is NaN, cannot calculate LWAP."
+    expect(() => lwapAggregator.getAggregatedValue(input)).toThrowError(
+      "Missing liquidation per source and token"
     );
   });
 
-  test("should return the only source if one dex source", async () => {
-    mockedAxios.post.mockResolvedValue({
-      data: { data: { pair: { reserveUSD: "1000.43432" } } },
-    });
+  test("should return the only source if one dex source", () => {
     const input: PriceDataBeforeAggregation = {
       id: "",
       source: {
@@ -98,19 +90,27 @@ describe("lwapAggregator", () => {
         src1: 7,
         src2: 2,
       },
-      symbol: "BTC",
+      symbol: "WAVAX",
       timestamp: 0,
       version: "",
     };
-
-    const result = await lwapAggregator.getAggregatedValue(input);
+    const liquidityPerSourceAndToken = {
+      "pangolin-usdc": { WAVAX: 43542.3241241 },
+    };
+    const result = lwapAggregator.getAggregatedValue(
+      input,
+      liquidityPerSourceAndToken
+    );
     expect(result.value).toEqual(3.23);
   });
 
-  test("should calculate lwap if more than one dex source", async () => {
-    mockedAxios.post.mockResolvedValue({
-      data: { data: { pair: { reserveUSD: "43542.3241241" } } },
-    });
+  test("should calculate lwap if more than one dex source", () => {
+    const liquidityPerSourceAndToken = {
+      "pangolin-usdc": { WAVAX: 43542.3241241 },
+      uniswap: { WAVAX: 123450.534543 },
+      sushiswap: { WAVAX: 993241.090542 },
+      "trader-joe": { WAVAX: 32343.431989 },
+    };
     const input: PriceDataBeforeAggregation = {
       id: "",
       source: {
@@ -119,12 +119,15 @@ describe("lwapAggregator", () => {
         sushiswap: 2.943,
         "trader-joe": 4.6546,
       },
-      symbol: "BTC",
+      symbol: "WAVAX",
       timestamp: 0,
       version: "",
     };
 
-    const result = await lwapAggregator.getAggregatedValue(input);
-    expect(result.value).toEqual(3.8759);
+    const result = lwapAggregator.getAggregatedValue(
+      input,
+      liquidityPerSourceAndToken
+    );
+    expect(result.value).toEqual(3.1792911170559917);
   });
 });

@@ -1,17 +1,11 @@
-import fetchers from "../fetchers";
-import { DexFetcher } from "../fetchers/DexFetcher";
+import { LiquiditiesPerSourceAndToken } from "./fetch-liquidity-for-data-feeds";
 import {
   Aggregator,
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
-} from "../types";
+} from "../../types";
 
-interface ValueWithLiquidity {
-  value: number;
-  liquidity: number;
-}
-
-const dexs = [
+export const dexs = [
   "uniswap",
   "sushiswap",
   "trader-joe",
@@ -19,20 +13,27 @@ const dexs = [
   "pangolin-usdc",
 ];
 
+interface ValueWithLiquidity {
+  value: number;
+  liquidity: number;
+}
+
 export const lwapAggregator: Aggregator = {
-  async getAggregatedValue(
-    price: PriceDataBeforeAggregation
-  ): Promise<PriceDataAfterAggregation> {
+  getAggregatedValue(
+    price: PriceDataBeforeAggregation,
+    liquidityPerSourceAndToken?: LiquiditiesPerSourceAndToken
+  ): PriceDataAfterAggregation {
     return {
       ...price,
-      value: await getLwapValue(price),
+      value: getLwapValue(price, liquidityPerSourceAndToken),
     };
   },
 };
 
-const getLwapValue = async (
-  price: PriceDataBeforeAggregation
-): Promise<number> => {
+const getLwapValue = (
+  price: PriceDataBeforeAggregation,
+  liquidityPerSourceAndToken?: LiquiditiesPerSourceAndToken
+): number => {
   const sources = Object.entries(price.source);
   const dexsSources = sources.filter(([sourceName]) =>
     dexs.includes(sourceName)
@@ -43,9 +44,10 @@ const getLwapValue = async (
     return valueFromTheOnlySource;
   }
   const dataFeedId = price.symbol;
-  const valuesWithLiquidity = await getDexsSourcesWithLiquidity(
+  const valuesWithLiquidity = getDexsSourcesWithLiquidity(
     dexsSources,
-    dataFeedId
+    dataFeedId,
+    liquidityPerSourceAndToken
   );
   return calculateLwap(valuesWithLiquidity);
 };
@@ -63,13 +65,18 @@ const validateDexsSources = (dexsSources: [string, any][]) => {
   }
 };
 
-const getDexsSourcesWithLiquidity = async (
+const getDexsSourcesWithLiquidity = (
   dexsSources: [string, any][],
-  dataFeedId: string
+  dataFeedId: string,
+  liquidityPerSourceAndToken?: LiquiditiesPerSourceAndToken
 ) => {
   const valuesWithLiquidity: ValueWithLiquidity[] = [];
   for (const [sourceName, value] of dexsSources) {
-    const liquidity = await getLiquidity(sourceName, dataFeedId);
+    const liquidity = getLiquidity(
+      sourceName,
+      dataFeedId,
+      liquidityPerSourceAndToken
+    );
     valuesWithLiquidity.push({
       value,
       liquidity,
@@ -95,9 +102,15 @@ const calculateLiquiditySum = (valuesWithLiquidity: ValueWithLiquidity[]) => {
   );
 };
 
-const getLiquidity = async (sourceName: string, dataFeedId: string) => {
-  const fetcher = fetchers[sourceName] as DexFetcher;
-  return await fetcher.getLiquidityForPair(dataFeedId);
+const getLiquidity = (
+  sourceName: string,
+  dataFeedId: string,
+  liquidityPerSourceAndToken?: LiquiditiesPerSourceAndToken
+) => {
+  if (!liquidityPerSourceAndToken) {
+    throw new Error("Missing liquidation per source and token");
+  }
+  return liquidityPerSourceAndToken[sourceName][dataFeedId];
 };
 
 export default lwapAggregator;

@@ -58,9 +58,8 @@ describe("medianAggregator", () => {
     };
 
     // When
-    const result = medianAggregator.getAggregatedValue(
-      input
-    ) as PriceDataAfterAggregation;
+    const result: PriceDataAfterAggregation =
+      medianAggregator.getAggregatedValue(input);
 
     // Then
     expect(result.value).toEqual(6);

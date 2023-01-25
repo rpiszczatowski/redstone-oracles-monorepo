@@ -1,4 +1,5 @@
 import { JWKInterface } from "arweave/node/lib/wallet";
+import { LiquiditiesPerSourceAndToken } from "./aggregators/lwap/fetch-liquidity-for-data-feeds";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
@@ -56,8 +57,9 @@ export interface Fetcher {
 
 export interface Aggregator {
   getAggregatedValue: (
-    price: PriceDataBeforeAggregation
-  ) => PriceDataAfterAggregation | Promise<PriceDataAfterAggregation>;
+    price: PriceDataBeforeAggregation,
+    liquidityPerSourceAndToken?: LiquiditiesPerSourceAndToken
+  ) => PriceDataAfterAggregation;
 }
 
 export interface Broadcaster {
