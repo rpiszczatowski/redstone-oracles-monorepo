@@ -28,6 +28,7 @@ export interface TokenConfig {
   customUrlDetails?: CustomUrlDetails;
   comment?: string;
   skipSigning?: boolean;
+  priceAggregator?: string;
 }
 
 export interface DeviationCheckConfig {
@@ -56,7 +57,7 @@ export interface Fetcher {
 export interface Aggregator {
   getAggregatedValue: (
     price: PriceDataBeforeAggregation
-  ) => PriceDataAfterAggregation;
+  ) => PriceDataAfterAggregation | Promise<PriceDataAfterAggregation>;
 }
 
 export interface Broadcaster {

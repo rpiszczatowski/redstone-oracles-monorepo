@@ -1,4 +1,5 @@
-import { Manifest, SourceTimeout } from "../types";
+import aggregators from "../aggregators";
+import { Manifest } from "../types";
 
 export type TokensBySource = { [source: string]: string[] };
 
@@ -56,5 +57,17 @@ export default class ManifestHelper {
 
   static getDeviationCheckConfigForSymbol(symbol: string, manifest: Manifest) {
     return manifest.tokens[symbol]?.deviationCheck || manifest.deviationCheck;
+  }
+
+  static getDefaultAggregator(manifest: Manifest) {
+    return aggregators[manifest.priceAggregator];
+  }
+
+  static getAggregatorForToken(manifest: Manifest, symbol: string) {
+    const priceAggregator = manifest.tokens[symbol]?.priceAggregator;
+    if (priceAggregator) {
+      return aggregators[priceAggregator];
+    }
+    return this.getDefaultAggregator(manifest);
   }
 }

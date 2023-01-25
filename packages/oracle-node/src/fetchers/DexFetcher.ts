@@ -90,4 +90,27 @@ export class DexFetcher extends BaseFetcher {
 
     return pairIds;
   }
+
+  public async getLiquidityForPair(dataFeedId: string): Promise<number> {
+    const pairId = this.symbolToPairIdObj[dataFeedId];
+    const query = `{
+      pair(id: ${JSON.stringify(pairId)}) {
+        id
+        reserveUSD
+      }
+    }`;
+
+    const liquidityResult = await graphProxy.executeQuery(
+      this.subgraphUrl,
+      query
+    );
+
+    const liquidity = liquidityResult?.data?.pair?.reserveUSD;
+    if (isNaN(liquidity)) {
+      throw new Error(
+        `Liquidity for ${dataFeedId} is NaN, cannot calculate LWAP.`
+      );
+    }
+    return Number(liquidity);
+  }
 }

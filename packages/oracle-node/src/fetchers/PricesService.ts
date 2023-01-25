@@ -166,7 +166,6 @@ export default class PricesService {
   async calculateAggregatedValues(
     prices: PriceDataBeforeAggregation[]
   ): Promise<PriceDataAfterAggregation[]> {
-    const aggregator = aggregators[this.manifest.priceAggregator];
     const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
 
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
@@ -182,8 +181,12 @@ export default class PricesService {
           deviationCheckConfig
         );
 
+        const aggregator = ManifestHelper.getAggregatorForToken(
+          this.manifest,
+          price.symbol
+        );
         // Calculating final aggregated value based on the values from the "valid" sources
-        const priceAfterAggregation = aggregator.getAggregatedValue(
+        const priceAfterAggregation = await aggregator.getAggregatedValue(
           sanitizedPriceBeforeAggregation
         );
 
