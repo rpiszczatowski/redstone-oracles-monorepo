@@ -51,7 +51,8 @@ export interface FetcherOpts {
 export interface Fetcher {
   fetchAll: (
     tokens: string[],
-    opts?: FetcherOpts
+    opts?: FetcherOpts,
+    timestamp?: number
   ) => Promise<PriceDataFetched[]>;
 }
 

@@ -15,7 +15,11 @@ export abstract class BaseFetcher implements Fetcher {
   }
 
   // All the abstract methods below must be implemented in fetchers
-  abstract fetchData(ids: string[], opts?: FetcherOpts): Promise<any>;
+  abstract fetchData(
+    ids: string[],
+    opts?: FetcherOpts,
+    timestamp?: number
+  ): Promise<any>;
   abstract extractPrices(
     response: any,
     ids?: string[],
@@ -33,12 +37,13 @@ export abstract class BaseFetcher implements Fetcher {
 
   async fetchAll(
     symbols: string[],
-    opts?: FetcherOpts
+    opts?: FetcherOpts,
+    timestamp?: number
   ): Promise<PriceDataFetched[]> {
     // Fetching data
     const fetchStartTime = Date.now();
     const ids = symbols.map((symbol) => this.convertSymbolToId(symbol));
-    let response = await this.fetchData(ids, opts);
+    let response = await this.fetchData(ids, opts, timestamp);
 
     // Retrying data fetching if needed
     const shouldRetry =
@@ -47,7 +52,7 @@ export abstract class BaseFetcher implements Fetcher {
       Date.now() - fetchStartTime <= MAX_RESPONSE_TIME_TO_RETRY_FETCHING_MS;
     if (shouldRetry) {
       this.logger.info("Retrying to fetch data");
-      response = await this.fetchData(ids, opts);
+      response = await this.fetchData(ids, opts, Number(timestamp!.toString()));
     }
 
     // Validating response
