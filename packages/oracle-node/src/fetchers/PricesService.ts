@@ -9,11 +9,11 @@ import {
   PriceDataBeforeAggregation,
   PriceDataBeforeSigning,
   PriceDataFetched,
+  Source,
 } from "../types";
 import { trackEnd, trackStart } from "../utils/performance-tracker";
 import ManifestConfigError from "../manifest/ManifestConfigError";
 import { promiseTimeout } from "../utils/promise-timeout";
-import aggregators from "../aggregators";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import {
   calculateAverageValue,
@@ -166,7 +166,6 @@ export default class PricesService {
   async calculateAggregatedValues(
     prices: PriceDataBeforeAggregation[]
   ): Promise<PriceDataAfterAggregation[]> {
-    const aggregator = aggregators[this.manifest.priceAggregator];
     const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
 
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
@@ -182,9 +181,20 @@ export default class PricesService {
           deviationCheckConfig
         );
 
+        const aggregator = ManifestHelper.getAggregatorForToken(
+          this.manifest,
+          price.symbol
+        );
+
+        const liquidities = this.getLiquiditiesIfNecessary(
+          price.symbol,
+          prices
+        );
+
         // Calculating final aggregated value based on the values from the "valid" sources
         const priceAfterAggregation = aggregator.getAggregatedValue(
-          sanitizedPriceBeforeAggregation
+          sanitizedPriceBeforeAggregation,
+          liquidities
         );
 
         // Throwing an error if price is invalid or too deviated
@@ -340,5 +350,28 @@ export default class PricesService {
       );
     }
     return deviationCheckConfig;
+  }
+
+  private getLiquiditiesIfNecessary(
+    symbol: string,
+    prices: PriceDataBeforeAggregation[]
+  ) {
+    const aggregatorName = ManifestHelper.getAggregatorName(
+      this.manifest,
+      symbol
+    );
+    if (aggregatorName === "lwap") {
+      const liquiditiesFound = prices.filter((price) =>
+        Object.keys(price.source).every(
+          (sourceName) => price.symbol === `${symbol}_${sourceName}_liquidity`
+        )
+      );
+      if (!liquiditiesFound) {
+        throw new Error(
+          `Cannot use LWAP aggregator with missing liquidity for ${symbol}`
+        );
+      }
+      return liquiditiesFound as PriceDataBeforeAggregation[];
+    }
   }
 }

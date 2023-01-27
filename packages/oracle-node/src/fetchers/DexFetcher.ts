@@ -65,9 +65,9 @@ export class DexFetcher extends BaseFetcher {
         } else if (symbol1 === currentAssetId) {
           pricesObj[currentAssetId] = reserveUSD / (2 * reserve1);
         }
+        pricesObj[`${currentAssetId}_${this.name}_liquidity`] = reserveUSD;
       }
     }
-
     return pricesObj;
   }
 

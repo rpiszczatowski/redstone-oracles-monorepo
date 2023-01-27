@@ -28,6 +28,7 @@ export interface TokenConfig {
   customUrlDetails?: CustomUrlDetails;
   comment?: string;
   skipSigning?: boolean;
+  priceAggregator?: string;
 }
 
 export interface DeviationCheckConfig {
@@ -55,7 +56,8 @@ export interface Fetcher {
 
 export interface Aggregator {
   getAggregatedValue: (
-    price: PriceDataBeforeAggregation
+    price: PriceDataBeforeAggregation,
+    liquidities?: PriceDataBeforeAggregation[]
   ) => PriceDataAfterAggregation;
 }
 
@@ -79,9 +81,13 @@ export interface PriceDataFetched {
 export interface PriceDataBeforeAggregation {
   id: string;
   symbol: string;
-  source: { [sourceName: string]: any };
+  source: Source;
   timestamp: number;
   version: string;
+}
+
+export interface Source {
+  [sourceName: string]: any;
 }
 
 export interface PriceDataAfterAggregation extends PriceDataBeforeAggregation {
