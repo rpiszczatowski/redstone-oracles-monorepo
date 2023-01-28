@@ -18,7 +18,8 @@
     "postversion": "git push && git push --tags",
     "docker:build": "docker build -f Dockerfile.public -t redstone-node .",
     "run-ts": "ts-node",
-    "query-historical-prices": "ts-node scripts/query-historical-prices.ts"
+    "query-historical-prices": "ts-node scripts/query-historical-prices.ts",
+    "query-redstone-api-prices": "ts-node scripts/query-redstone-api-prices.ts"
   },
   "license": "MIT",
   "author": "Redstone Team <dev@redstone.finance>",

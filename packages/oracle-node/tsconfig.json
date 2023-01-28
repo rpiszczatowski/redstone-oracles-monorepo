@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "es2018",
+    "target": "es2022",
     "declaration": true,
     "outDir": "./dist",
+    "module": "commonjs",
     "module": "commonjs",
     "resolveJsonModule": true,
     "esModuleInterop": true,
