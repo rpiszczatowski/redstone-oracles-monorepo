@@ -19,7 +19,8 @@
     "docker:build": "docker build -f Dockerfile.public -t redstone-node .",
     "run-ts": "ts-node",
     "query-historical-prices": "ts-node scripts/query-historical-prices.ts",
-    "query-redstone-api-prices": "ts-node scripts/query-redstone-api-prices.ts"
+    "query-redstone-api-prices": "ts-node scripts/query-redstone-api-prices.ts",
+    "reformat-json-results": "ts-node scripts/reformat-json-results.ts"
   },
   "license": "MIT",
   "author": "Redstone Team <dev@redstone.finance>",
