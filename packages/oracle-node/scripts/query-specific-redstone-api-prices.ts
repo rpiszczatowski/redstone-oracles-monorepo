@@ -42,7 +42,11 @@ async function queryPrices(timestamp: number): Promise<AgregatedData> {
 const runScript = async () => {
   console.log("Querying specific historical prices from Redstone API...");
   const agregatedData: AgregatedData[] = [];
+  console.log(`Total number of prices to query: ${dataToCompare.length}`);
   for (let i = 0; i < dataToCompare.length; i++) {
+    if (i % 100 === 0) {
+      console.log(`Querying ${i}th price...`);
+    }
     agregatedData.push(await queryPrices(dataToCompare[i].timestamp));
   }
   writeResults(agregatedData);
