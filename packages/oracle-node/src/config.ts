@@ -22,7 +22,7 @@ const DEFAULT_MOCK_PRICES_URL_OR_PATH =
 const DEFAULT_COINBASE_INDEXER_MONGODB_URL = "";
 const DEFAULT_COINMARKETCAP_API_KEY = "";
 const DEFAULT_KAIKO_API_KEY = "";
-const DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE = "50";
+const DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE = "90";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
