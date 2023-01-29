@@ -20,6 +20,7 @@
     "run-ts": "ts-node",
     "query-historical-prices": "ts-node scripts/query-historical-prices.ts",
     "query-redstone-api-prices": "ts-node scripts/query-redstone-api-prices.ts",
+    "query-specific-redstone-api-prices": "ts-node scripts/query-specific-redstone-api-prices.ts",
     "reformat-json-results": "ts-node scripts/reformat-json-results.ts"
   },
   "license": "MIT",
