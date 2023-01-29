@@ -14,6 +14,11 @@ contract SampleStorageProxy is RedstoneConsumerNumericMock {
     sampleContract = SampleStorageProxyConsumer(_sampleContract);
   }
 
+  function fetchValueUsingProxyDryRun(bytes32 dataFeedId) public returns (uint256) {
+    oracleValues[dataFeedId] = getOracleNumericValueFromTxMsg(dataFeedId);
+    return sampleContract.getOracleValue(dataFeedId);
+  }
+
   function saveOracleValueInContractStorage(bytes32 dataFeedId) public {
     oracleValues[dataFeedId] = getOracleNumericValueFromTxMsg(dataFeedId);
   }

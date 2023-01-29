@@ -54,6 +54,15 @@ describe("SampleStorageProxy", function () {
     await contract.register(consumerContract.address);
   });
 
+  it("Should return correct oracle value for one asset using dry run", async () => {
+    const wrappedContract =
+      WrapperBuilder.wrap(contract).usingStorageProxyMockDataPackages(mockNumericPackages);
+
+    const fetchedValue = await wrappedContract.fetchValueUsingProxyDryRun(ethDataFeedId);
+
+    expect(fetchedValue).to.eq(expectedNumericValues.ETH);
+  });
+
   it("Should return correct oracle value for one asset", async () => {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
