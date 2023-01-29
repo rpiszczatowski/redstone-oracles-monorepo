@@ -20,7 +20,6 @@ const writeResults = (results: AgregatedData[]) => {
 };
 
 function mapResponse(responseData: ResponseData): AgregatedData {
-  console.log(responseData.value);
   const AgregatedDataObj: AgregatedData = {
     price: responseData.value,
     timestamp: Math.round(responseData.timestamp / 1000), // Redstone API returns timestamp in milliseconds
