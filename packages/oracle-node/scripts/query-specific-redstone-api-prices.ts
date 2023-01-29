@@ -27,27 +27,39 @@ function mapResponse(responseData: ResponseData): AgregatedData {
   return AgregatedDataObj;
 }
 
-async function queryPrices(timestamp: number): Promise<AgregatedData> {
-  const response = await axios.get("https://api.redstone.finance/prices", {
-    params: {
-      symbol: "ETH",
-      provider: "redstone",
-      toTimestamp: timestamp * 1000, // Redstone API query timestamp in milliseconds
-      limit: "1",
-    },
+async function queryPrices(
+  requests: AgregatedData[]
+): Promise<AgregatedData[]> {
+  const promises = requests.map((request) => {
+    return axios.get("https://api.redstone.finance/prices", {
+      params: {
+        symbol: "ETH",
+        provider: "redstone",
+        toTimestamp: request.timestamp * 1000, // Redstone API query timestamp in milliseconds
+        limit: "1",
+      },
+    });
   });
-  return mapResponse(response.data[0]);
+  // try catch?
+  const responses = await Promise.all(promises);
+  return responses.map((response) => mapResponse(response.data[0]));
 }
 
 const runScript = async () => {
   console.log("Querying specific historical prices from Redstone API...");
   const agregatedData: AgregatedData[] = [];
   console.log(`Total number of prices to query: ${dataToCompare.length}`);
-  for (let i = 0; i < dataToCompare.length; i++) {
-    if (i % 100 === 0) {
+  for (let i = 0; i < dataToCompare.length; i += 100) {
+    if (i % 1000 === 0) {
       console.log(`Querying ${i}th price...`);
     }
-    agregatedData.push(await queryPrices(dataToCompare[i].timestamp));
+    // call queryPrices for 100 elements from dataToCompare at a time
+    try {
+      const result = await queryPrices(dataToCompare.slice(i, i + 100));
+      agregatedData.push(...result);
+    } catch {
+      console.log("Error occured");
+    }
   }
   writeResults(agregatedData);
 };
