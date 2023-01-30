@@ -115,7 +115,8 @@ export class DataPackagesController {
     @Query() query: GetLatestDataPackagesQuery
   ): Promise<DataPackagesResponse> {
     return await this.dataPackagesService.getDataPackages(
-      this.prepareDataPackagesRequestParams(query)
+      this.prepareDataPackagesRequestParams(query),
+      this.cacheManager
     );
   }
 
@@ -125,7 +126,8 @@ export class DataPackagesController {
     @Res() res: Response
   ) {
     const payload = await this.dataPackagesService.getPayload(
-      this.prepareDataPackagesRequestParams(query)
+      this.prepareDataPackagesRequestParams(query),
+      this.cacheManager
     );
     this.sendSerializableResponse(res, payload, query.format);
   }

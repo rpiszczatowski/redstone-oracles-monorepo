@@ -145,6 +145,8 @@ describe("Data packages (e2e)", () => {
   });
 
   it("/data-packages/latest (GET)", async () => {
+    const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
+    Date.now = jest.fn(() => dpTimestamp);
     const testResponse = await request(httpServer)
       .get("/data-packages/latest")
       .query({
