@@ -1,15 +1,22 @@
+import _ from "lodash";
 import { utils } from "ethers";
 import { PricesObj } from "../../types";
 import graphProxy from "../../utils/graph-proxy";
 import { BaseFetcher } from "../BaseFetcher";
 import symbolToPoolIdObj from "./uniswap-v3-symbol-to-pool-id.json";
 
-const BIG_NUMBER_MULTIPLIER = 36;
+const poolIdToSymbol = _.invert(symbolToPoolIdObj);
 
-type SymbolToPoolIdKeys = keyof typeof symbolToPoolIdObj;
+const BIG_NUMBER_MULTIPLIER = 36;
 
 interface SymbolToPoolId {
   [symbol: string]: string;
+}
+
+interface UniswapV3Response {
+  data: {
+    pools: Pool[];
+  };
 }
 
 interface Pool {
@@ -61,36 +68,34 @@ export class UniswapV3Fetcher extends BaseFetcher {
     return await graphProxy.executeQuery(subgraphUrl, query);
   }
 
-  validateResponse(response: any): boolean {
+  validateResponse(response: UniswapV3Response): boolean {
     return response !== undefined && response.data !== undefined;
   }
 
-  async extractPrices(
-    response: any,
-    dataFeedsIds: string[]
-  ): Promise<PricesObj> {
+  async extractPrices(response: UniswapV3Response): Promise<PricesObj> {
     const pricesObj: { [symbol: string]: number } = {};
 
-    for (const currentDataFeedId of dataFeedsIds) {
-      const poolId = symbolToPoolIdObj[currentDataFeedId as SymbolToPoolIdKeys];
-      const pool: Pool = response.data.pools.find(
-        (pool: Pool) => pool.id === poolId
-      );
-
-      if (!pool) {
-        this.logger.warn(
-          `Pool is not in response. Id: ${poolId}. Symbol: ${currentDataFeedId}. Source: ${this.name}`
-        );
-      } else {
-        const price = this.calculateTokenPrice(pool, currentDataFeedId);
-        if (price) {
-          pricesObj[currentDataFeedId] = price;
-        }
-      }
+    for (const pool of response.data.pools) {
+      const currentDataFeedId = poolIdToSymbol[pool.id];
+      const price = this.calculateTokenPrice(pool, currentDataFeedId);
+      pricesObj[currentDataFeedId] = price;
     }
     return pricesObj;
   }
 
+  /* 
+    Token price is calculated using prices of token in terms of the other one,
+    TVL of the tokens in the native currency and TVL of the pool in USD.
+
+    TVL of the pool can be presented as:
+    token0TVL * token0Price + token1TVL * token1Price
+    Additionally, we know what is the price of both tokens in the terms of the other one, which is:
+    token1Price = token0Price * token0PriceAgainstToken1Price
+    This leads us to the equation:
+    TVL = token0TVL * token0Price + token0Price * token0PriceAgainstToken1Price * token1TVL
+    and equation for token price:
+    token0Price = TVL / (token0TVL + token0PriceAgainstToken1Price * token1TVL)
+  */
   private calculateTokenPrice(pool: Pool, currentDataFeedId: string) {
     const {
       totalValueLockedTokenToCalculate,
@@ -101,9 +106,7 @@ export class UniswapV3Fetcher extends BaseFetcher {
     const { totalValueLockedInUSD } = this.getValuesFromResponse(pool);
 
     const tokenTotalValueLockedNormalized =
-      totalValueLockedTokenToCalculate.mul(
-        utils.parseUnits("1.0", BIG_NUMBER_MULTIPLIER)
-      );
+      totalValueLockedTokenToCalculate.mul(this.parseToBigNumber("1.0"));
 
     const totalValueLockedNormalizedForToken = oppositeTokenTotalValueLocked
       .mul(tokenPriceInTermsOfOther)
@@ -120,26 +123,22 @@ export class UniswapV3Fetcher extends BaseFetcher {
 
   getValuesFromResponse(pool: Pool) {
     const firstTokenSymbol = pool.token0.symbol;
-    const firstTokenPriceInTermsOfSecondToken = utils.parseUnits(
-      pool.token0Price,
-      BIG_NUMBER_MULTIPLIER
+    const firstTokenPriceInTermsOfSecondToken = this.parseToBigNumber(
+      pool.token0Price
     );
-    const secondTokenPriceInTermsOfFirstToken = utils.parseUnits(
-      pool.token1Price,
-      BIG_NUMBER_MULTIPLIER
+    const secondTokenPriceInTermsOfFirstToken = this.parseToBigNumber(
+      pool.token1Price
     );
-    const firstTokenTotalValueLocked = utils.parseUnits(
-      pool.totalValueLockedToken0,
-      BIG_NUMBER_MULTIPLIER
+    const firstTokenTotalValueLocked = this.parseToBigNumber(
+      pool.totalValueLockedToken0
     );
-    const secondTokenTotalValueLocked = utils.parseUnits(
-      pool.totalValueLockedToken1,
-      BIG_NUMBER_MULTIPLIER
+    const secondTokenTotalValueLocked = this.parseToBigNumber(
+      pool.totalValueLockedToken1
     );
-    const totalValueLockedInUSD = utils.parseUnits(
-      pool.totalValueLockedUSD,
-      BIG_NUMBER_MULTIPLIER
+    const totalValueLockedInUSD = this.parseToBigNumber(
+      pool.totalValueLockedUSD
     );
+
     return {
       firstTokenSymbol,
       firstTokenPriceInTermsOfSecondToken,
@@ -198,5 +197,9 @@ export class UniswapV3Fetcher extends BaseFetcher {
     }
 
     return poolIds;
+  }
+
+  private parseToBigNumber(numberAsString: string) {
+    return utils.parseUnits(numberAsString, BIG_NUMBER_MULTIPLIER);
   }
 }

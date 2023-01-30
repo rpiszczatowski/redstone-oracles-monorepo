@@ -5,7 +5,7 @@ import {
 } from "./_helpers";
 
 const pathToExampleResponse =
-  "./mocks/responses/uniswap-v3-example-response.json";
+  "../../src/fetchers/uniswap-v3/uniswap-v3-example-response.json";
 const expectedResult = [
   {
     symbol: "OHM",
