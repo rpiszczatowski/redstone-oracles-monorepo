@@ -526,7 +526,7 @@ describe("PricesService", () => {
       expect(() =>
         pricesService.assertSourcesNumber(newPriceObject, manifest)
       ).toThrowError(
-        "Invalid sources number for symbol TestToken. Valid sources count: 1, required: 2"
+        "Invalid sources number for symbol TestToken, valid sources count: 1"
       );
     });
 
@@ -538,7 +538,7 @@ describe("PricesService", () => {
       expect(() =>
         pricesService.assertSourcesNumber(newPriceObject, manifest)
       ).toThrowError(
-        "Invalid sources number for symbol TestToken. Valid sources count: 0, required: 2"
+        "Invalid sources number for symbol TestToken, valid sources count: 0"
       );
     });
   });

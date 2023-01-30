@@ -6,6 +6,11 @@ import {
   DEV_MANIFESTS_FOLDER,
 } from "../common/paths";
 
+/* 
+  In order to add new parameter you have to 
+  modify 'parameter' object with the content you require 
+*/
+
 (() => {
   const parameter = {};
   const folders = [

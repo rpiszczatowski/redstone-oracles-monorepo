@@ -359,11 +359,8 @@ export default class PricesService {
     const isSourcesNumberValid =
       validSourcesPercentage >= minValidSourcesPercentage;
     if (!isSourcesNumberValid) {
-      const requiredSourcesCount = Math.ceil(
-        (minValidSourcesPercentage / 100) * allSourcesCount
-      );
       throw new Error(
-        `Invalid sources number for symbol ${symbol}. Valid sources count: ${sourcesFetchedCount}, required: ${requiredSourcesCount}`
+        `Invalid sources number for symbol ${symbol}, valid sources count: ${sourcesFetchedCount}`
       );
     }
   }
