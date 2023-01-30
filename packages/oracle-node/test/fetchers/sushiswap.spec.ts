@@ -12,16 +12,8 @@ const expectedResult = [
     value: 162.29924837765495,
   },
   {
-    symbol: "CREAM_sushiswap_liquidity",
-    value: 2193570.169109215,
-  },
-  {
     symbol: "UMA",
     value: 12.810977172957678,
-  },
-  {
-    symbol: "UMA_sushiswap_liquidity",
-    value: 7001417.600045829,
   },
 ];
 

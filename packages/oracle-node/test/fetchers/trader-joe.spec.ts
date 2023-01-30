@@ -6,6 +6,36 @@ import {
 
 const pathToExampleResponse =
   "../../src/fetchers/trader-joe/example-response.json";
+const expectedResult = [
+  {
+    symbol: "WAVAX",
+    value: 43.748689396873296,
+  },
+  {
+    symbol: "PNG",
+    value: 1.9297487513400018,
+  },
+  {
+    symbol: "SNOB",
+    value: 1.1536966846113443,
+  },
+  {
+    symbol: "SPORE",
+    value: 1.6207263003171588e-10,
+  },
+  {
+    symbol: "XAVA",
+    value: 3.0202135734287623,
+  },
+  {
+    symbol: "SHERPA",
+    value: 2.5500045276659677,
+  },
+  {
+    symbol: "JOE",
+    value: 1.4411137463584196,
+  },
+];
 
 jest.mock("axios");
 
@@ -61,62 +91,3 @@ describe("trader-joe fetcher", () => {
     expect(tryCounter).toEqual(2);
   });
 });
-
-const expectedResult = [
-  {
-    symbol: "WAVAX",
-    value: 43.748689396873296,
-  },
-  {
-    symbol: "WAVAX_trader-joe_liquidity",
-    value: 4714050.358518391,
-  },
-  {
-    symbol: "PNG",
-    value: 1.9297487513400018,
-  },
-  {
-    symbol: "PNG_trader-joe_liquidity",
-    value: 4714050.358518391,
-  },
-  {
-    symbol: "SNOB",
-    value: 1.1536966846113443,
-  },
-  {
-    symbol: "SNOB_trader-joe_liquidity",
-    value: 3547553.5835035574,
-  },
-  {
-    symbol: "SPORE",
-    value: 1.6207263003171588e-10,
-  },
-  {
-    symbol: "SPORE_trader-joe_liquidity",
-    value: 77145.8401564236,
-  },
-  {
-    symbol: "XAVA",
-    value: 3.0202135734287623,
-  },
-  {
-    symbol: "XAVA_trader-joe_liquidity",
-    value: 4625189.158197615,
-  },
-  {
-    symbol: "SHERPA",
-    value: 2.5500045276659677,
-  },
-  {
-    symbol: "SHERPA_trader-joe_liquidity",
-    value: 1087175.8124189386,
-  },
-  {
-    symbol: "JOE",
-    value: 1.4411137463584196,
-  },
-  {
-    symbol: "JOE_trader-joe_liquidity",
-    value: 27984492.967134777,
-  },
-];

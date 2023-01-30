@@ -186,15 +186,9 @@ export default class PricesService {
           price.symbol
         );
 
-        const liquidities = this.getLiquiditiesIfNecessary(
-          price.symbol,
-          prices
-        );
-
         // Calculating final aggregated value based on the values from the "valid" sources
         const priceAfterAggregation = aggregator.getAggregatedValue(
-          sanitizedPriceBeforeAggregation,
-          liquidities
+          sanitizedPriceBeforeAggregation
         );
 
         // Throwing an error if price is invalid or too deviated
@@ -350,28 +344,5 @@ export default class PricesService {
       );
     }
     return deviationCheckConfig;
-  }
-
-  private getLiquiditiesIfNecessary(
-    symbol: string,
-    prices: PriceDataBeforeAggregation[]
-  ) {
-    const aggregatorName = ManifestHelper.getAggregatorName(
-      this.manifest,
-      symbol
-    );
-    if (aggregatorName === "lwap") {
-      const liquiditiesFound = prices.filter((price) =>
-        Object.keys(price.source).every(
-          (sourceName) => price.symbol === `${symbol}_${sourceName}_liquidity`
-        )
-      );
-      if (!liquiditiesFound) {
-        throw new Error(
-          `Cannot use LWAP aggregator with missing liquidity for ${symbol}`
-        );
-      }
-      return liquiditiesFound as PriceDataBeforeAggregation[];
-    }
   }
 }

@@ -59,20 +59,9 @@ export default class ManifestHelper {
     return manifest.tokens[symbol]?.deviationCheck || manifest.deviationCheck;
   }
 
-  static getDefaultAggregator(manifest: Manifest) {
-    return aggregators[manifest.priceAggregator];
-  }
-
   static getAggregatorForToken(manifest: Manifest, symbol: string) {
-    const priceAggregator = manifest.tokens[symbol]?.priceAggregator;
-    if (priceAggregator) {
-      return aggregators[priceAggregator];
-    }
-    return this.getDefaultAggregator(manifest);
-  }
-
-  static getAggregatorName(manifest: Manifest, symbol: string) {
-    const priceAggregator = manifest.tokens[symbol]?.priceAggregator;
-    return priceAggregator ? priceAggregator : manifest.priceAggregator;
+    const priceAggregator =
+      manifest.tokens[symbol]?.priceAggregator ?? manifest.priceAggregator;
+    return aggregators[priceAggregator];
   }
 }

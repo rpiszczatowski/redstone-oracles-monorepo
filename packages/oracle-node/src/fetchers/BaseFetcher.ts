@@ -91,24 +91,8 @@ export abstract class BaseFetcher implements Fetcher {
           symbol: this.convertIdToSymbol(id),
           value: pricesObj[id],
         });
-        this.addLiquidityIfNecessary(prices, pricesObj, id);
       }
     }
     return prices;
-  }
-
-  private addLiquidityIfNecessary(
-    prices: PriceDataFetched[],
-    pricesObj: PricesObj,
-    dataFeedId: string
-  ) {
-    const dataFeedIdWithLiquidity = `${dataFeedId}_${this.name}_liquidity`;
-    const liquidityForDataFeed = pricesObj[dataFeedIdWithLiquidity];
-    if (!!liquidityForDataFeed) {
-      prices.push({
-        symbol: `${this.convertIdToSymbol(dataFeedId)}_${this.name}_liquidity`,
-        value: liquidityForDataFeed,
-      });
-    }
   }
 }
