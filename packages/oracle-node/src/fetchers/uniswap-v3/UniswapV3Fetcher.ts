@@ -4,6 +4,7 @@ import { PricesObj } from "../../types";
 import graphProxy from "../../utils/graph-proxy";
 import { BaseFetcher } from "../BaseFetcher";
 import symbolToPoolIdObj from "./uniswap-v3-symbol-to-pool-id.json";
+import { getLastPrice } from "../../db/local-db";
 
 const poolIdToSymbol = _.invert(symbolToPoolIdObj);
 
@@ -50,18 +51,13 @@ export class UniswapV3Fetcher extends BaseFetcher {
       pools(where: { id_in: ${JSON.stringify(pairIds)} }) {
         id
         token0 {
-          id
           symbol
         }
         token1 {
-          id
           symbol
         }
         token0Price
         token1Price
-        totalValueLockedToken0
-        totalValueLockedToken1
-        totalValueLockedUSD
       }
     }`;
 
@@ -78,105 +74,44 @@ export class UniswapV3Fetcher extends BaseFetcher {
     for (const pool of response.data.pools) {
       const currentDataFeedId = poolIdToSymbol[pool.id];
       const price = this.calculateTokenPrice(pool, currentDataFeedId);
-      pricesObj[currentDataFeedId] = price;
+      if (price) {
+        pricesObj[currentDataFeedId] = price;
+      }
     }
     return pricesObj;
   }
 
   /* 
-    Token price is calculated using prices of token in terms of the other one,
-    TVL of the tokens in the native currency and TVL of the pool in USD.
-
-    TVL of the pool can be presented as:
-    token0TVL * token0Price + token1TVL * token1Price
-    Additionally, we know what is the price of both tokens in the terms of the other one, which is:
-    token1Price = token0Price * token0PriceAgainstToken1Price
-    This leads us to the equation:
-    TVL = token0TVL * token0Price + token0Price * token0PriceAgainstToken1Price * token1TVL
-    and equation for token price:
-    token0Price = TVL / (token0TVL + token0PriceAgainstToken1Price * token1TVL)
+    token0Price and token1Price are token prices in terms of other token in pool
   */
   private calculateTokenPrice(pool: Pool, currentDataFeedId: string) {
-    const {
-      totalValueLockedTokenToCalculate,
-      oppositeTokenTotalValueLocked,
-      tokenPriceInTermsOfOther,
-    } = this.defineValuesForPriceCalculation(pool, currentDataFeedId);
+    const { tokenPriceInTermsOfOther, otherTokenPrice } =
+      this.defineValuesBasedOnCurrentDataFeed(pool, currentDataFeedId);
 
-    const { totalValueLockedInUSD } = this.getValuesFromResponse(pool);
-
-    const tokenTotalValueLockedNormalized =
-      totalValueLockedTokenToCalculate.mul(this.parseToBigNumber("1.0"));
-
-    const totalValueLockedNormalizedForToken = oppositeTokenTotalValueLocked
-      .mul(tokenPriceInTermsOfOther)
-      .add(tokenTotalValueLockedNormalized);
-
-    const tokenPriceAsBigNumber = totalValueLockedInUSD
-      .mul(utils.parseUnits("1.0", BIG_NUMBER_MULTIPLIER * 2))
-      .div(totalValueLockedNormalizedForToken);
-
-    return Number(
-      utils.formatUnits(tokenPriceAsBigNumber, BIG_NUMBER_MULTIPLIER)
-    );
+    if (tokenPriceInTermsOfOther && otherTokenPrice) {
+      return tokenPriceInTermsOfOther * otherTokenPrice.value;
+    }
   }
 
-  getValuesFromResponse(pool: Pool) {
+  private defineValuesBasedOnCurrentDataFeed(
+    pool: Pool,
+    currentDataFeedId: string
+  ) {
     const firstTokenSymbol = pool.token0.symbol;
-    const firstTokenPriceInTermsOfSecondToken = this.parseToBigNumber(
-      pool.token0Price
-    );
-    const secondTokenPriceInTermsOfFirstToken = this.parseToBigNumber(
-      pool.token1Price
-    );
-    const firstTokenTotalValueLocked = this.parseToBigNumber(
-      pool.totalValueLockedToken0
-    );
-    const secondTokenTotalValueLocked = this.parseToBigNumber(
-      pool.totalValueLockedToken1
-    );
-    const totalValueLockedInUSD = this.parseToBigNumber(
-      pool.totalValueLockedUSD
-    );
-
-    return {
-      firstTokenSymbol,
-      firstTokenPriceInTermsOfSecondToken,
-      secondTokenPriceInTermsOfFirstToken,
-      firstTokenTotalValueLocked,
-      secondTokenTotalValueLocked,
-      totalValueLockedInUSD,
-    };
-  }
-
-  defineValuesForPriceCalculation(pool: Pool, currentDataFeedId: string) {
-    const {
-      firstTokenSymbol,
-      firstTokenPriceInTermsOfSecondToken,
-      secondTokenPriceInTermsOfFirstToken,
-      firstTokenTotalValueLocked,
-      secondTokenTotalValueLocked,
-    } = this.getValuesFromResponse(pool);
-
-    let totalValueLockedTokenToCalculate,
-      oppositeTokenTotalValueLocked,
-      tokenPriceInTermsOfOther;
-
-    if (firstTokenSymbol === currentDataFeedId) {
-      totalValueLockedTokenToCalculate = firstTokenTotalValueLocked;
-      oppositeTokenTotalValueLocked = secondTokenTotalValueLocked;
-      tokenPriceInTermsOfOther = firstTokenPriceInTermsOfSecondToken;
-    } else {
-      totalValueLockedTokenToCalculate = secondTokenTotalValueLocked;
-      oppositeTokenTotalValueLocked = firstTokenTotalValueLocked;
-      tokenPriceInTermsOfOther = secondTokenPriceInTermsOfFirstToken;
+    let secondTokenSymbol = pool.token1.symbol;
+    if (secondTokenSymbol === "WETH") {
+      secondTokenSymbol = "ETH";
     }
 
-    return {
-      totalValueLockedTokenToCalculate,
-      oppositeTokenTotalValueLocked,
-      tokenPriceInTermsOfOther,
-    };
+    let tokenPriceInTermsOfOther, otherTokenPrice;
+    if (firstTokenSymbol === currentDataFeedId) {
+      tokenPriceInTermsOfOther = parseFloat(pool.token1Price);
+      otherTokenPrice = getLastPrice(secondTokenSymbol);
+    } else if (secondTokenSymbol === currentDataFeedId) {
+      tokenPriceInTermsOfOther = parseFloat(pool.token0Price);
+      otherTokenPrice = getLastPrice(firstTokenSymbol);
+    }
+    return { tokenPriceInTermsOfOther, otherTokenPrice };
   }
 
   private convertSymbolsToPoolIds(
@@ -197,9 +132,5 @@ export class UniswapV3Fetcher extends BaseFetcher {
     }
 
     return poolIds;
-  }
-
-  private parseToBigNumber(numberAsString: string) {
-    return utils.parseUnits(numberAsString, BIG_NUMBER_MULTIPLIER);
   }
 }
