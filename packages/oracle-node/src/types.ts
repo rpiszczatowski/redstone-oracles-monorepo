@@ -137,8 +137,8 @@ export interface NodeConfig {
   privateKeys: PrivateKeys;
   overrideManifestUsingFile?: Manifest;
   ethereumAddress: string;
-  useNewSigningAndBroadcasting: boolean;
   overrideDirectCacheServiceUrls?: string[];
+  overridePriceCacheServiceUrls?: string[];
   coinbaseIndexerMongoDbUrl?: string;
   ethMainRpcUrl?: string;
   levelDbLocation: string;

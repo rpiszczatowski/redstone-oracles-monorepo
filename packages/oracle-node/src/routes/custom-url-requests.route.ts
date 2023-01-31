@@ -5,18 +5,16 @@ import axios from "axios";
 import jp from "jsonpath";
 
 import { fromBase64 } from "../utils/base64";
-import EvmPriceSignerOld from "../signers/EvmPriceSignerOld";
+import EvmPriceSigner from "../signers/EvmPriceSigner";
 import { NodeConfig } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 
-const EVM_CHAIN_ID = 1;
 const QUERY_PARAM_NAME = "custom-url-request-config-base64";
 const DEFAULT_TIMEOUT_MILLISECONDS = 10000;
-const EVM_SIGNER_VERSION = "0.4";
 const logger = require("../utils/logger")(
   "custom-url-requests-route"
 ) as Consola;
-const evmSigner = new EvmPriceSignerOld(EVM_SIGNER_VERSION, EVM_CHAIN_ID);
+const evmSigner = new EvmPriceSigner();
 
 export default function (app: express.Application, nodeConfig: NodeConfig) {
   app.get("/custom-url-requests", async (req, res) => {

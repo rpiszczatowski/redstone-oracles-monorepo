@@ -10,7 +10,6 @@ const DEFAULT_PRINT_DIAGNOSTIC_INFO = "true";
 const DEFAULT_ENABLE_STREAMR_BROADCASTING = "false";
 const DEFAULT_MANIFEST_REFRESH_INTERVAL = "120000";
 const DEFAULT_TWELVE_DATA_RAPID_API_KEY = "";
-const DEFAULT_USE_NEW_SIGNING_AND_BROADCASTING = "false";
 const DEFAULT_ETH_MAIN_RPC_URL = "https://rpc.ankr.com/eth";
 const DEFAULT_LEVEL_DB_LOCATION = "oracle-node-level-db";
 const DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS = "900000";
@@ -78,6 +77,16 @@ const getOptionallyCacheServiceUrls = () => {
   }
 };
 
+const getOptionallyPriceDataServiceUrls = () => {
+  const overridePriceCacheServiceUrls = getFromEnv(
+    "OVERRIDE_PRICE_CACHE_SERVICE_URLS",
+    ""
+  );
+  if (!!overridePriceCacheServiceUrls) {
+    return JSON.parse(overridePriceCacheServiceUrls) as string[];
+  }
+};
+
 export const getArweaveWallet = (): JWKInterface => {
   const arweaveKeysFile = process.env.ARWEAVE_KEYS_FILE_PATH;
   const arweaveKeysJWK = process.env.ARWEAVE_KEYS_JWK;
@@ -114,6 +123,7 @@ export const config: NodeConfig = Object.freeze({
   ),
   overrideManifestUsingFile: getOptionallyManifestData(),
   overrideDirectCacheServiceUrls: getOptionallyCacheServiceUrls(),
+  overridePriceCacheServiceUrls: getOptionallyPriceDataServiceUrls(),
   twelveDataRapidApiKey: getFromEnv(
     "TWELVE_DATA_RAPID_API_KEY",
     DEFAULT_TWELVE_DATA_RAPID_API_KEY
@@ -127,12 +137,6 @@ export const config: NodeConfig = Object.freeze({
     arweaveJwk: getArweaveWallet(),
     ethereumPrivateKey,
   },
-  useNewSigningAndBroadcasting: parserFromString.boolean(
-    getFromEnv(
-      "USE_NEW_SIGNING_AND_BROADCASTING",
-      DEFAULT_USE_NEW_SIGNING_AND_BROADCASTING
-    )
-  ),
   ethereumAddress: new ethers.Wallet(ethereumPrivateKey).address,
   coinbaseIndexerMongoDbUrl: getFromEnv(
     "COINBASE_INDEXER_MONGODB_URL",

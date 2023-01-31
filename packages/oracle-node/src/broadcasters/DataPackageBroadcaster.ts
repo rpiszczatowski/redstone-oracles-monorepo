@@ -1,5 +1,5 @@
 import { SignedDataPackage } from "redstone-protocol";
 
-export interface Broadcaster {
+export interface DataPackageBroadcaster {
   broadcast(signedDataPackages: SignedDataPackage[]): Promise<void>;
 }
