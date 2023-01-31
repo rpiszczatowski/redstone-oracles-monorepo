@@ -91,7 +91,7 @@ export class UniswapV3Fetcher extends BaseFetcher {
     return pricesObj;
   }
 
-  private calculateTokenPrice(pool: Pool, currentDataFeedId: string) {
+  protected calculateTokenPrice(pool: Pool, currentDataFeedId: string) {
     const {
       totalValueLockedTokenToCalculate,
       oppositeTokenTotalValueLocked,
@@ -180,7 +180,7 @@ export class UniswapV3Fetcher extends BaseFetcher {
     };
   }
 
-  private convertSymbolsToPoolIds(
+  protected convertSymbolsToPoolIds(
     symbols: string[],
     symbolToPoolId: SymbolToPoolId
   ): string[] {
