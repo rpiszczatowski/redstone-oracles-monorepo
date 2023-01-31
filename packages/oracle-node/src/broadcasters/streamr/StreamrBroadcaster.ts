@@ -1,4 +1,4 @@
-import { Broadcaster } from "../Broadcaster";
+import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
 import { Consola } from "consola";
 import { providers, utils, Wallet } from "ethers";
 import { SignedDataPackage } from "redstone-protocol";
@@ -21,7 +21,7 @@ const INACTIVITY_THRESHOLD_HOURS = 24 * 20; // 20 days
 
 const logger = require("../../utils/logger")("StreamrBroadcaster") as Consola;
 
-export class StreamrBroadcaster implements Broadcaster {
+export class StreamrBroadcaster implements DataPackageBroadcaster {
   private readonly streamrClient: StreamrClient;
   private readonly streamId: string;
   private readonly address: string;

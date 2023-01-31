@@ -6,8 +6,9 @@
       - `ENABLE_JSON_LOGS=true`
       - `OVERRIDE_MANIFEST_USING_FILE=./manifests/data-services/main.json`
       - `OVERRIDE_DIRECT_CACHE_SERVICE_URLS='["https://httpbin.org/anything"]'`
+      - `OVERRIDE_PRICE_CACHE_SERVICE_URLS='["https://httpbin.org/anything"]'`
     - Run `yarn start:dev`
-    - Inspect tmp.out and stop the node exection (ctrl+c) after few node iterations
+    - Inspect tmp.out and stop the node execution (ctrl+c) after few node iterations
   - Run script to analyze logs and print insights (`yarn run-ts tools/data-check/analyze-logs.ts`)
 - Fix sources and check again
   - Fix sources

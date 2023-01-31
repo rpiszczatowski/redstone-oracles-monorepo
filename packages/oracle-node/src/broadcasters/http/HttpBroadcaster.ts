@@ -2,11 +2,11 @@ import axios from "axios";
 import { Consola } from "consola";
 import { SignedDataPackage, UniversalSigner } from "redstone-protocol";
 import { stringifyError } from "../../utils/error-stringifier";
-import { Broadcaster } from "../Broadcaster";
+import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
 
 const logger = require("../../utils/logger")("HttpBroadcaster") as Consola;
 
-export class HttpBroadcaster implements Broadcaster {
+export class HttpBroadcaster implements DataPackageBroadcaster {
   constructor(
     private readonly broadcasterURLs: string[],
     private readonly ethereumPrivateKey: string
