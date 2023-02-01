@@ -9,6 +9,7 @@ import {
   DataPackagesRequestParams,
   getDataServiceIdForSigner,
   getOracleRegistryState,
+  parseDataPackagesResponse,
 } from "redstone-sdk";
 import config from "../config";
 import {
@@ -124,17 +125,12 @@ export class DataPackagesService {
     requestParams: DataPackagesRequestParams,
     cacheManager: Cache
   ) {
-    const { dataServiceId, uniqueSignersCount, dataFeeds } = requestParams;
     const cachedDataPackagesResponse = await this.getAllLatestDataWithCache(
-      dataServiceId,
+      requestParams.dataServiceId,
       cacheManager
     );
 
-    return this.filterDataPackages(
-      cachedDataPackagesResponse,
-      uniqueSignersCount,
-      dataFeeds
-    );
+    return parseDataPackagesResponse(cachedDataPackagesResponse, requestParams);
   }
 
   async getPayload(
@@ -255,30 +251,5 @@ export class DataPackagesService {
     } catch {
       return false;
     }
-  }
-
-  private filterDataPackages(
-    dataPackagesResponse: DataPackagesResponse,
-    uniqueSignersCount: number,
-    dataFeeds?: string[]
-  ): DataPackagesResponse {
-    if (!dataFeeds) {
-      const allFeedsDataPackages = dataPackagesResponse[ALL_FEEDS_KEY];
-      const limitedDataPackages = allFeedsDataPackages.slice(
-        0,
-        uniqueSignersCount
-      );
-      return { [ALL_FEEDS_KEY]: limitedDataPackages };
-    }
-
-    const dataPackagesEntries = Object.entries(dataPackagesResponse);
-    const filteredDataPackages: DataPackagesResponse = {};
-    for (const [dataFeedId, dataPackages] of dataPackagesEntries) {
-      const limitedDataPackages = dataPackages.slice(0, uniqueSignersCount);
-      if (dataFeeds.includes(dataFeedId)) {
-        filteredDataPackages[dataFeedId] = limitedDataPackages;
-      }
-    }
-    return filteredDataPackages;
   }
 }

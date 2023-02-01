@@ -111,9 +111,7 @@ export class DataPackagesController {
 
   @Get("latest")
   @Header("Cache-Control", "max-age=5")
-  async getLatest(
-    @Query() query: GetLatestDataPackagesQuery
-  ): Promise<DataPackagesResponse> {
+  async getLatest(@Query() query: GetLatestDataPackagesQuery) {
     return await this.dataPackagesService.getDataPackages(
       this.prepareDataPackagesRequestParams(query),
       this.cacheManager
