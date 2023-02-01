@@ -1,7 +1,7 @@
-import { contracts, abi } from "../src/fetchers/chainlink/constants";
+import { contracts, abi } from "../../src/fetchers/chainlink/constants";
 import { Contract, ethers } from "ethers";
 import fs from "fs";
-import { range } from "./utils";
+import { saveJSON } from "../common/fs-utils";
 
 const AGGREGATOR_V3_INTERFACE_ABI = abi;
 const PRICE_FEED_ADDR = contracts["OHMv2"];
@@ -29,11 +29,18 @@ const getPhaseId = (roundId: bigint) => {
 const getAllPrices = async (priceFeed: Contract, latestPhaseId: bigint) => {
   let prices: PriceWithTimestamp[] = [];
 
-  for (let i = latestPhaseId; i > 0; i--) {
-    console.log(`Getting aggregator no. ${i} prices`);
-    let aggregatorPrices = await getAggregatorPrices(priceFeed, i);
+  for (
+    let currentPhaseId = latestPhaseId;
+    currentPhaseId > 0;
+    currentPhaseId--
+  ) {
+    console.log(`Getting aggregator no. ${currentPhaseId} prices`);
+    const aggregatorPrices = await getAggregatorPrices(
+      priceFeed,
+      currentPhaseId
+    );
     console.log(
-      `Got ${aggregatorPrices.length} prices from aggregator no. ${i}`
+      `Got ${aggregatorPrices.length} prices from aggregator no. ${currentPhaseId}`
     );
 
     prices = [...prices, ...aggregatorPrices];
@@ -50,9 +57,10 @@ const getAggregatorPrices = async (contract: Contract, phaseId: bigint) => {
   let numErrors = 0;
   while (true) {
     try {
-      let promises = range(roundID, roundID + BigInt("100"), BigInt(1)).map(
-        (round: any) => contract.getRoundData(round)
+      const promises = [...Array(100).keys()].map((round: number) =>
+        contract.getRoundData(BigInt(round))
       );
+
       let isReverted = false;
       await Promise.all(promises).then((results) => {
         results.forEach((answer) => {
@@ -89,11 +97,6 @@ const getAggregatorPrices = async (contract: Contract, phaseId: bigint) => {
   return prices;
 };
 
-const writeResults = (results: PriceWithTimestamp[]) => {
-  console.log("Saving results to file");
-  let json = JSON.stringify(results);
-  fs.writeFile("results.json", json, "utf8", () => {});
-};
 async function query() {
   const priceFeed = new Contract(
     PRICE_FEED_ADDR,
@@ -102,8 +105,8 @@ async function query() {
   );
   const roundId = await getRoundId(priceFeed);
   const phaseId = getPhaseId(roundId);
-  let prices = await getAllPrices(priceFeed, phaseId);
-  writeResults(prices);
+  const prices = await getAllPrices(priceFeed, phaseId);
+  saveJSON(prices, "historical-chainlink-prices.json");
 }
 
 const runScript = async () => {
