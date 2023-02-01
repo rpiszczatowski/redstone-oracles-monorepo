@@ -56,7 +56,7 @@ describe("SampleStorageProxy", function () {
 
   it("Should return correct oracle value for one asset using dry run", async () => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingStorageProxyMockDataPackages(mockNumericPackages);
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
 
     const fetchedValue = await wrappedContract.fetchValueUsingProxyDryRun(ethDataFeedId);
 

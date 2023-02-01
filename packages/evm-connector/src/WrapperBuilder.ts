@@ -7,9 +7,6 @@ import {
   SimpleNumericMockConfig,
   SimpleNumericMockWrapper,
 } from "./wrappers/SimpleMockNumericWrapper";
-import {
-  MockStorageProxyWrapper,
-} from "./wrappers/MockStorageProxyWrapper";
 import { OnDemandRequestWrapper } from "./wrappers/OnDemandRequestWrapper";
 
 export class WrapperBuilder {
@@ -27,12 +24,6 @@ export class WrapperBuilder {
       dataPackagesRequestParams,
       urls
     ).overwriteEthersContract(this.baseContract);
-  }
-
-  usingStorageProxyMockDataPackages(mockDataPackages: MockDataPackageConfig[]) {
-    return new MockStorageProxyWrapper(mockDataPackages).overwriteEthersContract(
-      this.baseContract
-    );
   }
 
   usingMockDataPackages(mockDataPackages: MockDataPackageConfig[]) {
