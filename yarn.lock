@@ -1148,12 +1148,12 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
-"@balancer-labs/sdk@^0.1.45":
-  version "0.1.45"
-  resolved "https://registry.yarnpkg.com/@balancer-labs/sdk/-/sdk-0.1.45.tgz#18624774d7dda1b05bdf6691eaf58c5bc1fc92fb"
-  integrity sha512-j8Nm6XwduAIopMaq5u6h9uOJ16a+UQOAP1z/bv12TWmBUFmZFzNMcnd65nVxx0lj85KJ0V/VNCilgmsJaGJMsg==
+"@balancer-labs/sdk@^0.1.47":
+  version "0.1.47"
+  resolved "https://registry.yarnpkg.com/@balancer-labs/sdk/-/sdk-0.1.47.tgz#9446e56624ec82fa06a82da433168d4d483d6ee7"
+  integrity sha512-DeDtqARX2t8e44ZqnhXJqoY6wyvr9WxQiNgVQ7GMCHXLsyj3eWlcdKFuHcKreVVWLMIfEZm93Ukc8UU428DJPQ==
   dependencies:
-    "@balancer-labs/sor" "^4.0.1-beta.18"
+    "@balancer-labs/sor" "^4.1.0-beta.0"
     "@balancer-labs/typechain" "^1.0.0"
     "@ethersproject/abi" "^5.4.0"
     "@ethersproject/abstract-signer" "^5.4.0"
@@ -1170,10 +1170,10 @@
     json-to-graphql-query "^2.2.4"
     lodash "^4.17.21"
 
-"@balancer-labs/sor@^4.0.1-beta.18":
-  version "4.0.1-beta.18"
-  resolved "https://registry.yarnpkg.com/@balancer-labs/sor/-/sor-4.0.1-beta.18.tgz#811af4b41f8e9f670c1a38e5f5f2f131d28178ed"
-  integrity sha512-tNY9OIptCVCysSYY6QKBIpJleM66DMKRK78t1WOG1boJbay3kCm+x9R4+6LN5n05gDYM0PE2QwCPytOxzkrCfA==
+"@balancer-labs/sor@^4.1.0-beta.0":
+  version "4.1.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@balancer-labs/sor/-/sor-4.1.0-beta.0.tgz#9d22921bd805381b9d78cff5e5e62331b48c4e5e"
+  integrity sha512-NwnaB307u+3NCwhV4ro/jiyWgsaJQ2F7mcjBnUYrtXjDzGCMCM+0+mW21hnSBprJYZ55T6LEFAQAK0ADDT/uLQ==
   dependencies:
     isomorphic-fetch "^2.2.1"
 
@@ -5996,7 +5996,17 @@ arweave@^1.10.13, arweave@^1.10.23, arweave@^1.10.5, arweave@^1.11.4:
     bignumber.js "^9.0.2"
     util "^0.12.4"
 
-arweave@^1.10.15, arweave@^1.10.16, arweave@^1.12.2:
+arweave@^1.10.15, arweave@^1.10.16:
+  version "1.12.4"
+  resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.12.4.tgz#08a4fcbda250c490150cb094ce57119eb1e46b3b"
+  integrity sha512-W5z7hb9/ZP2vy6BiYC+2obfGMhlhz/DaCkEXpkj/4hjaecWYUnvlUX5aCI2i0+lCrzbBUFbz+maDihUpBrdZpg==
+  dependencies:
+    arconnect "^0.4.2"
+    asn1.js "^5.4.1"
+    base64-js "^1.5.1"
+    bignumber.js "^9.0.2"
+
+arweave@^1.12.2:
   version "1.12.2"
   resolved "https://registry.yarnpkg.com/arweave/-/arweave-1.12.2.tgz#e99fb3db0529043ae0c67a89587751f8640058dd"
   integrity sha512-gm82sbUd3AqiRxZ9hWRBnC2mRff+kCuVw1cSdMwhUmVyeSgvDxi5GkdCKHUm1tMvu59f45OcZRiL1yEIvvJY2Q==
@@ -7775,13 +7785,6 @@ cli-cursor@^3.1.0:
   integrity sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw==
   dependencies:
     restore-cursor "^3.1.0"
-
-cli-progress@^3.11.2:
-  version "3.11.2"
-  resolved "https://registry.yarnpkg.com/cli-progress/-/cli-progress-3.11.2.tgz#f8c89bd157e74f3f2c43bcfb3505670b4d48fc77"
-  integrity sha512-lCPoS6ncgX4+rJu5bS3F/iCz17kZ9MPZ6dpuTtI0KXKABkhyXIdYB3Inby1OpaGti3YlI3EeEkM9AuWpelJrVA==
-  dependencies:
-    string-width "^4.2.3"
 
 cli-spinners@^2.5.0:
   version "2.7.0"
