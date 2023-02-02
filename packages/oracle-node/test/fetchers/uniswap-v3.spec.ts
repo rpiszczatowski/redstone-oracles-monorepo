@@ -1,19 +1,21 @@
+import { closeLocalLevelDB, setupLocalDb } from "../../src/db/local-db";
 import fetchers from "../../src/fetchers/index";
 import {
   mockFetcherResponse,
   mockFetcherResponseWithFunction,
+  saveMockPriceInLocalDb,
 } from "./_helpers";
 
 const pathToExampleResponse =
-  "./mocks/responses/uniswap-v3-example-response.json";
+  "../../src/fetchers/uniswap-v3/uniswap-v3-example-response.json";
 const expectedResult = [
   {
     symbol: "OHM",
-    value: 9.918039144650795,
+    value: 9.65277773152638,
   },
   {
     symbol: "UNI",
-    value: 6.574866593866394,
+    value: 6.395158890069053,
   },
 ];
 
@@ -22,13 +24,22 @@ jest.mock("axios");
 describe("uniswap V3 fetcher", () => {
   const sut = fetchers["uniswap-v3"];
 
-  it("should properly fetch data", async () => {
+  beforeAll(async () => {
+    setupLocalDb();
+    await saveMockPriceInLocalDb(1570.82, "ETH");
+  });
+
+  afterAll(async () => {
+    await closeLocalLevelDB();
+  });
+
+  test("should properly fetch data", async () => {
     mockFetcherResponse(pathToExampleResponse);
     const result = await sut.fetchAll(["OHM", "UNI"]);
     expect(result).toEqual(expectedResult);
   });
 
-  it("should retry data fetching", async () => {
+  test("should retry data fetching", async () => {
     const exampleResponse = require(pathToExampleResponse);
     let tryCounter = 0;
     const getResponse = () => {
@@ -45,7 +56,7 @@ describe("uniswap V3 fetcher", () => {
     expect(tryCounter).toEqual(2);
   });
 
-  it("should fetch only well defined tokens", async () => {
+  test("should fetch only defined tokens", async () => {
     mockFetcherResponse(pathToExampleResponse);
     const result = await sut.fetchAll(["OHM", "UNI", "FRAX"]);
     expect(result).toEqual(expectedResult);

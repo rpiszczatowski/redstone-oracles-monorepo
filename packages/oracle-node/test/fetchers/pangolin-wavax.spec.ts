@@ -12,7 +12,7 @@ const expectedResult = [
     value: 1.932385477521399,
   },
   {
-    symbol: "SNOB",
+    symbol: "QI",
     value: 1.1545442496079128,
   },
   {
@@ -24,11 +24,11 @@ const expectedResult = [
     value: 3.0086266440424607,
   },
   {
-    symbol: "SHERPA",
+    symbol: "YAK",
     value: 2.531574131043456,
   },
   {
-    symbol: "JOE",
+    symbol: "PTP",
     value: 1.454891278286737,
   },
 ];
@@ -45,11 +45,11 @@ describe("pangolin-wavax fetcher", () => {
     // When
     const result = await sut.fetchAll([
       "PNG",
-      "SNOB",
+      "QI",
       "SPORE",
       "XAVA",
-      "SHERPA",
-      "JOE",
+      "YAK",
+      "PTP",
     ]);
 
     // Then
@@ -73,11 +73,11 @@ describe("pangolin-wavax fetcher", () => {
     // When
     const result = await sut.fetchAll([
       "PNG",
-      "SNOB",
+      "QI",
       "SPORE",
       "XAVA",
-      "SHERPA",
-      "JOE",
+      "YAK",
+      "PTP",
     ]);
 
     // Then
