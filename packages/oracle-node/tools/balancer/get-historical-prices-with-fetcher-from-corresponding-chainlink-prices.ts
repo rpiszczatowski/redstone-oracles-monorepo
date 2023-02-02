@@ -1,7 +1,9 @@
-import { range } from "../utils";
 import fs from "fs";
-import cliProgress from "cli-progress";
-import { BalancerFetcher } from "../../src/fetchers/balancer/BalancerFetcher";
+import { BalancerFetcherHistorical } from "../../src/fetchers/balancer/historical/BalancerFetcherHistorical";
+import { saveJSON } from "../common/fs-utils";
+
+const CHAINLINK_PRICES_FILE_PATH = "chainlink-prices.json";
+const BATCH_SIZE = 100;
 
 interface PriceWithBlockNumber {
   price: string;
@@ -13,23 +15,18 @@ const pools = [
 ];
 
 const getHistoricalPrices = async (pool: string) => {
-  let fetcher = new BalancerFetcher(pool);
   let prices: PriceWithBlockNumber[] = [];
 
-  let filePrices = readPrices("chainlink-prices-3.json");
+  let filePrices = readPrices(CHAINLINK_PRICES_FILE_PATH);
 
-  let i = 0;
+  let filePriceIterator = 0;
 
-  while (i < filePrices.length) {
-    let promises = range(BigInt(i), BigInt(i) + BigInt(100), BigInt(1)).map(
-      (timestamp: any) => {
-        return fetcher.fetchAll(
-          ["OHM"],
-          undefined,
-          Number(timestamp.toString())
-        );
-      }
-    );
+  while (filePriceIterator < filePrices.length) {
+    let promises = [...Array(BATCH_SIZE).keys()].map((timestamp: number) => {
+      let fetcher = new BalancerFetcherHistorical(pool, timestamp);
+
+      return fetcher.fetchAll(["OHM"]);
+    });
     await Promise.all(promises)
       .then((results) => {
         results.forEach(({ result }: any) => {});
@@ -37,16 +34,11 @@ const getHistoricalPrices = async (pool: string) => {
       .catch(function (err) {
         console.error(err);
       });
-    i += 100;
+    filePriceIterator += 100;
   }
   return prices;
 };
 
-const writeResults = (pool: string, results: any) => {
-  console.log("Saving results to file");
-  let json = JSON.stringify(results);
-  fs.writeFile(`results-${pool}.json`, json, "utf8", () => {});
-};
 const readPrices = (file: string) => {
   console.log("Reading price file");
   return JSON.parse(fs.readFileSync(file, "utf-8"));
@@ -55,7 +47,7 @@ const readPrices = (file: string) => {
 async function main() {
   for (const pool of pools) {
     const prices = await getHistoricalPrices(pool);
-    writeResults(pool, prices);
+    saveJSON(prices, `prices-${pool}.json`);
   }
 }
 main();
