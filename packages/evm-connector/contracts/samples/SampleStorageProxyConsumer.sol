@@ -35,4 +35,12 @@ contract SampleStorageProxyConsumer {
   function getOracleValue(bytes32 dataFeedId) public view returns (uint256) {
     return storageProxy.getOracleValue(dataFeedId);
   }
+
+  function getOracleValues(bytes32[] memory dataFeedIds) public view returns (uint256[] memory) {
+    uint256[] memory dataValues = new uint256[](dataFeedIds.length);
+    for (uint256 i = 0; i < dataFeedIds.length; i++) {
+      dataValues[i] = storageProxy.getOracleValue(dataFeedIds[i]);
+    }
+    return dataValues;
+  }
 }

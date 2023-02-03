@@ -58,9 +58,117 @@ describe("SampleStorageProxy", function () {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
 
-    const fetchedValue = await wrappedContract.fetchValueUsingProxyDryRun(ethDataFeedId);
+    const fetchedValue = await wrappedContract.fetchValueUsingProxyDryRun(
+      ethDataFeedId
+    );
 
     expect(fetchedValue).to.eq(expectedNumericValues.ETH);
+  });
+
+  it("Should return correct structure containing oracle value using dry run", async () => {
+    const wrappedContract =
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
+
+    const fetchedValue = await wrappedContract.fetchStructUsingProxyDryRun(
+      ethDataFeedId
+    );
+
+    const expectedValue = [
+      "sample",
+      ethers.BigNumber.from(expectedNumericValues.ETH),
+    ];
+
+    expect(fetchedValue).to.deep.equal(expectedValue);
+  });
+
+  it("Should return correct oracle values for array of values using dry run", async () => {
+    const mockNumericPackages = getRange({
+      start: 0,
+      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
+    }).map((i) =>
+      getMockNumericPackage({
+        dataPoints,
+        mockSignerIndex: i as MockSignerIndex,
+      })
+    );
+
+    const wrappedContract =
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
+
+    const dataFeedIds = dataPoints.map((dataPoint) => dataPoint.dataFeedId);
+    const dataFeedIdsBytes = dataFeedIds.map(convertStringToBytes32);
+
+    const dataValues = dataPoints.map((dataPoint) =>
+      ethers.BigNumber.from(dataPoint.value * 10 ** 8)
+    );
+
+    const fetchedValues = await wrappedContract.fetchValuesUsingProxyDryRun(
+      dataFeedIdsBytes
+    );
+
+    expect(dataValues).to.deep.eq(fetchedValues);
+  });
+
+  it("Should return correct array of structures containing oracle values using dry run", async () => {
+    const mockNumericPackages = getRange({
+      start: 0,
+      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
+    }).map((i) =>
+      getMockNumericPackage({
+        dataPoints,
+        mockSignerIndex: i as MockSignerIndex,
+      })
+    );
+
+    const wrappedContract =
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
+
+    const dataFeedIds = dataPoints.map((dataPoint) => dataPoint.dataFeedId);
+    const dataFeedIdsBytes = dataFeedIds.map(convertStringToBytes32);
+
+    const fetchedValues =
+      await wrappedContract.fetchArrayOfStructsUsingProxyDryRun(
+        dataFeedIdsBytes
+      );
+
+    const dataValues = dataPoints.map((dataPoint) => [
+      "sample",
+      ethers.BigNumber.from(dataPoint.value * 10 ** 8),
+    ]);
+
+    expect(dataValues).to.deep.eq(fetchedValues);
+  });
+
+  it("Should return correct structure of arrays containing oracle values using dry run", async () => {
+    const mockNumericPackages = getRange({
+      start: 0,
+      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
+    }).map((i) =>
+      getMockNumericPackage({
+        dataPoints,
+        mockSignerIndex: i as MockSignerIndex,
+      })
+    );
+
+    const wrappedContract =
+      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
+
+    const dataFeedIds = dataPoints.map((dataPoint) => dataPoint.dataFeedId);
+    const dataFeedIdsBytes = dataFeedIds.map(convertStringToBytes32);
+
+    const fetchedValues =
+      await wrappedContract.fetchStructOfArraysUsingProxyDryRun(
+        dataFeedIdsBytes
+      );
+
+    const names = dataPoints.map((dataPoint) => "sample");
+    const values = dataPoints.map((dataPoint) =>
+      ethers.BigNumber.from(dataPoint.value * 10 ** 8)
+    );
+
+    const dataValuesArray = [names, values];
+
+    expect(dataValuesArray).to.deep.eq(fetchedValues);
   });
 
   it("Should return correct oracle value for one asset", async () => {
