@@ -19,13 +19,13 @@ contract RedstoneToken is ERC20 {
   }
 
   function mint(address account, uint256 amount) external {
-    require(msg.sender == minter, "RedstoneToken: minting by an unatuthorized address");
+    require(msg.sender == minter, "RedstoneToken: minting by an unauthorized address");
     _mint(account, amount);
     require(totalSupply() <= MAX_SUPPLY, "RedstoneToken: cannot mint more than MAX SUPPLY");
   }
 
   function updateMinter(address newMinter) external {
-    require(msg.sender == minter, "RedstoneToken: minter update by an unatuthorized address");
+    require(msg.sender == minter, "RedstoneToken: minter update by an unauthorized address");
     minter = newMinter;
   }
 }
