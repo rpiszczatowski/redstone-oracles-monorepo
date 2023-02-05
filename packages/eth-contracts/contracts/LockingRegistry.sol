@@ -42,8 +42,8 @@ contract LockingRegistry is Initializable {
   }
 
   function requestUnlock(uint256 amountToUnlock) external {
-    UserLockingDetails storage userLockingDetails = _lockingDetailsForUsers[msg.sender];
     require(amountToUnlock > 0, "Amount to unlock must be a positive number");
+    UserLockingDetails storage userLockingDetails = _lockingDetailsForUsers[msg.sender];
     require(
       userLockingDetails.lockedAmount >= amountToUnlock,
       "Can not request to unlock more than locked"
@@ -59,12 +59,11 @@ contract LockingRegistry is Initializable {
 
   function completeUnlock() external {
     UserLockingDetails storage userLockingDetails = _lockingDetailsForUsers[msg.sender];
-    uint256 amountToUnlock = userLockingDetails.pendingAmountToUnlock;
-
     require(
       block.timestamp > userLockingDetails.unlockOpeningTimestampSeconds,
       "Unlocking is not opened yet"
     );
+    uint256 amountToUnlock = userLockingDetails.pendingAmountToUnlock;
     require(amountToUnlock > 0, "User hasn't requested unlock before");
     // If there is not enough tokens because of slashing user must request unlock again
     require(amountToUnlock <= userLockingDetails.lockedAmount, "Can not unlock more than locked");
