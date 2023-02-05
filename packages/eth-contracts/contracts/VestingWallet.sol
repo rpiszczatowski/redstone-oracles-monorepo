@@ -88,7 +88,7 @@ contract VestingWallet is Initializable {
       token.balanceOf(address(this)) >= amount,
       "VestingWallet: there is not enough tokens to lock"
     );
-    token.approve(address(lockingRegistry), amount);
+    require(token.approve(address(lockingRegistry), amount), "Approval failed");
     lockingRegistry.lock(amount);
   }
 
