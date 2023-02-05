@@ -52,7 +52,7 @@ contract DisputeResolutionEngine {
   mapping(uint256 => mapping(address => Vote)) private _votes; // disputeId => (address => Vote)
   LockingRegistry private _lockingRegistry;
 
-  constructor(address redstoneTokenAddress) {
+  constructor(IERC20 redstoneTokenAddress) {
     _lockingRegistry = new LockingRegistry();
     _lockingRegistry.initialize(redstoneTokenAddress, address(this), UNLOCK_DELAY_SECONDS);
     _redstoneToken = IERC20(redstoneTokenAddress);

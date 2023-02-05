@@ -25,7 +25,7 @@ contract LockingRegistry is Initializable {
   mapping(address => UserLockingDetails) private _lockingDetailsForUsers;
 
   function initialize(
-    address lockedTokenAddress,
+    IERC20 lockedTokenAddress,
     address authorisedSlasher,
     uint256 delayForUnlockingInSeconds
   ) public initializer {
