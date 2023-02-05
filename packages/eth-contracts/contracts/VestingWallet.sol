@@ -74,7 +74,7 @@ contract VestingWallet is Initializable {
    *
    * Emits a {TokensReleased} event.
    */
-  function release(uint256 amount) public virtual {
+  function release(uint256 amount) public virtual onlyBeneficiary {
     uint256 available = getReleasable();
     require(available >= amount, "VestingWallet: there is not enough tokens to release");
 
@@ -82,7 +82,7 @@ contract VestingWallet is Initializable {
     emit TokensReleased(amount);
   }
 
-  function lock(uint256 amount) external {
+  function lock(uint256 amount) external onlyBeneficiary {
     require(
       token.balanceOf(address(this)) >= amount,
       "VestingWallet: there is not enough tokens to lock"
@@ -91,11 +91,16 @@ contract VestingWallet is Initializable {
     lockingRegistry.lock(amount);
   }
 
-  function requestUnlock(uint256 amount) external {
+  function requestUnlock(uint256 amount) external onlyBeneficiary {
     lockingRegistry.requestUnlock(amount);
   }
 
-  function completeUnlock() external {
+  function completeUnlock() external onlyBeneficiary {
     lockingRegistry.completeUnlock();
+  }
+
+  modifier onlyBeneficiary() {
+    require(msg.sender == beneficiary, "VestingWallet: only beneficiary can call this function");
+    _;
   }
 }
