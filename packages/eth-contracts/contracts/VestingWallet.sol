@@ -14,7 +14,7 @@ import "./LockingRegistry.sol";
  * and the vesting period which lineary unlocks deposited tokens.
  */
 contract VestingWallet is Initializable {
-  event TokensReleased(uint256 amount);
+  event TokensRelease(uint256 amount);
 
   IERC20 public token;
   address public beneficiary;
@@ -81,7 +81,7 @@ contract VestingWallet is Initializable {
     require(available >= amount, "VestingWallet: there is not enough tokens to release");
 
     require(token.transfer(beneficiary, amount));
-    emit TokensReleased(amount);
+    emit TokensRelease(amount);
   }
 
   function lock(uint256 amount) external onlyBeneficiary {

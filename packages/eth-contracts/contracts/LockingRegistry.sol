@@ -16,8 +16,8 @@ contract LockingRegistry is Initializable {
     uint256 unlockOpeningTimestampSeconds;
   }
 
-  event UnlockRequested(address user, UserLockingDetails lockingDetails);
-  event UnlockCompleted(address user, UserLockingDetails lockingDetails);
+  event UnlockRequest(address indexed user, UserLockingDetails lockingDetails);
+  event Unlock(address indexed user, UserLockingDetails lockingDetails);
 
   uint256 private _delayForUnlockingInSeconds;
   IERC20 private _lockedToken;
@@ -54,7 +54,7 @@ contract LockingRegistry is Initializable {
       block.timestamp +
       _delayForUnlockingInSeconds;
 
-    emit UnlockRequested(msg.sender, userLockingDetails);
+    emit UnlockRequest(msg.sender, userLockingDetails);
   }
 
   function completeUnlock() external {
@@ -73,7 +73,7 @@ contract LockingRegistry is Initializable {
     userLockingDetails.pendingAmountToUnlock = 0;
     require(_lockedToken.transfer(msg.sender, amountToUnlock), "Transfer failed");
 
-    emit UnlockCompleted(msg.sender, userLockingDetails);
+    emit Unlock(msg.sender, userLockingDetails);
   }
 
   function getUserLockingDetails(address addr) public view returns (UserLockingDetails memory) {

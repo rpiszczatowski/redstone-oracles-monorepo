@@ -11,6 +11,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract RedstoneToken is ERC20 {
   uint256 constant MAX_SUPPLY = 50_000_000e18;
 
+  event MinterUpdate(address indexed newMinter);
+
   address public minter;
 
   constructor(uint256 initialSupply) ERC20("Redstone", "REDSTONE") {
@@ -27,5 +29,6 @@ contract RedstoneToken is ERC20 {
   function updateMinter(address newMinter) external {
     require(msg.sender == minter, "RedstoneToken: minter update by an unauthorized address");
     minter = newMinter;
+    emit MinterUpdate(newMinter);
   }
 }
