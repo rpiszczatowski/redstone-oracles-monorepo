@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./LockingRegistry.sol";
 
@@ -16,7 +16,7 @@ import "./LockingRegistry.sol";
 contract VestingWallet is Initializable {
   event TokensReleased(uint256 amount);
 
-  ERC20 public token;
+  IERC20 public token;
   address public beneficiary;
   LockingRegistry public lockingRegistry;
   uint256 public allocation;
@@ -25,19 +25,19 @@ contract VestingWallet is Initializable {
   uint64 public vestingDuration;
 
   function initialize(
-    address vestingToken_,
+    IERC20 vestingToken_,
     address beneficiaryAddress_,
-    address lockingRegistry_,
+    LockingRegistry lockingRegistry_,
     uint256 allocation_,
     uint64 startTimestamp_,
     uint64 cliffDurationSeconds_,
     uint64 vestingDurationSeconds_
   ) public initializer {
-    require(vestingToken_ != address(0), "VestingWallet: vesting token is zero address");
+    require(address(vestingToken_) != address(0), "VestingWallet: vesting token is zero address");
     require(beneficiaryAddress_ != address(0), "VestingWallet: beneficiary is zero address");
     require(allocation_ > 0, "VestingWallet: allocation is zero");
 
-    token = ERC20(vestingToken_);
+    token = vestingToken_;
     beneficiary = beneficiaryAddress_;
     lockingRegistry = LockingRegistry(lockingRegistry_);
     allocation = allocation_;
