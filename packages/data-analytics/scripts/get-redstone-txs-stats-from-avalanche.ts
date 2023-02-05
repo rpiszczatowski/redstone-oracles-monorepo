@@ -2,9 +2,9 @@ import prompts from "prompts";
 import Web3 from "web3";
 import cliProgress from "cli-progress";
 
-
 const REDSTONE_MARKER_HEX = "000002ed57011e0000";
-const AVAX_URL = "https://api.avax.network/ext/bc/C/rpc"
+const AVAX_URL = "https://api.avax.network/ext/bc/C/rpc";
+const BATCH_SIZE = 100;
 
 const progressBar = new cliProgress.SingleBar(
   {},
@@ -12,8 +12,7 @@ const progressBar = new cliProgress.SingleBar(
 );
 const web3 = new Web3(AVAX_URL);
 
-
-const getPromptQuestions = (latestBlockNumber: number) : any[] => {
+const getPromptQuestions = (latestBlockNumber: number): any[] => {
   return [
     {
       type: "number",
@@ -21,30 +20,6 @@ const getPromptQuestions = (latestBlockNumber: number) : any[] => {
       message: `How many blocks you want to query? (Current Block Number is: ${latestBlockNumber}`,
     },
   ];
-};
-
-const range = (start: number, stop: number, step: number) => {
-
-  if (typeof stop == "undefined") {
-    stop = start;
-    start = 0;
-  }
-
-  if (typeof step == "undefined") {
-    step = 1;
-  }
-
-  if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
-    return [];
-  }
-
-  let result: number[] = [];
-
-  for (let loopIterator = start; step > 0 ? loopIterator < stop : loopIterator > stop; loopIterator += step) {
-    result.push(loopIterator);
-  }
-
-  return result;
 };
 
 async function getTransactionsByCallData(
@@ -63,7 +38,7 @@ async function getTransactionsByCallData(
   progressBar.start(latestBlock - loopIterator, 0);
 
   while (loopIterator < latestBlock) {
-    const promises = range(loopIterator, loopIterator + blockPerPage, 1).map((block) =>
+    const promises = [...Array(BATCH_SIZE).keys()].map((block) =>
       web3.eth.getBlock(block, true)
     );
 
@@ -72,9 +47,18 @@ async function getTransactionsByCallData(
       results.forEach((result) => blockResults.push(result));
     });
 
-    for (let blockIterator = 0; blockIterator < blockResults.length; blockIterator++) {
-      for (let transactionIterator = 0; transactionIterator < blockResults[blockIterator].transactions.length; transactionIterator++) {
-        const tx = blockResults[blockIterator].transactions[transactionIterator];
+    for (
+      let blockIterator = 0;
+      blockIterator < blockResults.length;
+      blockIterator++
+    ) {
+      for (
+        let transactionIterator = 0;
+        transactionIterator < blockResults[blockIterator].transactions.length;
+        transactionIterator++
+      ) {
+        const tx =
+          blockResults[blockIterator].transactions[transactionIterator];
         if (tx.input.endsWith(callData)) {
           matchingTransactions.push(tx);
         }
