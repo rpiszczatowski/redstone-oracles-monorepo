@@ -1,23 +1,27 @@
-import { range } from "../utils";
 import fs from "fs";
 import graphProxy from "../../src/utils/graph-proxy";
+import { saveJSON } from "../common/fs-utils";
 
-interface PriceWithBlockNumber {
-  price: string;
-  blockNumber: number;
-}
 const pools = [
   "0xd1ec5e215e8148d76f4460e4097fd3d5ae0a35580002000000000000000003d3",
   "0x76fcf0e8c7ff37a47a799fa2cd4c13cde0d981c90002000000000000000003d2",
 ];
 const url = "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2";
+const BATCH_SIZE = 100;
+
+interface BalancerPrices {
+  token0: number;
+  token1: number;
+  totalLiquidity: number;
+  blockNumber: number;
+}
 
 Promise.all = function promiseAllIterative(values: any): any {
   return new Promise((resolve, reject) => {
     let results: any[] = [];
     let completed = 0;
 
-    values.forEach((value: any, index: any) => {
+    values.forEach((value: any[], index: number) => {
       Promise.resolve(value[0])
         .then((result) => {
           results[index] = [result, value[1]];
@@ -32,36 +36,28 @@ Promise.all = function promiseAllIterative(values: any): any {
 };
 
 const getHistoricalPrices = async (pool: string) => {
-  let prices: PriceWithBlockNumber[] = [];
+  const filePrices = readPrices("chainlink-prices-with-block.json");
+  let balancerPrices: BalancerPrices[] = [];
 
-  let filePrices = readPrices("chainlink-prices-with-block.json");
-
-  let balancerPrices: any = [];
-
-  let i = 0;
-  while (i < filePrices.length - 100) {
-    let promises = range(BigInt(i), BigInt(i) + BigInt(100), BigInt(1)).map(
-      (index: any) => {
-        return [
-          graphProxy.executeQuery(
-            url,
-            getGraphQuery(
-              pool,
-              Number(filePrices[index].blockNumber.toString())
-            )
-          ),
-          filePrices[index].blockNumber.toString(),
-        ];
-      }
-    );
+  let priceIndex = 0;
+  while (priceIndex < filePrices.length - BATCH_SIZE) {
+    const promises = [...Array(BATCH_SIZE).keys()].map((index: number) => {
+      return [
+        graphProxy.executeQuery(
+          url,
+          getGraphQuery(pool, Number(filePrices[index].blockNumber.toString()))
+        ),
+        filePrices[index].blockNumber.toString(),
+      ];
+    });
     await Promise.all(promises)
       .then((results) => {
         results.forEach((result) => {
           if (result[0].data.pool == null) {
           } else {
-            let tokens = result[0].data.pool.tokens;
-            let [token0, token1] = tokens;
-            let totalLiquidity = result[0].data.pool.totalLiquidity;
+            const tokens = result[0].data.pool.tokens;
+            const [token0, token1] = tokens;
+            const totalLiquidity = result[0].data.pool.totalLiquidity;
             balancerPrices.push({
               token0: token0.balance,
               token1: token1.balance,
@@ -74,8 +70,7 @@ const getHistoricalPrices = async (pool: string) => {
       .catch(function (err) {
         console.error(err);
       });
-    i += 100;
-    console.log(i / filePrices.length);
+    priceIndex += BATCH_SIZE;
   }
   return balancerPrices;
 };
@@ -93,11 +88,6 @@ const getGraphQuery = (poolId: string, blockNumber: number) => {
     }
   }`;
 };
-const writeResults = (pool: string, results: any) => {
-  console.log("Saving results to file");
-  let json = JSON.stringify(results);
-  fs.writeFile(`results-combined-${pool}.json`, json, "utf8", () => {});
-};
 const readPrices = (file: string) => {
   console.log("Reading price file");
   return JSON.parse(fs.readFileSync(file, "utf-8"));
@@ -105,11 +95,6 @@ const readPrices = (file: string) => {
 
 async function main() {
   const prices = await getHistoricalPrices(pools[1]);
-  writeResults(pools[1], prices);
-  return;
-  for (const pool of pools) {
-    const prices = await getHistoricalPrices(pool);
-    writeResults(pool, prices);
-  }
+  saveJSON(prices, `results-${pools[1]}.json`);
 }
 main();

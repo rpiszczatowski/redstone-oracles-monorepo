@@ -1,21 +1,28 @@
 import { SushiswapFetcher } from "../SushiswapFetcher";
 import graphProxy from "../../../utils/graph-proxy";
+import axios from "axios";
+
+const timestampToBlockProviderUrl = "https://coins.llama.fi/block/ethereum/";
 
 export class SushiswapFetcherHistorical extends SushiswapFetcher {
-  private blockNumber: number;
+  private timestamp: number;
 
-  constructor(blockNumber: number) {
+  constructor(timestamp: number) {
     super();
-    this.blockNumber = blockNumber;
+    this.timestamp = timestamp;
   }
 
   async fetchData(ids: string[]) {
     const pairIds = this.convertSymbolsToPairIds(ids, this.symbolToPairIdObj);
 
+    const blockNumber = (
+      await axios.get(timestampToBlockProviderUrl + this.timestamp)
+    ).data.height;
+
     const query = `{
-      pairs(block: {number: ${
-        this.blockNumber
-      }} where: { id_in: ${JSON.stringify(pairIds)} }) {
+      pairs(block: {number: ${blockNumber}} where: { id_in: ${JSON.stringify(
+      pairIds
+    )} }) {
         id
         token0 {
           symbol
