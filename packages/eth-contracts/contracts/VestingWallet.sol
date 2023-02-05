@@ -63,10 +63,11 @@ contract VestingWallet is Initializable {
    * @dev Getter for the amount of releasable tokens.
    */
   function getReleasable() public view virtual returns (uint256) {
+    uint256 unvestedAmount = getUnvestedAmount(block.timestamp);
     return
-      token.balanceOf(address(this)) < getUnvestedAmount(block.timestamp)
+      token.balanceOf(address(this)) < unvestedAmount
         ? 0
-        : token.balanceOf(address(this)) - getUnvestedAmount(block.timestamp);
+        : token.balanceOf(address(this)) - unvestedAmount;
   }
 
   /**
