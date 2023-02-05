@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 
-pragma solidity ^0.8.4;
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -17,7 +17,7 @@ contract RedstoneToken is ERC20 {
     _mint(msg.sender, initialSupply);
     minter = msg.sender;
   }
-  
+
   function mint(address account, uint256 amount) external {
     require(msg.sender == minter, "RedstoneToken: minting by an unatuthorized address");
     _mint(account, amount);
