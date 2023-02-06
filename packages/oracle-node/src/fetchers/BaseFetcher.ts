@@ -15,11 +15,7 @@ export abstract class BaseFetcher implements Fetcher {
   }
 
   // All the abstract methods below must be implemented in fetchers
-  abstract fetchData(
-    ids: string[],
-    opts?: FetcherOpts,
-    timestamp?: number
-  ): Promise<any>;
+  abstract fetchData(ids: string[], opts?: FetcherOpts): Promise<any>;
   abstract extractPrices(
     response: any,
     ids?: string[],
