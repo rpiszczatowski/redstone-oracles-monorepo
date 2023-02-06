@@ -1,5 +1,5 @@
 import fetchers from "../../src/fetchers/index";
-import { getKaikoMockResponse } from "./mocks/get-kaiko-mock-response";
+import { getKaikoMockResponse } from "./mocks/responses/get-kaiko-mock-response";
 import { mockFetcherResponseOnceWithFunction } from "./_helpers";
 
 jest.mock("axios");
