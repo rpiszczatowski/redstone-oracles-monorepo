@@ -27,6 +27,7 @@ import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
 import { LiquidityFetcher } from "./liquidity/LiquidityFetcher";
+import balancerFetchers from "./balancer/all-balancer-fetchers";
 
 const AVALANCHE_NETWORK_NAME = "Avalanche Network";
 const AVALANCHE_CHAIN_ID = 43114;
@@ -62,5 +63,6 @@ export default {
   liquidity: new LiquidityFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
+  ...balancerFetchers,
   ...twapFetchers,
 } as { [name: string]: Fetcher };

@@ -37,13 +37,12 @@ export abstract class BaseFetcher implements Fetcher {
 
   async fetchAll(
     symbols: string[],
-    opts?: FetcherOpts,
-    timestamp?: number
+    opts?: FetcherOpts
   ): Promise<PriceDataFetched[]> {
     // Fetching data
     const fetchStartTime = Date.now();
     const ids = symbols.map((symbol) => this.convertSymbolToId(symbol));
-    let response = await this.fetchData(ids, opts, timestamp);
+    let response = await this.fetchData(ids, opts);
 
     // Retrying data fetching if needed
     const shouldRetry =
@@ -52,7 +51,7 @@ export abstract class BaseFetcher implements Fetcher {
       Date.now() - fetchStartTime <= MAX_RESPONSE_TIME_TO_RETRY_FETCHING_MS;
     if (shouldRetry) {
       this.logger.info("Retrying to fetch data");
-      response = await this.fetchData(ids, opts, Number(timestamp!.toString()));
+      response = await this.fetchData(ids, opts);
     }
 
     // Validating response
