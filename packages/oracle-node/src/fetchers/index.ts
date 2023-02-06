@@ -25,6 +25,7 @@ import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { config } from "../config";
 import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
+import balancerFetchers from "./balancer/all-balancer-fetchers";
 
 const AVALANCHE_NETWORK_NAME = "Avalanche Network";
 const AVALANCHE_CHAIN_ID = 43114;
@@ -58,5 +59,6 @@ export default {
   kaiko: new KaikoFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
+  ...balancerFetchers,
   ...twapFetchers,
 } as { [name: string]: Fetcher };

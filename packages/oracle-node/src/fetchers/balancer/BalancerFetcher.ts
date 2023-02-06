@@ -8,85 +8,84 @@ import {
 import { config } from "../../config";
 import { BaseFetcher } from "../BaseFetcher";
 import { getLastPrice } from "../../db/local-db";
+import balancerPairs from "./balancer-pairs.json";
 
 const balancerConfig: BalancerSdkConfig = {
   network: Network.MAINNET,
   rpcUrl: config.ethMainRpcUrl as string,
 };
 
+interface SpotPrice {
+  id: string;
+  price: number;
+}
+
 export class BalancerFetcher extends BaseFetcher {
-  protected poolId: string;
-  protected supportedToken?: string;
-  protected pool?: PoolWithMethods;
   protected balancer: BalancerSDK;
 
-  constructor(poolId: string) {
-    super(`balancer-${poolId}`);
-    this.poolId = poolId;
+  constructor(name: string, protected readonly baseTokenSymbol: string) {
+    super(name);
     this.balancer = new BalancerSDK(balancerConfig);
   }
 
   async fetchData(ids: string[]): Promise<any> {
-    await this.tryInit();
+    const spotPrices: SpotPrice[] = [];
 
-    if (this.hasUnsupportedPairs(ids)) {
-      return {};
-    }
+    const pairIds = this.getPairIdsForAssetIds(ids);
 
     const pairedTokenPrice = await this.getPairedTokenPrice();
-
-    if (pairedTokenPrice === undefined) {
-      this.logger.error(
-        `In order to use source: ${this.name} with poolId ${
-          this.poolId
-        } you need to add ${this.pool!.tokens[1]!.symbol} to manifest`
-      );
-      return {};
+    for (const pairId of pairIds) {
+      const { id, price } = await this.calculatePrice(pairId, pairedTokenPrice);
+      spotPrices.push({ id, price });
     }
-    return await this.calculatePrice(pairedTokenPrice);
+    return spotPrices;
   }
 
-  protected async calculatePrice(pairedTokenPrice: number): Promise<number> {
-    const spotPrice = this.pool?.calcSpotPrice(
-      this.pool.tokens[0].address,
-      this.pool.tokens[1].address
+  protected async calculatePrice(
+    pairId: string,
+    pairedTokenPrice: number
+  ): Promise<SpotPrice> {
+    const pool = await this.balancer.pools.find(pairId);
+    const spotPrice = pool?.calcSpotPrice(
+      pool!.tokens[0].address,
+      pool!.tokens[1].address
     );
-    return pairedTokenPrice / Number(spotPrice);
+    const price = pairedTokenPrice / Number(spotPrice);
+    return { id: this.getSymbol(pool!), price };
+  }
+
+  protected getSymbol(pool: PoolWithMethods): string {
+    return pool.tokens[0].symbol == this.baseTokenSymbol
+      ? pool.tokens[1].symbol!
+      : pool.tokens[0].symbol!;
   }
 
   protected async getPairedTokenPrice() {
-    return getLastPrice(this.pool!.tokens[1]!.symbol as string)!.value;
-  }
-
-  protected hasUnsupportedPairs(ids: string[]) {
-    const unsupportedPairs = this.findUnsupportedTokens(ids);
-
-    if (unsupportedPairs.length === ids.length) {
-      this.logger.error("Requested tokens are not supported for this pool");
-      return true;
-    }
-    if (unsupportedPairs.length > 0) {
-      this.logger.warn(
-        `Symbols: ${unsupportedPairs} not supported in Source: ${this.name} with poolId: ${this.poolId}`
-      );
-    }
-    return false;
-  }
-
-  findUnsupportedTokens(ids: string[]) {
-    return ids.filter((id: string) => id !== this.supportedToken);
-  }
-
-  protected async tryInit() {
-    if (this.pool === null || this.pool === undefined) {
-      this.pool = await this.balancer.pools.find(this.poolId);
-      this.supportedToken = this.pool?.tokens[0].symbol;
-    }
+    return getLastPrice(this.baseTokenSymbol)!.value;
   }
 
   async extractPrices(response: any): Promise<PricesObj> {
     const pricesObj: { [symbol: string]: number } = {};
-    pricesObj[this.supportedToken as string] = response;
+
+    for (const spotPrice of response) {
+      pricesObj[spotPrice.id] = spotPrice.price;
+    }
     return pricesObj;
+  }
+
+  protected getPairIdsForAssetIds(assetIds: string[]): string[] {
+    const pairIds = [];
+
+    for (const pair of balancerPairs) {
+      const symbol0 = pair.tokens[0].symbol;
+      const symbol1 = pair.tokens[1].symbol;
+      const pairIdShouldBeIncluded =
+        (symbol0 == this.baseTokenSymbol && assetIds.includes(symbol1)) ||
+        (symbol1 == this.baseTokenSymbol && assetIds.includes(symbol0));
+      if (pairIdShouldBeIncluded) {
+        pairIds.push(pair.id);
+      }
+    }
+    return pairIds;
   }
 }
