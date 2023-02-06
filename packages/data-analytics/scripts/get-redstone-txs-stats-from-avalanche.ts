@@ -1,5 +1,6 @@
 import prompts from "prompts";
 import Web3 from "web3";
+import { Transaction } from "ethers";
 import cliProgress from "cli-progress";
 
 const REDSTONE_MARKER_HEX = "000002ed57011e0000";
@@ -28,7 +29,7 @@ async function getTransactionsByCallData(
   callData: string,
   blockPerPage = 50
 ) {
-  let matchingTransactions: any[] = [];
+  const matchingTransactions: string[] = [];
 
   const startingBlock = latestBlock - blockCount;
 
@@ -73,7 +74,7 @@ async function getTransactionsByCallData(
   return matchingTransactions;
 }
 
-const countUniqueAddresses = (transactions: any[]) => {
+const countUniqueAddresses = (transactions: Transaction[]) => {
   const addresses = new Set<string>();
   transactions.forEach((tx) => {
     addresses.add(tx.from!);
@@ -90,7 +91,7 @@ const getTotalGasPriceFromTransactions = (transactions: any[]) => {
   return totalGasPrice.toString();
 };
 
-const getCallDataSizeFromTransactions = (transactions: any[]) => {
+const getCallDataSizeFromTransactions = (transactions: Transaction[]) => {
   let totalCallDataSizeInBits = 0;
 
   transactions.forEach((tx: any) => {
