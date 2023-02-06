@@ -17,7 +17,6 @@
   "enableStreamrBroadcaster": false,
   "enableArweaveBackup": false,
   "defaultSource": ["avalanche-evm-fetcher"],
-  "minValidSourcesPercentage": 50,
   "tokens": {
     "YY_AAVE_AVAX": {},
     "YY_PTP_sAVAX": {},

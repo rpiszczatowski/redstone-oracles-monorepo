@@ -17,7 +17,6 @@
   ],
   "enableStreamrBroadcaster": true,
   "enableArweaveBackup": false,
-  "minValidSourcesPercentage": 50,
   "tokens": {
     "ETH": {
       "source": [

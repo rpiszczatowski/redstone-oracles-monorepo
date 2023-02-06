@@ -17,7 +17,6 @@
   "enableStreamrBroadcaster": false,
   "enableArweaveBackup": false,
   "defaultSource": ["custom-urls"],
-  "minValidSourcesPercentage": 50,
   "tokens": {
     "0x031f7bcd73d9f5ed": {
       "customUrlDetails": {

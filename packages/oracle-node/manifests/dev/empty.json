@@ -12,6 +12,5 @@
   "httpBroadcasterURLs": [],
   "enableStreamrBroadcaster": false,
   "enableArweaveBackup": false,
-  "minValidSourcesPercentage": 50,
   "tokens": {}
 }

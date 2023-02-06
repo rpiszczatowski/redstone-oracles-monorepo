@@ -16,7 +16,6 @@
   ],
   "enableStreamrBroadcaster": false,
   "defaultSource": ["coingecko"],
-  "minValidSourcesPercentage": 50,
   "tokens": {
     "AR": {},
     "BTC": {},

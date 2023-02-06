@@ -16,7 +16,6 @@
   ],
   "enableStreamrBroadcaster": false,
   "defaultSource": ["coinmarketcap"],
-  "minValidSourcesPercentage": 50,
   "tokens": {
     "ETH": {},
     "USDT": {},
