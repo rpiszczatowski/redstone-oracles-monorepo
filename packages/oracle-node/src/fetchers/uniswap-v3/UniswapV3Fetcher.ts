@@ -81,19 +81,19 @@ export class UniswapV3Fetcher extends BaseFetcher {
     return pricesObj;
   }
 
-  /* 
-    token0Price and token1Price are token prices in terms of other token in pool
-  */
-  private calculateTokenPrice(pool: Pool, currentDataFeedId: string) {
+  private calculateTokenPrice(
+    pool: Pool,
+    currentDataFeedId: string
+  ): number | undefined {
     const { tokenPriceInTermsOfOther, otherTokenPrice } =
-      this.defineValuesBasedOnCurrentDataFeed(pool, currentDataFeedId);
+      this.prepareValuesBasedOnCurrentDataFeed(pool, currentDataFeedId);
 
     if (tokenPriceInTermsOfOther && otherTokenPrice) {
       return tokenPriceInTermsOfOther * otherTokenPrice.value;
     }
   }
 
-  private defineValuesBasedOnCurrentDataFeed(
+  private prepareValuesBasedOnCurrentDataFeed(
     pool: Pool,
     currentDataFeedId: string
   ) {
