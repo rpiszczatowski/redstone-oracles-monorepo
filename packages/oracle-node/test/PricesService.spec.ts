@@ -10,14 +10,20 @@ import PricesService, {
   PriceValidationArgs,
 } from "../src/fetchers/PricesService";
 import emptyManifest from "../manifests/dev/empty.json";
-import { PriceDataBeforeAggregation } from "../src/types";
+import {
+  PriceDataAfterAggregation,
+  PriceDataBeforeAggregation,
+} from "../src/types";
 import { preparePrices, preparePrice } from "./fetchers/_helpers";
 
 // Having hard time to mock uuid..so far only this solution is working: https://stackoverflow.com/a/61150430
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 const testTimestamp = Date.now();
 
-const pricesService = new PricesService(emptyManifest);
+const pricesService = new PricesService({
+  ...emptyManifest,
+  defaultSource: ["src1"],
+});
 
 describe("PricesService", () => {
   beforeAll(() => {
@@ -480,6 +486,60 @@ describe("PricesService", () => {
           recentPrices: [],
         })
       ).toBe(0);
+    });
+  });
+
+  describe("assertSourcesNumber", () => {
+    const manifest = {
+      ...emptyManifest,
+      tokens: {
+        TestToken: {
+          source: ["testSource1", "testSource2", "testSource3", "testSource4"],
+        },
+      },
+      minValidSourcesPercentage: 50,
+    };
+
+    const priceObject = {
+      value: 43,
+      symbol: "TestToken",
+      source: { testSource1: 42, testSource2: 44, testSource4: 43 },
+    } as unknown as PriceDataAfterAggregation;
+
+    test("should pass assertion for enough sources", () => {
+      pricesService.assertSourcesNumber(priceObject, manifest);
+    });
+
+    test("should pass assertion for exactly minValidSourcesPercentage", () => {
+      const newPriceObject = {
+        ...priceObject,
+        source: { testSource1: 42, testSource3: 44 },
+      };
+      pricesService.assertSourcesNumber(newPriceObject, manifest);
+    });
+
+    test("should not pass assertion for less than minValidSourcesPercentage", () => {
+      const newPriceObject = {
+        ...priceObject,
+        source: { testSource3: 43 },
+      };
+      expect(() =>
+        pricesService.assertSourcesNumber(newPriceObject, manifest)
+      ).toThrowError(
+        "Invalid sources number for symbol TestToken, valid sources count: 1"
+      );
+    });
+
+    test("should not pass assertion for zero sources", () => {
+      const newPriceObject = {
+        ...priceObject,
+        source: {},
+      };
+      expect(() =>
+        pricesService.assertSourcesNumber(newPriceObject, manifest)
+      ).toThrowError(
+        "Invalid sources number for symbol TestToken, valid sources count: 0"
+      );
     });
   });
 });
