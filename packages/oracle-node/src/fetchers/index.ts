@@ -25,6 +25,7 @@ import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { config } from "../config";
 import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
+import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
 
 const AVALANCHE_NETWORK_NAME = "Avalanche Network";
 const AVALANCHE_CHAIN_ID = 43114;
@@ -38,6 +39,7 @@ export default {
   coingecko: new CoingeckoFetcher(),
   sushiswap: new SushiswapFetcher(),
   uniswap: new UniswapFetcher(),
+  "uniswap-v3": new UniswapV3Fetcher(),
   drand: new DrandFetcher(),
   dia: new DiaFetcher(),
   kyber: new KyberFetcher(),
