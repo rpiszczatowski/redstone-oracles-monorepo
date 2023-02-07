@@ -159,10 +159,13 @@ export default class PricesService {
     return result;
   }
 
-  // This function calculates aggregated price values based on
-  // - recent deviations check
-  // - invalid values excluding
-  // - aggregation across different sources
+  /* 
+    This function calculates aggregated price values based on
+      - recent deviations check
+      - invalid values excluding
+      - aggregation across different sources
+      - valid sources number
+  */
   async calculateAggregatedValues(
     prices: PriceDataBeforeAggregation[]
   ): Promise<PriceDataAfterAggregation[]> {
@@ -193,6 +196,9 @@ export default class PricesService {
           pricesInLocalDBForSymbol,
           deviationCheckConfig
         );
+
+        // Throwing an error if not enough sources for symbol
+        this.assertSourcesNumber(priceAfterAggregation, this.manifest);
 
         aggregatedPrices.push(priceAfterAggregation);
       } catch (e: any) {
@@ -340,5 +346,22 @@ export default class PricesService {
       );
     }
     return deviationCheckConfig;
+  }
+
+  assertSourcesNumber(price: PriceDataAfterAggregation, manifest: Manifest) {
+    const { symbol, source } = price;
+    const sourcesFetchedCount = Object.keys(source).length;
+    const minValidSourcesPercentage =
+      ManifestHelper.getMinValidSourcesPercentage(manifest);
+    const allSourcesCount = ManifestHelper.getAllSourceCount(symbol, manifest);
+    const validSourcesPercentage =
+      (sourcesFetchedCount / allSourcesCount) * 100;
+    const isSourcesNumberValid =
+      validSourcesPercentage >= minValidSourcesPercentage;
+    if (!isSourcesNumberValid) {
+      throw new Error(
+        `Invalid sources number for symbol ${symbol}, valid sources count: ${sourcesFetchedCount}`
+      );
+    }
   }
 }

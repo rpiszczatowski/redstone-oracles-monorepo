@@ -1,11 +1,7 @@
 import { toBuffer, bufferToHex, keccak256 } from "ethereumjs-util";
 import { ethers } from "ethers";
 import sortDeepObjectArrays from "sort-deep-object-arrays";
-import {
-  personalSign,
-  recoverPersonalSignature,
-  TypedMessage,
-} from "@metamask/eth-sig-util";
+import { personalSign, recoverPersonalSignature } from "@metamask/eth-sig-util";
 import {
   PricePackage,
   ShortSinglePrice,
@@ -14,55 +10,9 @@ import {
 } from "../types";
 import _ from "lodash";
 
-interface MessageTypeProperty {
-  name: string;
-  type: string;
-}
-interface PriceDataMessageType {
-  EIP712Domain: MessageTypeProperty[];
-  PriceData: MessageTypeProperty[];
-  [additionalProperties: string]: MessageTypeProperty[];
-}
-
-const PriceData = [
-  { name: "symbols", type: "bytes32[]" },
-  { name: "values", type: "uint256[]" },
-  { name: "timestamp", type: "uint256" },
-];
-
-const EIP712Domain = [
-  { name: "name", type: "string" },
-  { name: "version", type: "string" },
-  { name: "chainId", type: "uint256" },
-];
-
 const serializePriceValue = (value: number) => Math.round(value * 10 ** 8);
 
-export default class EvmPriceSignerOld {
-  private _domainData: object;
-
-  constructor(version: string = "0.4", chainId: number = 1) {
-    this._domainData = {
-      name: "Redstone",
-      version: version,
-      chainId: chainId,
-    };
-  }
-
-  getDataToSign(
-    priceData: SerializedPriceData
-  ): TypedMessage<PriceDataMessageType> {
-    return {
-      types: {
-        EIP712Domain,
-        PriceData,
-      },
-      domain: this._domainData,
-      primaryType: "PriceData",
-      message: priceData as Record<string, any>,
-    };
-  }
-
+export default class EvmPriceSigner {
   getLiteDataBytesString(priceData: SerializedPriceData): string {
     // Calculating lite price data bytes array
     let data = "";
@@ -117,7 +67,7 @@ export default class EvmPriceSignerOld {
 
     return {
       symbols: sortedPrices.map((p: ShortSinglePrice) =>
-        EvmPriceSignerOld.convertStringToBytes32String(p.symbol)
+        EvmPriceSigner.convertStringToBytes32String(p.symbol)
       ),
       values: sortedPrices.map((p: ShortSinglePrice) =>
         serializePriceValue(p.value)

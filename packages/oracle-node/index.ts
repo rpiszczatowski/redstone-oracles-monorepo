@@ -1,5 +1,4 @@
 import { Consola } from "consola";
-import NodeRunnerOld from "./src/NodeRunnerOld";
 import { config } from "./src/config";
 import NodeRunner from "./src/NodeRunner";
 import { closeLocalLevelDB, setupLocalDb } from "./src/db/local-db";
@@ -18,10 +17,7 @@ async function start() {
 }
 
 async function main(): Promise<void> {
-  const SelectedNodeRunner = config.useNewSigningAndBroadcasting
-    ? NodeRunner
-    : NodeRunnerOld;
-  const runner = await SelectedNodeRunner.create(config);
+  const runner = await NodeRunner.create(config);
   setupLocalDb();
   await runner.run();
 }

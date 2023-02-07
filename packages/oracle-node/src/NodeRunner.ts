@@ -15,25 +15,18 @@ import PricesService, {
   PricesBeforeAggregation,
   PricesDataFetched,
 } from "./fetchers/PricesService";
-import {
-  Broadcaster,
-  HttpBroadcaster,
-  StreamrBroadcaster,
-} from "./broadcasters";
 import { Manifest, NodeConfig, PriceDataAfterAggregation } from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
 import { ArweaveProxy } from "./arweave/ArweaveProxy";
-import {
-  DataPackage,
-  DataPoint,
-  NumericDataPoint,
-  SignedDataPackage,
-} from "redstone-protocol";
 import { config } from "./config";
 import { connectToDb } from "./db/remote-mongo/db-connector";
-import localDB from "./db/local-db";
+import { AggregatedPriceHandler } from "./aggregated-price-handlers/AggregatedPriceHandler";
+import { AggregatedPriceLocalDBSaver } from "./aggregated-price-handlers/AggregatedPriceLocalDBSaver";
+import { DataPackageBroadcastPerformer } from "./aggregated-price-handlers/DataPackageBroadcastPerformer";
+import { PriceDataBroadcastPerformer } from "./aggregated-price-handlers/PriceDataBroadcastPerformer";
 import { roundTimestamp } from "./utils/timestamps";
 import { intervalMsToCronFormat } from "./utils/intervals";
+import {ManifestDataProvider} from "./aggregated-price-handlers/ManifestDataProvider";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -41,11 +34,6 @@ const schedule = require("node-schedule");
 
 const MANIFEST_LOAD_TIMEOUT_MS = 25 * 1000;
 const DIAGNOSTIC_INFO_PRINTING_INTERVAL = 60 * 1000;
-const DEFAULT_HTTP_BROADCASTER_URLS = [
-  "https://direct-1.cache-service.redstone.finance",
-  "https://direct-2.cache-service.redstone.finance",
-  "https://direct-3.cache-service.redstone.finance",
-];
 
 export default class NodeRunner {
   private readonly version: string;
@@ -57,8 +45,9 @@ export default class NodeRunner {
   private pricesService?: PricesService;
   private tokensBySource?: TokensBySource;
   private newManifest: Manifest | null = null;
-  private httpBroadcaster: Broadcaster;
-  private streamrBroadcaster: Broadcaster;
+  private readonly manifestDataProvider = new ManifestDataProvider();
+
+  private readonly aggregatedPriceHandlers: AggregatedPriceHandler[];
 
   private constructor(
     private readonly arweaveService: ArweaveService,
@@ -72,13 +61,19 @@ export default class NodeRunner {
     this.lastManifestLoadTimestamp = Date.now();
     const httpBroadcasterURLs =
       config.overrideDirectCacheServiceUrls ??
-      initialManifest?.httpBroadcasterURLs ??
-      DEFAULT_HTTP_BROADCASTER_URLS;
-    this.httpBroadcaster = new HttpBroadcaster(
-      httpBroadcasterURLs,
-      ethereumPrivKey
-    );
-    this.streamrBroadcaster = new StreamrBroadcaster(ethereumPrivKey);
+      initialManifest?.httpBroadcasterURLs;
+
+    const priceHttpBroadcasterURLs = config.overridePriceCacheServiceUrls;
+
+    this.aggregatedPriceHandlers = [
+      new AggregatedPriceLocalDBSaver(),
+      new DataPackageBroadcastPerformer(httpBroadcasterURLs, ethereumPrivKey, this.manifestDataProvider),
+      new PriceDataBroadcastPerformer(
+        priceHttpBroadcasterURLs,
+        ethereumPrivKey,
+        this.providerAddress
+      ),
+    ];
 
     // https://www.freecodecamp.org/news/the-complete-guide-to-this-in-javascript/
     // alternatively use arrow functions...
@@ -217,66 +212,15 @@ export default class NodeRunner {
     const aggregatedPrices: PriceDataAfterAggregation[] =
       await this.fetchPrices();
 
-    // Saving prices in local db
-    // (they can be used for building TWAPs and checking recent deviations)
-    await this.savePricesInLocalDB(aggregatedPrices);
-
     if (aggregatedPrices.length === 0) {
-      logger.info("No prices to sign");
-    } else {
-      // Exluding "helpful" prices, which should not be signed
-      // "Helpful" prices (e.g. AVAX_SPOT) can be used to calculate TWAP values
-      const pricesForSigning =
-        this.pricesService!.filterPricesForSigning(aggregatedPrices);
+      logger.info("No aggregated prices to process");
 
-      // Signing
-      const signedDataPackages = this.signPrices(
-        pricesForSigning,
-        pricesForSigning[0].timestamp
-      );
-
-      // Broadcasting
-      await this.broadcastDataPackages(signedDataPackages);
-    }
-  }
-
-  private async savePricesInLocalDB(prices: PriceDataAfterAggregation[]) {
-    logger.info(`Saving ${prices.length} prices in local db`);
-    await localDB.savePrices(prices);
-    logger.info("Prices saved in local db");
-  }
-
-  private signPrices(
-    prices: PriceDataAfterAggregation[],
-    timestamp: number
-  ): SignedDataPackage[] {
-    const ethPrivKey = this.nodeConfig.privateKeys.ethereumPrivateKey;
-
-    // Prepare data points
-    const dataPoints: DataPoint[] = [];
-    for (const price of prices) {
-      try {
-        const dataPoint = priceToDataPoint(price);
-        dataPoints.push(dataPoint);
-      } catch (e) {
-        logger.error(
-          `Failed to convert price object to data point for ${price.symbol} (${price.value})`
-        );
-      }
+      return;
     }
 
-    // Prepare signed data packages with single data point
-    const signedDataPackages = dataPoints.map((dataPoint) => {
-      const dataPackage = new DataPackage([dataPoint], timestamp);
-      return dataPackage.sign(ethPrivKey);
-    });
-
-    // Adding a data package with all data points
-    const bigDataPackage = new DataPackage(dataPoints, timestamp);
-    const signedBigDataPackage = bigDataPackage.sign(ethPrivKey);
-    signedDataPackages.push(signedBigDataPackage);
-
-    return signedDataPackages;
+    for (const processor of this.aggregatedPriceHandlers) {
+      await processor.handle(aggregatedPrices, this.pricesService!);
+    }
   }
 
   private async fetchPrices(): Promise<PriceDataAfterAggregation[]> {
@@ -301,37 +245,6 @@ export default class NodeRunner {
     NodeRunner.printAggregatedPrices(aggregatedPrices);
     trackEnd(fetchingAllTrackingId);
     return aggregatedPrices;
-  }
-
-  private async broadcastDataPackages(signedDataPackages: SignedDataPackage[]) {
-    logger.info("Broadcasting prices");
-    const broadcastingTrackingId = trackStart("broadcasting");
-    try {
-      const promises = [];
-      promises.push(this.httpBroadcaster.broadcast(signedDataPackages));
-      if (config.enableStreamrBroadcasting) {
-        promises.push(this.streamrBroadcaster.broadcast(signedDataPackages));
-      }
-      const results = await Promise.allSettled(promises);
-
-      // Check if all promises resolved
-      const failedBroadcastersCount = results.filter(
-        (res) => res.status === "rejected"
-      ).length;
-      if (failedBroadcastersCount > 0) {
-        throw new Error(`${failedBroadcastersCount} broadcasters failed`);
-      }
-
-      logger.info("Broadcasting completed");
-    } catch (e: any) {
-      if (e.response !== undefined) {
-        logger.error("Broadcasting failed: " + e.response.data, e.stack);
-      } else {
-        logger.error("Broadcasting failed", e.stack);
-      }
-    } finally {
-      trackEnd(broadcastingTrackingId);
-    }
   }
 
   private static printAggregatedPrices(
@@ -419,15 +332,9 @@ export default class NodeRunner {
     this.currentManifest = newManifest;
     this.pricesService = new PricesService(newManifest);
     this.tokensBySource = ManifestHelper.groupTokensBySource(newManifest);
+    this.manifestDataProvider.handleManifest(newManifest);
     this.newManifest = null;
   }
-}
-
-function priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
-  return new NumericDataPoint({
-    dataFeedId: price.symbol,
-    value: price.value,
-  });
 }
 
 function getVersionFromPackageJSON() {

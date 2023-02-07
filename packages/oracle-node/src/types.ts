@@ -11,6 +11,7 @@ export interface Manifest {
   tokens: TokensConfig;
   httpBroadcasterURLs?: string[];
   enableStreamrBroadcaster?: boolean;
+  minValidSourcesPercentage?: number;
 }
 
 export interface TokensConfig {
@@ -137,8 +138,8 @@ export interface NodeConfig {
   privateKeys: PrivateKeys;
   overrideManifestUsingFile?: Manifest;
   ethereumAddress: string;
-  useNewSigningAndBroadcasting: boolean;
   overrideDirectCacheServiceUrls?: string[];
+  overridePriceCacheServiceUrls?: string[];
   coinbaseIndexerMongoDbUrl?: string;
   ethMainRpcUrl?: string;
   levelDbLocation: string;
@@ -151,6 +152,7 @@ export interface NodeConfig {
   twelveDataRapidApiKey?: string;
   coinmarketcapApiKey?: string;
   kaikoApiKey?: string;
+  minDataFeedsPercentageForBigPackage: number;
 }
 
 export interface MulticallRequest {
