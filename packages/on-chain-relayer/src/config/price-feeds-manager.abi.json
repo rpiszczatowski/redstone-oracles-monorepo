@@ -1,6 +1,12 @@
 [
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "priceFeedsRegistryAddress",
+        "type": "address"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -213,25 +219,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "dataFeedId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "getPriceFeedContractAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "getUniqueSignersThreshold",
     "outputs": [
@@ -252,6 +239,19 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "priceFeedRegistry",
+    "outputs": [
+      {
+        "internalType": "contract PriceFeedsRegistry",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

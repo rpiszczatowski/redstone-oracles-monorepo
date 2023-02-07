@@ -3,28 +3,13 @@
 pragma solidity ^0.8.4;
 
 import "../data-services/AvalancheDataServiceConsumerBase.sol";
+import "./PriceFeedsRegistry.sol";
 import "./PriceFeed.sol";
 
 contract PriceFeedsManager is AvalancheDataServiceConsumerBase {
   uint256 public lastRound = 0;
-  uint256 private lastUpdateTimestampMilliseconds;
-  mapping(bytes32 => PriceFeed) private priceFeedsContracts;
-
-  bytes32[] dataFeedsIds = [
-    bytes32("BTC"),
-    bytes32("ETH"),
-    bytes32("AVAX"),
-    bytes32("USDT"),
-    bytes32("USDC"),
-    bytes32("BUSD"),
-    bytes32("LINK"),
-    bytes32("GMX"),
-    bytes32("PNG"),
-    bytes32("QI"),
-    bytes32("JOE"),
-    bytes32("YAK"),
-    bytes32("PTP")
-  ];
+  uint256 private lastUpdateTimestampMilliseconds = 0;
+  PriceFeedsRegistry public priceFeedRegistry;
 
   error ProposedTimestampSmallerOrEqualToLastTimestamp(
     uint256 lastUpdateTimestampMilliseconds,
@@ -36,16 +21,8 @@ contract PriceFeedsManager is AvalancheDataServiceConsumerBase {
     uint256 receivedTimestampMilliseconds
   );
 
-  constructor() {
-    for (uint256 i = 0; i < dataFeedsIds.length; i++) {
-      priceFeedsContracts[dataFeedsIds[i]] = new PriceFeed(
-        address(this),
-        dataFeedsIds[i],
-        string(
-          abi.encodePacked("RedStone price feed for ", string(abi.encodePacked(dataFeedsIds[i])))
-        )
-      );
-    }
+  constructor(address priceFeedsRegistryAddress) {
+    priceFeedRegistry = PriceFeedsRegistry(priceFeedsRegistryAddress);
   }
 
   function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
@@ -75,10 +52,6 @@ contract PriceFeedsManager is AvalancheDataServiceConsumerBase {
     return proposedRound == lastRound + 1;
   }
 
-  function getPriceFeedContractAddress(bytes32 dataFeedId) public view returns (address) {
-    return address(priceFeedsContracts[dataFeedId]);
-  }
-
   function getLastRound() public view returns (uint256) {
     return lastRound;
   }
@@ -101,9 +74,12 @@ contract PriceFeedsManager is AvalancheDataServiceConsumerBase {
       getOracleNumericValuesFromTxMsg will call validateTimestamp
       for each data package from the redstone payload 
     */
+    bytes32[] memory dataFeedsIds = priceFeedRegistry.getDataFeeds();
     uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedsIds);
     for (uint256 i = 0; i < dataFeedsIds.length; i++) {
-      priceFeedsContracts[dataFeedsIds[i]].storeDataFeedValue(values[i]);
+      PriceFeed(priceFeedRegistry.getPriceFeedContractAddress(dataFeedsIds[i])).storeDataFeedValue(
+          values[i]
+        );
     }
   }
 }
