@@ -21,7 +21,7 @@ interface SpotPrice {
 }
 
 export class BalancerFetcher extends BaseFetcher {
-  protected balancer: BalancerSDK;
+  private balancer: BalancerSDK;
 
   constructor(name: string, protected readonly baseTokenSymbol: string) {
     super(name);
@@ -35,7 +35,11 @@ export class BalancerFetcher extends BaseFetcher {
 
     const pairedTokenPrice = await this.getPairedTokenPrice();
     for (const pairId of pairIds) {
-      const { id, price } = await this.calculatePrice(pairId, pairedTokenPrice);
+      const priceResult = await this.calculatePrice(pairId, pairedTokenPrice);
+      if (!priceResult) {
+        throw new Error(`Could not get pool with id ${pairId}`);
+      }
+      const { id, price } = priceResult;
       spotPrices.push({ id, price });
     }
     return spotPrices;
@@ -44,18 +48,21 @@ export class BalancerFetcher extends BaseFetcher {
   protected async calculatePrice(
     pairId: string,
     pairedTokenPrice: number
-  ): Promise<SpotPrice> {
+  ): Promise<SpotPrice | null> {
     const pool = await this.balancer.pools.find(pairId);
-    const spotPrice = pool?.calcSpotPrice(
-      pool!.tokens[0].address,
-      pool!.tokens[1].address
-    );
-    const price = pairedTokenPrice / Number(spotPrice);
-    return { id: this.getSymbol(pool!), price };
+    if (pool) {
+      const spotPrice = pool.calcSpotPrice(
+        pool.tokens[0].address,
+        pool.tokens[1].address
+      );
+      const price = pairedTokenPrice / Number(spotPrice);
+      return { id: this.getSymbol(pool), price };
+    }
+    return null;
   }
 
   protected getSymbol(pool: PoolWithMethods): string {
-    return pool.tokens[0].symbol == this.baseTokenSymbol
+    return pool.tokens[0].symbol === this.baseTokenSymbol
       ? pool.tokens[1].symbol!
       : pool.tokens[0].symbol!;
   }
@@ -64,8 +71,8 @@ export class BalancerFetcher extends BaseFetcher {
     return getLastPrice(this.baseTokenSymbol)!.value;
   }
 
-  async extractPrices(response: any): Promise<PricesObj> {
-    const pricesObj: { [symbol: string]: number } = {};
+  async extractPrices(response: SpotPrice[]): Promise<PricesObj> {
+    const pricesObj: PricesObj = {};
 
     for (const spotPrice of response) {
       pricesObj[spotPrice.id] = spotPrice.price;
