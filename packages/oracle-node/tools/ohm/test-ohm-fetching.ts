@@ -6,8 +6,9 @@ import { sleep } from "../common/sleep";
 
 type PriceFromIteration = any;
 
-const ITERATIONS_COUNT = 7;
+const ITERATIONS_COUNT = 2000;
 const SLEEP_BETWEEN_ITERATIONS_MILLISECONDS = 10000;
+const SLEEP_MS_BEFORE_RETRY = 5000;
 const OUTPUT_FILE = "./ohm-fetching-report.json";
 const TRADE_SYMBOLS = [
   "OHM_BUY_1K",
@@ -30,13 +31,23 @@ async function main() {
     iterationIndex++
   ) {
     console.log(`\nRunning iteration: ${iterationIndex + 1}`);
-    const pricesFromIteration = await getPricesFromDifferentSources();
+    const pricesFromIteration = await getPriceFromDifferentSourcesWithRetry();
     resultPrices.push(pricesFromIteration);
+    saveJSON(resultPrices, OUTPUT_FILE);
     console.log(`Iteration completed. Waiting...`);
     await sleep(SLEEP_BETWEEN_ITERATIONS_MILLISECONDS);
   }
+}
 
-  saveJSON(resultPrices, OUTPUT_FILE);
+async function getPriceFromDifferentSourcesWithRetry(): Promise<any> {
+  try {
+    return await getPricesFromDifferentSources();
+  } catch (e) {
+    console.error(e);
+    console.error("Error occured. Retrying soon...");
+    await sleep(SLEEP_MS_BEFORE_RETRY);
+    return await getPriceFromDifferentSourcesWithRetry();
+  }
 }
 
 async function getPricesFromDifferentSources() {
