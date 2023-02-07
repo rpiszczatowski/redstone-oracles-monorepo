@@ -25,7 +25,9 @@ export class ZeroExFetcher extends MultiRequestFetcher2 {
     _context: any,
     id: string
   ): PricesObj {
-    pricesObj[id] = zeroExResponse.price;
+    pricesObj[id] = id.includes("SELL")
+      ? zeroExResponse.price
+      : 1 / zeroExResponse.price;
     return pricesObj;
   }
 }

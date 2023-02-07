@@ -26,6 +26,7 @@ import { config } from "../config";
 import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 import { ZeroExFetcher } from "./zero-ex/ZeroExFetcher";
+import { OneInchFetcher } from "./one-inch/OneInchFetcher";
 
 const AVALANCHE_NETWORK_NAME = "Avalanche Network";
 const AVALANCHE_CHAIN_ID = 43114;
@@ -61,4 +62,5 @@ export default {
   ...pangolinFetchers,
   ...twapFetchers,
   "zero-ex": new ZeroExFetcher(),
+  "one-inch": new OneInchFetcher(),
 } as { [name: string]: Fetcher };

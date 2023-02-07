@@ -6,6 +6,7 @@ const DAI_ADDRESS = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
 const OHM_ADDRESS = "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5";
 const OHM_DECIMALS = 9;
 const DAI_DECIMALS = 18;
+const LAST_PRICE_FOR_ASSET = 10.05; // We'll use last price for asset from local DB
 
 export const parseSymbolWithTradeDetails = (symbol: string) => {
   const regex = /(.*)_(.*)_(\d*)K$/;
@@ -24,6 +25,10 @@ export const parseSymbolWithTradeDetails = (symbol: string) => {
 
   const assetAddress = getAddress(asset);
   const assetAmount = getAssetAmount(amount, assetAddress);
+  const estimatedDaiAmount = getAssetAmount(
+    amount * LAST_PRICE_FOR_ASSET,
+    DAI_ADDRESS
+  );
 
   return {
     asset,
@@ -33,9 +38,10 @@ export const parseSymbolWithTradeDetails = (symbol: string) => {
     reqParams: {
       buyToken: action === "BUY" ? assetAddress : DAI_ADDRESS,
       sellToken: action === "SELL" ? assetAddress : DAI_ADDRESS,
-      ...(action === "BUY"
-        ? { buyAmount: assetAmount }
-        : { sellAmount: assetAmount }),
+      sellAmount: action === "SELL" ? assetAmount : estimatedDaiAmount,
+      // ...(action === "BUY"
+      //   ? { buyAmount: assetAmount }
+      //   : { sellAmount: assetAmount }),
     },
   };
 };
