@@ -30,6 +30,24 @@ const dataPoints = [
   { dataFeedId: "BNB", value: 31 },
 ];
 
+const dataFeedIdsBytes = dataPoints.map((dataPoint) => {
+  return convertStringToBytes32(dataPoint.dataFeedId);
+});
+
+const prepareMockPackagesForManyAssets = () => {
+  const mockNumericPackages = getRange({
+    start: 0,
+    length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
+  }).map((i) =>
+    getMockNumericPackage({
+      dataPoints,
+      mockSignerIndex: i as MockSignerIndex,
+    })
+  );
+
+  return mockNumericPackages;
+};
+
 describe("SampleStorageProxy", function () {
   let contract: SampleStorageProxy;
   let consumerContract: SampleStorageProxyConsumer;
@@ -82,21 +100,10 @@ describe("SampleStorageProxy", function () {
   });
 
   it("Should return correct oracle values for array of values using dry run", async () => {
-    const mockNumericPackages = getRange({
-      start: 0,
-      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-    }).map((i) =>
-      getMockNumericPackage({
-        dataPoints,
-        mockSignerIndex: i as MockSignerIndex,
-      })
-    );
+    const mockNumericPackages = prepareMockPackagesForManyAssets();
 
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-
-    const dataFeedIds = dataPoints.map((dataPoint) => dataPoint.dataFeedId);
-    const dataFeedIdsBytes = dataFeedIds.map(convertStringToBytes32);
 
     const dataValues = dataPoints.map((dataPoint) =>
       ethers.BigNumber.from(dataPoint.value * 10 ** 8)
@@ -110,21 +117,10 @@ describe("SampleStorageProxy", function () {
   });
 
   it("Should return correct array of structures containing oracle values using dry run", async () => {
-    const mockNumericPackages = getRange({
-      start: 0,
-      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-    }).map((i) =>
-      getMockNumericPackage({
-        dataPoints,
-        mockSignerIndex: i as MockSignerIndex,
-      })
-    );
+    const mockNumericPackages = prepareMockPackagesForManyAssets();
 
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-
-    const dataFeedIds = dataPoints.map((dataPoint) => dataPoint.dataFeedId);
-    const dataFeedIdsBytes = dataFeedIds.map(convertStringToBytes32);
 
     const fetchedValues =
       await wrappedContract.fetchArrayOfStructsUsingProxyDryRun(
@@ -140,21 +136,10 @@ describe("SampleStorageProxy", function () {
   });
 
   it("Should return correct structure of arrays containing oracle values using dry run", async () => {
-    const mockNumericPackages = getRange({
-      start: 0,
-      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-    }).map((i) =>
-      getMockNumericPackage({
-        dataPoints,
-        mockSignerIndex: i as MockSignerIndex,
-      })
-    );
+    const mockNumericPackages = prepareMockPackagesForManyAssets();
 
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-
-    const dataFeedIds = dataPoints.map((dataPoint) => dataPoint.dataFeedId);
-    const dataFeedIdsBytes = dataFeedIds.map(convertStringToBytes32);
 
     const fetchedValues =
       await wrappedContract.fetchStructOfArraysUsingProxyDryRun(
@@ -182,15 +167,7 @@ describe("SampleStorageProxy", function () {
   });
 
   it("Should return correct oracle values for 10 assets", async () => {
-    const mockNumericPackages = getRange({
-      start: 0,
-      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-    }).map((i) =>
-      getMockNumericPackage({
-        dataPoints,
-        mockSignerIndex: i as MockSignerIndex,
-      })
-    );
+    const mockNumericPackages = prepareMockPackagesForManyAssets();
 
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
@@ -209,21 +186,11 @@ describe("SampleStorageProxy", function () {
   });
 
   it("Should return correct oracle values for 10 assets simultaneously", async () => {
-    const mockNumericPackages = getRange({
-      start: 0,
-      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-    }).map((i) =>
-      getMockNumericPackage({
-        dataPoints,
-        mockSignerIndex: i as MockSignerIndex,
-      })
-    );
+    const mockNumericPackages = prepareMockPackagesForManyAssets();
 
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
 
-    const dataFeedIds = dataPoints.map((dataPoint) => dataPoint.dataFeedId);
-    const dataFeedIdsBytes = dataFeedIds.map(convertStringToBytes32);
     const dataValues = dataPoints.map((dataPoint) =>
       Math.round(dataPoint.value * 10 ** 8)
     );
