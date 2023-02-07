@@ -1,14 +1,13 @@
 import axios from "axios";
-import { BroadcasterOld } from "../BroadcasterOld";
 import { PriceDataSigned, SignedPricePackage } from "../../types";
 import { Consola } from "consola";
 import { stringifyError } from "../../utils/error-stringifier";
 
-const logger = require("../../utils/logger")("HttpBroadcasterOld") as Consola;
+const logger = require("../../utils/logger")("PriceDataBroadcaster") as Consola;
 
 // TODO: add timeout to broadcasting
 
-export class HttpBroadcasterOld implements BroadcasterOld {
+export class PriceDataBroadcaster {
   constructor(private readonly broadcasterURLs: string[]) {}
 
   async broadcast(prices: PriceDataSigned[]): Promise<void> {

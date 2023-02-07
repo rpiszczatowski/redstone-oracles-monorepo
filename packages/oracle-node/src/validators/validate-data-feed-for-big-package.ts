@@ -1,19 +1,16 @@
 import { DataPoint } from "redstone-protocol";
-import ManifestHelper from "../manifest/ManifestHelper";
 import { config } from "../config";
-import { Manifest } from "../types";
 
 export const validateDataPointsForBigPackage = (
   dataPoints: DataPoint[],
-  manifest?: Manifest
+  allTokenCount?: number
 ) => {
-  if (!manifest) {
+  if (!allTokenCount) {
     throw new Error(
-      `Cannot get tokens count from manifest, manifest is ${manifest}`
+      `Cannot get token count from manifest.`
     );
   }
-  const allTokensCount = ManifestHelper.getAllTokensCount(manifest);
-  const validDataPointsPercentage = (dataPoints.length / allTokensCount) * 100;
+  const validDataPointsPercentage = (dataPoints.length / allTokenCount) * 100;
   return (
     validDataPointsPercentage >= config.minDataFeedsPercentageForBigPackage
   );
