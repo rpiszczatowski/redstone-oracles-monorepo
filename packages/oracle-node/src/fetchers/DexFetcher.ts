@@ -11,8 +11,8 @@ export class DexFetcher extends BaseFetcher {
 
   constructor(
     name: string,
-    private readonly subgraphUrl: string,
-    private readonly symbolToPairIdObj: SymbolToPairId
+    protected readonly subgraphUrl: string,
+    protected readonly symbolToPairIdObj: SymbolToPairId
   ) {
     super(name);
   }
