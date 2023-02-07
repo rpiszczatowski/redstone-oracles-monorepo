@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Contract, Signer } from "ethers";
+import { Signer } from "ethers";
 import {
   SignedDataPackage,
   RedstonePayload,
@@ -8,7 +8,7 @@ import {
   UniversalSigner,
   prepareMessageToSign,
 } from "redstone-protocol";
-import { BaseWrapper, ParamsForDryRunVerification } from "./BaseWrapper";
+import { BaseWrapper } from "./BaseWrapper";
 import { version } from "../../package.json";
 
 export interface OnDemandRequestParams {
@@ -32,8 +32,8 @@ export class OnDemandRequestWrapper extends BaseWrapper {
     return payloads[0];
   }
 
-  async getBytesDataForAppending(params: ParamsForDryRunVerification): Promise<string> {
-    const timestamp = await this.requestTimestamp(params.contract);
+  async getBytesDataForAppending(): Promise<string> {
+    const timestamp = Date.now();
     const message = prepareMessageToSign(timestamp);
     const { signer, scoreType } = this.requestParams;
     const signature = await UniversalSigner.signWithEthereumHashMessage(
@@ -51,11 +51,5 @@ export class OnDemandRequestWrapper extends BaseWrapper {
     );
     const unsignedMetadata = this.getUnsignedMetadata();
     return RedstonePayload.prepare(signedDataPackages, unsignedMetadata);
-  }
-
-  async requestTimestamp(contract: Contract): Promise<number> {
-    const blockNumber = await contract.provider.getBlockNumber();
-    const block = await contract.provider.getBlock(blockNumber);
-    return block.timestamp * 1000;
   }
 }
