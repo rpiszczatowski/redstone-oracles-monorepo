@@ -1,0 +1,102 @@
+[
+  {
+    "timestamp": 1675729659393,
+    "coingecko": 10.05,
+    "zero-ex_ohm_buy_100k": "10.530133010441292802",
+    "zero-ex_ohm_buy_1k": "10.103909799711077",
+    "zero-ex_ohm_buy_10k": "10.121814810759784825",
+    "zero-ex_ohm_sell_10k": "10.0366281438",
+    "zero-ex_ohm_sell_1k": "10.048207117140185",
+    "zero-ex_ohm_sell_100k": "9.91623460949242646"
+  },
+  {
+    "timestamp": 1675729662741,
+    "coingecko": 10.05,
+    "zero-ex_ohm_sell_10k": "10.0366281438",
+    "zero-ex_ohm_buy_100k": "10.530133010441292802",
+    "zero-ex_ohm_buy_1k": "10.103909799711077",
+    "zero-ex_ohm_sell_1k": "10.048207117140185",
+    "zero-ex_ohm_buy_10k": "10.121814810759784825",
+    "zero-ex_ohm_sell_100k": "9.91623460949242646"
+  },
+  {
+    "timestamp": 1675729667877,
+    "coingecko": 10.05,
+    "zero-ex_ohm_buy_100k": "10.530133010441292802",
+    "zero-ex_ohm_buy_10k": "10.121814810759784825",
+    "zero-ex_ohm_buy_1k": "10.103909799711077",
+    "zero-ex_ohm_sell_100k": "9.91623460949242646",
+    "zero-ex_ohm_sell_10k": "10.0366281438",
+    "zero-ex_ohm_sell_1k": "10.048207117140185"
+  },
+  {
+    "timestamp": 1675729671131,
+    "coingecko": 10.05,
+    "zero-ex_ohm_buy_100k": "10.530133010441292802",
+    "zero-ex_ohm_buy_1k": "10.103909799711077",
+    "zero-ex_ohm_sell_1k": "10.048207117140185",
+    "zero-ex_ohm_buy_10k": "10.121814810759784825",
+    "zero-ex_ohm_sell_100k": "9.91623460949242646",
+    "zero-ex_ohm_sell_10k": "10.0366281438"
+  },
+  {
+    "timestamp": 1675729674360,
+    "coingecko": 10.05,
+    "zero-ex_ohm_buy_100k": "10.530133010441292802",
+    "zero-ex_ohm_buy_1k": "10.103909799711077",
+    "zero-ex_ohm_buy_10k": "10.121814810759784825",
+    "zero-ex_ohm_sell_1k": "10.048207117140185",
+    "zero-ex_ohm_sell_100k": "9.91623460949242646",
+    "zero-ex_ohm_sell_10k": "10.0366281438"
+  },
+  {
+    "timestamp": 1675729677861,
+    "coingecko": 10.05,
+    "zero-ex_ohm_buy_10k": "10.121814810759784825",
+    "zero-ex_ohm_buy_100k": "10.530133010441292802",
+    "zero-ex_ohm_buy_1k": "10.103909799711077",
+    "zero-ex_ohm_sell_10k": "10.0366281438",
+    "zero-ex_ohm_sell_100k": "9.91623460949242646",
+    "zero-ex_ohm_sell_1k": "10.048207117140185"
+  },
+  {
+    "timestamp": 1675729681228,
+    "coingecko": 10.05,
+    "zero-ex_ohm_buy_100k": "10.530133010441292802",
+    "zero-ex_ohm_buy_10k": "10.121814810759784825",
+    "zero-ex_ohm_buy_1k": "10.103909799711077",
+    "zero-ex_ohm_sell_1k": "10.048207117140185",
+    "zero-ex_ohm_sell_10k": "10.0366281438",
+    "zero-ex_ohm_sell_100k": "9.91623460949242646"
+  },
+  {
+    "timestamp": 1675729684452,
+    "coingecko": 10.05,
+    "zero-ex_ohm_sell_10k": "10.0366281438",
+    "zero-ex_ohm_sell_1k": "10.048207117140185",
+    "zero-ex_ohm_buy_100k": "10.530133010441292802",
+    "zero-ex_ohm_buy_10k": "10.121814810759784825",
+    "zero-ex_ohm_buy_1k": "10.103909799711077",
+    "zero-ex_ohm_sell_100k": "9.91623460949242646"
+  },
+  {
+    "timestamp": 1675729687786,
+    "coingecko": 10.05,
+    "zero-ex_ohm_buy_100k": "10.530133010441292802",
+    "zero-ex_ohm_sell_1k": "10.048207117140185",
+    "zero-ex_ohm_sell_10k": "10.0366281438",
+    "zero-ex_ohm_buy_10k": "10.121814810759784825",
+    "zero-ex_ohm_sell_100k": "9.91623460949242646",
+    "zero-ex_ohm_buy_1k": "10.103909799711077"
+  },
+  {
+    "timestamp": 1675729691098,
+    "coingecko": 10.05,
+    "zero-ex_ohm_buy_100k": "10.530133010441292802",
+    "zero-ex_ohm_sell_100k": "9.91623460949242646",
+    "zero-ex_ohm_buy_1k": "10.103909799711077",
+    "zero-ex_ohm_sell_1k": "10.048207117140185",
+    "zero-ex_ohm_sell_10k": "10.0366281438",
+    "zero-ex_ohm_buy_10k": "10.121814810759784825"
+  }
+]

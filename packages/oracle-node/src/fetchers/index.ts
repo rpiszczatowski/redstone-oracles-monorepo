@@ -25,6 +25,7 @@ import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { config } from "../config";
 import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
+import { ZeroExFetcher } from "./zero-ex/ZeroExFetcher";
 
 const AVALANCHE_NETWORK_NAME = "Avalanche Network";
 const AVALANCHE_CHAIN_ID = 43114;
@@ -59,4 +60,5 @@ export default {
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...twapFetchers,
+  "zero-ex": new ZeroExFetcher(),
 } as { [name: string]: Fetcher };
