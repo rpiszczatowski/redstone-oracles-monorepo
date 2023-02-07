@@ -18,6 +18,7 @@ import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
 import { glpManagerContractsDetails } from "./contracts-details/glp-manager";
+import bn from "bignumber.js";
 
 interface TokenReserve {
   [name: string]: BigNumber;
@@ -71,6 +72,12 @@ const extractPriceForYieldYakOrMoo = async (
   }
 };
 
+const sqrt = (value: BigNumber): BigNumber => {
+  return BigNumber.from(
+    new bn(value.toString()).sqrt().toFixed().split(".")[0]
+  );
+};
+
 const extractPriceForLpTokens = async (
   multicallResult: MulticallParsedResponses,
   id: string
@@ -78,6 +85,10 @@ const extractPriceForLpTokens = async (
   const { address, tokensToFetch } =
     lpTokensContractsDetails[id as LpTokensDetailsKeys];
   const reserves = multicallResult[address].getReserves.value;
+
+  const totalSupply = BigNumber.from(
+    multicallResult[address].totalSupply.value
+  );
 
   const firstTokenReserve = BigNumber.from(reserves.slice(0, 66));
   const firstToken = tokensToFetch[0];
@@ -87,41 +98,33 @@ const extractPriceForLpTokens = async (
     [firstToken]: firstTokenReserve,
     [secondToken]: secondTokenReserve,
   };
-  const tokensReservesPrices = await calculateReserveTokensPrices(
-    tokenReserves
-  );
-  if (tokensReservesPrices) {
-    const firstTokenReservePrice = tokensReservesPrices[firstToken];
-    const secondTokenReservePrice = tokensReservesPrices[secondToken];
-    const reservesPricesSum = firstTokenReservePrice.add(
-      secondTokenReservePrice
-    );
-    const totalSupply = BigNumber.from(
-      multicallResult[address].totalSupply.value
-    );
-    const lpTokenPrice = reservesPricesSum.div(totalSupply);
+
+  const tokenPrices = await calculateTokensPrices(tokenReserves);
+  const reservesSerialized = serializeDecimals(tokenReserves);
+
+  if (tokenPrices) {
+    const firstTokenPrice = tokenPrices[firstToken];
+    const secondTokenPrice = tokenPrices[secondToken];
+
+    const sqrtK = sqrt(
+      reservesSerialized[firstToken].mul(reservesSerialized[secondToken])
+    ).div(totalSupply);
+    const sqrtPx0Px1 = sqrt(firstTokenPrice.mul(secondTokenPrice));
+    const lpTokenPrice = sqrtK.mul(sqrtPx0Px1).mul(2);
+
     return ethers.utils.formatEther(lpTokenPrice);
   }
 };
 
-const calculateReserveTokensPrices = async (tokenReserves: TokenReserve) => {
+const calculateTokensPrices = async (tokenReserves: TokenReserve) => {
   const tokenNames = Object.keys(tokenReserves);
   const tokensPrices = await fetchTokensPrices(tokenNames);
   const areAllTokensFetched =
     Object.keys(tokensPrices).length === Object.keys(tokenReserves).length;
   if (areAllTokensFetched) {
-    const tokensReservesSerialized = serializeDecimals(tokenReserves);
-    const tokensReservesPrices = {} as TokenReserve;
-    for (const tokenName of Object.keys(tokenReserves)) {
-      const tokenReservePrice = tokensReservesSerialized[tokenName].mul(
-        tokensPrices[tokenName]
-      );
-      tokensReservesPrices[tokenName] = tokenReservePrice;
-    }
-    return tokensReservesPrices;
+    return tokensPrices;
   }
 };
-
 const serializeDecimals = (tokenReserves: TokenReserve) => {
   const serializedTokenReserves = {} as TokenReserve;
   for (const tokenName of Object.keys(tokenReserves)) {
@@ -139,7 +142,6 @@ const serializeDecimals = (tokenReserves: TokenReserve) => {
   }
   return serializedTokenReserves;
 };
-
 const extractPriceForOracleAdapterTokens = (
   multicallResult: MulticallParsedResponses,
   id: string
