@@ -3,12 +3,13 @@
 pragma solidity ^0.8.4;
 
 import "../data-services/AvalancheDataServiceConsumerBase.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./PriceFeedsRegistry.sol";
 import "./PriceFeed.sol";
 
-contract PriceFeedsManager is AvalancheDataServiceConsumerBase {
+contract PriceFeedsManager is AvalancheDataServiceConsumerBase, Initializable {
   uint256 public lastRound = 0;
-  uint256 private lastUpdateTimestampMilliseconds = 0;
+  uint256 public lastUpdateTimestampMilliseconds = 0;
   PriceFeedsRegistry public priceFeedRegistry;
 
   error ProposedTimestampSmallerOrEqualToLastTimestamp(
@@ -16,12 +17,12 @@ contract PriceFeedsManager is AvalancheDataServiceConsumerBase {
     uint256 blockTimestamp
   );
 
-  error ProposedTimestampDoesNotMatchProposedTimestamp(
+  error ProposedTimestampDoesNotMatchReceivedTimestamp(
     uint256 proposedTimestamp,
     uint256 receivedTimestampMilliseconds
   );
 
-  constructor(address priceFeedsRegistryAddress) {
+  function initialize(address priceFeedsRegistryAddress) public initializer {
     priceFeedRegistry = PriceFeedsRegistry(priceFeedsRegistryAddress);
   }
 
@@ -32,7 +33,7 @@ contract PriceFeedsManager is AvalancheDataServiceConsumerBase {
       after validation in valivalidateTimestampFromUser and equal to proposedTimestamp
     */
     if (receivedTimestampMilliseconds != lastUpdateTimestampMilliseconds) {
-      revert ProposedTimestampDoesNotMatchProposedTimestamp(
+      revert ProposedTimestampDoesNotMatchReceivedTimestamp(
         lastUpdateTimestampMilliseconds,
         receivedTimestampMilliseconds
       );

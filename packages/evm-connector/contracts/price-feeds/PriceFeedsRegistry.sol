@@ -11,6 +11,7 @@ contract PriceFeedsRegistry is Ownable {
   using EnumerableSet for EnumerableSet.Bytes32Set;
 
   EnumerableMap.UintToAddressMap private priceFeedsContracts;
+  address private priceFeedsManagerAddress;
 
   bytes32[] public initialDataFeedsIds = [
     bytes32("BTC"),
@@ -28,7 +29,8 @@ contract PriceFeedsRegistry is Ownable {
     bytes32("PTP")
   ];
 
-  constructor() {
+  constructor(address priceFeedsManagerAddress_) {
+    priceFeedsManagerAddress = priceFeedsManagerAddress_;
     for (uint256 i = 0; i < initialDataFeedsIds.length; i++) {
       EnumerableMap.set(
         priceFeedsContracts,
@@ -42,7 +44,7 @@ contract PriceFeedsRegistry is Ownable {
     return
       address(
         new PriceFeed(
-          address(this),
+          priceFeedsManagerAddress,
           dataFeedId,
           string(
             abi.encodePacked("RedStone price feed for ", string(abi.encodePacked(dataFeedId)))
