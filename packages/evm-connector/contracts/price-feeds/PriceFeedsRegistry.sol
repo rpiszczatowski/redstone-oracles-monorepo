@@ -4,8 +4,9 @@ pragma solidity ^0.8.4;
 
 import "./PriceFeed.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract PriceFeedsRegistry {
+contract PriceFeedsRegistry is Ownable {
   using EnumerableMap for EnumerableMap.UintToAddressMap;
   using EnumerableSet for EnumerableSet.Bytes32Set;
 
@@ -27,34 +28,27 @@ contract PriceFeedsRegistry {
     bytes32("PTP")
   ];
 
-  address private owner;
-
-  constructor(address owner_) {
-    owner = owner_;
-
+  constructor() {
     for (uint256 i = 0; i < initialDataFeedsIds.length; i++) {
       EnumerableMap.set(
         priceFeedsContracts,
         uint256(initialDataFeedsIds[i]),
-        address(
-          new PriceFeed(
-            address(this),
-            initialDataFeedsIds[i],
-            string(
-              abi.encodePacked(
-                "RedStone price feed for ",
-                string(abi.encodePacked(initialDataFeedsIds[i]))
-              )
-            )
-          )
-        )
+        deployPriceFeed(initialDataFeedsIds[i])
       );
     }
   }
 
-  modifier _onlyOwner() {
-    require(msg.sender == owner);
-    _;
+  function deployPriceFeed(bytes32 dataFeedId) private returns (address) {
+    return
+      address(
+        new PriceFeed(
+          address(this),
+          dataFeedId,
+          string(
+            abi.encodePacked("RedStone price feed for ", string(abi.encodePacked(dataFeedId)))
+          )
+        )
+      );
   }
 
   function getPriceFeedContractAddress(bytes32 dataFeedId) public view returns (address) {
@@ -65,23 +59,11 @@ contract PriceFeedsRegistry {
     return keys(priceFeedsContracts._inner);
   }
 
-  function addDataFeed(bytes32 dataFeedId) public _onlyOwner {
-    EnumerableMap.set(
-      priceFeedsContracts,
-      uint256(dataFeedId),
-      address(
-        new PriceFeed(
-          address(this),
-          dataFeedId,
-          string(
-            abi.encodePacked("RedStone price feed for ", string(abi.encodePacked(dataFeedId)))
-          )
-        )
-      )
-    );
+  function addDataFeed(bytes32 dataFeedId) public onlyOwner {
+    EnumerableMap.set(priceFeedsContracts, uint256(dataFeedId), deployPriceFeed(dataFeedId));
   }
 
-  function removeDataFeed(bytes32 dataFeedId) public _onlyOwner {
+  function removeDataFeed(bytes32 dataFeedId) public onlyOwner {
     EnumerableMap.remove(priceFeedsContracts, uint256(dataFeedId));
   }
 
