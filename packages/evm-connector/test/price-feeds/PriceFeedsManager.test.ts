@@ -7,7 +7,7 @@ import {
   PriceFeedsManagerMock,
   PriceFeedsRegistry,
 } from "../../typechain-types";
-import { getWrappedContract } from "./helpers";
+import { addDataFeedsToRegistry, getWrappedContract } from "./helpers";
 
 chai.use(chaiAsPromised);
 
@@ -33,6 +33,7 @@ describe("PriceFeedsManager", () => {
     registryContract = await RegistryContractFactory.deploy(contract.address);
     await registryContract.deployed();
     await contract.initialize(registryContract.address);
+    await addDataFeedsToRegistry(registryContract);
     timestamp = Date.now();
     wrappedContract = getWrappedContract(contract, timestamp);
     await wrappedContract.updateDataFeedValues(1, timestamp);
@@ -56,7 +57,7 @@ describe("PriceFeedsManager", () => {
     await expect(
       wrappedContract.updateDataFeedValues(2, smallerTimestamp)
     ).to.be.rejectedWith(
-      `VM Exception while processing transaction: reverted with custom error 'ProposedTimestampSmallerOrEqualToLastTimestamp(${smallerTimestamp}, ${timestamp})'`
+      `ProposedTimestampSmallerOrEqualToLastTimestamp(${smallerTimestamp}, ${timestamp})`
     );
   });
 
@@ -67,7 +68,7 @@ describe("PriceFeedsManager", () => {
     await expect(
       wrappedContract.updateDataFeedValues(2, timestampNotEqualToReceived)
     ).to.be.rejectedWith(
-      `VM Exception while processing transaction: reverted with custom error 'ProposedTimestampDoesNotMatchReceivedTimestamp(${timestampNotEqualToReceived}, ${newTimestamp})'`
+      `ProposedTimestampDoesNotMatchReceivedTimestamp(${timestampNotEqualToReceived}, ${newTimestamp})`
     );
   });
 
@@ -78,14 +79,25 @@ describe("PriceFeedsManager", () => {
     const [round, lastUpdateTimestamp] = await contract.getLastRoundParams();
     expect(round).to.be.equal(2);
     expect(lastUpdateTimestamp).to.be.equal(newTimestamp);
-    const priceFeedAddress = await registryContract.getPriceFeedContractAddress(
-      formatBytes32String("ETH")
-    );
-    const priceFeedContract = await ethers.getContractAt(
+    const ethPriceFeedAddress =
+      await registryContract.getPriceFeedContractAddress(
+        formatBytes32String("ETH")
+      );
+    const ethPriceFeedContract = await ethers.getContractAt(
       "PriceFeed",
-      priceFeedAddress
+      ethPriceFeedAddress
     );
-    const roundData = await priceFeedContract.latestRoundData();
-    expect(roundData.answer).to.be.equal(167099000000);
+    const ethRoundData = await ethPriceFeedContract.latestRoundData();
+    expect(ethRoundData.answer).to.be.equal(167099000000);
+    const btcPriceFeedAddress =
+      await registryContract.getPriceFeedContractAddress(
+        formatBytes32String("BTC")
+      );
+    const btcPriceFeedContract = await ethers.getContractAt(
+      "PriceFeed",
+      btcPriceFeedAddress
+    );
+    const btcRoundData = await btcPriceFeedContract.latestRoundData();
+    expect(btcRoundData.answer).to.be.equal(2307768000000);
   });
 });

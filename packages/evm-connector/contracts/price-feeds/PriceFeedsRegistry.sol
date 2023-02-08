@@ -13,44 +13,8 @@ contract PriceFeedsRegistry is Ownable {
   EnumerableMap.UintToAddressMap private priceFeedsContracts;
   address private priceFeedsManagerAddress;
 
-  bytes32[] public initialDataFeedsIds = [
-    bytes32("BTC"),
-    bytes32("ETH"),
-    bytes32("AVAX"),
-    bytes32("USDT"),
-    bytes32("USDC"),
-    bytes32("BUSD"),
-    bytes32("LINK"),
-    bytes32("GMX"),
-    bytes32("PNG"),
-    bytes32("QI"),
-    bytes32("JOE"),
-    bytes32("YAK"),
-    bytes32("PTP")
-  ];
-
   constructor(address priceFeedsManagerAddress_) {
     priceFeedsManagerAddress = priceFeedsManagerAddress_;
-    for (uint256 i = 0; i < initialDataFeedsIds.length; i++) {
-      EnumerableMap.set(
-        priceFeedsContracts,
-        uint256(initialDataFeedsIds[i]),
-        deployPriceFeed(initialDataFeedsIds[i])
-      );
-    }
-  }
-
-  function deployPriceFeed(bytes32 dataFeedId) private returns (address) {
-    return
-      address(
-        new PriceFeed(
-          priceFeedsManagerAddress,
-          dataFeedId,
-          string(
-            abi.encodePacked("RedStone price feed for ", string(abi.encodePacked(dataFeedId)))
-          )
-        )
-      );
   }
 
   function getPriceFeedContractAddress(bytes32 dataFeedId) public view returns (address) {
@@ -67,6 +31,19 @@ contract PriceFeedsRegistry is Ownable {
 
   function removeDataFeed(bytes32 dataFeedId) public onlyOwner {
     EnumerableMap.remove(priceFeedsContracts, uint256(dataFeedId));
+  }
+
+  function deployPriceFeed(bytes32 dataFeedId) private returns (address) {
+    return
+      address(
+        new PriceFeed(
+          priceFeedsManagerAddress,
+          dataFeedId,
+          string(
+            abi.encodePacked("RedStone price feed for ", string(abi.encodePacked(dataFeedId)))
+          )
+        )
+      );
   }
 
   /**
