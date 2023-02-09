@@ -9,11 +9,11 @@ import {
   PriceDataBeforeAggregation,
   PriceDataBeforeSigning,
   PriceDataFetched,
+  Source,
 } from "../types";
 import { trackEnd, trackStart } from "../utils/performance-tracker";
 import ManifestConfigError from "../manifest/ManifestConfigError";
 import { promiseTimeout } from "../utils/promise-timeout";
-import aggregators from "../aggregators";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import {
   calculateAverageValue,
@@ -169,7 +169,6 @@ export default class PricesService {
   async calculateAggregatedValues(
     prices: PriceDataBeforeAggregation[]
   ): Promise<PriceDataAfterAggregation[]> {
-    const aggregator = aggregators[this.manifest.priceAggregator];
     const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
 
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
@@ -183,6 +182,11 @@ export default class PricesService {
           price,
           pricesInLocalDBForSymbol,
           deviationCheckConfig
+        );
+
+        const aggregator = ManifestHelper.getAggregatorForToken(
+          this.manifest,
+          price.symbol
         );
 
         // Calculating final aggregated value based on the values from the "valid" sources
