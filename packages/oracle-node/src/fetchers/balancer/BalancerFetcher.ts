@@ -9,16 +9,12 @@ import { config } from "../../config";
 import { BaseFetcher } from "../BaseFetcher";
 import { getLastPrice } from "../../db/local-db";
 import balancerPairs from "./balancer-pairs.json";
+import { SpotPrice } from "./types";
 
 const balancerConfig: BalancerSdkConfig = {
   network: Network.MAINNET,
   rpcUrl: config.ethMainRpcUrl as string,
 };
-
-interface SpotPrice {
-  id: string;
-  price: number;
-}
 
 export class BalancerFetcher extends BaseFetcher {
   private balancer: BalancerSDK;
@@ -29,19 +25,19 @@ export class BalancerFetcher extends BaseFetcher {
   }
 
   async fetchData(ids: string[]): Promise<any> {
-    const spotPrices: SpotPrice[] = [];
+    const spotPricesPromises: Promise<SpotPrice | null>[] = [];
 
     const pairIds = this.getPairIdsForAssetIds(ids);
 
     const pairedTokenPrice = await this.getPairedTokenPrice();
     for (const pairId of pairIds) {
-      const priceResult = await this.calculatePrice(pairId, pairedTokenPrice);
+      const priceResult = this.calculatePrice(pairId, pairedTokenPrice);
       if (!priceResult) {
         throw new Error(`Could not get pool with id ${pairId}`);
       }
-      const { id, price } = priceResult;
-      spotPrices.push({ id, price });
+      spotPricesPromises.push(priceResult);
     }
+    const spotPrices = await Promise.all(spotPricesPromises);
     return spotPrices;
   }
 
@@ -51,14 +47,13 @@ export class BalancerFetcher extends BaseFetcher {
   ): Promise<SpotPrice | null> {
     const pool = await this.balancer.pools.find(pairId);
     if (pool) {
-      const spotPrice = pool.calcSpotPrice(
-        pool.tokens[0].address,
-        pool.tokens[1].address
+      const spotPrice = Number(
+        pool.calcSpotPrice(pool.tokens[0].address, pool.tokens[1].address)
       );
       const price = pairedTokenPrice / Number(spotPrice);
-      return { id: this.getSymbol(pool), price };
+      return { id: this.getSymbol(pool), pairedTokenPrice, spotPrice };
     }
-    return null;
+    throw new Error(`Pool with ${pairId} not found`);
   }
 
   protected getSymbol(pool: PoolWithMethods): string {
@@ -75,7 +70,8 @@ export class BalancerFetcher extends BaseFetcher {
     const pricesObj: PricesObj = {};
 
     for (const spotPrice of response) {
-      pricesObj[spotPrice.id] = spotPrice.price;
+      pricesObj[spotPrice.id] =
+        spotPrice.pairedTokenPrice / spotPrice.spotPrice;
     }
     return pricesObj;
   }
