@@ -1,0 +1,10 @@
+[project]
+authors = ["Łukasz Kalbarczyk"]
+entry = "main.sw"
+forc-version = "0.34.0"
+license = "Apache-2.0"
+name = "redstone"
+organization = "Redstone"
+
+[constants]
+CONTRACT_ID = { type = "b256", value = "0x865b2fbbc3b6f16e8a747d1a7629418d69fea5eeaaf87673a3d01a39a504e5e1" }

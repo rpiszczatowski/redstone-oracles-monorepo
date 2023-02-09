@@ -1,0 +1,10 @@
+[project]
+authors = ["Łukasz Kalbarczyk"]
+entry = "prices.sw"
+forc-version = "0.34.0"
+license = "Apache-2.0"
+name = "prices"
+organization = "Redstone"
+
+[dependencies]
+redstone = { path = "../redstone" }

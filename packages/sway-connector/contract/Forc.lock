@@ -1,0 +1,21 @@
+[[package]]
+name = 'core'
+source = 'path+from-root-A7232FFB1E1E75F3'
+
+[[package]]
+name = 'prices'
+source = 'member'
+dependencies = [
+    'redstone',
+    'std',
+]
+
+[[package]]
+name = 'redstone'
+source = 'path+from-root-150CADB8352FDDF2'
+dependencies = ['std']
+
+[[package]]
+name = 'std'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.34.0#ddb0ede05e649489b554da4f7a8003b507443ad0'
+dependencies = ['core']

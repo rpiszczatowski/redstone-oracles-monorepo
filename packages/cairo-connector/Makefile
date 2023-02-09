@@ -55,7 +55,7 @@ contracts: format build_dir
 declare: $(CNC)
 	starknet declare --account=$(ACC) --contract $(CNC) --max_fee=$(MAX_FEE) \
 	--wallet=starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount \
-	--network=alpha-goerli
+	--network=alpha-goerli2
 
 $(CNC): contract
 $(ABI): contract

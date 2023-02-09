@@ -3,8 +3,7 @@ protostar-version = "0.9.1"
 lib-path = "lib"
 
 [contracts]
-oracle_values = ["src/contracts/oracle_values.cairo"]
-price = ["src/contracts/price.cairo"]
+prices = ["src/contracts/prices.cairo"]
 
 # Command Configuration Profile
 [profile.integration.test]
