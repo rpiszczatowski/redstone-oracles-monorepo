@@ -1,7 +1,7 @@
 # Automate building a public docker image of on-chain-relayer
 # and publishing it to the AWS ECR Public
 
-name: Deploy monitoring to Amazon ECR Public
+name: Deploy on-chain relayer to Amazon ECR Public
 on:
   workflow_dispatch:
   push:
