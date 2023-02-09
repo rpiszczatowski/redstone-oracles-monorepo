@@ -18,7 +18,9 @@ import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
 import { glpManagerContractsDetails } from "./contracts-details/glp-manager";
-import bn from "bignumber.js";
+import { sqrt } from "../../../utils/math";
+
+// Fair LP Token Pricing has been implemented with the help of: https://blog.alphaventuredao.io/fair-lp-token-pricing/
 
 interface TokenReserve {
   [name: string]: BigNumber;
@@ -72,12 +74,6 @@ const extractPriceForYieldYakOrMoo = async (
   }
 };
 
-const sqrt = (value: BigNumber): BigNumber => {
-  return BigNumber.from(
-    new bn(value.toString()).sqrt().toFixed().split(".")[0]
-  );
-};
-
 const extractPriceForLpTokens = async (
   multicallResult: MulticallParsedResponses,
   id: string
@@ -85,10 +81,6 @@ const extractPriceForLpTokens = async (
   const { address, tokensToFetch } =
     lpTokensContractsDetails[id as LpTokensDetailsKeys];
   const reserves = multicallResult[address].getReserves.value;
-
-  const totalSupply = BigNumber.from(
-    multicallResult[address].totalSupply.value
-  );
 
   const firstTokenReserve = BigNumber.from(reserves.slice(0, 66));
   const firstToken = tokensToFetch[0];
@@ -106,11 +98,23 @@ const extractPriceForLpTokens = async (
     const firstTokenPrice = tokenPrices[firstToken];
     const secondTokenPrice = tokenPrices[secondToken];
 
-    const sqrtK = sqrt(
-      reservesSerialized[firstToken].mul(reservesSerialized[secondToken])
-    ).div(totalSupply);
-    const sqrtPx0Px1 = sqrt(firstTokenPrice.mul(secondTokenPrice));
-    const lpTokenPrice = sqrtK.mul(sqrtPx0Px1).mul(2);
+    const firstReserve = reservesSerialized[firstToken];
+    const secondReserve = reservesSerialized[secondToken];
+
+    const reservesMultiplied = firstReserve.mul(secondReserve);
+    const pricesMultiplied = firstTokenPrice.mul(secondTokenPrice);
+
+    const reservesMultipliedSqrt = sqrt(reservesMultiplied);
+    const pricesMultipliedSqrt = sqrt(pricesMultiplied);
+
+    const reservesPricesMulitplied =
+      reservesMultipliedSqrt.mul(pricesMultipliedSqrt);
+
+    const totalSupply = BigNumber.from(
+      multicallResult[address].totalSupply.value
+    );
+
+    const lpTokenPrice = reservesPricesMulitplied.div(totalSupply).mul(2);
 
     return ethers.utils.formatEther(lpTokenPrice);
   }
