@@ -65,21 +65,20 @@ const getHistoricalPrices = async () => {
       let fetcher = new UniswapV3FetcherHistorical(pricesToFetch[index]);
       return [fetcher.fetchAll(["OHM"]), pricesToFetch[index]];
     });
-    await Promise.all(promises)
-      .then((results) => {
-        results.forEach((result) => {
-          if (result[0][0].value != null) {
-            const price = {
-              uniswapPrice: result[0][0].value,
-              timestamp: Number(result[1].toString()),
-            };
-            prices.push(price);
-          }
-        });
-      })
-      .catch(function (err) {
-        console.error(err);
+    const results = await Promise.all(promises);
+
+    results.forEach((results) => {
+      results.forEach((result) => {
+        if (result[0][0].value != null) {
+          const price = {
+            uniswapPrice: result[0][0].value,
+            timestamp: Number(result[1].toString()),
+          };
+          prices.push(price);
+        }
       });
+    });
+
     priceIterator += 100;
     console.log(priceIterator / pricesToFetch.length);
   }
