@@ -3,7 +3,6 @@
 pragma solidity ^0.8.4;
 
 import "../SampleRedstoneConsumerNumericMock.sol";
-import "hardhat/console.sol";
 
 contract HashCalldataModel is RedstoneConsumerNumericMock {
   mapping(bytes32 => Request) public requests;
@@ -67,7 +66,6 @@ contract HashCalldataModel is RedstoneConsumerNumericMock {
     if (request.requestHash != 0) {
       price = getOracleNumericValueFromTxMsg(arg2);
     } else {
-      console.log("Request not found");
       revert("Request not found");
     }
   }
