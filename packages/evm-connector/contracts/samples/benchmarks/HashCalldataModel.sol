@@ -5,22 +5,16 @@ pragma solidity ^0.8.4;
 import "../SampleRedstoneConsumerNumericMock.sol";
 
 contract HashCalldataModel is RedstoneConsumerNumericMock {
-  mapping(bytes32 => Request) public requests;
+  mapping(bytes32 => bool) public requests;
   uint256 price = 0;
-
-  struct Request {
-    bytes32 requestHash;
-    uint256 blockNumber;
-    address requesterAddress;
-  }
 
   function sendRequestWith3Args(
     bytes32 arg1,
     bytes32 arg2,
     bytes32 arg3
   ) public returns (bytes32) {
-    bytes32 requestHash = keccak256(abi.encodePacked(arg1, arg2, arg3));
-    requests[requestHash] = Request(requestHash, block.number, msg.sender);
+    bytes32 requestHash = keccak256(abi.encodePacked(block.number, msg.sender, arg1, arg2, arg3));
+    requests[requestHash] = true;
     return requestHash;
   }
 
@@ -31,8 +25,10 @@ contract HashCalldataModel is RedstoneConsumerNumericMock {
     bytes32 arg4,
     bytes32 arg5
   ) public returns (bytes32) {
-    bytes32 requestHash = keccak256(abi.encodePacked(arg1, arg2, arg3, arg4, arg5));
-    requests[requestHash] = Request(requestHash, block.number, msg.sender);
+    bytes32 requestHash = keccak256(
+      abi.encodePacked(block.number, msg.sender, arg1, arg2, arg3, arg4, arg5)
+    );
+    requests[requestHash] = true;
     return requestHash;
   }
 
@@ -49,21 +45,36 @@ contract HashCalldataModel is RedstoneConsumerNumericMock {
     bytes32 arg10
   ) public returns (bytes32) {
     bytes32 requestHash = keccak256(
-      abi.encodePacked(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)
+      abi.encodePacked(
+        block.number,
+        msg.sender,
+        arg1,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        arg6,
+        arg7,
+        arg8,
+        arg9,
+        arg10
+      )
     );
-    requests[requestHash] = Request(requestHash, block.number, msg.sender);
+    requests[requestHash] = true;
     return requestHash;
   }
 
   function executeRequestWith3ArgsWithPrices(
+    uint blockNumber,
+    address sender,
     bytes32 arg1,
     bytes32 arg2,
     bytes32 arg3
   ) public {
-    bytes32 requestHash = keccak256(abi.encodePacked(arg1, arg2, arg3));
+    bytes32 requestHash = keccak256(abi.encodePacked(blockNumber, sender, arg1, arg2, arg3));
 
-    Request memory request = requests[requestHash];
-    if (request.requestHash != 0) {
+    bool isIn = requests[requestHash];
+    if (isIn == true) {
       price = getOracleNumericValueFromTxMsg(arg2);
     } else {
       revert("Request not found");
@@ -71,16 +82,18 @@ contract HashCalldataModel is RedstoneConsumerNumericMock {
   }
 
   function executeRequestWith5ArgsWithPrices(
+    uint blockNumber,
+    address sender,
     bytes32 arg1,
     bytes32 arg2,
     bytes32 arg3,
     bytes32 arg4,
     bytes32 arg5
   ) public {
-    bytes32 requestHash = keccak256(abi.encodePacked(arg1, arg2, arg3, arg4, arg5));
+    bytes32 requestHash = keccak256(abi.encodePacked(blockNumber, sender, arg1, arg2, arg3, arg4, arg5));
 
-    Request memory request = requests[requestHash];
-    if (request.requestHash != 0) {
+    bool isIn = requests[requestHash];
+    if (isIn == true) {
       price = getOracleNumericValueFromTxMsg(arg2);
     } else {
       revert("Request not found");
@@ -88,6 +101,8 @@ contract HashCalldataModel is RedstoneConsumerNumericMock {
   }
 
   function executeRequestWith10ArgsWithPrices(
+    uint blockNumber,
+    address sender,
     bytes32 arg1,
     bytes32 arg2,
     bytes32 arg3,
@@ -100,11 +115,24 @@ contract HashCalldataModel is RedstoneConsumerNumericMock {
     bytes32 arg10
   ) public {
     bytes32 requestHash = keccak256(
-      abi.encodePacked(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10)
+      abi.encodePacked(
+        blockNumber,
+        sender,
+        arg1,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        arg6,
+        arg7,
+        arg8,
+        arg9,
+        arg10
+      )
     );
 
-    Request memory request = requests[requestHash];
-    if (request.requestHash != 0) {
+    bool isIn = requests[requestHash];
+    if (isIn == true) {
       price = getOracleNumericValueFromTxMsg(arg1);
     } else {
       revert("Request not found");

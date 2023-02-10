@@ -124,7 +124,7 @@ describe("Benchmark", function () {
       let sendStructRequestFunction: (...args: Uint8Array[]) => any;
       let executeStructRequestFunction: (requestId: number) => any;
       let sendHashRequestFunction: (...args: Uint8Array[]) => any;
-      let executeHashRequestFunction: (...args: Uint8Array[]) => any;
+      let executeHashRequestFunction: (blockNumber: number, address: string, ...args: Uint8Array[]) => any;
 
       switch (benchmarkParams.passedArgumentsCount) {
         case 3:
@@ -166,17 +166,16 @@ describe("Benchmark", function () {
       const requestStructTxReceipt = await requestStructTx.wait();
 
       const executeRequestStructTx = await executeStructRequestFunction(1);
-
       const executeRequestStructTxReceipt = await executeRequestStructTx.wait();
 
       const requestHashTx = await sendHashRequestFunction(...bytes32Symbols);
-
       const requestHashTxReceipt = await requestHashTx.wait();
-
-      const executeRequestHashTx = await executeHashRequestFunction(
+      
+      const blockNumber = await ethers.provider.getBlockNumber();
+      const sender = await ethers.provider.getSigner(0).getAddress();
+      const executeRequestHashTx = await executeHashRequestFunction(blockNumber, sender,
         ...bytes32Symbols
       );
-
       const executeRequestHashTxReceipt = await executeRequestHashTx.wait();
 
       const gasReport: GasReport = {
