@@ -83,7 +83,6 @@ contract HashCalldataModel is RedstoneConsumerNumericMock {
     if (request.requestHash != 0) {
       price = getOracleNumericValueFromTxMsg(arg2);
     } else {
-      console.log("Request not found");
       revert("Request not found");
     }
   }
@@ -108,7 +107,6 @@ contract HashCalldataModel is RedstoneConsumerNumericMock {
     if (request.requestHash != 0) {
       price = getOracleNumericValueFromTxMsg(arg1);
     } else {
-      console.log("Request not found");
       revert("Request not found");
     }
   }
