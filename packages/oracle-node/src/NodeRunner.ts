@@ -24,13 +24,12 @@ import { AggregatedPriceHandler } from "./aggregated-price-handlers/AggregatedPr
 import { AggregatedPriceLocalDBSaver } from "./aggregated-price-handlers/AggregatedPriceLocalDBSaver";
 import { DataPackageBroadcastPerformer } from "./aggregated-price-handlers/DataPackageBroadcastPerformer";
 import { PriceDataBroadcastPerformer } from "./aggregated-price-handlers/PriceDataBroadcastPerformer";
-import { roundTimestamp } from "./utils/timestamps";
-import { intervalMsToCronFormat } from "./utils/intervals";
-import {ManifestDataProvider} from "./aggregated-price-handlers/ManifestDataProvider";
+import { ManifestDataProvider } from "./aggregated-price-handlers/ManifestDataProvider";
+import { getScheduler } from "./schedulers";
+import { IterationContext } from "./schedulers/IScheduler";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
-const schedule = require("node-schedule");
 
 const MANIFEST_LOAD_TIMEOUT_MS = 25 * 1000;
 const DIAGNOSTIC_INFO_PRINTING_INTERVAL = 60 * 1000;
@@ -67,7 +66,11 @@ export default class NodeRunner {
 
     this.aggregatedPriceHandlers = [
       new AggregatedPriceLocalDBSaver(),
-      new DataPackageBroadcastPerformer(httpBroadcasterURLs, ethereumPrivKey, this.manifestDataProvider),
+      new DataPackageBroadcastPerformer(
+        httpBroadcasterURLs,
+        ethereumPrivKey,
+        this.manifestDataProvider
+      ),
       new PriceDataBroadcastPerformer(
         priceHttpBroadcasterURLs,
         ethereumPrivKey,
@@ -121,12 +124,13 @@ export default class NodeRunner {
     await this.printInitialNodeDetails();
     this.maybeRunDiagnosticInfoPrinting();
 
+    // TODO: implement manifest validation
+
     try {
-      await this.runIteration();
-      const cronScheduleString = intervalMsToCronFormat(
-        this.currentManifest!.interval
-      );
-      schedule.scheduleJob(cronScheduleString, this.runIteration);
+      // TODO: get scheduler name from manifest
+      const schedulerName = "interval";
+      const scheduler = getScheduler(schedulerName, this.currentManifest!);
+      await scheduler.startIterations(this.runIteration);
     } catch (e: any) {
       NodeRunner.reThrowIfManifestConfigError(e);
     }
@@ -180,24 +184,25 @@ export default class NodeRunner {
     }
   }
 
-  private async runIteration() {
+  private async runIteration(iterationContext: IterationContext) {
     logger.info("Running new iteration.");
 
+    // TODO: think about a mechanism of manifest updating in oracle-node
     if (this.newManifest !== null) {
       logger.info("Using new manifest: ", this.newManifest.txId);
       this.useNewManifest(this.newManifest);
     }
 
     this.maybeLoadManifestFromSmartContract();
-    await this.safeProcessManifestTokens();
+    await this.safeProcessManifestTokens(iterationContext);
 
     printTrackingState();
   }
 
-  private async safeProcessManifestTokens() {
+  private async safeProcessManifestTokens(iterationContext: IterationContext) {
     const processingAllTrackingId = trackStart("processing-all");
     try {
-      await this.doProcessTokens();
+      await this.doProcessTokens(iterationContext);
     } catch (e: any) {
       NodeRunner.reThrowIfManifestConfigError(e);
     } finally {
@@ -205,12 +210,14 @@ export default class NodeRunner {
     }
   }
 
-  private async doProcessTokens(): Promise<void> {
+  private async doProcessTokens(
+    iterationContext: IterationContext
+  ): Promise<void> {
     logger.info("Processing tokens");
 
     // Fetching and aggregating
     const aggregatedPrices: PriceDataAfterAggregation[] =
-      await this.fetchPrices();
+      await this.fetchPrices(iterationContext);
 
     if (aggregatedPrices.length === 0) {
       logger.info("No aggregated prices to process");
@@ -223,10 +230,13 @@ export default class NodeRunner {
     }
   }
 
-  private async fetchPrices(): Promise<PriceDataAfterAggregation[]> {
+  // TODO: add blockNumber saving here as well
+  private async fetchPrices(
+    iterationContext: IterationContext
+  ): Promise<PriceDataAfterAggregation[]> {
     const fetchingAllTrackingId = trackStart("fetching-all");
 
-    const fetchTimestamp = roundTimestamp(Date.now());
+    const fetchTimestamp = iterationContext.timestamp;
     const fetchedPrices = await this.pricesService!.fetchInParallel(
       this.tokensBySource!
     );

@@ -16,6 +16,7 @@ const DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS = "900000";
 const DEFAULT_ETHERSCAN_API_URL = "";
 const DEFAULT_ETHERSCAN_API_KEY = "";
 const DEFAULT_AVALANCHE_RPC_URL = "https://api.avax.network/ext/bc/C/rpc";
+const DEFAULT_ARBITRUM_RPC_URL = "https://arb1.arbitrum.io/rpc";
 const DEFAULT_MOCK_PRICES_URL_OR_PATH =
   "https://raw.githubusercontent.com/redstone-finance/redstone-mock-prices/main/mock-prices.json";
 const DEFAULT_COINBASE_INDEXER_MONGODB_URL = "";
@@ -105,7 +106,7 @@ const ethereumPrivateKey = parserFromString.hex(
   getFromEnv("ECDSA_PRIVATE_KEY")
 );
 
-export const config: NodeConfig = Object.freeze({
+export const config = Object.freeze({
   enableJsonLogs: parserFromString.boolean(
     getFromEnv("ENABLE_JSON_LOGS", DEFAULT_ENABLE_JSON_LOGS)
   ),
@@ -153,6 +154,7 @@ export const config: NodeConfig = Object.freeze({
     )
   ),
   avalancheRpcUrl: getFromEnv("AVALANCHE_RPC_URL", DEFAULT_AVALANCHE_RPC_URL),
+  arbitrumRpcUrl: getFromEnv("ARBITRUM_RPC_URL", DEFAULT_ARBITRUM_RPC_URL),
   enableStreamrBroadcasting: parserFromString.boolean(
     getFromEnv(
       "ENABLE_STREAMR_BROADCASTING",
