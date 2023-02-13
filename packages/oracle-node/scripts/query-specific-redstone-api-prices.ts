@@ -1,5 +1,8 @@
 import axios from "axios";
-import dataToCompare from "../ETH-historical-prices-chainlink.json";
+const cryptocurrency = "ETH"; //change to any other cryptocurrency
+// import dataToCompare from `../${cryptocurrency}-historical-prices-chainlink.json`;
+const dataToCompare = require(`../${cryptocurrency}-historical-prices-chainlink.json`);
+// import dataToCompare from "../OHMv2-historical-prices-chainlink.json";
 import fs from "fs";
 
 interface ResponseData {
@@ -16,7 +19,13 @@ interface AgregatedData {
 const writeResults = (results: AgregatedData[]) => {
   console.log("Saving results to file: historical-prices-redstone.json");
   const json = JSON.stringify(results);
-  fs.writeFile("ETH-historical-prices-redstone.json", json, "utf8", () => {});
+  // fs.writeFile("ETH-historical-prices-redstone.json", json, "utf8", () => {});
+  fs.writeFile(
+    `${cryptocurrency}-historical-prices-redstone.json`,
+    json,
+    "utf8",
+    () => {}
+  );
 };
 
 function mapResponse(responseData: ResponseData): AgregatedData {
@@ -33,7 +42,8 @@ async function queryPrices(
   const promises = requests.map((request) => {
     return axios.get("https://api.redstone.finance/prices", {
       params: {
-        symbol: "ETH",
+        // symbol: "ETH",
+        symbol: cryptocurrency,
         provider: "redstone",
         toTimestamp: request.timestamp * 1000, // Redstone API query timestamp in milliseconds
         limit: "1",

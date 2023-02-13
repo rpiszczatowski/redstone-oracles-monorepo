@@ -14,12 +14,17 @@ interface AgregatedData {
 const writeResults = (results: AgregatedData[]) => {
   console.log("Saving results in correct json format");
   const json = JSON.stringify(results);
-  fs.writeFile("ETH-historical-prices-chainlink.json", json, "utf8", () => {});
+  fs.writeFile(
+    "OHMv2-historical-prices-chainlink.json",
+    json,
+    "utf8",
+    () => {}
+  );
 };
 
 function mapResponse(response: ResponseData[]): AgregatedData[] {
   return response.map((item) => ({
-    price: Number(item.price) / 1e6, // Chainlink returns price in 6 decimal places?
+    price: Number(item.price) / 1e8, // Chainlink returns price in 8 decimal places?
     timestamp: Number(item.timestamp),
   }));
 }
