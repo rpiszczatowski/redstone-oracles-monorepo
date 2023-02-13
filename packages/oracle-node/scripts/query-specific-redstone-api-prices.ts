@@ -19,7 +19,6 @@ interface AgregatedData {
 const writeResults = (results: AgregatedData[]) => {
   console.log("Saving results to file: historical-prices-redstone.json");
   const json = JSON.stringify(results);
-  // fs.writeFile("ETH-historical-prices-redstone.json", json, "utf8", () => {});
   fs.writeFile(
     `${cryptocurrency}-historical-prices-redstone.json`,
     json,
@@ -42,7 +41,6 @@ async function queryPrices(
   const promises = requests.map((request) => {
     return axios.get("https://api.redstone.finance/prices", {
       params: {
-        // symbol: "ETH",
         symbol: cryptocurrency,
         provider: "redstone",
         toTimestamp: request.timestamp * 1000, // Redstone API query timestamp in milliseconds

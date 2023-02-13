@@ -4,7 +4,7 @@ import fs from "fs";
 import { range } from "./utils";
 
 const AGGREGATOR_V3_INTERFACE_ABI = abi;
-const PRICE_FEED_ADDR = contracts["OHMv2"];
+const PRICE_FEED_ADDR = contracts["ETH"]; // we can change to any valid cryptocurrency
 
 const provider = new ethers.providers.JsonRpcProvider(
   "https://api.avax.network/ext/bc/C/rpc"
