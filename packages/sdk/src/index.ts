@@ -14,11 +14,14 @@ export const DEFAULT_CACHE_SERVICE_URLS = [
 
 const ALL_FEEDS_KEY = "___ALL_FEEDS___";
 
+const SECOND_IN_MILLISECONDS = 1000;
+
 export interface DataPackagesRequestParams {
   dataServiceId: string;
   uniqueSignersCount: number;
   dataFeeds?: string[];
   disablePayloadsDryRun?: boolean;
+  maxTimestampDelay?: number;
 }
 
 export interface DataPackagesResponse {
@@ -51,6 +54,7 @@ export const parseDataPackagesResponse = (
   const parsedResponse: DataPackagesResponse = {};
 
   const requestedDataFeedIds = reqParams.dataFeeds ?? [ALL_FEEDS_KEY];
+  const currentTimestamp = Date.now();
 
   for (const dataFeedId of requestedDataFeedIds) {
     const dataFeedPackages = dpResponse[dataFeedId];
@@ -67,6 +71,20 @@ export const parseDataPackagesResponse = (
           `Expected: ${reqParams.uniqueSignersCount}. ` +
           `Received: ${dataFeedPackages.length}`
       );
+    }
+
+    const maxTimestampDelay = reqParams.maxTimestampDelay;
+
+    if (
+      maxTimestampDelay &&
+      dataFeedPackages.some((dataFeedPackage) => {
+        return (
+          currentTimestamp - maxTimestampDelay >=
+          dataFeedPackage.timestampMilliseconds
+        );
+      })
+    ) {
+      throw new Error("At least one datapackage is outdated");
     }
 
     parsedResponse[dataFeedId] = dataFeedPackages
