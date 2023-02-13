@@ -40,7 +40,7 @@ export abstract class BaseWrapper {
           tx.data = tx.data + dataToAppend;
 
           if (isCall || isDryRun) {
-            const result = await contract.signer.call(tx);
+            const result = await contract.provider.call(tx);
             const decoded = contract.interface.decodeFunctionResult(
               functionName,
               result
