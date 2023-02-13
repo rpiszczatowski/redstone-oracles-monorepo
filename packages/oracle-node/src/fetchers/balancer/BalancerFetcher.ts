@@ -47,7 +47,6 @@ export class BalancerFetcher extends BaseFetcher {
       const spotPrice = Number(
         pool.calcSpotPrice(pool.tokens[0].address, pool.tokens[1].address)
       );
-      const price = pairedTokenPrice / Number(spotPrice);
       return { id: this.getSymbol(pool), pairedTokenPrice, spotPrice };
     }
     throw new Error(`Pool with ${pairId} not found`);
