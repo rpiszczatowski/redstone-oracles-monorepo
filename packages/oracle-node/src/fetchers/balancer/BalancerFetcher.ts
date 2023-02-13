@@ -32,19 +32,16 @@ export class BalancerFetcher extends BaseFetcher {
     const pairedTokenPrice = await this.getPairedTokenPrice();
     for (const pairId of pairIds) {
       const priceResult = this.calculatePrice(pairId, pairedTokenPrice);
-      if (!priceResult) {
-        throw new Error(`Could not get pool with id ${pairId}`);
-      }
       spotPricesPromises.push(priceResult);
     }
-    const spotPrices = await Promise.all(spotPricesPromises);
+    const spotPrices = await Promise.allSettled(spotPricesPromises);
     return spotPrices;
   }
 
   protected async calculatePrice(
     pairId: string,
     pairedTokenPrice: number
-  ): Promise<SpotPrice | null> {
+  ): Promise<SpotPrice> {
     const pool = await this.balancer.pools.find(pairId);
     if (pool) {
       const spotPrice = Number(
