@@ -2,6 +2,25 @@ import graphProxy from "../utils/graph-proxy";
 import { PricesObj } from "../types";
 import { BaseFetcher } from "./BaseFetcher";
 
+export interface DexFetcherResponse {
+  data: {
+    pairs: Pair[];
+  };
+}
+
+export interface Pair {
+  id: string;
+  token0: Token;
+  token1: Token;
+  reserve0: string;
+  reserve1: string;
+  reserveUSD: string;
+}
+
+interface Token {
+  symbol: string;
+}
+
 interface SymbolToPairId {
   [symbol: string]: string;
 }
@@ -17,7 +36,7 @@ export class DexFetcher extends BaseFetcher {
     super(name);
   }
 
-  async fetchData(ids: string[]) {
+  async fetchData(ids: string[]): Promise<DexFetcherResponse> {
     const pairIds = this.convertSymbolsToPairIds(ids, this.symbolToPairIdObj);
 
     const query = `{
@@ -38,16 +57,19 @@ export class DexFetcher extends BaseFetcher {
     return await graphProxy.executeQuery(this.subgraphUrl, query);
   }
 
-  validateResponse(response: any): boolean {
+  validateResponse(response: DexFetcherResponse): boolean {
     return response !== undefined && response.data !== undefined;
   }
 
-  async extractPrices(response: any, assetIds: string[]): Promise<PricesObj> {
-    const pricesObj: { [symbol: string]: number } = {};
+  async extractPrices(
+    response: DexFetcherResponse,
+    assetIds: string[]
+  ): Promise<PricesObj> {
+    const pricesObj: PricesObj = {};
 
     for (const currentAssetId of assetIds) {
       const pairId = this.symbolToPairIdObj[currentAssetId];
-      const pair = response.data.pairs.find((p: any) => p.id === pairId);
+      const pair = response.data.pairs.find((pair) => pair.id === pairId);
 
       if (!pair) {
         this.logger.warn(
