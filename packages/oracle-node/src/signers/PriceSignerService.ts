@@ -8,6 +8,8 @@ import {
 } from "../types";
 import { trackStart, trackEnd } from "../utils/performance-tracker";
 
+// TODO: remove this service. Use Universal signer from redstone-protocol instead
+
 const logger = require("../utils/logger")("ArweaveService") as Consola;
 
 // Business service that supplies signing operations required by Redstone-Node

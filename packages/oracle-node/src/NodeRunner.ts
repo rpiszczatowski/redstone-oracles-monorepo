@@ -236,14 +236,13 @@ export default class NodeRunner {
   ): Promise<PriceDataAfterAggregation[]> {
     const fetchingAllTrackingId = trackStart("fetching-all");
 
-    const fetchTimestamp = iterationContext.timestamp;
     const fetchedPrices = await this.pricesService!.fetchInParallel(
       this.tokensBySource!
     );
     const pricesData: PricesDataFetched = mergeObjects(fetchedPrices);
     const pricesBeforeAggregation: PricesBeforeAggregation =
       PricesService.groupPricesByToken(
-        fetchTimestamp,
+        iterationContext,
         pricesData,
         this.version
       );

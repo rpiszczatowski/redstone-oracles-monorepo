@@ -20,6 +20,7 @@ import {
   safelyConvertAnyValueToNumber,
   calculateDeviationPercent,
 } from "../utils/numbers";
+import { IterationContext } from "../schedulers/IScheduler";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -134,7 +135,7 @@ export default class PricesService {
   }
 
   static groupPricesByToken(
-    fetchTimestamp: number,
+    iterationContext: IterationContext,
     pricesData: PricesDataFetched,
     nodeVersion: string
   ): PricesBeforeAggregation {
@@ -147,7 +148,8 @@ export default class PricesService {
             id: uuidv4(), // Generating unique id for each price
             source: {},
             symbol: price.symbol,
-            timestamp: fetchTimestamp,
+            timestamp: iterationContext.timestamp,
+            blockNumber: iterationContext.blockNumber,
             version: nodeVersion,
           };
         }
@@ -159,7 +161,7 @@ export default class PricesService {
     return result;
   }
 
-  /* 
+  /*
     This function calculates aggregated price values based on
       - recent deviations check
       - invalid values excluding

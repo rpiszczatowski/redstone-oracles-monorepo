@@ -83,6 +83,7 @@ export interface PriceDataBeforeAggregation {
   symbol: string;
   source: Source;
   timestamp: number;
+  blockNumber?: number;
   version: string;
 }
 

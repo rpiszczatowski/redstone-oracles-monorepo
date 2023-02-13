@@ -67,7 +67,7 @@ describe("PricesService", () => {
 
       // When
       const result: PricesBeforeAggregation = PricesService.groupPricesByToken(
-        fetchTimestamp,
+        { timestamp: fetchTimestamp },
         pricesData,
         nodeVersion
       );
