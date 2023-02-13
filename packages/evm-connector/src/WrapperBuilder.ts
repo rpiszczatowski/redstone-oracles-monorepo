@@ -46,7 +46,7 @@ export class WrapperBuilder {
         scoreType,
       },
       nodeUrls
-    ).overwriteEthersContract(this.baseContract);
+    ).overwriteEthersContract(this.baseContract, true);
   }
 
   usingDataPackages(dataPackages: DataPackagesResponse) {

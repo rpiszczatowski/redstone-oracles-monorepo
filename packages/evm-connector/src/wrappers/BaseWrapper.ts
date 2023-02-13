@@ -12,7 +12,10 @@ export abstract class BaseWrapper {
     params?: ParamsForDryRunVerification
   ): Promise<string>;
 
-  overwriteEthersContract(contract: Contract): Contract {
+  overwriteEthersContract(
+    contract: Contract,
+    shouldBeSigner: boolean = false
+  ): Contract {
     const wrapper = this;
     const contractPrototype = Object.getPrototypeOf(contract);
     const wrappedContract = Object.assign(
@@ -40,7 +43,12 @@ export abstract class BaseWrapper {
           tx.data = tx.data + dataToAppend;
 
           if (isCall || isDryRun) {
-            const result = await contract.provider.call(tx);
+            let result = null;
+            if (shouldBeSigner) {
+              result = await contract.signer.call(tx);
+            } else {
+              result = await contract.provider.call(tx);
+            }
             const decoded = contract.interface.decodeFunctionResult(
               functionName,
               result
