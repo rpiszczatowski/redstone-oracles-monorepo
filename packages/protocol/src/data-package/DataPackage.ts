@@ -15,6 +15,7 @@ import { assert, convertIntegerNumberToBytes } from "../common/utils";
 import { deserializeDataPointFromObj } from "../data-point/data-point-deserializer";
 import { DataPoint, DataPointPlainObj } from "../data-point/DataPoint";
 import { SignedDataPackage } from "./SignedDataPackage";
+import { MultiSignDataPackage } from "./MultiSignDataPackage";
 
 export interface DataPackagePlainObj {
   dataPoints: DataPointPlainObj[];
@@ -83,6 +84,21 @@ export class DataPackage extends Serializable {
     const fullSignature = signingKey.signDigest(signableHashBytes);
     // Return a signed data package
     return new SignedDataPackage(this, fullSignature);
+  }
+
+  multiSign(privateKeys: string[]): MultiSignDataPackage {
+    // Prepare hash for signing
+    const signableHashBytes = this.getSignableHash();
+
+    // Generating a signature
+    const signingKeys = privateKeys.map(
+      (privateKey) => new SigningKey(privateKey)
+    );
+    const fullSignatures = signingKeys.map((signingKey) =>
+      signingKey.signDigest(signableHashBytes)
+    );
+    // Return a signed data package
+    return new MultiSignDataPackage(this, fullSignatures);
   }
 
   protected serializeDataPoints(): Uint8Array {
