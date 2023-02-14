@@ -131,7 +131,6 @@ export interface ArweaveTransactionTags {
 }
 
 export interface PrivateKeys {
-  arweaveJwk: JWKInterface;
   ethereumPrivateKey: string;
 }
 
