@@ -226,7 +226,11 @@ export default class NodeRunner {
     }
 
     for (const processor of this.aggregatedPriceHandlers) {
-      await processor.handle(aggregatedPrices, this.pricesService!);
+      await processor.handle(
+        aggregatedPrices,
+        this.pricesService!,
+        iterationContext
+      );
     }
   }
 

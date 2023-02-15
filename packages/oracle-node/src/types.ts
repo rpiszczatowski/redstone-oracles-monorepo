@@ -12,6 +12,7 @@ export interface Manifest {
   httpBroadcasterURLs?: string[];
   enableStreamrBroadcaster?: boolean;
   minValidSourcesPercentage?: number;
+  signBlockNumbersInsteadOfTimestamps?: boolean;
 }
 
 export interface TokensConfig {
