@@ -234,7 +234,6 @@ export default class NodeRunner {
     }
   }
 
-  // TODO: add blockNumber saving here as well
   private async fetchPrices(
     iterationContext: IterationContext
   ): Promise<PriceDataAfterAggregation[]> {
