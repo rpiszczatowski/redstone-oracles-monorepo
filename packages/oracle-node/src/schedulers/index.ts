@@ -9,7 +9,6 @@ export type SchedulerName = keyof typeof schedulerGetters;
 const ARBITRUM_NETWORK_NAME = "Arbitrum One";
 const ARBITRUM_CHAIN_ID = 42161;
 
-// TODO: create a separate module with providers registry in the oracle-node
 const arbitrumProvider = new ethers.providers.StaticJsonRpcProvider(
   config.arbitrumRpcUrl,
   {

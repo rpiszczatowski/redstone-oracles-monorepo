@@ -33,6 +33,7 @@ const pjson = require("../package.json") as any;
 
 const MANIFEST_LOAD_TIMEOUT_MS = 25 * 1000;
 const DIAGNOSTIC_INFO_PRINTING_INTERVAL = 60 * 1000;
+const DEFAULT_SCHEDULER_NAME = "interval";
 
 export default class NodeRunner {
   private readonly version: string;
@@ -121,14 +122,14 @@ export default class NodeRunner {
   }
 
   async run(): Promise<void> {
+    // TODO: implement manifest validation here
+
     await this.printInitialNodeDetails();
     this.maybeRunDiagnosticInfoPrinting();
 
-    // TODO: implement manifest validation
-
     try {
-      // TODO: get scheduler name from manifest
-      const schedulerName = "interval";
+      const schedulerName =
+        this.currentManifest!.useCustomScheduler ?? DEFAULT_SCHEDULER_NAME;
       const scheduler = getScheduler(schedulerName, this.currentManifest!);
       await scheduler.startIterations(this.runIteration);
     } catch (e: any) {
@@ -185,9 +186,8 @@ export default class NodeRunner {
   }
 
   private async runIteration(iterationContext: IterationContext) {
-    logger.info("Running new iteration.");
+    logger.info("Running new iteration: " + JSON.stringify(iterationContext));
 
-    // TODO: think about a mechanism of manifest updating in oracle-node
     if (this.newManifest !== null) {
       logger.info("Using new manifest: ", this.newManifest.txId);
       this.useNewManifest(this.newManifest);
