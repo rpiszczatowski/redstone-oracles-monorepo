@@ -2,6 +2,10 @@ import { Contract } from "ethers";
 import { DataPackagesRequestParams, DataPackagesResponse } from "redstone-sdk";
 import { ScoreType } from "redstone-protocol";
 import { MockDataPackageConfig, MockWrapper } from "./wrappers/MockWrapper";
+import {
+  MockMultiSignDataPackageConfig,
+  MockWrapperMultiSign,
+} from "./wrappers/MockWrapperMultiSign";
 import { DataServiceWrapper } from "./wrappers/DataServiceWrapper";
 import {
   SimpleNumericMockConfig,
@@ -29,6 +33,14 @@ export class WrapperBuilder {
 
   usingMockDataPackages(mockDataPackages: MockDataPackageConfig[]) {
     return new MockWrapper(mockDataPackages).overwriteEthersContract(
+      this.baseContract
+    );
+  }
+
+  usingMockDataPackagesMultiSign(
+    mockDataPackage: MockMultiSignDataPackageConfig
+  ) {
+    return new MockWrapperMultiSign(mockDataPackage).overwriteEthersContract(
       this.baseContract
     );
   }
