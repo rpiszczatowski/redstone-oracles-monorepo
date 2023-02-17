@@ -24,19 +24,19 @@ export class WrapperBuilder {
     return new DataServiceWrapper(
       dataPackagesRequestParams,
       urls
-    ).overwriteEthersContract(this.baseContract);
+    ).useSignerInsteadOfProviderForStaticCalls(this.baseContract);
   }
 
   usingMockDataPackages(mockDataPackages: MockDataPackageConfig[]) {
-    return new MockWrapper(mockDataPackages).overwriteEthersContract(
-      this.baseContract
-    );
+    return new MockWrapper(
+      mockDataPackages
+    ).useSignerInsteadOfProviderForStaticCalls(this.baseContract);
   }
 
   usingSimpleNumericMock(simpleNumericMockConfig: SimpleNumericMockConfig) {
     return new SimpleNumericMockWrapper(
       simpleNumericMockConfig
-    ).overwriteEthersContract(this.baseContract);
+    ).useSignerInsteadOfProviderForStaticCalls(this.baseContract);
   }
 
   usingOnDemandRequest(nodeUrls: string[], scoreType: ScoreType) {
@@ -46,12 +46,12 @@ export class WrapperBuilder {
         scoreType,
       },
       nodeUrls
-    ).overwriteEthersContract(this.baseContract, true);
+    ).useSignerInsteadOfProviderForStaticCalls(this.baseContract, true);
   }
 
   usingDataPackages(dataPackages: DataPackagesResponse) {
-    return new DataPackagesWrapper(dataPackages).overwriteEthersContract(
-      this.baseContract
-    );
+    return new DataPackagesWrapper(
+      dataPackages
+    ).useSignerInsteadOfProviderForStaticCalls(this.baseContract);
   }
 }

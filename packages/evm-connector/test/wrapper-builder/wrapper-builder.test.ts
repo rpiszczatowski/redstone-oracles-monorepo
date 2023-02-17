@@ -1,20 +1,36 @@
 import { WrapperBuilder } from "../../src/index";
-import { ethers } from "ethers";
-import { contractAddress, abi } from "./constants";
+import { ethers } from "hardhat";
 import { DataPackagesResponse } from "redstone-sdk";
 
+import { SampleSyntheticToken } from "../../typechain-types";
+import { Signer } from "ethers";
+import { convertStringToBytes32 } from "redstone-protocol/src/common/utils";
+import { expect } from "chai";
+
 describe("WrapperBuilder", () => {
+  let sampleContract: SampleSyntheticToken,
+    wrappedContract: any,
+    signer: Signer,
+    address: string;
+
   it("It should wrap Signer Contract", async () => {
-    let provider = new ethers.providers.JsonRpcProvider(
-      "https://api.avax.network/ext/bc/C/rpc"
+    const SampleSyntheticToken = await ethers.getContractFactory(
+      "SampleSyntheticToken"
     );
-    let contract = new ethers.Contract(contractAddress.address, abi, provider);
+    sampleContract = await SampleSyntheticToken.deploy();
+    await sampleContract.initialize(
+      convertStringToBytes32("REDSTONE"),
+      "SYNTH-REDSTONE",
+      "SREDSTONE"
+    );
+    await sampleContract.deployed();
+    [signer] = await ethers.getSigners();
+    address = await signer.getAddress();
 
     const dataPackages: DataPackagesResponse = {};
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingDataPackages(dataPackages);
-    const result = await wrappedContract.usdg();
+      WrapperBuilder.wrap(sampleContract).usingDataPackages(dataPackages);
 
-    console.log(result);
+    expect(await wrappedContract.balanceOf(address)).to.equal(0);
   });
 });

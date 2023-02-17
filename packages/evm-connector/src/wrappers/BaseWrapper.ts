@@ -12,7 +12,7 @@ export abstract class BaseWrapper {
     params?: ParamsForDryRunVerification
   ): Promise<string>;
 
-  overwriteEthersContract(
+  useSignerInsteadOfProviderForStaticCalls(
     contract: Contract,
     shouldBeSigner: boolean = false
   ): Contract {
@@ -43,12 +43,10 @@ export abstract class BaseWrapper {
           tx.data = tx.data + dataToAppend;
 
           if (isCall || isDryRun) {
-            let result = null;
-            if (shouldBeSigner) {
-              result = await contract.signer.call(tx);
-            } else {
-              result = await contract.provider.call(tx);
-            }
+            const result = await contract[
+              shouldBeSigner ? "signer" : "provider"
+            ].call(tx);
+
             const decoded = contract.interface.decodeFunctionResult(
               functionName,
               result
