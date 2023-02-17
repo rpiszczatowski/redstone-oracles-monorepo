@@ -79,7 +79,7 @@ const getHistoricalPrices = async () => {
       });
     });
 
-    priceIterator += 100;
+    priceIterator += PROMISE_BATCH_SIZE;
     console.log(priceIterator / pricesToFetch.length);
   }
   return prices;

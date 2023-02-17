@@ -1,6 +1,9 @@
-import { range } from "../utils";
 import fs from "fs";
 import { SushiswapFetcherHistorical } from "../../src/fetchers/sushiswap/historical/SushiswapFetcherHistorical";
+import { saveJSON } from "../common/fs-utils";
+
+const PROMISE_BATCH_SIZE = 100;
+const SUSHISWAP_PRICES_FILEPATH = "sushiswap-prices.json";
 
 Promise.all = function promiseAllIterative(values: any): any {
   return new Promise((resolve, reject) => {
@@ -58,39 +61,31 @@ const getHistoricalPrices = async () => {
 
   console.log(pricesToFetch.length);
 
-  while (i < pricesToFetch.length - 101) {
-    let promises = range(BigInt(i), BigInt(i) + BigInt(100), BigInt(1)).map(
-      (index: any) => {
+  while (i < pricesToFetch.length - PROMISE_BATCH_SIZE + 1) {
+    let promises = [...Array(PROMISE_BATCH_SIZE).keys()].map(
+      (index: number) => {
         let fetcher = new SushiswapFetcherHistorical(pricesToFetch[index]);
         return [fetcher.fetchAll(["OHM"]), pricesToFetch[index]];
       }
     );
-    await Promise.all(promises)
-      .then((results) => {
-        results.forEach((result) => {
-          if (result[0][0].value != null) {
-            const price = {
-              sushiswapPrice: result[0][0].value,
-              blockNumber: result[1],
-            };
-            prices.push(price);
-          }
-        });
-      })
-      .catch(function (err) {
-        console.error(err);
-      });
-    i += 100;
+
+    const results = await Promise.all(promises);
+
+    results.forEach((result: any) => {
+      if (result[0][0].value != null) {
+        const price = {
+          sushiswapPrice: result[0][0].value,
+          blockNumber: result[1],
+        };
+        prices.push(price);
+      }
+    });
+    i += PROMISE_BATCH_SIZE;
     console.log(i / pricesToFetch.length);
   }
   return prices;
 };
 
-const writeResults = (results: any) => {
-  console.log("Saving results to file");
-  let json = JSON.stringify(results);
-  fs.writeFile(`sushiswap-prices-weth.json`, json, "utf8", () => {});
-};
 const readPrices = (file: string) => {
   console.log("Reading price file");
   return JSON.parse(fs.readFileSync(file, "utf-8"));
@@ -98,6 +93,6 @@ const readPrices = (file: string) => {
 
 async function main() {
   const result = await getHistoricalPrices();
-  writeResults(result);
+  saveJSON(result, SUSHISWAP_PRICES_FILEPATH);
 }
 main();
