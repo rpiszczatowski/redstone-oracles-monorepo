@@ -3,3 +3,7 @@ export interface SpotPrice {
   pairedTokenPrice: number;
   spotPrice: number;
 }
+export interface PriceWithPromiseStatus {
+  status: string;
+  value: SpotPrice;
+}

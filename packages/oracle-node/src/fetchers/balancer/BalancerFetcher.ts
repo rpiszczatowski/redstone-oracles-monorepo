@@ -9,12 +9,14 @@ import { config } from "../../config";
 import { BaseFetcher } from "../BaseFetcher";
 import { getLastPrice } from "../../db/local-db";
 import balancerPairs from "./balancer-pairs.json";
-import { SpotPrice } from "./types";
+import { PriceWithPromiseStatus, SpotPrice } from "./types";
 
 const balancerConfig: BalancerSdkConfig = {
   network: Network.MAINNET,
   rpcUrl: config.ethMainRpcUrl as string,
 };
+
+const PROMISE_STATUS_FULFILLED = "fulfilled";
 
 export class BalancerFetcher extends BaseFetcher {
   private balancer: BalancerSDK;
@@ -28,7 +30,6 @@ export class BalancerFetcher extends BaseFetcher {
     const spotPricesPromises: Promise<SpotPrice | null>[] = [];
 
     const pairIds = this.getPairIdsForAssetIds(ids);
-
     const pairedTokenPrice = await this.getPairedTokenPrice();
     for (const pairId of pairIds) {
       const priceResult = this.calculatePrice(pairId, pairedTokenPrice);
@@ -62,12 +63,14 @@ export class BalancerFetcher extends BaseFetcher {
     return getLastPrice(this.baseTokenSymbol)!.value;
   }
 
-  async extractPrices(response: SpotPrice[]): Promise<PricesObj> {
+  async extractPrices(response: PriceWithPromiseStatus[]): Promise<PricesObj> {
     const pricesObj: PricesObj = {};
 
-    for (const spotPrice of response) {
-      pricesObj[spotPrice.id] =
-        spotPrice.pairedTokenPrice / spotPrice.spotPrice;
+    for (const spotPriceWithStatus of response) {
+      if (spotPriceWithStatus.status === PROMISE_STATUS_FULFILLED) {
+        const { id, pairedTokenPrice, spotPrice } = spotPriceWithStatus.value;
+        pricesObj[id] = pairedTokenPrice / spotPrice;
+      }
     }
     return pricesObj;
   }
