@@ -75,24 +75,35 @@ export const parseDataPackagesResponse = (
 
     const maxTimestampDelay = reqParams.maxTimestampDelay;
 
+    const sortedSlicedDataPackages = dataFeedPackages
+      .sort((a, b) => b.timestampMilliseconds - a.timestampMilliseconds)
+      .slice(0, reqParams.uniqueSignersCount);
+
+    const outdatedDataPackagesTimestamps: number[] = [];
     if (
       maxTimestampDelay &&
-      dataFeedPackages.some((dataFeedPackage) => {
-        return (
+      sortedSlicedDataPackages.some((dataFeedPackage) => {
+        const isDataPackageOutdated =
           currentTimestamp - maxTimestampDelay >=
-          dataFeedPackage.timestampMilliseconds
-        );
+          dataFeedPackage.timestampMilliseconds;
+
+        if (isDataPackageOutdated) {
+          outdatedDataPackagesTimestamps.push(
+            dataFeedPackage.timestampMilliseconds
+          );
+        }
+        return isDataPackageOutdated;
       })
     ) {
-      throw new Error("At least one datapackage is outdated");
+      throw new Error(
+        `At least one datapackage is outdated. Current timestamp: ${currentTimestamp}. Outdated datapackages timestamps: ${outdatedDataPackagesTimestamps}`
+      );
     }
 
-    parsedResponse[dataFeedId] = dataFeedPackages
-      .sort((a, b) => b.timestampMilliseconds - a.timestampMilliseconds) // we prefer newer data packages in the first order
-      .slice(0, reqParams.uniqueSignersCount)
-      .map((dataPackage: SignedDataPackagePlainObj) =>
+    parsedResponse[dataFeedId] = sortedSlicedDataPackages.map(
+      (dataPackage: SignedDataPackagePlainObj) =>
         SignedDataPackage.fromObj(dataPackage)
-      );
+    );
   }
 
   return parsedResponse;

@@ -6,7 +6,6 @@ import {
 } from "../src";
 import { mockSignedDataPackages } from "./mocks/mock-packages";
 import { server } from "./mocks/server";
-import axios from "axios";
 
 describe("SDK tests", () => {
   const reqParams: DataPackagesRequestParams = {
