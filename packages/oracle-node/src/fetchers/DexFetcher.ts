@@ -90,7 +90,7 @@ export class DexFetcher extends BaseFetcher {
     return pricesObj;
   }
 
-  private convertSymbolsToPairIds(
+  protected convertSymbolsToPairIds(
     symbols: string[],
     symbolToPairId: SymbolToPairId
   ): string[] {
