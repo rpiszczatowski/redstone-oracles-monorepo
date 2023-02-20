@@ -17,7 +17,7 @@ export class MockFetcher extends BaseFetcher {
     return readJSON(config.mockPricesUrlOrPath);
   }
 
-  async extractPrices(response: any, ids: string[]): Promise<PricesObj> {
+  extractPrices(response: any, ids: string[]): PricesObj {
     const result: PricesObj = {};
 
     for (const id of ids) {

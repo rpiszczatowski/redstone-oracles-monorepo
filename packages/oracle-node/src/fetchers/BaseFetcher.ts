@@ -20,7 +20,7 @@ export abstract class BaseFetcher implements Fetcher {
     response: any,
     ids?: string[],
     opts?: FetcherOpts
-  ): Promise<PricesObj>;
+  ): PricesObj;
 
   // This method may be overridden to extend validation
   validateResponse(response: any): boolean {

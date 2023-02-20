@@ -47,7 +47,7 @@ class MultiRequestFetcherMock extends MultiRequestFetcher {
     }
   }
 
-  async getProcessingContext(): Promise<number> {
+  getProcessingContext(): number {
     return 100;
   }
 

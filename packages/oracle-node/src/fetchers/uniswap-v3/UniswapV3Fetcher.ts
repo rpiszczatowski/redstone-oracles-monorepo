@@ -68,7 +68,7 @@ export class UniswapV3Fetcher extends BaseFetcher {
     return response !== undefined && response.data !== undefined;
   }
 
-  async extractPrices(response: UniswapV3Response): Promise<PricesObj> {
+  extractPrices(response: UniswapV3Response): PricesObj {
     const pricesObj: { [symbol: string]: number } = {};
 
     for (const pool of response.data.pools) {

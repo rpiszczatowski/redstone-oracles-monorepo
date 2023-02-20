@@ -23,7 +23,7 @@ interface TokenReserve {
   [name: string]: BigNumber;
 }
 
-export const extractPrice = async (
+export const extractPrice = (
   response: MulticallParsedResponses,
   id: string
 ) => {
@@ -43,7 +43,7 @@ export const extractPrice = async (
   }
 };
 
-const extractPriceForYieldYakOrMoo = async (
+const extractPriceForYieldYakOrMoo = (
   multicallResult: MulticallParsedResponses,
   id: string,
   address: string,
@@ -61,7 +61,7 @@ const extractPriceForYieldYakOrMoo = async (
     .mul(ethers.utils.parseUnits("1.0", 8))
     .div(totalSupply);
 
-  const tokenPrice = await fetchTokenPrice(id);
+  const tokenPrice = fetchTokenPrice(id);
   if (tokenPrice) {
     const yieldYakPrice = tokenValue
       .mul(tokenPrice)
@@ -71,7 +71,7 @@ const extractPriceForYieldYakOrMoo = async (
   }
 };
 
-const extractPriceForLpTokens = async (
+const extractPriceForLpTokens = (
   multicallResult: MulticallParsedResponses,
   id: string
 ) => {
@@ -87,9 +87,7 @@ const extractPriceForLpTokens = async (
     [firstToken]: firstTokenReserve,
     [secondToken]: secondTokenReserve,
   };
-  const tokensReservesPrices = await calculateReserveTokensPrices(
-    tokenReserves
-  );
+  const tokensReservesPrices = calculateReserveTokensPrices(tokenReserves);
   if (tokensReservesPrices) {
     const firstTokenReservePrice = tokensReservesPrices[firstToken];
     const secondTokenReservePrice = tokensReservesPrices[secondToken];
@@ -104,9 +102,9 @@ const extractPriceForLpTokens = async (
   }
 };
 
-const calculateReserveTokensPrices = async (tokenReserves: TokenReserve) => {
+const calculateReserveTokensPrices = (tokenReserves: TokenReserve) => {
   const tokenNames = Object.keys(tokenReserves);
-  const tokensPrices = await fetchTokensPrices(tokenNames);
+  const tokensPrices = fetchTokensPrices(tokenNames);
   const areAllTokensFetched =
     Object.keys(tokensPrices).length === Object.keys(tokenReserves).length;
   if (areAllTokensFetched) {

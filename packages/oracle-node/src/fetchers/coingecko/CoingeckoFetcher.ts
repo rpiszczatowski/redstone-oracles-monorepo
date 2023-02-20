@@ -27,7 +27,7 @@ export class CoingeckoFetcher extends BaseFetcher {
     return await this.coingeckoProxy.getExchangeRates(ids);
   }
 
-  async extractPrices(response: any): Promise<PricesObj> {
+  extractPrices(response: any): PricesObj {
     const pricesObj: PricesObj = {};
 
     const rates = response.data;

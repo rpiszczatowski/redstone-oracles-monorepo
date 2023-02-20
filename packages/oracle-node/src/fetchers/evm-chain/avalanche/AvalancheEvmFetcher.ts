@@ -59,16 +59,11 @@ export class AvalancheEvmFetcher extends BaseFetcher {
     }
   }
 
-  // TODO: It must not be async
-  // We should change it asap
-  async extractPrices(
-    response: MulticallParsedResponses,
-    ids: string[]
-  ): Promise<PricesObj> {
+  extractPrices(response: MulticallParsedResponses, ids: string[]): PricesObj {
     const pricesObject: PricesObj = {};
     for (const id of ids) {
       try {
-        const price = await extractPrice(response, id);
+        const price = extractPrice(response, id);
         this.logger.info(`Extracted price for ${id}: ${price}`);
         if (price) {
           pricesObject[id] = Number(price);
