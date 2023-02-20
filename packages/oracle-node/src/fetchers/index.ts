@@ -28,9 +28,9 @@ import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
 import { LiquidityFetcher } from "./liquidity/LiquidityFetcher";
 import balancerFetchers from "./balancer/all-balancer-fetchers";
-
-const AVALANCHE_NETWORK_NAME = "Avalanche Network";
-const AVALANCHE_CHAIN_ID = 43114;
+import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/ArbitrumEvmFetcher";
+import { arbitrumProvider } from "./evm-chain/arbitrum/config";
+import { avalancheProvider } from "./evm-chain/avalanche/config";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -48,12 +48,7 @@ export default {
   verto: new VertoFetcher(),
   ecb: new EcbFetcher(),
   band: new BandFetcher(),
-  "avalanche-evm-fetcher": new AvalancheEvmFetcher(
-    new ethers.providers.StaticJsonRpcProvider(config.avalancheRpcUrl, {
-      name: AVALANCHE_NETWORK_NAME,
-      chainId: AVALANCHE_CHAIN_ID,
-    })
-  ),
+  "avalanche-evm-fetcher": new AvalancheEvmFetcher(avalancheProvider),
   platypus: new PlatypusFetcher(),
   chainlink: new ChainlinkFetcher(),
   lens: new LensFetcher(),
@@ -61,6 +56,7 @@ export default {
   coinmarketcap: new CoinMarketCapFetcher(),
   kaiko: new KaikoFetcher(),
   liquidity: new LiquidityFetcher(),
+  "arbitrum-evm-fetcher": new ArbitrumEvmFetcher(arbitrumProvider),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...balancerFetchers,
