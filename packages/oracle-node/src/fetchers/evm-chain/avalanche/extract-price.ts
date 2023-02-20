@@ -9,15 +9,15 @@ import {
   MooJoeTokensDetailsKeys,
   oracleAdaptersTokens,
   OracleAdaptersDetailsKeys,
-  glpToken,
-  GlpManagerDetailsKeys,
 } from "./AvalancheEvmFetcher";
 import { fetchTokenPrice, fetchTokensPrices } from "./fetch-token-price";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
-import { glpManagerContractsDetails } from "./contracts-details/glp-manager";
+import { extractPriceForGlpToken } from "../shared/extract-prices";
+import { glpToken } from "../shared/contracts-details/glp-manager";
+import { glpManagerAddress } from "./contracts-details/glp-manager";
 
 interface TokenReserve {
   [name: string]: BigNumber;
@@ -39,7 +39,7 @@ export const extractPrice = (
   } else if (oracleAdaptersTokens.includes(id)) {
     return extractPriceForOracleAdapterTokens(response, id);
   } else if (glpToken.includes(id)) {
-    return extractPriceForGlpToken(response, id);
+    return extractPriceForGlpToken(response, glpManagerAddress);
   }
 };
 
@@ -148,13 +148,4 @@ const extractPriceForOracleAdapterTokens = (
     multicallResult[address].latestAnswer.value
   );
   return ethers.utils.formatUnits(latestAnswer, 8);
-};
-
-const extractPriceForGlpToken = (
-  multicallResult: MulticallParsedResponses,
-  id: string
-) => {
-  const { address } = glpManagerContractsDetails[id as GlpManagerDetailsKeys];
-  const price = BigNumber.from(multicallResult[address].getPrice.value);
-  return ethers.utils.formatUnits(price, 30);
 };

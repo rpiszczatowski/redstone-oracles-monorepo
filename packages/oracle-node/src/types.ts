@@ -152,6 +152,7 @@ export interface NodeConfig {
   etherscanApiKey?: string;
   ttlForPricesInLocalDBInMilliseconds: number;
   avalancheRpcUrl: string;
+  arbitrumRpcUrl: string;
   enableStreamrBroadcasting: boolean;
   mockPricesUrlOrPath: string;
   twelveDataRapidApiKey?: string;

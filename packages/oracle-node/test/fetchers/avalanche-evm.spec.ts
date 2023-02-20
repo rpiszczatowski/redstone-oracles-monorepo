@@ -1,7 +1,7 @@
 import { Contract } from "ethers";
 import { MockProvider, deployContract } from "ethereum-waffle";
 import { AvalancheEvmFetcher } from "../../src/fetchers/evm-chain/avalanche/AvalancheEvmFetcher";
-import Multicall2 from "../../src/fetchers/evm-chain/avalanche/contracts-details/common/Multicall2.json";
+import Multicall2 from "../../src/fetchers/evm-chain/shared/abis/Multicall2.abi.json";
 import { yieldYakContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/yield-yak";
 import { lpTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/lp-tokens";
 import { mooTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/moo-joe";
