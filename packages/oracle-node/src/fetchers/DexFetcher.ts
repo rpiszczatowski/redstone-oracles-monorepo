@@ -17,6 +17,13 @@ export interface Pair {
   reserveUSD: string;
 }
 
+export interface Pool {
+  id: string;
+  token0: Token;
+  token1: Token;
+  liquidity: string;
+}
+
 interface Token {
   symbol: string;
 }

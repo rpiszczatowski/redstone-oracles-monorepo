@@ -16,6 +16,8 @@ const balancerConfig: BalancerSdkConfig = {
   rpcUrl: config.ethMainRpcUrl as string,
 };
 
+export type BalancerResponse = PriceWithPromiseStatus[];
+
 const PROMISE_STATUS_FULFILLED = "fulfilled";
 
 export class BalancerFetcher extends BaseFetcher {
@@ -48,7 +50,13 @@ export class BalancerFetcher extends BaseFetcher {
       const spotPrice = Number(
         pool.calcSpotPrice(pool.tokens[0].address, pool.tokens[1].address)
       );
-      return { id: this.getSymbol(pool), pairedTokenPrice, spotPrice };
+      const liquidity = pool.totalLiquidity;
+      return {
+        symbol: this.getSymbol(pool),
+        pairedTokenPrice,
+        spotPrice,
+        liquidity,
+      };
     }
     throw new Error(`Pool with ${pairId} not found`);
   }
@@ -76,8 +84,9 @@ export class BalancerFetcher extends BaseFetcher {
 
     for (const spotPriceWithStatus of response) {
       if (spotPriceWithStatus.status === PROMISE_STATUS_FULFILLED) {
-        const { id, pairedTokenPrice, spotPrice } = spotPriceWithStatus.value;
-        pricesObj[id] = pairedTokenPrice / spotPrice;
+        const { symbol, pairedTokenPrice, spotPrice } =
+          spotPriceWithStatus.value;
+        pricesObj[symbol] = pairedTokenPrice / spotPrice;
       }
     }
     return pricesObj;
