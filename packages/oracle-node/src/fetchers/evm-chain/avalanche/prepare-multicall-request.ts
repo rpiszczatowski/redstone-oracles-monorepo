@@ -1,5 +1,5 @@
 import { JsonFragment } from "@ethersproject/abi";
-import { Fragment, Interface } from "ethers/lib/utils";
+import { Fragment } from "ethers/lib/utils";
 import {
   YieldYakDetailsKeys,
   LpTokensDetailsKeys,
@@ -9,19 +9,21 @@ import {
   yyTokenIds,
   oracleAdaptersTokens,
   OracleAdaptersDetailsKeys,
-  glpToken,
-  GlpManagerDetailsKeys,
 } from "./AvalancheEvmFetcher";
+import {
+  buildMulticallRequests,
+  FunctionNamesWithValues,
+} from "../shared/build-multicall-request";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
-import { glpManagerContractsDetails } from "./contracts-details/glp-manager";
-
-interface FunctionNamesWithValues {
-  name: string;
-  values?: any[];
-}
+import { glpManagerAddress } from "./contracts-details/glp-manager";
+import {
+  glpToken,
+  GlpManagerDetailsKeys,
+  glpManagerContractsDetails,
+} from "../shared/contracts-details/glp-manager";
 
 export const prepareMulticallRequests = (id: string) => {
   let abi: string | readonly (string | Fragment | JsonFragment)[];
@@ -49,27 +51,12 @@ export const prepareMulticallRequests = (id: string) => {
       oracleAdaptersContractsDetails[id as OracleAdaptersDetailsKeys]);
     functionsNamesWithValues = [{ name: "latestAnswer" }];
   } else if (glpToken.includes(id)) {
-    ({ abi, address } =
-      glpManagerContractsDetails[id as GlpManagerDetailsKeys]);
+    ({ abi } = glpManagerContractsDetails[id as GlpManagerDetailsKeys]);
     functionsNamesWithValues = [{ name: "getPrice", values: [false] }];
+    address = glpManagerAddress;
   } else {
     throw new Error(`Asset ${id} not supported by Avalanche multicall builder`);
   }
 
   return buildMulticallRequests(abi, address, functionsNamesWithValues);
-};
-
-const buildMulticallRequests = (
-  abi: string | readonly (string | Fragment | JsonFragment)[],
-  address: string,
-  functionsNamesWithValues: FunctionNamesWithValues[]
-) => {
-  return Object.values(functionsNamesWithValues).map(({ name, values }) => {
-    const functionData = new Interface(abi).encodeFunctionData(name, values);
-    return {
-      address,
-      data: functionData,
-      name,
-    };
-  });
 };

@@ -1,8 +1,1 @@
-import GlpManagerAbi from "./GlpManager.abi.json";
-
-export const glpManagerContractsDetails = {
-  GLP: {
-    address: "0xD152c7F25db7F4B95b7658323c5F33d176818EE4",
-    abi: GlpManagerAbi,
-  },
-};
+export const glpManagerAddress = "0xd152c7f25db7f4b95b7658323c5f33d176818ee4";
