@@ -9,6 +9,7 @@ import { MulticallParsedResponses, PricesObj } from "../../../types";
 import { extractPrice } from "./extract-price";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
 import { glpManagerContractsDetails } from "./contracts-details/glp-manager";
+import { stringifyError } from "../../../utils/error-stringifier";
 
 export type YieldYakDetailsKeys = keyof typeof yieldYakContractsDetails;
 export type LpTokensDetailsKeys = keyof typeof lpTokensContractsDetails;
@@ -58,15 +59,25 @@ export class AvalancheEvmFetcher extends BaseFetcher {
     }
   }
 
+  // TODO: It must not be async
+  // We should change it asap
   async extractPrices(
     response: MulticallParsedResponses,
     ids: string[]
   ): Promise<PricesObj> {
     const pricesObject: PricesObj = {};
     for (const id of ids) {
-      const price = await extractPrice(response, id);
-      if (price) {
-        pricesObject[id] = Number(price);
+      try {
+        const price = await extractPrice(response, id);
+        this.logger.info(`Extracted price for ${id}: ${price}`);
+        if (price) {
+          pricesObject[id] = Number(price);
+        }
+      } catch (err: any) {
+        const errMsg = stringifyError(err);
+        this.logger.error(
+          `Error during extracting price. Id: ${id}. Err: ${errMsg}`
+        );
       }
     }
     return pricesObject;
