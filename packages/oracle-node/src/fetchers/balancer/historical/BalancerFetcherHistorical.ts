@@ -28,7 +28,13 @@ export class BalancerFetcherHistorical extends BalancerFetcher {
 
     if (graphResults.data.pool === null) {
       this.logger.error("Pool is null for specified timestamp");
-      return { spotPrice: NaN, id: "", pairedTokenPrice: NaN };
+
+      return {
+        spotPrice: NaN,
+        symbol: "",
+        pairedTokenPrice: NaN,
+        liquidity: "",
+      };
     }
     const tokens = graphResults.data.pool.tokens;
     const token0 = tokens[0];
@@ -36,10 +42,10 @@ export class BalancerFetcherHistorical extends BalancerFetcher {
 
     const spotPrice = Number(token0.balance / token1.balance);
 
-    const id =
+    const symbol =
       token0.symbol == this.baseTokenSymbol ? token1.symbol! : token0.symbol!;
 
-    return { spotPrice, id, pairedTokenPrice };
+    return { spotPrice, symbol, pairedTokenPrice, liquidity: "" };
   }
 
   async getBlockNumber(timestamp: number) {
