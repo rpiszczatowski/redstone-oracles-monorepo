@@ -60,10 +60,18 @@ export class BalancerFetcher extends BaseFetcher {
   }
 
   protected async getPairedTokenPrice() {
-    return getLastPrice(this.baseTokenSymbol)!.value;
+    let tokenToGet = this.baseTokenSymbol;
+    if (tokenToGet === "WETH") {
+      tokenToGet = "ETH";
+    }
+    const lastPriceFromCache = getLastPrice(tokenToGet);
+    if (!lastPriceFromCache) {
+      throw new Error(`Cannot get last price from cache for: ${tokenToGet}`);
+    }
+    return lastPriceFromCache.value;
   }
 
-  async extractPrices(response: PriceWithPromiseStatus[]): Promise<PricesObj> {
+  extractPrices(response: PriceWithPromiseStatus[]): PricesObj {
     const pricesObj: PricesObj = {};
 
     for (const spotPriceWithStatus of response) {
