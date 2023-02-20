@@ -14,7 +14,7 @@ export class KyberFetcher extends BaseFetcher {
     return await axios.get(ETH_PAIRS_URL);
   }
 
-  async extractPrices(response: any, ids: string[]): Promise<PricesObj> {
+  extractPrices(response: any, ids: string[]): PricesObj {
     const lastEthPrice = getLastPrice("ETH")?.value;
 
     const pricesObj: PricesObj = {};

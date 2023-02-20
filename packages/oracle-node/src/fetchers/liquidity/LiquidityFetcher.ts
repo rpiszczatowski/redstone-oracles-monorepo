@@ -49,10 +49,10 @@ export class LiquidityFetcher extends BaseFetcher {
     return responsePerSources !== undefined;
   }
 
-  async extractPrices(
+  extractPrices(
     responsePerSources: ResponsePerSources,
     dataFeedsIds: string[]
-  ): Promise<PricesObj> {
+  ): PricesObj {
     const pricesObj: PricesObj = {};
 
     for (const [source, response] of Object.entries(responsePerSources)) {

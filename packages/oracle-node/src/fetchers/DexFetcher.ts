@@ -61,10 +61,7 @@ export class DexFetcher extends BaseFetcher {
     return response !== undefined && response.data !== undefined;
   }
 
-  async extractPrices(
-    response: DexFetcherResponse,
-    assetIds: string[]
-  ): Promise<PricesObj> {
+  extractPrices(response: DexFetcherResponse, assetIds: string[]): PricesObj {
     const pricesObj: PricesObj = {};
 
     for (const currentAssetId of assetIds) {
