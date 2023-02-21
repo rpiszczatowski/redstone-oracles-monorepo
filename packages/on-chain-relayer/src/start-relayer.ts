@@ -5,7 +5,15 @@ import { getLastRoundParamsFromContract, getProvider } from "./utils";
 import { config } from "./config";
 
 (() => {
-  const { privateKey, managerContractAddress, abi } = config;
+  const {
+    privateKey,
+    managerContractAddress,
+    abi,
+    dataServiceId,
+    uniqueSignersCount,
+    dataFeeds,
+    cacheServiceUrls,
+  } = config;
   const relayerIterationInterval = Number(config.relayerIterationInterval);
   const updatePriceInterval = Number(config.updatePriceInterval);
 
@@ -34,11 +42,11 @@ import { config } from "./config";
       } else {
         const dataPackages = await requestDataPackages(
           {
-            dataServiceId: "redstone-main-demo",
-            uniqueSignersCount: 1,
-            dataFeeds: ["OHM"],
+            dataServiceId,
+            uniqueSignersCount,
+            dataFeeds,
           },
-          ["https://d1zm8lxy9v2ddd.cloudfront.net"]
+          cacheServiceUrls
         );
 
         const wrappedContract = WrapperBuilder.wrap(
@@ -46,7 +54,7 @@ import { config } from "./config";
         ).usingDataPackages(dataPackages);
 
         const dataPackageTimestamp =
-          dataPackages.OHM[0].dataPackage.timestampMilliseconds;
+          dataPackages[dataFeeds[0]][0].dataPackage.timestampMilliseconds;
 
         const updateTransaction = await wrappedContract.updateDataFeedValues(
           lastRound + 1,
