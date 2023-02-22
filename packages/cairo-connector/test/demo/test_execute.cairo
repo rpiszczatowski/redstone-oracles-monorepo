@@ -17,7 +17,7 @@ func test_execute_for_all_feeds_1_signer{
 
     let (payload, results, aggregated) = execute(test_id=1);
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[0],
         timestamp=1675358050000,
         signature_v=28,
@@ -26,7 +26,7 @@ func test_execute_for_all_feeds_1_signer{
         feed_value=2382142920000,
     );
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[0],
         timestamp=1675358050000,
         signature_v=28,
@@ -34,6 +34,8 @@ func test_execute_for_all_feeds_1_signer{
         feed_id='ETH',
         feed_value=167496049160,
     );
+
+    assert payload.min_timestamp = 1675358050000;
 
     // BTC values
     assert results.ptr[0].ptr[0] = 2382142920000;
@@ -55,7 +57,7 @@ func test_execute_for_all_feeds_2_signers{
 
     let (payload, results, aggregated) = execute(test_id=2);
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[0],
         timestamp=1675358460000,
         signature_v=28,
@@ -64,7 +66,7 @@ func test_execute_for_all_feeds_2_signers{
         feed_value=2382242973443,
     );
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[1],
         timestamp=1675358460000,
         signature_v=28,
@@ -73,7 +75,7 @@ func test_execute_for_all_feeds_2_signers{
         feed_value=2382116462690,
     );
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[0],
         timestamp=1675358460000,
         signature_v=28,
@@ -82,7 +84,7 @@ func test_execute_for_all_feeds_2_signers{
         feed_value=167451232145,
     );
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[1],
         timestamp=1675358460000,
         signature_v=28,
@@ -90,6 +92,8 @@ func test_execute_for_all_feeds_2_signers{
         feed_id='ETH',
         feed_value=167451232145,
     );
+
+    assert payload.min_timestamp = 1675358460000;
 
     // BTC values
     assert results.ptr[0].ptr[0] = 2382116462690;
@@ -113,7 +117,7 @@ func test_execute_for_all_feeds_3_signers{
 
     let (payload, results, aggregated) = execute(test_id=3);
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[0],
         timestamp=1675357430000,
         signature_v=28,
@@ -122,7 +126,7 @@ func test_execute_for_all_feeds_3_signers{
         feed_value=2383330000000,
     );
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[1],
         timestamp=1675357430000,
         signature_v=28,
@@ -131,7 +135,7 @@ func test_execute_for_all_feeds_3_signers{
         feed_value=2383256854521,
     );
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[2],
         timestamp=1675357430000,
         signature_v=28,
@@ -139,6 +143,8 @@ func test_execute_for_all_feeds_3_signers{
         feed_id='ETH',
         feed_value=167564652812,
     );
+
+    assert payload.min_timestamp = 1675357430000;
 
     // BTC values
     assert results.ptr[0].ptr[0] = 2383256854521;
@@ -164,7 +170,7 @@ func test_execute_for_2_feeds_2_signers{
 
     let (payload, results, aggregated) = execute(test_id=22);
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[0],
         timestamp=1675354990000,
         signature_v=27,
@@ -173,7 +179,7 @@ func test_execute_for_2_feeds_2_signers{
         feed_value=2383650676800,
     );
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[1],
         timestamp=1675354990000,
         signature_v=27,
@@ -182,7 +188,7 @@ func test_execute_for_2_feeds_2_signers{
         feed_value=2383637675760,
     );
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[2],
         timestamp=1675354990000,
         signature_v=28,
@@ -191,7 +197,7 @@ func test_execute_for_2_feeds_2_signers{
         feed_value=167930000000,
     );
 
-    _test_data_package(
+    _check_data_package(
         package=payload.data_packages.ptr[3],
         timestamp=1675354990000,
         signature_v=28,
@@ -199,6 +205,8 @@ func test_execute_for_2_feeds_2_signers{
         feed_id='ETH',
         feed_value=167937717000,
     );
+
+    assert payload.min_timestamp = 1675354990000;
 
     // BTC values
     assert results.ptr[0].ptr[0] = 2383650676800;
@@ -214,7 +222,7 @@ func test_execute_for_2_feeds_2_signers{
     return ();
 }
 
-func _test_data_package(
+func _check_data_package(
     package: DataPackage,
     timestamp: felt,
     signature_v: felt,
