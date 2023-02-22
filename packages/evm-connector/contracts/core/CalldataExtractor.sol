@@ -66,12 +66,43 @@ contract CalldataExtractor is RedstoneConstants {
     return dataPackagesCount;
   }
 
+  function _extractDataPackageSignersCountFromCalldata(uint256 calldataNegativeOffset) internal pure returns (uint16 signerCount) {
+    uint256 calldataNegativeOffsetWithStandardSlot = calldataNegativeOffset + STANDARD_SLOT_BS;
+
+    if (calldataNegativeOffsetWithStandardSlot > msg.data.length) {
+      revert CalldataOverOrUnderFlow();
+    }
+    assembly {
+      signerCount := calldataload(
+        sub(calldatasize(), calldataNegativeOffsetWithStandardSlot)
+      )
+    }
+    return signerCount;
+  }
+
   function _extractDataPointValueAndDataFeedId(
     uint256 calldataNegativeOffsetForDataPackage,
     uint256 defaultDataPointValueByteSize,
     uint256 dataPointIndex
   ) internal pure virtual returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
     uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
+    uint256 dataPointNegativeOffset = negativeOffsetToDataPoints.add(
+      (1 + dataPointIndex).mul((defaultDataPointValueByteSize + DATA_POINT_SYMBOL_BS))
+    );
+    uint256 dataPointCalldataOffset = msg.data.length.sub(dataPointNegativeOffset);
+    assembly {
+      dataPointDataFeedId := calldataload(dataPointCalldataOffset)
+      dataPointValue := calldataload(add(dataPointCalldataOffset, DATA_POINT_SYMBOL_BS))
+    }
+  }
+
+  function _extractDataPointValueAndDataFeedIdMultiSign(
+    uint256 calldataNegativeOffsetForDataPackage,
+    uint256 defaultDataPointValueByteSize,
+    uint256 dataPointIndex,
+    uint256 signatureCount
+  ) internal pure virtual returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
+    uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + signatureCount * SIG_BS + SIGNERS_COUNT_BS + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS - SIG_BS;
     uint256 dataPointNegativeOffset = negativeOffsetToDataPoints.add(
       (1 + dataPointIndex).mul((defaultDataPointValueByteSize + DATA_POINT_SYMBOL_BS))
     );
@@ -107,6 +138,28 @@ contract CalldataExtractor is RedstoneConstants {
     }
 
     // Prepare returned values
+    dataPointsCount = dataPointsCount_;
+    eachDataPointValueByteSize = eachDataPointValueByteSize_;
+  }
+
+  function _extractDataPointsDetailsForDataPackageMultiSign (uint256 calldataNegativeOffsetForDataPackage, uint256 signatureCount) internal pure returns (uint256 dataPointsCount, uint256 eachDataPointValueByteSize)
+  {
+    uint24 dataPointsCount_;
+
+    uint32 eachDataPointValueByteSize_;
+
+    uint256 negativeCalldataOffset = calldataNegativeOffsetForDataPackage + signatureCount * SIG_BS + SIGNERS_COUNT_BS;
+
+    uint256 calldataOffset = msg.data.length.sub(negativeCalldataOffset + STANDARD_SLOT_BS);
+    assembly {
+      dataPointsCount_ := calldataload(calldataOffset)
+    }
+
+    calldataOffset = calldataOffset.sub(DATA_POINTS_COUNT_BS);
+    assembly {
+      eachDataPointValueByteSize_ := calldataload(calldataOffset)
+    }
+
     dataPointsCount = dataPointsCount_;
     eachDataPointValueByteSize = eachDataPointValueByteSize_;
   }
