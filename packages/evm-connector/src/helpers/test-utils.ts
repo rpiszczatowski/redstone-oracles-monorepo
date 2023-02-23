@@ -5,6 +5,7 @@ import {
   DataPoint,
   INumericDataPoint,
   IStringDataPoint,
+  MultiSignDataPackagePlainObj,
   NumericDataPoint,
   SignedDataPackagePlainObj,
   StringDataPoint,
@@ -12,6 +13,7 @@ import {
 } from "redstone-protocol";
 import { ConvertibleToBytes32 } from "redstone-protocol/src/common/utils";
 import { MockDataPackageConfig } from "../wrappers/MockWrapper";
+import { MockMultiSignDataPackageConfig } from "../wrappers/MockWrapperMultiSign";
 
 export const MAX_MOCK_SIGNERS_COUNT = 19;
 
@@ -64,7 +66,16 @@ export interface MockPackageArgs {
   timestampMilliseconds?: number;
 }
 
+export interface MockMultiSignPackageArgs {
+  mockSingerIndices: MockSignerIndex[];
+  timestampMilliseconds?: number;
+}
+
 export interface MockNumericPackageArgs extends MockPackageArgs {
+  dataPoints: INumericDataPoint[];
+}
+
+export interface MockNumericMultiSignPackageArgs extends MockMultiSignPackageArgs {
   dataPoints: INumericDataPoint[];
 }
 
@@ -211,6 +222,18 @@ export const getMockPackage = (
   };
 };
 
+export const getMockMultiSignedPackage = (
+  opts: MockMultiSignPackageArgs,
+  dataPoints: DataPoint[]
+): MockMultiSignDataPackageConfig => {
+  const timestampMilliseconds =
+    opts.timestampMilliseconds || DEFAULT_TIMESTAMP_FOR_TESTS;
+  return {
+    signers: opts.mockSingerIndices.map((index) => { return MOCK_SIGNERS[index].address as MockSignerAddress }),
+    dataPackage: new DataPackage(dataPoints, timestampMilliseconds),
+  };
+};
+
 export const getMockSignedDataPackageObj = (
   args: MockNumericPackageArgs
 ): SignedDataPackagePlainObj => {
@@ -225,6 +248,20 @@ export const getMockSignedDataPackageObj = (
   };
 };
 
+export const getMockMultiSignedDataPackageObj = (
+  args: MockNumericMultiSignPackageArgs
+): MultiSignDataPackagePlainObj => {
+  const numericDataPoints = args.dataPoints.map(
+    (dp) => new NumericDataPoint(dp)
+  );
+  const mockPackage = getMockMultiSignedPackage(args, numericDataPoints);
+  return {
+    ...mockPackage.dataPackage
+      .multiSign(args.mockSingerIndices.map((i) => MOCK_SIGNERS[i].privateKey))
+      .toObj(),
+  };
+};
+
 export const getMockNumericPackage = (
   args: MockNumericPackageArgs
 ): MockDataPackageConfig => {
@@ -232,6 +269,15 @@ export const getMockNumericPackage = (
     (dp) => new NumericDataPoint(dp)
   );
   return getMockPackage(args, numericDataPoints);
+};
+
+export const getMockNumericMultiSignPackage = (
+  args: MockNumericMultiSignPackageArgs
+): MockMultiSignDataPackageConfig => {
+  const numericDataPoints = args.dataPoints.map(
+    (dp) => new NumericDataPoint(dp)
+  );
+  return getMockMultiSignedPackage(args, numericDataPoints);
 };
 
 export const getMockStringPackage = (

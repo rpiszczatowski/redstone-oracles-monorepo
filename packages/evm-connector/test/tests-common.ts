@@ -1,12 +1,14 @@
 import { ethers } from "hardhat";
 import {
   getMockNumericPackage,
+  getMockNumericMultiSignPackage,
   getMockSignedDataPackageObj,
   getMockStringPackage,
   getRange,
   MockNumericPackageArgs,
   MockSignerIndex,
   MockStringPackageArgs,
+  MockNumericMultiSignPackageArgs,
 } from "../src/helpers/test-utils";
 
 export const NUMBER_OF_MOCK_NUMERIC_SIGNERS = 10;
@@ -49,8 +51,21 @@ export const mockNumericPackageConfigs: MockNumericPackageArgs[] = [
   ),
 ];
 
+export const mockNumericPackageMultiSignConfig: MockNumericMultiSignPackageArgs = {
+  mockSingerIndices: [0, 1, 2],
+  dataPoints: [
+    { dataFeedId: "ETH", value: 42 },
+    { dataFeedId: "BTC", value: 400 },
+    { dataFeedId: "SOME OTHER ID", value: 123 },
+  ],
+};
+
 export const mockNumericPackages = mockNumericPackageConfigs.map(
   getMockNumericPackage
+);
+
+export const mockNumericPackageMultiSign = getMockNumericMultiSignPackage(
+  mockNumericPackageMultiSignConfig
 );
 
 export const mockSignedDataPackageObjects = mockNumericPackageConfigs.map(
@@ -85,8 +100,8 @@ export const mockBytesPackageConfigs: MockStringPackageArgs[] = getRange({
   mockSignerIndex: i as MockSignerIndex,
 }));
 
-export const mockBytesPackages =
-  mockBytesPackageConfigs.map(getMockStringPackage);
+export const mockBytesPackages = 
+mockBytesPackageConfigs.map(getMockStringPackage);
 
 export const expectedBytesValues = {
   ETH: "0x457468657265756d",
