@@ -31,6 +31,7 @@ import balancerFetchers from "./balancer/all-balancer-fetchers";
 import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/ArbitrumEvmFetcher";
 import { arbitrumProvider } from "./evm-chain/arbitrum/config";
 import { avalancheProvider } from "./evm-chain/avalanche/config";
+import sushiswapFetchers from "./sushiswap-on-chain/all-sushiswap-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -61,4 +62,5 @@ export default {
   ...pangolinFetchers,
   ...balancerFetchers,
   ...twapFetchers,
+  ...sushiswapFetchers,
 } as { [name: string]: Fetcher };

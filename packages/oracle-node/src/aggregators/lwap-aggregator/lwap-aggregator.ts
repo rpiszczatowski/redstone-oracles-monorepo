@@ -12,18 +12,27 @@ export interface PricesWithLiquidity {
 
 export const lwapAggregator: Aggregator = {
   getAggregatedValue(
-    price: PriceDataBeforeAggregation
+    price: PriceDataBeforeAggregation,
+    liquidities?: PriceDataBeforeAggregation[]
   ): PriceDataAfterAggregation {
     return {
       ...price,
-      value: getLwapValue(price),
+      value: getLwapValue(price, liquidities),
     };
   },
 };
 
-const getLwapValue = (price: PriceDataBeforeAggregation): number => {
+const getLwapValue = (
+  price: PriceDataBeforeAggregation,
+  liquidities?: PriceDataBeforeAggregation[]
+): number => {
+  if (!liquidities) {
+    throw new Error(
+      `Cannot calculate LWAP, missing liquidities for ${price.symbol}`
+    );
+  }
   const { symbol, source } = price;
-  const valuesWithLiquidity = getTickLiquidities(symbol, source);
+  const valuesWithLiquidity = getTickLiquidities(symbol, source, liquidities);
   return calculateLwap(valuesWithLiquidity);
 };
 

@@ -82,8 +82,11 @@ export default class ManifestHelper {
   }
 
   static getAggregatorForToken(manifest: Manifest, symbol: string) {
-    const priceAggregator =
-      manifest.tokens[symbol]?.priceAggregator ?? manifest.priceAggregator;
-    return aggregators[priceAggregator];
+    const aggregatorName = this.getAggregatorNameForToken(manifest, symbol);
+    return aggregators[aggregatorName];
+  }
+
+  static getAggregatorNameForToken(manifest: Manifest, symbol: string) {
+    return manifest.tokens[symbol]?.priceAggregator ?? manifest.priceAggregator;
   }
 }

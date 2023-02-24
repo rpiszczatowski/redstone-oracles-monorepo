@@ -57,7 +57,8 @@ export interface Fetcher {
 
 export interface Aggregator {
   getAggregatedValue: (
-    price: PriceDataBeforeAggregation
+    price: PriceDataBeforeAggregation,
+    liquidities?: PriceDataBeforeAggregation[]
   ) => PriceDataAfterAggregation;
 }
 

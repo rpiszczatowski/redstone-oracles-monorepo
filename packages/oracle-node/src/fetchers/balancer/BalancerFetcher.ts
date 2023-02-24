@@ -10,6 +10,7 @@ import { BaseFetcher } from "../BaseFetcher";
 import { getLastPrice } from "../../db/local-db";
 import balancerPairs from "./balancer-pairs.json";
 import { PriceWithPromiseStatus, SpotPrice } from "./types";
+import { addLiquidityIfNecessary } from "../liquidity/utils";
 
 const balancerConfig: BalancerSdkConfig = {
   network: Network.MAINNET,
@@ -79,16 +80,28 @@ export class BalancerFetcher extends BaseFetcher {
     return lastPriceFromCache.value;
   }
 
-  extractPrices(response: PriceWithPromiseStatus[]): PricesObj {
+  extractPrices(
+    response: PriceWithPromiseStatus[],
+    assetsIds: string[]
+  ): PricesObj {
     const pricesObj: PricesObj = {};
 
     for (const spotPriceWithStatus of response) {
       if (spotPriceWithStatus.status === PROMISE_STATUS_FULFILLED) {
-        const { symbol, pairedTokenPrice, spotPrice } =
+        const { symbol, pairedTokenPrice, spotPrice, liquidity } =
           spotPriceWithStatus.value;
         pricesObj[symbol] = pairedTokenPrice / spotPrice;
+
+        addLiquidityIfNecessary(
+          symbol,
+          assetsIds,
+          this.name,
+          Number(liquidity),
+          pricesObj
+        );
       }
     }
+
     return pricesObj;
   }
 
