@@ -1,90 +1,46 @@
-import { rest } from 'msw';
+import { rest } from "msw";
 import { setupServer } from "msw/node";
+import devManifest from "../../../manifests/dev/dev.json";
+import { Manifest } from "../../../src/types";
 
-const validDenResponse = {
+export const mockOracleRegistryState = {
   state: {
     nodes: {
-      mockArAddress: {
-        dataFeedId: "testDataFeedId"
-      }
+      nodeId: {
+        dataServiceId: "testDataServiceId",
+        evmAddress: "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A",
+      },
     },
-    dataFeeds: {
-      testDataFeedId: {
-        manifestTxId: "manifestTxIdByDen"
-      }
-    }
-  }
+    dataServices: {
+      testDataServiceId: {
+        manifestTxId: "mockManifestTxId",
+      },
+    },
+  },
 };
 
-const validArweaveResponse = {
-  interval: 1000,
+export const devManifestWithTxId: Manifest = {
+  ...devManifest,
+  txId: "mockManifestTxId",
 };
 
-const validDenHandlers = [
-  rest.get("https://d2rkt3biev1br2.cloudfront.net/state", (_, res, ctx) => {
-    return res(
-      ctx.json(validDenResponse)
-    )
-  }),
-  rest.get("https://arweave.net/manifestTxIdByDen", (_, res, ctx) => {
-    return res(
-      ctx.json(validArweaveResponse)
-    )
-  }),
+const validHandlers = [
+  rest.get("https://dre-1.warp.cc/contract", (_, res, ctx) =>
+    res(ctx.json(mockOracleRegistryState))
+  ),
+  rest.get("https://arweave.net/mockManifestTxId", (_, res, ctx) =>
+    res(ctx.json(devManifest))
+  ),
 ];
 
-export const invalidDenHandlers = [
-  rest.get("https://d2rkt3biev1br2.cloudfront.net/state", (_, res, ctx) => {
-    return res(
-      ctx.status(400)
-    )
-  }),
-  rest.get("https://arweave.net/manifestTxIdByGateway", (_, res, ctx) => {
-    return res(
-      ctx.json(validArweaveResponse)
-    )
-  }),
-];
+export const invalidHandler = rest.get(
+  "https://arweave.net/mockManifestTxId",
+  (_, res, ctx) => res(ctx.status(400))
+);
 
-export const timeoutDenHandlers = [
-  rest.get("https://d2rkt3biev1br2.cloudfront.net/state", (_, res, ctx) => {
-    return res(
-      ctx.delay(10),
-      ctx.json(validDenResponse)
-    )
-  }),
-  rest.get("https://arweave.net/manifestTxIdByGateway", (_, res, ctx) => {
-    return res(
-      ctx.json(validArweaveResponse)
-    )
-  })
-];
+export const bigDelayHandler = rest.get(
+  "https://arweave.net/mockManifestTxId",
+  (_, res, ctx) => res(ctx.delay(10), ctx.json(devManifest))
+);
 
-export const invalidArweaveHandlers = [
-  rest.get("https://d2rkt3biev1br2.cloudfront.net/state", (_, res, ctx) => {
-    return res(
-      ctx.json(validDenResponse)
-    )
-  }),
-  rest.get("https://arweave.net/manifestTxIdByDen", (_, res, ctx) => {
-    return res(
-      ctx.status(400)
-    )
-  })
-];
-
-export const timeoutArweaveHandlers = [
-  rest.get("https://d2rkt3biev1br2.cloudfront.net/state", (_, res, ctx) => {
-    return res(
-      ctx.json(validDenResponse)
-    )
-  }),
-  rest.get("https://arweave.net/manifestTxIdByDen", (_, res, ctx) => {
-    return res(
-      ctx.delay(10),
-      ctx.json(validArweaveResponse)
-    )
-  })
-];
-
-export const server = setupServer(...validDenHandlers);
+export const server = setupServer(...validHandlers);
