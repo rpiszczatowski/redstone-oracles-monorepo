@@ -1,4 +1,3 @@
-import axios from "axios";
 import fetchers from "../../src/fetchers/index";
 import { mockFetcherResponse } from "./_helpers";
 

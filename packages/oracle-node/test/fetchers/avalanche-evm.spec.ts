@@ -49,7 +49,6 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      yieldYakContractsDetails.YY_AAVE_AVAX.abi = YYMock.abi;
       yieldYakContractsDetails.YY_AAVE_AVAX.address = Yycontract.address;
     });
 
@@ -80,7 +79,6 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      yieldYakContractsDetails.YY_PTP_sAVAX.abi = YYMock.abi;
       yieldYakContractsDetails.YY_PTP_sAVAX.address = Yycontract.address;
     });
 
@@ -111,7 +109,6 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      lpTokensContractsDetails.TJ_AVAX_USDC_LP.abi = LPTokenMock.abi;
       lpTokensContractsDetails.TJ_AVAX_USDC_LP.address =
         lpTokenContract.address;
     });
@@ -145,7 +142,6 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      mooTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.abi = MooTokenMock.abi;
       mooTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.address =
         mooTokenContract.address;
     });
@@ -179,7 +175,6 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      oracleAdaptersContractsDetails.sAVAX.abi = OracleAdaptersMock.abi;
       oracleAdaptersContractsDetails.sAVAX.address =
         oracleTokenContract.address;
     });

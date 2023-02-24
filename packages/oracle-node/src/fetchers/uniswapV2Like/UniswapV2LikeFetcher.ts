@@ -1,7 +1,7 @@
 import { BaseFetcher } from "../BaseFetcher";
 import { BigNumber, providers, utils, Contract } from "ethers";
 import { getLastPrice } from "../../db/local-db";
-import abi from "./UniswapV2.abi.json";
+import { abi } from "./UniswapV2.abi";
 import { config } from "../../config";
 import { PricesObj } from "../../types";
 import { addLiquidityIfNecessary, isLiquidity } from "../liquidity/utils";
@@ -28,13 +28,15 @@ interface FetchResponse {
   [id: string]: Reserves;
 }
 
-const provider = new providers.JsonRpcProvider(config.ethMainRpcUrl);
-
 export class UniswapV2LikeFetcher extends BaseFetcher {
   protected retryForInvalidResponse: boolean = true;
   private assetsWithoutLiquidity: string[] = [];
 
-  constructor(name: string, private readonly poolsConfig: PoolsConfig) {
+  constructor(
+    name: string,
+    private readonly poolsConfig: PoolsConfig,
+    private readonly provider: providers.JsonRpcProvider
+  ) {
     super(name);
   }
 
@@ -44,20 +46,20 @@ export class UniswapV2LikeFetcher extends BaseFetcher {
     );
     const responses: FetchResponse = {};
     const promises = this.assetsWithoutLiquidity.map(async (assetId) => {
-      const sushiswapV2Pair = new Contract(
+      const uniswapV2Pair = new Contract(
         this.poolsConfig[assetId].address,
         abi,
-        provider
+        this.provider
       );
-      const answer = await sushiswapV2Pair.getReserves();
-      const { _reserve0, _reserve1 } = answer;
+
+      const { _reserve0, _reserve1 } = await uniswapV2Pair.getReserves();
 
       responses[assetId] = {
         reserve0: _reserve0,
         reserve1: _reserve1,
       };
     });
-    await Promise.allSettled(promises);
+    await Promise.all(promises);
     return responses;
   }
 

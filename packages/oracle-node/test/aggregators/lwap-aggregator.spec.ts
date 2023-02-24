@@ -175,4 +175,49 @@ describe("lwapAggregator", () => {
     const result = lwapAggregator.getAggregatedValue(input, liquidities);
     expect(result.value).toEqual(3.1792911170559917);
   });
+
+  test("should return NaN if all liquidities are zero", async () => {
+    const input: PriceDataBeforeAggregation = {
+      id: "",
+      source: {
+        "pangolin-usdc": 3.23,
+        uniswap: 4.676,
+        sushiswap: 2.943,
+        "trader-joe": 4.6546,
+      },
+      symbol: "WAVAX",
+      timestamp: 0,
+      version: "",
+    } as unknown as PriceDataBeforeAggregation;
+
+    const liquidities = [
+      {
+        source: {
+          "trader-joe": 0,
+        },
+        symbol: "WAVAX_trader-joe_liquidity",
+      },
+      {
+        source: {
+          uniswap: 0,
+        },
+        symbol: "WAVAX_uniswap_liquidity",
+      },
+      {
+        source: {
+          sushiswap: 0,
+        },
+        symbol: "WAVAX_sushiswap_liquidity",
+      },
+      {
+        source: {
+          uniswap: 0,
+        },
+        symbol: "WAVAX_pangolin-usdc_liquidity",
+      },
+    ] as unknown as PriceDataBeforeAggregation[];
+
+    const result = lwapAggregator.getAggregatedValue(input, liquidities);
+    expect(result.value).toBeNaN();
+  });
 });
