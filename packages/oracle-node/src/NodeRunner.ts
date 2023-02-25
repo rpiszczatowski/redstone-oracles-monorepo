@@ -17,7 +17,6 @@ import PricesService, {
 } from "./fetchers/PricesService";
 import { Manifest, NodeConfig, PriceDataAfterAggregation } from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
-import { ArweaveProxy } from "./arweave/ArweaveProxy";
 import { config } from "./config";
 import { connectToDb } from "./db/remote-mongo/db-connector";
 import { AggregatedPriceHandler } from "./aggregated-price-handlers/AggregatedPriceHandler";
@@ -26,7 +25,7 @@ import { DataPackageBroadcastPerformer } from "./aggregated-price-handlers/DataP
 import { PriceDataBroadcastPerformer } from "./aggregated-price-handlers/PriceDataBroadcastPerformer";
 import { roundTimestamp } from "./utils/timestamps";
 import { intervalMsToCronFormat } from "./utils/intervals";
-import {ManifestDataProvider} from "./aggregated-price-handlers/ManifestDataProvider";
+import { ManifestDataProvider } from "./aggregated-price-handlers/ManifestDataProvider";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -67,7 +66,11 @@ export default class NodeRunner {
 
     this.aggregatedPriceHandlers = [
       new AggregatedPriceLocalDBSaver(),
-      new DataPackageBroadcastPerformer(httpBroadcasterURLs, ethereumPrivKey, this.manifestDataProvider),
+      new DataPackageBroadcastPerformer(
+        httpBroadcasterURLs,
+        ethereumPrivKey,
+        this.manifestDataProvider
+      ),
       new PriceDataBroadcastPerformer(
         priceHttpBroadcasterURLs,
         ethereumPrivKey,
@@ -87,8 +90,9 @@ export default class NodeRunner {
     // Otherwise App Runner crashes ¯\_(ツ)_/¯
     new ExpressAppRunner(nodeConfig).run();
     await connectToDb();
-    const arweave = new ArweaveProxy(nodeConfig.privateKeys.arweaveJwk);
-    const providerAddress = await arweave.getAddress();
+    const providerAddress = new ethers.Wallet(
+      nodeConfig.privateKeys.ethereumPrivateKey
+    ).address;
     const arweaveService = new ArweaveService();
 
     let manifestData = null;
@@ -133,11 +137,8 @@ export default class NodeRunner {
   }
 
   private async printInitialNodeDetails() {
-    const evmPrivateKey = this.nodeConfig.privateKeys.ethereumPrivateKey;
-    const evmAddress = new ethers.Wallet(evmPrivateKey).address;
     const ipAddress = await fetchIp();
-    logger.info(`Node evm address: ${evmAddress}`);
-    logger.info(`Node arweave address: ${this.providerAddress}`);
+    logger.info(`Node evm address: ${this.providerAddress}`);
     logger.info(`Version from package.json: ${this.version}`);
     logger.info(`Node's IP address: ${ipAddress}`);
     logger.info(
