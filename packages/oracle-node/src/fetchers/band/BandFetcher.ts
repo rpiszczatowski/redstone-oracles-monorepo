@@ -35,7 +35,7 @@ export class BandFetcher extends BaseFetcher {
     return response;
   }
 
-  async extractPrices(response: BandResponse): Promise<PricesObj> {
+  extractPrices(response: BandResponse): PricesObj {
     const pricesArray = response.data.price_results;
     const pricesObj: PricesObj = {};
     for (const asset of pricesArray) {

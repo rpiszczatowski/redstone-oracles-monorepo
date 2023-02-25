@@ -28,9 +28,9 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
     return Promise.allSettled(promises);
   }
 
-  async extractPrices(responses: any): Promise<PricesObj> {
+  extractPrices(responses: any): PricesObj {
     let result: PricesObj = {};
-    let context = await this.getProcessingContext();
+    let context = this.getProcessingContext();
 
     for (const response of responses) {
       if (

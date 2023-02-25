@@ -26,10 +26,10 @@ export class XtFetcher extends BaseFetcher {
     return response.data;
   }
 
-  async extractPrices(response: any): Promise<PricesObj> {
+  extractPrices(response: any): PricesObj {
     const pricesObj: PricesObj = {};
 
-    const results = await response.result;
+    const results = response.result;
     for (const result of results) {
       const symbol = result.s;
       const price = result.p;

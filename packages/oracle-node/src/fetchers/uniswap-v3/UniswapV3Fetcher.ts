@@ -1,5 +1,4 @@
 import _ from "lodash";
-import { utils } from "ethers";
 import { PricesObj } from "../../types";
 import graphProxy from "../../utils/graph-proxy";
 import { BaseFetcher } from "../BaseFetcher";
@@ -8,27 +7,23 @@ import { getLastPrice } from "../../db/local-db";
 
 const poolIdToSymbol = _.invert(symbolToPoolIdObj);
 
-const BIG_NUMBER_MULTIPLIER = 36;
-
 interface SymbolToPoolId {
   [symbol: string]: string;
 }
 
-interface UniswapV3Response {
+export interface UniswapV3Response {
   data: {
     pools: Pool[];
   };
 }
 
-interface Pool {
+export interface Pool {
   id: string;
   token0: Token;
   token1: Token;
   token0Price: string;
   token1Price: string;
-  totalValueLockedToken0: string;
-  totalValueLockedToken1: string;
-  totalValueLockedUSD: string;
+  liquidity: string;
 }
 
 interface Token {
@@ -58,6 +53,7 @@ export class UniswapV3Fetcher extends BaseFetcher {
         }
         token0Price
         token1Price
+        liquidity
       }
     }`;
 
@@ -68,7 +64,7 @@ export class UniswapV3Fetcher extends BaseFetcher {
     return response !== undefined && response.data !== undefined;
   }
 
-  async extractPrices(response: UniswapV3Response): Promise<PricesObj> {
+  extractPrices(response: UniswapV3Response): PricesObj {
     const pricesObj: { [symbol: string]: number } = {};
 
     for (const pool of response.data.pools) {

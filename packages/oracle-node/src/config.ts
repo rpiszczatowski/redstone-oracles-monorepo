@@ -22,6 +22,7 @@ const DEFAULT_COINBASE_INDEXER_MONGODB_URL = "";
 const DEFAULT_COINMARKETCAP_API_KEY = "";
 const DEFAULT_KAIKO_API_KEY = "";
 const DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE = "90";
+const DEFAULT_ARBITRUM_RPC_URL = "https://arb1.arbitrum.io/rpc";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -154,4 +155,5 @@ export const config: NodeConfig = Object.freeze({
       DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE
     )
   ),
+  arbitrumRpcUrl: getFromEnv("ARBITRUM_RPC_URL", DEFAULT_ARBITRUM_RPC_URL),
 });

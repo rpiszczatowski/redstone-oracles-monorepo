@@ -41,11 +41,7 @@ export class CustomUrlsFetcher extends BaseFetcher {
     return responses;
   }
 
-  async extractPrices(
-    responses: any,
-    _ids: string[],
-    opts: FetcherOpts
-  ): Promise<PricesObj> {
+  extractPrices(responses: any, _ids: string[], opts: FetcherOpts): PricesObj {
     const pricesObj: PricesObj = {};
     for (const [id, response] of Object.entries(responses)) {
       const jsonpath = opts.manifest.tokens[id].customUrlDetails!.jsonpath;
