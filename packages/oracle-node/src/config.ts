@@ -88,20 +88,6 @@ const getOptionallyPriceDataServiceUrls = () => {
   }
 };
 
-export const getArweaveWallet = (): JWKInterface => {
-  const arweaveKeysFile = process.env.ARWEAVE_KEYS_FILE_PATH;
-  const arweaveKeysJWK = process.env.ARWEAVE_KEYS_JWK;
-  if (arweaveKeysFile) {
-    return readJSON(arweaveKeysFile);
-  } else if (arweaveKeysJWK) {
-    return JSON.parse(arweaveKeysJWK);
-  } else {
-    throw new Error(
-      "Env ARWEAVE_KEYS_FILE_PATH or ARWEAVE_KEYS_JWK must be specified"
-    );
-  }
-};
-
 const ethereumPrivateKey = parserFromString.hex(
   getFromEnv("ECDSA_PRIVATE_KEY")
 );
@@ -135,7 +121,6 @@ export const config: NodeConfig = Object.freeze({
   ),
   kaikoApiKey: getFromEnv("KAIKO_API_KEY", DEFAULT_KAIKO_API_KEY),
   privateKeys: {
-    arweaveJwk: getArweaveWallet(),
     ethereumPrivateKey,
   },
   ethereumAddress: new ethers.Wallet(ethereumPrivateKey).address,
