@@ -25,7 +25,7 @@ describe("SampleRedstoneConsumerNumericMockMultiSign", function () {
     dataFeedId: "ETH" | "BTC"
   ) => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackagesMultiSign(mockNumericPackage);
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(mockNumericPackage);
 
     const tx = await wrappedContract.saveOracleValueInContractStorage(
       utils.convertStringToBytes32(dataFeedId)

@@ -95,7 +95,8 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
           SIGNERS_COUNT_BS +
           signaturesBytesCount +
           DATA_POINT_VALUE_BYTE_SIZE_BS +
-          DATA_POINTS_COUNT_BS
+          DATA_POINTS_COUNT_BS +
+          STANDARD_SLOT_BS
       );
 
       uint256 signedMessageCalldataOffset = msg.data.length.sub(
@@ -191,7 +192,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
     returns (uint256[] memory)
   {
     // Initializing helpful variables and allocating memory
-    uint256[] memory uniqueSignerCountForDataFeedIds = new uint256[](dataFeedIds.length); // trivial
+    uint256[] memory uniqueSignerCountForDataFeedIds = new uint256[](dataFeedIds.length);
     uint256[] memory signersBitmapForDataFeedIds = new uint256[](dataFeedIds.length);
     uint256[][] memory valuesForDataFeeds = new uint256[][](dataFeedIds.length);
     for (uint256 i = 0; i < dataFeedIds.length; i++) {
