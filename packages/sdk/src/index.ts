@@ -14,8 +14,6 @@ export const DEFAULT_CACHE_SERVICE_URLS = [
 
 const ALL_FEEDS_KEY = "___ALL_FEEDS___";
 
-const SECOND_IN_MILLISECONDS = 1000;
-
 export interface DataPackagesRequestParams {
   dataServiceId: string;
   uniqueSignersCount: number;
@@ -73,37 +71,30 @@ export const parseDataPackagesResponse = (
       );
     }
 
-    const maxTimestampDelay = reqParams.maxTimestampDelay;
-
-    const sortedSlicedDataPackages = dataFeedPackages
-      .sort((a, b) => b.timestampMilliseconds - a.timestampMilliseconds)
-      .slice(0, reqParams.uniqueSignersCount);
-
-    const outdatedDataPackagesTimestamps: number[] = [];
-    if (
-      maxTimestampDelay &&
-      sortedSlicedDataPackages.some((dataFeedPackage) => {
-        const isDataPackageOutdated =
-          currentTimestamp - maxTimestampDelay >=
-          dataFeedPackage.timestampMilliseconds;
-
-        if (isDataPackageOutdated) {
-          outdatedDataPackagesTimestamps.push(
-            dataFeedPackage.timestampMilliseconds
-          );
-        }
-        return isDataPackageOutdated;
-      })
-    ) {
+    const maxTimestampDelay = reqParams?.maxTimestampDelay ?? currentTimestamp;
+    const outdatedDataPackages = dataFeedPackages.filter(
+      (dataFeedPackage) =>
+        currentTimestamp - maxTimestampDelay >=
+        dataFeedPackage.timestampMilliseconds
+    );
+    const isAnyPackageOutdated = outdatedDataPackages.length > 0;
+    if (isAnyPackageOutdated) {
+      const outdatedDataPackagesTimestamps = outdatedDataPackages.map(
+        ({ timestampMilliseconds }) => timestampMilliseconds
+      );
       throw new Error(
-        `At least one datapackage is outdated. Current timestamp: ${currentTimestamp}. Outdated datapackages timestamps: ${outdatedDataPackagesTimestamps}`
+        `At least one datapackage is outdated. Current timestamp: ${currentTimestamp}. Outdated datapackages timestamps: ${JSON.stringify(
+          outdatedDataPackagesTimestamps
+        )}`
       );
     }
 
-    parsedResponse[dataFeedId] = sortedSlicedDataPackages.map(
-      (dataPackage: SignedDataPackagePlainObj) =>
+    parsedResponse[dataFeedId] = dataFeedPackages
+      .sort((a, b) => b.timestampMilliseconds - a.timestampMilliseconds)
+      .slice(0, reqParams.uniqueSignersCount)
+      .map((dataPackage: SignedDataPackagePlainObj) =>
         SignedDataPackage.fromObj(dataPackage)
-    );
+      );
   }
 
   return parsedResponse;

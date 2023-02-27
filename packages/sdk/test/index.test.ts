@@ -98,7 +98,9 @@ describe("SDK tests", () => {
         ...reqParams,
         maxTimestampDelay: 10000,
       })
-    ).rejects.toThrow("At least one datapackage is outdated");
+    ).rejects.toThrow(
+      /At least one datapackage is outdated. Current timestamp: [0-9]*. Outdated datapackages timestamps: \[1654353400000,1654353400000\]/
+    );
   });
 
   test("Should fetch data packages with valid timestamp", async () => {
