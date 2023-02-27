@@ -33,7 +33,7 @@ export class BalancerFetcherHistorical extends BalancerFetcher {
         spotPrice: NaN,
         symbol: "",
         pairedTokenPrice: NaN,
-        liquidity: "",
+        liquidity: 0,
       };
     }
     const tokens = graphResults.data.pool.tokens;
@@ -45,7 +45,7 @@ export class BalancerFetcherHistorical extends BalancerFetcher {
     const symbol =
       token0.symbol == this.baseTokenSymbol ? token1.symbol! : token0.symbol!;
 
-    return { spotPrice, symbol, pairedTokenPrice, liquidity: "" };
+    return { spotPrice, symbol, pairedTokenPrice, liquidity: 0 };
   }
 
   async getBlockNumber(timestamp: number) {

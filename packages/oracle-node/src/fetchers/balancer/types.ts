@@ -2,7 +2,7 @@ export interface SpotPrice {
   symbol: string;
   pairedTokenPrice: number;
   spotPrice: number;
-  liquidity: string;
+  liquidity: number;
 }
 
 export interface PriceWithPromiseStatus {

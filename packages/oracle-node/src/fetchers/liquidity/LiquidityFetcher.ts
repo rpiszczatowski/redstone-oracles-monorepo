@@ -78,7 +78,7 @@ export class LiquidityFetcher extends BaseFetcher {
           pool.token0.symbol,
           source,
           dataFeedsIds,
-          pool.liquidity,
+          Number(pool.liquidity),
           pricesObj
         )
       );
@@ -89,7 +89,7 @@ export class LiquidityFetcher extends BaseFetcher {
           pair.token0.symbol,
           source,
           dataFeedsIds,
-          pair.reserveUSD,
+          Number(pair.reserveUSD),
           pricesObj
         )
       );
@@ -112,7 +112,7 @@ export class LiquidityFetcher extends BaseFetcher {
     secondTokenSymbol: string,
     source: string,
     dataFeedsIds: string[],
-    liquidity: string,
+    liquidity: number,
     pricesObj: PricesObj
   ) => {
     const firstTokenDataFeedId = buildLiquidityDataFeedId(
@@ -133,10 +133,10 @@ export class LiquidityFetcher extends BaseFetcher {
     }
   };
 
-  private parseLiquidity(liquidity: string, source: string) {
+  private parseLiquidity(liquidity: number, source: string) {
     if (source === "uniswap-v3") {
-      return parseFloat(liquidity) / 10 ** 9;
+      return liquidity / 10 ** 9;
     }
-    return parseFloat(liquidity);
+    return liquidity;
   }
 }

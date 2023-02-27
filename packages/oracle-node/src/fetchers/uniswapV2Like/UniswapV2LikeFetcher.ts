@@ -1,10 +1,10 @@
-import { BaseFetcher } from "../BaseFetcher";
 import { BigNumber, providers, utils, Contract } from "ethers";
+import {
+  DexOnChainFetcher,
+  Responses,
+} from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice } from "../../db/local-db";
 import { abi } from "./UniswapV2.abi";
-import { config } from "../../config";
-import { PricesObj } from "../../types";
-import { addLiquidityIfNecessary, isLiquidity } from "../liquidity/utils";
 
 const DEFAULT_DECIMALS = 18;
 
@@ -22,15 +22,11 @@ export interface PoolsConfig {
 interface Reserves {
   reserve0: BigNumber;
   reserve1: BigNumber;
+  assetId: string;
 }
 
-interface FetchResponse {
-  [id: string]: Reserves;
-}
-
-export class UniswapV2LikeFetcher extends BaseFetcher {
+export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
   protected retryForInvalidResponse: boolean = true;
-  private assetsWithoutLiquidity: string[] = [];
 
   constructor(
     name: string,
@@ -40,12 +36,8 @@ export class UniswapV2LikeFetcher extends BaseFetcher {
     super(name);
   }
 
-  async fetchData(assetsIds: string[]): Promise<FetchResponse> {
-    this.assetsWithoutLiquidity = assetsIds.filter(
-      (assetId) => !isLiquidity(assetId)
-    );
-    const responses: FetchResponse = {};
-    const promises = this.assetsWithoutLiquidity.map(async (assetId) => {
+  async getPoolDetailsWithStatus(spotAssetIds: string[]) {
+    const promises = spotAssetIds.map(async (assetId) => {
       const uniswapV2Pair = new Contract(
         this.poolsConfig[assetId].address,
         abi,
@@ -54,73 +46,92 @@ export class UniswapV2LikeFetcher extends BaseFetcher {
 
       const { _reserve0, _reserve1 } = await uniswapV2Pair.getReserves();
 
-      responses[assetId] = {
-        reserve0: _reserve0,
-        reserve1: _reserve1,
+      return {
+        reserve0: _reserve0 as BigNumber,
+        reserve1: _reserve1 as BigNumber,
+        assetId,
       };
     });
-    await Promise.all(promises);
-    return responses;
+    return await Promise.allSettled(promises);
   }
 
-  validateResponse(response: FetchResponse): boolean {
+  getAssetId(response: Reserves) {
+    return response.assetId;
+  }
+
+  validateResponse(response: Responses<Reserves>): boolean {
     return response !== undefined;
   }
 
-  extractPrices(response: FetchResponse, assetsIds: string[]): PricesObj {
-    const pricesObj: PricesObj = {};
+  getParamsFromResponse(assetId: string, response: Reserves) {
+    const { reserve0, reserve1 } = response;
+    const { symbol0Decimals, symbol1Decimals, symbol0, pairedToken } =
+      this.poolsConfig[assetId];
 
-    for (const assetId of this.assetsWithoutLiquidity) {
-      const { reserve0, reserve1 } = response[assetId];
-      const { symbol0Decimals, symbol1Decimals, symbol0, pairedToken } =
-        this.poolsConfig[assetId];
+    const reserve0Serialized = this.serializeReserveDecimals(
+      reserve0,
+      symbol0Decimals
+    );
+    const reserve1Serialized = this.serializeReserveDecimals(
+      reserve1,
+      symbol1Decimals
+    );
 
-      const reserve0Serialized = this.serializeReserveDecimals(
-        reserve0,
-        symbol0Decimals
-      );
-
-      const reserve1Serialized = this.serializeReserveDecimals(
-        reserve1,
-        symbol1Decimals
-      );
-
-      const pairedTokenPrice = getLastPrice(pairedToken);
-      if (!pairedTokenPrice) {
-        throw new Error(`Cannot get last price from cache for: ${pairedToken}`);
-      }
-
-      const isSymbol0CurrentAsset = symbol0 === assetId;
-      const balanceRatio = this.calculateBalanceRatio(
-        isSymbol0CurrentAsset,
-        reserve0Serialized,
-        reserve1Serialized
-      );
-
-      const pairedTokenPriceAsBigNumber = utils.parseEther(
-        pairedTokenPrice.value.toString()
-      );
-
-      const spotPrice = this.calculateSpotPrice(
-        balanceRatio,
-        pairedTokenPriceAsBigNumber
-      );
-      pricesObj[assetId] = parseFloat(utils.formatEther(spotPrice));
-
-      const liquidity = this.calculateLiquidity(
-        isSymbol0CurrentAsset ? reserve1Serialized : reserve0Serialized,
-        pairedTokenPriceAsBigNumber
-      );
-      addLiquidityIfNecessary(
-        assetId,
-        assetsIds,
-        this.name,
-        liquidity,
-        pricesObj
-      );
+    const lastPriceFromCache = getLastPrice(pairedToken);
+    if (!lastPriceFromCache) {
+      throw new Error(`Cannot get last price from cache for: ${pairedToken}`);
     }
+    const pairedTokenPriceAsBigNumber = utils.parseEther(
+      lastPriceFromCache.value.toString()
+    );
 
-    return pricesObj;
+    return {
+      reserve0Serialized,
+      reserve1Serialized,
+      isSymbol0CurrentAsset: symbol0 === assetId,
+      pairedTokenPrice: pairedTokenPriceAsBigNumber,
+    };
+  }
+
+  calculateSpotPrice(assetId: string, response: Reserves): number {
+    const {
+      isSymbol0CurrentAsset,
+      reserve0Serialized,
+      reserve1Serialized,
+      pairedTokenPrice,
+    } = this.getParamsFromResponse(assetId, response);
+
+    const balanceRatio = this.calculateBalanceRatio(
+      isSymbol0CurrentAsset,
+      reserve0Serialized,
+      reserve1Serialized
+    );
+
+    const spotPrice = balanceRatio
+      .mul(utils.parseUnits("1.0", DEFAULT_DECIMALS))
+      .div(pairedTokenPrice);
+
+    return parseFloat(utils.formatEther(spotPrice));
+  }
+
+  calculateLiquidity(assetId: string, response: Reserves): number {
+    const {
+      isSymbol0CurrentAsset,
+      reserve0Serialized,
+      reserve1Serialized,
+      pairedTokenPrice,
+    } = this.getParamsFromResponse(assetId, response);
+
+    const reserve = isSymbol0CurrentAsset
+      ? reserve1Serialized
+      : reserve0Serialized;
+
+    const liquidityAsBigNumber = reserve
+      .mul(pairedTokenPrice)
+      .div(utils.parseUnits("1.0", DEFAULT_DECIMALS))
+      .mul(BigNumber.from(2));
+
+    return parseFloat(utils.formatEther(liquidityAsBigNumber));
   }
 
   serializeReserveDecimals(reserve: BigNumber, decimals: number) {
@@ -140,20 +151,5 @@ export class UniswapV2LikeFetcher extends BaseFetcher {
       : reserve0Serialized
           .mul(utils.parseUnits("1.0", DEFAULT_DECIMALS))
           .div(reserve1Serialized);
-  }
-
-  calculateSpotPrice(balanceRatio: BigNumber, pairedTokenPrice: BigNumber) {
-    return balanceRatio
-      .mul(utils.parseUnits("1.0", DEFAULT_DECIMALS))
-      .div(pairedTokenPrice);
-  }
-
-  calculateLiquidity(reserve: BigNumber, pairedTokenPrice: BigNumber) {
-    const liquidityAsBigNumber = reserve
-      .mul(pairedTokenPrice)
-      .div(utils.parseUnits("1.0", DEFAULT_DECIMALS))
-      .mul(BigNumber.from(2));
-
-    return parseFloat(utils.formatEther(liquidityAsBigNumber));
   }
 }
