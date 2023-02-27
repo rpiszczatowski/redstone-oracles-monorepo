@@ -1,5 +1,3 @@
-import { PricesObj } from "../../types";
-
 export const buildLiquidityDataFeedId = (
   tokenName: string,
   sourceName: string
