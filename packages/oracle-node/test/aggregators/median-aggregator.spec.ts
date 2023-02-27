@@ -1,10 +1,10 @@
 import {
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
-} from "../src/types";
+} from "../../src/types";
 import medianAggregator, {
   getMedianValue,
-} from "../src/aggregators/median-aggregator";
+} from "../../src/aggregators/median-aggregator";
 
 const NAN_VALUES_ERR =
   "Cannot get median value of an array that contains NaN value";

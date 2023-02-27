@@ -1,6 +1,6 @@
 const prompts = require("prompts");
 const { default: Bundlr } = require("@bundlr-network/client");
-const bundlrDefaults = require("../../src/arweave/bundlr-defaults.json");
+const bundlrDefaults = require("./bundlr-defaults.json");
 
 main();
 

@@ -1,11 +1,19 @@
 import { Contract, Wallet } from "ethers";
 import { WrapperBuilder } from "@redstone-finance/evm-connector";
 import { requestDataPackages } from "redstone-sdk";
-import { getProvider, parseBigNumberParam } from "./utils";
+import { getLastRoundParamsFromContract, getProvider } from "./utils";
 import { config } from "./config";
 
-export const startRelayer = () => {
-  const { privateKey, managerContractAddress, abi } = config;
+(() => {
+  const {
+    privateKey,
+    managerContractAddress,
+    abi,
+    dataServiceId,
+    uniqueSignersCount,
+    dataFeeds,
+    cacheServiceUrls,
+  } = config;
   const relayerIterationInterval = Number(config.relayerIterationInterval);
   const updatePriceInterval = Number(config.updatePriceInterval);
 
@@ -26,42 +34,37 @@ export const startRelayer = () => {
 
       const { lastRound, lastUpdateTimestamp } =
         await getLastRoundParamsFromContract(priceFeedsManagerContract);
-
       const currentTimestamp = Date.now();
       const isTwoMinutesSinceLastUpdate =
         currentTimestamp - lastUpdateTimestamp >= updatePriceInterval;
       if (!isTwoMinutesSinceLastUpdate) {
         console.log("Not enough time has passed to update prices");
       } else {
-        const dataPackages = await requestDataPackages({
-          dataServiceId: "redstone-avalanche-prod",
-          uniqueSignersCount: 3,
-        });
+        const dataPackages = await requestDataPackages(
+          {
+            dataServiceId,
+            uniqueSignersCount,
+            dataFeeds,
+          },
+          cacheServiceUrls
+        );
 
         const wrappedContract = WrapperBuilder.wrap(
           priceFeedsManagerContract
         ).usingDataPackages(dataPackages);
 
         const dataPackageTimestamp =
-          dataPackages.___ALL_FEEDS___[0].dataPackage.timestampMilliseconds;
+          dataPackages[dataFeeds[0]][0].dataPackage.timestampMilliseconds;
 
-        await wrappedContract.updateDataFeedValues(
+        const updateTransaction = await wrappedContract.updateDataFeedValues(
           lastRound + 1,
           dataPackageTimestamp
         );
+        await updateTransaction.wait();
         console.log("Successfully updated prices");
       }
     } catch (error: any) {
       console.log(error.stack);
     }
   }, relayerIterationInterval);
-};
-
-const getLastRoundParamsFromContract = async (managerContract: Contract) => {
-  const [lastRound, lastUpdateTimestamp] =
-    await managerContract.getLastRoundParams();
-  return {
-    lastRound: parseBigNumberParam(lastRound),
-    lastUpdateTimestamp: parseBigNumberParam(lastUpdateTimestamp),
-  };
-};
+})();

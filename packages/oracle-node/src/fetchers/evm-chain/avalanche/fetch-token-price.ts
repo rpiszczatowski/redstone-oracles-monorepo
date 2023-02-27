@@ -9,7 +9,7 @@ import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 
 type TokenContractKeys = YieldYakDetailsKeys | MooJoeTokensDetailsKeys;
 
-export const fetchTokenPrice = async (id: string) => {
+export const fetchTokenPrice = (id: string) => {
   const contractDetails = {
     ...yieldYakContractsDetails,
     ...mooTokensContractsDetails,
@@ -25,7 +25,7 @@ export const fetchTokenPrice = async (id: string) => {
   }
 };
 
-export const fetchTokensPrices = async (tokens: string[]) => {
+export const fetchTokensPrices = (tokens: string[]) => {
   const priceObject = {} as { [tokenName: string]: BigNumber };
   for (const token of tokens) {
     const tokenPriceFromDb = getLastPrice(token);

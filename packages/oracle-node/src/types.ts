@@ -29,6 +29,7 @@ export interface TokenConfig {
   customUrlDetails?: CustomUrlDetails;
   comment?: string;
   skipSigning?: boolean;
+  priceAggregator?: string;
 }
 
 export interface DeviationCheckConfig {
@@ -80,9 +81,13 @@ export interface PriceDataFetched {
 export interface PriceDataBeforeAggregation {
   id: string;
   symbol: string;
-  source: { [sourceName: string]: any };
+  source: Source;
   timestamp: number;
   version: string;
+}
+
+export interface Source {
+  [sourceName: string]: any;
 }
 
 export interface PriceDataAfterAggregation extends PriceDataBeforeAggregation {
@@ -126,7 +131,6 @@ export interface ArweaveTransactionTags {
 }
 
 export interface PrivateKeys {
-  arweaveJwk: JWKInterface;
   ethereumPrivateKey: string;
 }
 
@@ -147,6 +151,7 @@ export interface NodeConfig {
   etherscanApiKey?: string;
   ttlForPricesInLocalDBInMilliseconds: number;
   avalancheRpcUrl: string;
+  arbitrumRpcUrl: string;
   enableStreamrBroadcasting: boolean;
   mockPricesUrlOrPath: string;
   twelveDataRapidApiKey?: string;

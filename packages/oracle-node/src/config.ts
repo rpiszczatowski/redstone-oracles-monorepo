@@ -22,6 +22,7 @@ const DEFAULT_COINBASE_INDEXER_MONGODB_URL = "";
 const DEFAULT_COINMARKETCAP_API_KEY = "";
 const DEFAULT_KAIKO_API_KEY = "";
 const DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE = "90";
+const DEFAULT_ARBITRUM_RPC_URL = "https://arb1.arbitrum.io/rpc";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -87,20 +88,6 @@ const getOptionallyPriceDataServiceUrls = () => {
   }
 };
 
-export const getArweaveWallet = (): JWKInterface => {
-  const arweaveKeysFile = process.env.ARWEAVE_KEYS_FILE_PATH;
-  const arweaveKeysJWK = process.env.ARWEAVE_KEYS_JWK;
-  if (arweaveKeysFile) {
-    return readJSON(arweaveKeysFile);
-  } else if (arweaveKeysJWK) {
-    return JSON.parse(arweaveKeysJWK);
-  } else {
-    throw new Error(
-      "Env ARWEAVE_KEYS_FILE_PATH or ARWEAVE_KEYS_JWK must be specified"
-    );
-  }
-};
-
 const ethereumPrivateKey = parserFromString.hex(
   getFromEnv("ECDSA_PRIVATE_KEY")
 );
@@ -134,7 +121,6 @@ export const config: NodeConfig = Object.freeze({
   ),
   kaikoApiKey: getFromEnv("KAIKO_API_KEY", DEFAULT_KAIKO_API_KEY),
   privateKeys: {
-    arweaveJwk: getArweaveWallet(),
     ethereumPrivateKey,
   },
   ethereumAddress: new ethers.Wallet(ethereumPrivateKey).address,
@@ -169,4 +155,5 @@ export const config: NodeConfig = Object.freeze({
       DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE
     )
   ),
+  arbitrumRpcUrl: getFromEnv("ARBITRUM_RPC_URL", DEFAULT_ARBITRUM_RPC_URL),
 });

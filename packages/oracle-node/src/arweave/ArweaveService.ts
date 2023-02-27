@@ -2,18 +2,16 @@ import axios, { AxiosResponse } from "axios";
 import { Consola } from "consola";
 import { Manifest } from "../types";
 import { promiseTimeout } from "../utils/promise-timeout";
-import {
-  getOracleRegistryState,
-  getDataServiceIdForSigner,
-} from "redstone-sdk";
+import { getDataServiceIdForSigner } from "redstone-sdk";
 import { config } from "../config";
+import contractsAddresses from "../../src/config/contracts.json";
 
 const logger = require("../utils/logger")("ArweaveService") as Consola;
 
 const ARWEAVE_URL = "https://arweave.net";
+const WARP_DRE_NODE_URL = "https://dre-1.warp.cc/contract";
 const TIMEOUT_MS = 10 * 1000;
 
-// Business service that supplies operations required by Redstone-Node.
 export default class ArweaveService {
   constructor(private readonly timeout: number = TIMEOUT_MS) {}
 
@@ -26,14 +24,13 @@ export default class ArweaveService {
 
   async getCurrentManifest(oldManifest?: Manifest): Promise<Manifest> {
     try {
-      const oracleRegistryState = await getOracleRegistryState();
+      const oracleRegistryState = await this.getOracleRegistryState();
       const dataServiceId = getDataServiceIdForSigner(
         oracleRegistryState,
         config.ethereumAddress
       );
-      const currentDataService =
-        oracleRegistryState.dataServices[dataServiceId];
-      const manifestTxId = currentDataService.manifestTxId;
+      const manifestTxId =
+        oracleRegistryState.dataServices[dataServiceId].manifestTxId;
       return await promiseTimeout(
         () => this.fetchManifestPromise(manifestTxId),
         this.timeout
@@ -48,5 +45,15 @@ export default class ArweaveService {
         );
       }
     }
+  }
+
+  async getOracleRegistryState() {
+    const params = new URLSearchParams([
+      ["id", contractsAddresses["oracle-registry"]],
+    ]);
+    const response = await axios.get(WARP_DRE_NODE_URL, {
+      params,
+    });
+    return response.data.state;
   }
 }
