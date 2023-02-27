@@ -1,10 +1,10 @@
-import { ethers, BigNumber } from "ethers";
+import { BigNumber } from "ethers";
 
-const ONE = ethers.BigNumber.from(1);
-const TWO = ethers.BigNumber.from(2);
+const ONE = BigNumber.from(1);
+const TWO = BigNumber.from(2);
 
 export const sqrt = (value: BigNumber) => {
-  const x = ethers.BigNumber.from(value);
+  const x = BigNumber.from(value);
   let z = x.add(ONE).div(TWO);
   let y = x;
   while (z.sub(y).isNegative()) {

@@ -11,11 +11,12 @@ describe("BigNum Sqrt Test", () => {
   });
 
   test("Should properly square big integers", async () => {
-    const number = BigNumber.from(999999999).mul(BigNumber.from(999999999));
+    const multiplier = BigNumber.from(999999999);
+    const number = multiplier.mul(multiplier);
 
     const result = sqrt(number);
 
-    expect(result.toNumber()).toEqual(999999999);
+    expect(result.toNumber()).toEqual(multiplier.toNumber());
   });
 
   test("Should properly floor square big integers", async () => {
