@@ -1,0 +1,19 @@
+{
+  "name": "fuel-analysis",
+  "version": "0.0.1",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/timestamps.js",
+    "start:dev": "ts-node src/timestamps.ts"
+  },
+  "dependencies": {
+    "level-ts": "^2.1.0",
+    "@redstone-finance/fuel-connector": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^18.13.0",
+    "typescript": "^4.9.5"
+  }
+}
