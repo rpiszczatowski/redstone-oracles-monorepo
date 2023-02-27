@@ -67,7 +67,7 @@ export interface MockPackageArgs {
 }
 
 export interface MockMultiSignPackageArgs {
-  mockSingerIndices: MockSignerIndex[];
+  mockSignerIndices: MockSignerIndex[];
   timestampMilliseconds?: number;
 }
 
@@ -75,7 +75,8 @@ export interface MockNumericPackageArgs extends MockPackageArgs {
   dataPoints: INumericDataPoint[];
 }
 
-export interface MockNumericMultiSignPackageArgs extends MockMultiSignPackageArgs {
+export interface MockNumericMultiSignPackageArgs
+  extends MockMultiSignPackageArgs {
   dataPoints: INumericDataPoint[];
 }
 
@@ -100,8 +101,9 @@ export const DEFAULT_TIMESTAMP_FOR_TESTS = 1654353400000;
 // Used in mock data packages with one data point
 export const DEFAULT_DATA_FEED_ID =
   "SOME LONG STRING FOR DATA FEED ID TO TRIGGER SYMBOL HASHING";
-export const DEFAULT_DATA_FEED_ID_BYTES_32 =
-  utils.convertStringToBytes32(DEFAULT_DATA_FEED_ID);
+export const DEFAULT_DATA_FEED_ID_BYTES_32 = utils.convertStringToBytes32(
+  DEFAULT_DATA_FEED_ID
+);
 
 // Well-known private keys, which are used by
 // default in hardhat testing environment
@@ -229,7 +231,9 @@ export const getMockMultiSignedPackage = (
   const timestampMilliseconds =
     opts.timestampMilliseconds || DEFAULT_TIMESTAMP_FOR_TESTS;
   return {
-    signers: opts.mockSingerIndices.map((index) => { return MOCK_SIGNERS[index].address as MockSignerAddress }),
+    signers: opts.mockSignerIndices.map((index) => {
+      return MOCK_SIGNERS[index].address as MockSignerAddress;
+    }),
     dataPackage: new DataPackage(dataPoints, timestampMilliseconds),
   };
 };
@@ -257,7 +261,7 @@ export const getMockMultiSignedDataPackageObj = (
   const mockPackage = getMockMultiSignedPackage(args, numericDataPoints);
   return {
     ...mockPackage.dataPackage
-      .multiSign(args.mockSingerIndices.map((i) => MOCK_SIGNERS[i].privateKey))
+      .multiSign(args.mockSignerIndices.map((i) => MOCK_SIGNERS[i].privateKey))
       .toObj(),
   };
 };

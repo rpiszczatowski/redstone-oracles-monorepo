@@ -52,7 +52,10 @@ export const mockNumericPackageConfigs: MockNumericPackageArgs[] = [
 ];
 
 export const mockNumericPackageMultiSignConfig: MockNumericMultiSignPackageArgs = {
-  mockSingerIndices: [0, 1, 2],
+  mockSignerIndices: getRange({
+    start: 0,
+    length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
+  }).map((i: number) => i as MockSignerIndex),
   dataPoints: [
     { dataFeedId: "ETH", value: 42 },
     { dataFeedId: "BTC", value: 400 },
@@ -100,8 +103,9 @@ export const mockBytesPackageConfigs: MockStringPackageArgs[] = getRange({
   mockSignerIndex: i as MockSignerIndex,
 }));
 
-export const mockBytesPackages = 
-mockBytesPackageConfigs.map(getMockStringPackage);
+export const mockBytesPackages = mockBytesPackageConfigs.map(
+  getMockStringPackage
+);
 
 export const expectedBytesValues = {
   ETH: "0x457468657265756d",

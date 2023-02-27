@@ -3,7 +3,6 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "hardhat/console.sol";
 
 import "./RedstoneConstants.sol";
 import "./RedstoneDefaultsLib.sol";
@@ -78,9 +77,6 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       uint256 eachDataPointValueByteSize
     ) = _extractDataPointsDetailsForDataPackageMultiSign(calldataNegativeOffset, signersCount);
 
-    console.log("dataPointsCount: %s", dataPointsCount);
-    console.log("eachDataPointValueByteSize: %s", eachDataPointValueByteSize);
-
     {
       bytes memory signedMessage;
       uint48 extractedTimestamp;
@@ -131,9 +127,12 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
 
       validateTimestamp(extractedTimestamp);
     }
+    uint256 uniqueSignersThreshold = getUniqueSignersThreshold();
 
     {
       // Validating signatures
+      uint256 uniqueSignersCount = 0;
+      uint256 singersBitmap = 0;
       for (uint256 i = 0; i < signersCount; i++) {
         uint256 signatureCalldataOffset = calldataNegativeOffset +
           SIGNERS_COUNT_BS +
@@ -143,11 +142,22 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
           signedHash,
           signatureCalldataOffset
         );
-        getAuthorisedSignerIndex(signerAddress);
+        uint256 signerIndex = getAuthorisedSignerIndex(signerAddress);
+
+        if (!BitmapLib.getBitFromBitmap(singersBitmap, signerIndex)) {
+          singersBitmap = BitmapLib.setBitInBitmap(singersBitmap, signerIndex);
+          uniqueSignersCount++;
+        }
+      }
+      
+      if (uniqueSignersCount < uniqueSignersThreshold) {
+        revert InsufficientNumberOfUniqueSigners(uniqueSignersCount, uniqueSignersThreshold);
       }
     }
 
     {
+      uint256 dataFeedIdsBitmap = 0;
+      uint256 uniqueDataFeedIdsCount = 0;
       // Extracting data points values
       bytes32 dataPointDataFeedId;
       uint256 dataPointValue;
@@ -163,9 +173,18 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
 
         for (uint256 i = 0; i < dataFeedIds.length; i++) {
           if (dataFeedIds[i] == dataPointDataFeedId) {
+            if (!BitmapLib.getBitFromBitmap(dataFeedIdsBitmap, i)) {
+              dataFeedIdsBitmap = BitmapLib.setBitInBitmap(dataFeedIdsBitmap, i);
+              uniqueDataFeedIdsCount++;
+            }
+
             dataPointsValues[i] = dataPointValue;
           }
         }
+      }
+
+      if (uniqueDataFeedIdsCount < dataFeedIds.length) {
+        revert InsufficientNumberOfUniqueSigners(0, uniqueSignersThreshold);
       }
 
       return dataPointsValues;

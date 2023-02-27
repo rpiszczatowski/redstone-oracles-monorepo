@@ -21,10 +21,8 @@ export interface MultiSignDataPackagePlainObj extends DataPackagePlainObj {
   signatures: string[]; // base64-encoded joined signatures
 }
 
-export class MultiSignDataPackage
-  extends Serializable
-  implements MultiSignDataPackageLike
-{
+export class MultiSignDataPackage extends Serializable
+  implements MultiSignDataPackageLike {
   public readonly signatures: Signature[];
 
   constructor(
@@ -32,14 +30,9 @@ export class MultiSignDataPackage
     signatures: Signature[] | string[]
   ) {
     super();
-    // TODO: improve this
-    if (typeof signatures[0] === "string") {
-      this.signatures = signatures.map((signature) =>
-        splitSignature(signature)
-      );
-    } else {
-      this.signatures = signatures as Signature[];
-    }
+    this.signatures = signatures.map((signature) =>
+      typeof signature === "string" ? splitSignature(signature) : signature
+    );
   }
 
   serializeSignaturesToBytes(): Uint8Array {
@@ -78,11 +71,6 @@ export class MultiSignDataPackage
 
   toObj(): MultiSignDataPackagePlainObj {
     const signaturesHex = this.serializeSignaturesToHex();
-
-    // return {
-    //   ...this.dataPackage.toObj(),
-    //   signature: base64.encode(signatureHex),
-    // };
 
     return {
       ...this.dataPackage.toObj(),
