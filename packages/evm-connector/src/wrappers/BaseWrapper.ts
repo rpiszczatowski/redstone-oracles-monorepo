@@ -12,10 +12,7 @@ export abstract class BaseWrapper {
     params?: ParamsForDryRunVerification
   ): Promise<string>;
 
-  useSignerInsteadOfProviderForStaticCalls(
-    contract: Contract,
-    shouldBeSigner: boolean = false
-  ): Contract {
+  overwriteEthersContract(contract: Contract): Contract {
     const wrapper = this;
     const contractPrototype = Object.getPrototypeOf(contract);
     const wrappedContract = Object.assign(
@@ -44,9 +41,7 @@ export abstract class BaseWrapper {
 
           if (isCall || isDryRun) {
             const shouldUseSigner =
-              shouldBeSigner &&
-              contract.signer &&
-              Signer.isSigner(contract.signer);
+              contract.signer && Signer.isSigner(contract.signer);
 
             const result = await contract[
               shouldUseSigner ? "signer" : "provider"

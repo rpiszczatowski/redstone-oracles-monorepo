@@ -25,7 +25,7 @@ describe("Corrupted payload", function () {
   const testShouldRevert = async (payload: string) => {
     const wrappedContract = new CustomPayloadWrapper(
       payload
-    ).useSignerInsteadOfProviderForStaticCalls(contract);
+    ).overwriteEthersContract(contract);
 
     await expect(
       wrappedContract.save2ValuesInStorage(
