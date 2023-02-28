@@ -9,16 +9,16 @@ import {
   MooJoeTokensDetailsKeys,
   oracleAdaptersTokens,
   OracleAdaptersDetailsKeys,
-  glpToken,
-  GlpManagerDetailsKeys,
 } from "./AvalancheEvmFetcher";
 import { fetchTokenPrice, fetchTokensPrices } from "./fetch-token-price";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
-import { glpManagerContractsDetails } from "./contracts-details/glp-manager";
 import { sqrt } from "../../../utils/math";
+import { extractPriceForGlpToken } from "../shared/extract-prices";
+import { glpToken } from "../shared/contracts-details/glp-manager";
+import { glpManagerAddress } from "./contracts-details/glp-manager";
 
 // Fair LP Token Pricing has been implemented with the help of: https://blog.alphaventuredao.io/fair-lp-token-pricing/
 
@@ -26,7 +26,7 @@ interface TokenReserve {
   [name: string]: BigNumber;
 }
 
-export const extractPrice = async (
+export const extractPrice = (
   response: MulticallParsedResponses,
   id: string
 ) => {
@@ -42,11 +42,11 @@ export const extractPrice = async (
   } else if (oracleAdaptersTokens.includes(id)) {
     return extractPriceForOracleAdapterTokens(response, id);
   } else if (glpToken.includes(id)) {
-    return extractPriceForGlpToken(response, id);
+    return extractPriceForGlpToken(response, glpManagerAddress);
   }
 };
 
-const extractPriceForYieldYakOrMoo = async (
+const extractPriceForYieldYakOrMoo = (
   multicallResult: MulticallParsedResponses,
   id: string,
   address: string,
@@ -64,7 +64,7 @@ const extractPriceForYieldYakOrMoo = async (
     .mul(ethers.utils.parseUnits("1.0", 8))
     .div(totalSupply);
 
-  const tokenPrice = await fetchTokenPrice(id);
+  const tokenPrice = fetchTokenPrice(id);
   if (tokenPrice) {
     const yieldYakPrice = tokenValue
       .mul(tokenPrice)
@@ -74,7 +74,7 @@ const extractPriceForYieldYakOrMoo = async (
   }
 };
 
-const extractPriceForLpTokens = async (
+const extractPriceForLpTokens = (
   multicallResult: MulticallParsedResponses,
   id: string
 ) => {
@@ -90,19 +90,21 @@ const extractPriceForLpTokens = async (
     [firstToken]: firstTokenReserve,
     [secondToken]: secondTokenReserve,
   };
-
-  const tokenPrices = await calculateTokensPrices(tokenReserves);
+  //current
+  const tokensReservesPrices = calculateReserveTokensPrices(tokenReserves);
   const reservesSerialized = serializeDecimals(tokenReserves);
 
-  if (tokenPrices) {
-    const firstTokenPrice = tokenPrices[firstToken];
-    const secondTokenPrice = tokenPrices[secondToken];
+  if (tokensReservesPrices) {
+    const firstTokenReservePrice = tokensReservesPrices[firstToken];
+    const secondTokenReservePrice = tokensReservesPrices[secondToken];
 
     const firstReserve = reservesSerialized[firstToken];
     const secondReserve = reservesSerialized[secondToken];
 
     const reservesMultiplied = firstReserve.mul(secondReserve);
-    const pricesMultiplied = firstTokenPrice.mul(secondTokenPrice);
+    const pricesMultiplied = firstTokenReservePrice.mul(
+      secondTokenReservePrice
+    );
 
     const reservesMultipliedSqrt = sqrt(reservesMultiplied);
     const pricesMultipliedSqrt = sqrt(pricesMultiplied);
@@ -120,9 +122,9 @@ const extractPriceForLpTokens = async (
   }
 };
 
-const calculateTokensPrices = async (tokenReserves: TokenReserve) => {
+const calculateReserveTokensPrices = (tokenReserves: TokenReserve) => {
   const tokenNames = Object.keys(tokenReserves);
-  const tokensPrices = await fetchTokensPrices(tokenNames);
+  const tokensPrices = fetchTokensPrices(tokenNames);
   const areAllTokensFetched =
     Object.keys(tokensPrices).length === Object.keys(tokenReserves).length;
   if (areAllTokensFetched) {
@@ -156,13 +158,4 @@ const extractPriceForOracleAdapterTokens = (
     multicallResult[address].latestAnswer.value
   );
   return ethers.utils.formatUnits(latestAnswer, 8);
-};
-
-const extractPriceForGlpToken = (
-  multicallResult: MulticallParsedResponses,
-  id: string
-) => {
-  const { address } = glpManagerContractsDetails[id as GlpManagerDetailsKeys];
-  const price = BigNumber.from(multicallResult[address].getPrice.value);
-  return ethers.utils.formatUnits(price, 30);
 };

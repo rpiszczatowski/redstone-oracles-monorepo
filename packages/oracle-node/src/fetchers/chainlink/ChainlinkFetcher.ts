@@ -14,7 +14,7 @@ export class ChainlinkFetcher extends BaseFetcher {
     return await this.chainlinkProxy.getExchangeRates(ids);
   }
 
-  async extractPrices(response: any): Promise<PricesObj> {
+  extractPrices(response: any): PricesObj {
     const pricesObj: PricesObj = {};
 
     for (const id of Object.keys(response)) {
