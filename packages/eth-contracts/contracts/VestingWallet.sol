@@ -51,7 +51,7 @@ contract VestingWallet is Initializable {
    * @dev This returns the amount still unvested in the contract, as a function of time
    */
   function getUnvestedAmount(uint256 timestamp) public view virtual returns (uint256) {
-    if (timestamp < start + cliffDuration) {
+    if (timestamp <= start + cliffDuration) {
       return allocation;
     } else if (timestamp > start + cliffDuration + vestingDuration) {
       return 0;
