@@ -3,11 +3,13 @@ library config_validation;
 dep protocol;
 dep config;
 dep validation;
+dep numbers;
 
 use std::u256::U256;
 use protocol::{DataPackage, Payload};
 use config::Config;
 use validation::*;
+use numbers::*;
 
 /// 655360000 + feed_index
 pub const INSUFFICIENT_SIGNER_COUNT_FOR = 0x2710_0000;
@@ -36,7 +38,7 @@ impl Validation for Config {
 
     fn validate_signer_count(self, results: Vec<Vec<U256>>) {
         let mut i = 0;
-        while (i < results.len) {
+        while (i < self.feed_ids.len) {
             let values = results.get(i).unwrap();
             if (values.len < self.required_signer_count) {
                 log(values.len);
@@ -57,4 +59,66 @@ impl Validation for Config {
 
         return s.unwrap();
     }
+}
+
+fn make_results() -> Vec<Vec<U256>> {
+    let mut results = Vec::new();
+
+    let mut set1 = Vec::new();
+    set1.push(U256::from_u64(111));
+    set1.push(U256::from_u64(777));
+
+    let mut set2 = Vec::new();
+    set2.push(U256::from_u64(444));
+    set2.push(U256::from_u64(555));
+    set2.push(U256::from_u64(666));
+
+    let mut set3 = Vec::new();
+    set3.push(U256::from_u64(222));
+    set3.push(U256::from_u64(333));
+
+    results.push(set1);
+    results.push(set2);
+    results.push(set3);
+
+    return results;
+}
+
+fn make_config(required_signer_count: u64) -> Config {
+    let mut feed_ids = Vec::new();
+    feed_ids.push(U256::from_u64(0x444444));
+    feed_ids.push(U256::from_u64(0x445566));
+    feed_ids.push(U256::from_u64(0x556644));
+
+    let config = Config {
+        feed_ids: feed_ids,
+        signers: Vec::new(),
+        required_signer_count,
+        block_timestamp: 0,
+    };
+
+    return config;
+}
+#[test]
+fn test_validate_one_signer() {
+    let results = make_results();
+    let config = make_config(1);
+
+    config.validate_signer_count(results);
+}
+
+#[test]
+fn test_validate_two_signers() {
+    let results = make_results();
+    let config = make_config(2);
+
+    config.validate_signer_count(results);
+}
+
+#[test(should_revert)]
+fn test_validate_three_signers() {
+    let results = make_results();
+    let config = make_config(3);
+
+    config.validate_signer_count(results);
 }

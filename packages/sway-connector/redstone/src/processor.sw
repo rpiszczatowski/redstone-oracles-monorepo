@@ -2,20 +2,15 @@ library processor;
 
 dep protocol;
 dep config;
-dep vec;
 dep config_validation;
+dep aggregation;
 
-use std::option::*;
-use std::vec::*;
-use std::bytes::*;
-use std::logging::log;
-use std::constants::ZERO_B256;
-use std::u256::U256;
+use std::{bytes::*, logging::log, option::*, u256::U256, vec::*};
 
-use protocol::{make_payload, Payload};
+use protocol::Payload;
 use config::Config;
-use vec::sort;
 use config_validation::*;
+use aggregation::aggregate_results;
 
 enum Entry {
     Value: U256,
@@ -23,7 +18,7 @@ enum Entry {
 }
 
 pub fn process_input(bytes: Bytes, config: Config) -> Vec<U256> {
-    let payload = make_payload(bytes);
+    let payload = Payload::from_bytes(bytes);
     config.validate_timestamps(payload);
 
     let matrix = get_payload_result_matrix(payload, config);
@@ -34,37 +29,6 @@ pub fn process_input(bytes: Bytes, config: Config) -> Vec<U256> {
     let aggregated = aggregate_results(results);
 
     return aggregated;
-}
-
-fn aggregate_results(results: Vec<Vec<U256>>) -> Vec<U256> {
-    let mut aggregated = Vec::new();
-
-    let mut i = 0;
-    while (i < results.len) {
-        let values = results.get(i).unwrap();
-        aggregated.push(aggregate_values(values));
-
-        i += 1;
-    }
-
-    return aggregated;
-}
-
-fn aggregate_values(values: Vec<U256>) -> U256 {
-    let mut values = values;
-    sort(values);
-    let mut j = 0;
-    while (j < values.len) {
-        j += 1;
-    }
-
-    let mid = values.len / 2;
-
-    if (values.len - 2 * mid == 1) {
-        return values.get(mid).unwrap();
-    }
-
-    return (values.get(mid).unwrap() + values.get(mid - 1).unwrap()).rsh(1);
 }
 
 fn get_feed_values(matrix: Vec<Entry>, config: Config) -> Vec<Vec<U256>> {
