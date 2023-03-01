@@ -3,7 +3,7 @@
   "useCustomScheduler": "on-each-arbitrum-block",
   "signBlockNumbersInsteadOfTimestamps": true,
   "priceAggregator": "median",
-  "defaultSource": ["mock"],
+  "defaultSource": ["kaiko"],
   "sourceTimeout": 50000,
   "deviationCheck": {
     "deviationWithRecentValues": {
@@ -16,6 +16,14 @@
   "enableArweaveBackup": false,
   "tokens": {
     "BTC": {},
-    "ETH": {}
+    "ETH": {},
+    "USDT": {},
+    "BNB": {},
+    "ADA": {},
+    "DOT": {},
+    "CELO": {},
+    "AVAX": {},
+    "GMX": {},
+    "UNI": {}
   }
 }
