@@ -110,7 +110,7 @@ export class UniswapV3Fetcher extends BaseFetcher {
     return { tokenPriceInTermsOfOther, otherTokenPrice };
   }
 
-  private convertSymbolsToPoolIds(
+  protected convertSymbolsToPoolIds(
     symbols: string[],
     symbolToPoolId: SymbolToPoolId
   ): string[] {
