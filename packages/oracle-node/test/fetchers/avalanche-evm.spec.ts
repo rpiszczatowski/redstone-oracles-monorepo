@@ -126,7 +126,7 @@ describe("Avalanche EVM fetcher", () => {
 
       const result = await fetcher.fetchAll(["TJ_AVAX_USDC_LP"]);
       expect(result).toEqual([
-        { symbol: "TJ_AVAX_USDC_LP", value: 10864910.562549423 },
+        { symbol: "TJ_AVAX_USDC_LP", value: 10864354.524753695 },
       ]);
     });
   });

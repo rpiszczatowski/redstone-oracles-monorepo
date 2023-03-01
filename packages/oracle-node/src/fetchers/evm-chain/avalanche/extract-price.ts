@@ -15,9 +15,12 @@ import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
+import { sqrt } from "../../../utils/math";
 import { extractPriceForGlpToken } from "../shared/extract-prices";
 import { glpToken } from "../shared/contracts-details/glp-manager";
 import { glpManagerAddress } from "./contracts-details/glp-manager";
+
+// Fair LP Token Pricing has been implemented with the help of: https://blog.alphaventuredao.io/fair-lp-token-pricing/
 
 interface TokenReserve {
   [name: string]: BigNumber;
@@ -87,17 +90,34 @@ const extractPriceForLpTokens = (
     [firstToken]: firstTokenReserve,
     [secondToken]: secondTokenReserve,
   };
+  //current
   const tokensReservesPrices = calculateReserveTokensPrices(tokenReserves);
+  const reservesSerialized = serializeDecimals(tokenReserves);
+
   if (tokensReservesPrices) {
     const firstTokenReservePrice = tokensReservesPrices[firstToken];
     const secondTokenReservePrice = tokensReservesPrices[secondToken];
-    const reservesPricesSum = firstTokenReservePrice.add(
+
+    const firstReserve = reservesSerialized[firstToken];
+    const secondReserve = reservesSerialized[secondToken];
+
+    const reservesMultiplied = firstReserve.mul(secondReserve);
+    const pricesMultiplied = firstTokenReservePrice.mul(
       secondTokenReservePrice
     );
+
+    const reservesMultipliedSqrt = sqrt(reservesMultiplied);
+    const pricesMultipliedSqrt = sqrt(pricesMultiplied);
+
+    const reservesPricesMulitplied =
+      reservesMultipliedSqrt.mul(pricesMultipliedSqrt);
+
     const totalSupply = BigNumber.from(
       multicallResult[address].totalSupply.value
     );
-    const lpTokenPrice = reservesPricesSum.div(totalSupply);
+
+    const lpTokenPrice = reservesPricesMulitplied.div(totalSupply).mul(2);
+
     return ethers.utils.formatEther(lpTokenPrice);
   }
 };
@@ -108,18 +128,9 @@ const calculateReserveTokensPrices = (tokenReserves: TokenReserve) => {
   const areAllTokensFetched =
     Object.keys(tokensPrices).length === Object.keys(tokenReserves).length;
   if (areAllTokensFetched) {
-    const tokensReservesSerialized = serializeDecimals(tokenReserves);
-    const tokensReservesPrices = {} as TokenReserve;
-    for (const tokenName of Object.keys(tokenReserves)) {
-      const tokenReservePrice = tokensReservesSerialized[tokenName].mul(
-        tokensPrices[tokenName]
-      );
-      tokensReservesPrices[tokenName] = tokenReservePrice;
-    }
-    return tokensReservesPrices;
+    return tokensPrices;
   }
 };
-
 const serializeDecimals = (tokenReserves: TokenReserve) => {
   const serializedTokenReserves = {} as TokenReserve;
   for (const tokenName of Object.keys(tokenReserves)) {
@@ -137,7 +148,6 @@ const serializeDecimals = (tokenReserves: TokenReserve) => {
   }
   return serializedTokenReserves;
 };
-
 const extractPriceForOracleAdapterTokens = (
   multicallResult: MulticallParsedResponses,
   id: string
