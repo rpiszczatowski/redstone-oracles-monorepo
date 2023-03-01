@@ -40,7 +40,7 @@ impl Validation for Config {
         let mut i = 0;
         while (i < self.feed_ids.len) {
             let values = results.get(i).unwrap();
-            if (values.len < self.required_signer_count) {
+            if (values.len < self.signer_count_threshold) {
                 log(values.len);
                 revert(INSUFFICIENT_SIGNER_COUNT_FOR + i);
             }
@@ -84,7 +84,7 @@ fn make_results() -> Vec<Vec<U256>> {
     return results;
 }
 
-fn make_config(required_signer_count: u64) -> Config {
+fn make_config(signer_count_threshold: u64) -> Config {
     let mut feed_ids = Vec::new();
     feed_ids.push(U256::from_u64(0x444444));
     feed_ids.push(U256::from_u64(0x445566));
@@ -93,7 +93,7 @@ fn make_config(required_signer_count: u64) -> Config {
     let config = Config {
         feed_ids: feed_ids,
         signers: Vec::new(),
-        required_signer_count,
+        signer_count_threshold,
         block_timestamp: 0,
     };
 

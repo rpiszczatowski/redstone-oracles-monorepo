@@ -33,7 +33,7 @@ fn main() {
     let config = Config {
         feed_ids,
         signers,
-        required_signer_count: 1,
+        signer_count_threshold: 1,
         block_timestamp: timestamp() - (10 + (1 << 62)),
     };
 

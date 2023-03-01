@@ -7,4 +7,4 @@ name = "redstone"
 organization = "Redstone"
 
 [constants]
-CONTRACT_ID = { type = "b256", value = "0x865b2fbbc3b6f16e8a747d1a7629418d69fea5eeaaf87673a3d01a39a504e5e1" }
+CONTRACT_ID = { type = "b256", value = "0x5a0dce7918ff309fe71534aa2469a2dc3a587fe89517e35335672415ae77c13b" }

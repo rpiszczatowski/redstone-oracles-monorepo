@@ -1,9 +1,15 @@
 script;
 
-use std::logging::log;
-use std::bytes::Bytes;
-use std::u256::U256;
-use std::tx::{tx_script_data_length, tx_script_data_start_pointer};
+use std::{
+    bytes::Bytes,
+    inputs::input_owner,
+    logging::log,
+    tx::{
+        tx_script_data_length,
+        tx_script_data_start_pointer,
+    },
+    u256::U256,
+};
 
 abi Prices {
     fn get_prices(feed_ids: Vec<U256>, payload: Vec<u64>) -> [U256; 50];

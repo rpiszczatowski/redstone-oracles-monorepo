@@ -8,7 +8,7 @@ use vec::{value_index, value_index_b256};
 pub struct Config {
     signers: Vec<b256>,
     feed_ids: Vec<U256>,
-    required_signer_count: u64,
+    signer_count_threshold: u64,
     block_timestamp: u64, // unix
 }
 

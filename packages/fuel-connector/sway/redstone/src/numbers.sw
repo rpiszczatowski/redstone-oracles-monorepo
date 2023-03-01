@@ -16,6 +16,18 @@ impl U256 {
     }
 }
 
+impl b256 {
+    pub fn from_u64(number: u64) -> b256 {
+        let number_u256 = U256::from_u64(number);
+
+        let mut value = 0x0000000000000000000000000000000000000000000000000000000000000000;
+        let ptr = __addr_of(value);
+        let val = __addr_of(number_u256).copy_to::<b256>(ptr, 1);
+
+        return value;
+    }
+}
+
 impl FromBytes for u64 {
     fn from_bytes(bytes: Bytes) -> u64 {
         assert(bytes.len <= 8);

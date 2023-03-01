@@ -2,7 +2,7 @@
 DATA_NAME=test
 IS_LOCAL=1
 
-CONTRACT_ID=0x865b2fbbc3b6f16e8a747d1a7629418d69fea5eeaaf87673a3d01a39a504e5e1
+CONTRACT_ID=0x5a0dce7918ff309fe71534aa2469a2dc3a587fe89517e35335672415ae77c13b
 
 ifeq ($(IS_LOCAL), 0)
 #	SIGNING_KEY= # forc-wallet export --account-index=0
@@ -14,16 +14,19 @@ else
 	GAS_PRICE=0
 endif
 
-SCRIPT=script
-CONTRACT=contract
-INVOKER=invoker
-LIBRARY=redstone
-DATA_DIR=../data-generator/data
+SCRIPT=sway/script
+CONTRACT=sway/contract
+INVOKER=sway/contract_invoker
+INITIALIZER=sway/contract_initializer
+LIBRARY=sway/redstone
+DATA_GENERATOR=../data-generator
+DATA_DIR=$(DATA_GENERATOR)/data
 
 format:
 	cd $(SCRIPT) && forc-fmt
 	cd $(CONTRACT) && forc-fmt
 	cd $(INVOKER) && forc-fmt
+	cd $(INITIALIZER) && forc-fmt
 	cd $(LIBRARY) && forc-fmt
 
 run: format
@@ -36,17 +39,28 @@ invoke: format
 	--data $(shell cat $(DATA_DIR)/$(DATA_NAME).hex) \
 	--node-url $(NODE_URL) \
 	--contract $(CONTRACT_ID) \
-	--gas-limit 900000000 \
+	--gas-limit 100000000 \
 	--gas-price $(GAS_PRICE) $(SIGNING_KEY) 
+
+contract: format
+	cd $(CONTRACT) && forc build --terse
 
 # make SIGNING_KEY=5b4 invoke
 deploy: format
-	cd $(CONTRACT) && forc deploy \
+	cd $(CONTRACT) && forc deploy --terse \
 	--node-url $(NODE_URL) \
+	--gas-price $(GAS_PRICE) $(SIGNING_KEY)
+
+initialize: format
+	cd $(INITIALIZER) && forc run -r \
+	--data 0x0$(IS_LOCAL) \
+	--node-url $(NODE_URL) \
+	--contract $(CONTRACT_ID) \
+	--gas-limit 100000000 \
 	--gas-price $(GAS_PRICE) $(SIGNING_KEY)
 
 test: format
 	cd $(LIBRARY) && forc test
 
 prepare_data:
-	make -C ../data-generator DATA_NAME=$(DATA_NAME) prepare_data
+	make -C $(DATA_GENERATOR) DATA_NAME=$(DATA_NAME) prepare_data
