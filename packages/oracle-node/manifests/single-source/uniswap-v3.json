@@ -18,6 +18,7 @@
   "enableStreamrBroadcaster": false,
   "enableArweaveBackup": false,
   "tokens": {
+    "OHM": {},
     "FRAX": {}
   }
 }
