@@ -2,8 +2,8 @@
 
 pragma solidity ^0.8.4;
 
-import "../data-services/MainDemoConsumerBase.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "../data-services/MainDemoConsumerBase.sol";
 import "./PriceFeedsRegistry.sol";
 import "./PriceFeed.sol";
 
