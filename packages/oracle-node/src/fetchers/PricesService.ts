@@ -19,7 +19,6 @@ import {
   safelyConvertAnyValueToNumber,
   calculateDeviationPercent,
 } from "../utils/numbers";
-import { isLiquidityAndSymbol } from "./liquidity/utils";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -188,17 +187,6 @@ export default class PricesService {
           this.manifest,
           price.symbol
         );
-
-        const aggregatorName = ManifestHelper.getAggregatorNameForToken(
-          this.manifest,
-          price.symbol
-        );
-        let liquidities: PriceDataBeforeAggregation[] = [];
-        if (aggregatorName === "lwap") {
-          liquidities = prices.filter((priceToCheck) =>
-            isLiquidityAndSymbol(priceToCheck.symbol, price.symbol)
-          );
-        }
 
         // Calculating final aggregated value based on the values from the "valid" sources
         const priceAfterAggregation = aggregator.getAggregatedValue(
