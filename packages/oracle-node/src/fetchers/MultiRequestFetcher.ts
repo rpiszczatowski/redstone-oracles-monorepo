@@ -9,16 +9,16 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
   ): PricesObj;
   abstract makeRequest(id: string, context?: any): Promise<any>;
 
-  getProcessingContext(): any {
+  protected getProcessingContext(): any {
     return undefined;
   }
 
-  getRequestContext(): any {
+  protected getRequestContext(ids: string[]): any {
     return undefined;
   }
 
   async fetchData(ids: string[]): Promise<any> {
-    const context = await this.getRequestContext();
+    const context = await this.getRequestContext(ids);
     const promises: Promise<any>[] = [];
 
     for (const id of ids) {
@@ -33,15 +33,11 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
     let context = this.getProcessingContext();
 
     for (const response of responses) {
-      if (
-        response.status === "rejected" ||
-        response.value === undefined ||
-        response.value.data === undefined
-      ) {
+      if (response.status === "rejected" || response.value === undefined) {
         continue;
       }
 
-      result = this.processData(response.value.data, result, context);
+      result = this.processData(response.value, result, context);
     }
 
     return result;

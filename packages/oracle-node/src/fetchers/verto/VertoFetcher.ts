@@ -23,7 +23,7 @@ export class VertoFetcher extends MultiRequestFetcher {
   }
 
   processData(
-    quote: any,
+    response: any,
     pricesObj: PricesObj,
     lastArPrice?: number
   ): PricesObj {
@@ -31,7 +31,7 @@ export class VertoFetcher extends MultiRequestFetcher {
       return pricesObj;
     }
 
-    pricesObj[quote.ticker] = quote.price * lastArPrice;
+    pricesObj[response.data.ticker] = response.data.price * lastArPrice;
 
     return pricesObj;
   }

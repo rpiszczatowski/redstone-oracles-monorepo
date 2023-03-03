@@ -1,5 +1,5 @@
 export interface SpotPrice {
-  symbol: string;
+  assetId: string;
   pairedTokenPrice: number;
   spotPrice: number;
   liquidity: number;

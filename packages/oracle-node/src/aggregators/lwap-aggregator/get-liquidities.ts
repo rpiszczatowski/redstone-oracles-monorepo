@@ -5,23 +5,21 @@ import { PriceDataBeforeAggregation, Source } from "../../types";
 export const getTickLiquidities = (
   symbol: string,
   sourcesNames: Source,
-  liquidities: PriceDataBeforeAggregation[]
+  allPrices: PriceDataBeforeAggregation[]
 ) => {
   const pricesWithLiquidity: PricesWithLiquidity[] = [];
   for (const [sourceName, price] of Object.entries(sourcesNames)) {
     const dataFeedId = buildLiquidityDataFeedId(symbol, sourceName);
-    const liquidity = liquidities.find(
-      (liquidity) => liquidity.symbol === dataFeedId
-    );
+    const liquidity = allPrices.find((price) => price.symbol === dataFeedId);
     if (!liquidity) {
       throw new Error(
         `Cannot calculate LWAP, missing liquidity for ${dataFeedId}`
       );
     }
-    const theOnlySource = Object.keys(liquidity.source)[0];
+    const theOnlySourceValue = Object.values(liquidity.source)[0];
     pricesWithLiquidity.push({
       price,
-      liquidity: liquidity.source[theOnlySource],
+      liquidity: theOnlySourceValue,
     });
   }
   return pricesWithLiquidity;

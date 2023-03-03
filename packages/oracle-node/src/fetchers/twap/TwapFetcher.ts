@@ -29,36 +29,33 @@ export class TwapFetcher extends MultiRequestFetcher {
     return Date.now();
   }
 
-  makeRequest(id: string, timestamp: number): Promise<any> {
+  async makeRequest(id: string, timestamp: number): Promise<any> {
     const { assetSymbol, millisecondsOffset } =
       TwapFetcher.parseTwapAssetId(id);
     const fromTimestamp = timestamp - millisecondsOffset;
 
-    return axios
-      .get(PRICES_URL, {
-        params: {
-          symbol: assetSymbol,
-          provider: this.sourceProviderId,
-          fromTimestamp,
-          toTimestamp: timestamp,
-          limit: MAX_LIMIT,
-        },
-      })
-      .then((responseForSymbol) => {
-        return {
-          data: {
-            id: id,
-            data: responseForSymbol.data,
-          },
-        };
-      });
+    const responseForSymbol = await axios.get(PRICES_URL, {
+      params: {
+        symbol: assetSymbol,
+        provider: this.sourceProviderId,
+        fromTimestamp,
+        toTimestamp: timestamp,
+        limit: MAX_LIMIT,
+      },
+    });
+    return {
+      data: {
+        id: id,
+        data: responseForSymbol.data,
+      },
+    };
   }
 
-  processData(data: any, pricesObj: PricesObj): PricesObj {
-    this.verifySignatures(data.data);
+  processData(response: any, pricesObj: PricesObj): PricesObj {
+    this.verifySignatures(response.data.data);
 
-    const twapValue = TwapFetcher.getTwapValue(data.data);
-    pricesObj[data.id] = twapValue!;
+    const twapValue = TwapFetcher.getTwapValue(response.data.data);
+    pricesObj[response.data.id] = twapValue!;
 
     return pricesObj;
   }

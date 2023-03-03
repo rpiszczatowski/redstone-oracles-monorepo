@@ -1,9 +1,6 @@
 import { BaseFetcher } from "../BaseFetcher";
 import { PricesObj } from "../../types";
-import {
-  buildLiquidityDataFeedId,
-  getDataFromLiquidityDataFeedId,
-} from "./utils";
+import { buildLiquidityDataFeedId, parseLiquidityDataFeedId } from "./utils";
 import { DexesFetchers, dexesFetchers } from "./dexesFetchers";
 import { DexFetcherResponse } from "../DexFetcher";
 import { UniswapV3Response } from "../uniswap-v3/UniswapV3Fetcher";
@@ -29,7 +26,7 @@ export class LiquidityFetcher extends BaseFetcher {
     const dataFeedsPerSources: DataFeedsPerSources = {};
     for (const liquidityDataFeedId of liquidityDataFeedIds) {
       const { source, dataFeedId } =
-        getDataFromLiquidityDataFeedId(liquidityDataFeedId);
+        parseLiquidityDataFeedId(liquidityDataFeedId);
       const newDataFeedsArray = [
         ...(dataFeedsPerSources?.[source] ?? []),
         dataFeedId,
@@ -96,7 +93,7 @@ export class LiquidityFetcher extends BaseFetcher {
     } else if (balancerResponse?.length > 0) {
       balancerResponse.forEach((pool) =>
         this.populatePriceObjBasedOnCurrentDataFeed(
-          pool.value.symbol,
+          pool.value.assetId,
           "",
           source,
           dataFeedsIds,

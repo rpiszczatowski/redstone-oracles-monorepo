@@ -9,7 +9,6 @@ import {
   PriceDataBeforeAggregation,
   PriceDataBeforeSigning,
   PriceDataFetched,
-  Source,
 } from "../types";
 import { trackEnd, trackStart } from "../utils/performance-tracker";
 import ManifestConfigError from "../manifest/ManifestConfigError";
@@ -20,7 +19,6 @@ import {
   safelyConvertAnyValueToNumber,
   calculateDeviationPercent,
 } from "../utils/numbers";
-import { isLiquidityAndSymbol } from "./liquidity/utils";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -190,21 +188,10 @@ export default class PricesService {
           price.symbol
         );
 
-        const aggregatorName = ManifestHelper.getAggregatorNameForToken(
-          this.manifest,
-          price.symbol
-        );
-        let liquidities: PriceDataBeforeAggregation[] = [];
-        if (aggregatorName === "lwap") {
-          liquidities = prices.filter((priceToCheck) =>
-            isLiquidityAndSymbol(priceToCheck.symbol, price.symbol)
-          );
-        }
-
         // Calculating final aggregated value based on the values from the "valid" sources
         const priceAfterAggregation = aggregator.getAggregatedValue(
           sanitizedPriceBeforeAggregation,
-          liquidities
+          prices
         );
 
         // Throwing an error if price is invalid or too deviated

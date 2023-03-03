@@ -25,19 +25,10 @@ export class BalancerFetcher extends DexOnChainFetcher<SpotPrice> {
     this.balancer = new BalancerSDK(balancerConfig);
   }
 
-  async getPoolDetailsWithStatus(spotAssetIds: string[]) {
-    const spotPricesPromises: Promise<SpotPrice | null>[] = [];
-    const pairIds = this.getPairIdsForAssetIds(spotAssetIds);
+  async makeRequest(id: string): Promise<any> {
     const pairedTokenPrice = await this.getPairedTokenPrice();
-    for (const pairId of pairIds) {
-      const priceResult = this.calculatePrice(pairId, pairedTokenPrice);
-      spotPricesPromises.push(priceResult);
-    }
-    return await Promise.allSettled(spotPricesPromises);
-  }
-
-  getAssetId(response: SpotPrice) {
-    return response.symbol;
+    const priceResult = this.calculatePrice(id, pairedTokenPrice);
+    return priceResult;
   }
 
   protected async calculatePrice(
@@ -51,7 +42,7 @@ export class BalancerFetcher extends DexOnChainFetcher<SpotPrice> {
       );
       const liquidity = Number(pool.totalLiquidity);
       return {
-        symbol: this.getSymbolFromPool(pool),
+        assetId: this.getSymbolFromPool(pool),
         pairedTokenPrice,
         spotPrice,
         liquidity,

@@ -36,27 +36,20 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
     super(name);
   }
 
-  async getPoolDetailsWithStatus(spotAssetIds: string[]) {
-    const promises = spotAssetIds.map(async (assetId) => {
-      const uniswapV2Pair = new Contract(
-        this.poolsConfig[assetId].address,
-        abi,
-        this.provider
-      );
+  async makeRequest(id: string, context?: any): Promise<Reserves> {
+    const uniswapV2Pair = new Contract(
+      this.poolsConfig[id].address,
+      abi,
+      this.provider
+    );
 
-      const { _reserve0, _reserve1 } = await uniswapV2Pair.getReserves();
+    const { _reserve0, _reserve1 } = await uniswapV2Pair.getReserves();
 
-      return {
-        reserve0: _reserve0 as BigNumber,
-        reserve1: _reserve1 as BigNumber,
-        assetId,
-      };
-    });
-    return await Promise.allSettled(promises);
-  }
-
-  getAssetId(response: Reserves) {
-    return response.assetId;
+    return {
+      reserve0: _reserve0 as BigNumber,
+      reserve1: _reserve1 as BigNumber,
+      assetId: id,
+    };
   }
 
   validateResponse(response: Responses<Reserves>): boolean {
@@ -134,7 +127,7 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
     return parseFloat(utils.formatEther(liquidityAsBigNumber));
   }
 
-  serializeReserveDecimals(reserve: BigNumber, decimals: number) {
+  serializeReserveDecimals(reserve: BigNumber, decimals: number): BigNumber {
     const decimalsRequired = DEFAULT_DECIMALS - decimals;
     return reserve.mul(utils.parseUnits("1.0", decimalsRequired));
   }
