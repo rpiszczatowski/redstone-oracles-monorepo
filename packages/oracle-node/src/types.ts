@@ -159,6 +159,7 @@ export interface NodeConfig {
   coinmarketcapApiKey?: string;
   kaikoApiKey?: string;
   minDataFeedsPercentageForBigPackage: number;
+  providerIdForPriceBroadcasting: string;
 }
 
 export interface MulticallRequest {
