@@ -6,7 +6,7 @@ import {
 } from "@balancer-labs/sdk";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice } from "../../db/local-db";
-import balancerPairs from "./balancer-pairs.json";
+import balancerPools from "./balancer-pools.json";
 import { config } from "../../config";
 
 const balancerConfig: BalancerSdkConfig = {
@@ -30,7 +30,8 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
 
   async makeRequest(id: string): Promise<BalancerResponse> {
     const pairedTokenPrice = await this.getPairedTokenPrice();
-    const pool = await this.fetchPool(id);
+    const poolId = this.getPoolIdForAssetId(id);
+    const pool = await this.fetchPool(poolId);
     return { pool, assetId: id, pairedTokenPrice };
   }
 
@@ -72,19 +73,20 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
     return Number(response.pool.totalLiquidity);
   }
 
-  protected getPairIdsForAssetIds(assetIds: string[]): string[] {
-    const pairIds = [];
-
-    for (const pair of balancerPairs) {
-      const symbol0 = pair.tokens[0].symbol;
-      const symbol1 = pair.tokens[1].symbol;
-      const pairIdShouldBeIncluded =
-        (symbol0 == this.baseTokenSymbol && assetIds.includes(symbol1)) ||
-        (symbol1 == this.baseTokenSymbol && assetIds.includes(symbol0));
-      if (pairIdShouldBeIncluded) {
-        pairIds.push(pair.id);
-      }
+  protected getPoolIdForAssetId(assetId: string) {
+    const poolFound = balancerPools.find((pool) => {
+      const symbol0 = pool.tokens[0].symbol;
+      const symbol1 = pool.tokens[1].symbol;
+      return (
+        (symbol0 == this.baseTokenSymbol && assetId === symbol1) ||
+        (symbol1 == this.baseTokenSymbol && assetId === symbol0)
+      );
+    });
+    if (!poolFound) {
+      throw new Error(
+        `Missing balancer pair for ${assetId}, check balancer pair config`
+      );
     }
-    return pairIds;
+    return poolFound.id;
   }
 }
