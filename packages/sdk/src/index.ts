@@ -52,7 +52,6 @@ export const parseDataPackagesResponse = (
   const parsedResponse: DataPackagesResponse = {};
 
   const requestedDataFeedIds = reqParams.dataFeeds ?? [ALL_FEEDS_KEY];
-  const currentTimestamp = Date.now();
 
   for (const dataFeedId of requestedDataFeedIds) {
     const dataFeedPackages = dpResponse[dataFeedId];
@@ -71,23 +70,7 @@ export const parseDataPackagesResponse = (
       );
     }
 
-    const maxTimestampDelay = reqParams?.maxTimestampDelay ?? currentTimestamp;
-    const outdatedDataPackages = dataFeedPackages.filter(
-      (dataFeedPackage) =>
-        currentTimestamp - maxTimestampDelay >=
-        dataFeedPackage.timestampMilliseconds
-    );
-    const isAnyPackageOutdated = outdatedDataPackages.length > 0;
-    if (isAnyPackageOutdated) {
-      const outdatedDataPackagesTimestamps = outdatedDataPackages.map(
-        ({ timestampMilliseconds }) => timestampMilliseconds
-      );
-      throw new Error(
-        `At least one datapackage is outdated. Current timestamp: ${currentTimestamp}. Outdated datapackages timestamps: ${JSON.stringify(
-          outdatedDataPackagesTimestamps
-        )}`
-      );
-    }
+    validateTimestampDelay(reqParams, dataFeedPackages);
 
     parsedResponse[dataFeedId] = dataFeedPackages
       .sort((a, b) => b.timestampMilliseconds - a.timestampMilliseconds)
@@ -98,6 +81,31 @@ export const parseDataPackagesResponse = (
   }
 
   return parsedResponse;
+};
+
+const validateTimestampDelay = (
+  reqParams: DataPackagesRequestParams,
+  dataFeedPackages: SignedDataPackagePlainObj[]
+) => {
+  const currentTimestamp = Date.now();
+
+  const maxTimestampDelay = reqParams?.maxTimestampDelay ?? currentTimestamp;
+  const outdatedDataPackages = dataFeedPackages.filter(
+    (dataFeedPackage) =>
+      currentTimestamp - maxTimestampDelay >=
+      dataFeedPackage.timestampMilliseconds
+  );
+  const isAnyPackageOutdated = outdatedDataPackages.length > 0;
+  if (isAnyPackageOutdated) {
+    const outdatedDataPackagesTimestamps = outdatedDataPackages.map(
+      ({ timestampMilliseconds }) => timestampMilliseconds
+    );
+    throw new Error(
+      `At least one datapackage is outdated. Current timestamp: ${currentTimestamp}. Outdated datapackages timestamps: ${JSON.stringify(
+        outdatedDataPackagesTimestamps
+      )}`
+    );
+  }
 };
 
 const errToString = (e: any): string => {

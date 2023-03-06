@@ -93,13 +93,15 @@ describe("SDK tests", () => {
   });
 
   test("Should fail for outdated data package", async () => {
+    Date.now = jest.fn(() => 1678101790000);
+
     await expect(() =>
       requestDataPackages({
         ...reqParams,
         maxTimestampDelay: 10000,
       })
     ).rejects.toThrow(
-      /At least one datapackage is outdated. Current timestamp: [0-9]*. Outdated datapackages timestamps: \[1654353400000,1654353400000\]/
+      "At least one datapackage is outdated. Current timestamp: 1678101790000. Outdated datapackages timestamps: [1654353400000,1654353400000]"
     );
   });
 
