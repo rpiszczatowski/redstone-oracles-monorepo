@@ -1,32 +1,39 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { ethers } from "hardhat";
-import { PriceFeed } from "../../typechain-types";
+import { PriceFeed, PriceFeedsManager } from "../../typechain-types";
+import { dataFeedsIds, ethDataFeed, getWrappedContract } from "./helpers";
 
 chai.use(chaiAsPromised);
 
 describe("PriceFeed", () => {
   let contract: PriceFeed;
-  let contractWithNotOwner: PriceFeed;
-  const dataFeedIdAsBytes32 = ethers.utils.formatBytes32String("TestToken");
+  let managerContract: PriceFeedsManager;
 
   beforeEach(async () => {
-    const [owner, notOwner] = await ethers.getSigners();
-    const ownerAddress = await owner.getAddress();
+    const MangerContractFactory = await ethers.getContractFactory(
+      "PriceFeedsManagerMock"
+    );
+    managerContract = await MangerContractFactory.deploy();
+    await managerContract.deployed();
+
     const ContractFactory = await ethers.getContractFactory("PriceFeed");
     contract = await ContractFactory.deploy(
-      ownerAddress,
-      dataFeedIdAsBytes32,
+      managerContract.address,
+      ethDataFeed,
       "RedStone price feed for TestToken"
     );
-    contractWithNotOwner = contract.connect(notOwner);
 
     await contract.deployed();
+
+    const timestamp = Date.now();
+    const wrappedContract = getWrappedContract(managerContract, timestamp);
+    await wrappedContract.updateDataFeedValues(1, timestamp, dataFeedsIds);
   });
 
   it("should properly initialize", async () => {
     const dataFeedId = await contract.getDataFeedId();
-    expect(dataFeedId).to.be.equal(dataFeedIdAsBytes32);
+    expect(dataFeedId).to.be.equal(ethDataFeed);
     const description = await contract.description();
     expect(description).to.be.equal("RedStone price feed for TestToken");
   });
@@ -37,22 +44,8 @@ describe("PriceFeed", () => {
     );
   });
 
-  it("should revert if not owner tries to store data feed value", async () => {
-    await expect(
-      contractWithNotOwner.storeDataFeedValue(123)
-    ).to.be.rejectedWith("Caller is not the owner");
-  });
-
   it("should store data feed value and fetch latest value", async () => {
-    await contract.storeDataFeedValue(123);
-    const latestValue = await contract.dataFeedValue();
-    expect(latestValue).to.be.equal(123);
-  });
-
-  it("should store data feed value twice and fetch latest value", async () => {
-    await contract.storeDataFeedValue(125);
-    await contract.storeDataFeedValue(128);
-    const latestValue = await contract.dataFeedValue();
-    expect(latestValue).to.be.equal(128);
+    const latestValue = await contract.latestRoundData();
+    expect(latestValue.answer).to.be.equal(167099000000);
   });
 });

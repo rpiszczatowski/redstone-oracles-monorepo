@@ -2,6 +2,11 @@ import { Contract } from "ethers";
 import { formatBytes32String } from "ethers/lib/utils";
 import { WrapperBuilder } from "../../src";
 
+export const ethDataFeed = formatBytes32String("ETH");
+export const btcDataFeed = formatBytes32String("BTC");
+
+export const dataFeedsIds = [ethDataFeed, btcDataFeed];
+
 export const getWrappedContract = (contract: Contract, timestamp: number) => {
   return WrapperBuilder.wrap(contract).usingSimpleNumericMock({
     mockSignersCount: 10,

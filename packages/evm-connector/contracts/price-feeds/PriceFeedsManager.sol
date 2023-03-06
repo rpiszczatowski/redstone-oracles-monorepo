@@ -4,13 +4,11 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../data-services/MainDemoConsumerBase.sol";
-import "./PriceFeedsRegistry.sol";
-import "./PriceFeed.sol";
 
 contract PriceFeedsManager is MainDemoConsumerBase, Initializable {
   uint256 public lastRound = 0;
   uint256 public lastUpdateTimestampMilliseconds = 0;
-  PriceFeedsRegistry public priceFeedRegistry;
+  mapping(bytes32 => uint256) dataFeedsValues;
 
   error ProposedTimestampSmallerOrEqualToLastTimestamp(
     uint256 lastUpdateTimestampMilliseconds,
@@ -21,10 +19,6 @@ contract PriceFeedsManager is MainDemoConsumerBase, Initializable {
     uint256 proposedTimestamp,
     uint256 receivedTimestampMilliseconds
   );
-
-  function initialize(address priceFeedsRegistryAddress) public initializer {
-    priceFeedRegistry = PriceFeedsRegistry(priceFeedsRegistryAddress);
-  }
 
   function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
     RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
@@ -65,7 +59,11 @@ contract PriceFeedsManager is MainDemoConsumerBase, Initializable {
     return (lastRound, lastUpdateTimestampMilliseconds);
   }
 
-  function updateDataFeedValues(uint256 proposedRound, uint256 proposedTimestamp) public {
+  function updateDataFeedValues(
+    uint256 proposedRound,
+    uint256 proposedTimestamp,
+    bytes32[] calldata dataFeedsIds
+  ) public {
     if (!isProposedRoundValid(proposedRound)) return;
     lastRound = proposedRound;
     validateProposedTimestamp(proposedTimestamp);
@@ -75,13 +73,38 @@ contract PriceFeedsManager is MainDemoConsumerBase, Initializable {
       getOracleNumericValuesFromTxMsg will call validateTimestamp
       for each data package from the redstone payload 
     */
-    bytes32[] memory dataFeedsIds = priceFeedRegistry.getDataFeeds();
     uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedsIds);
     for (uint256 i = 0; i < dataFeedsIds.length; i++) {
-      PriceFeed(priceFeedRegistry.getPriceFeedContractAddress(dataFeedsIds[i])).storeDataFeedValue(
-          values[i]
-        );
+      dataFeedsValues[dataFeedsIds[i]] = values[i];
     }
+  }
+
+  function getValueForDataFeed(bytes32 dataFeedId) public view returns (uint256) {
+    return dataFeedsValues[dataFeedId];
+  }
+
+  function getValueForDataFeedAndLastRoundParas(bytes32 dataFeedId)
+    public
+    view
+    returns (
+      uint256,
+      uint256,
+      uint256
+    )
+  {
+    return (dataFeedsValues[dataFeedId], lastRound, lastUpdateTimestampMilliseconds);
+  }
+
+  function getValuesForDataFeeds(bytes32[] memory dataFeedsIds)
+    public
+    view
+    returns (bytes32[] memory, uint256[] memory)
+  {
+    uint256[] memory values = new uint256[](dataFeedsIds.length);
+    for (uint256 i = 0; i < dataFeedsIds.length; i++) {
+      values[i] = dataFeedsValues[dataFeedsIds[i]];
+    }
+    return (dataFeedsIds, values);
   }
 
   function getValuesForDataFeeds(bytes32[] memory dataFeedsIds)
