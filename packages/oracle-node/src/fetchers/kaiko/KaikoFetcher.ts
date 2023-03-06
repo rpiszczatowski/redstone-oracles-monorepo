@@ -32,12 +32,12 @@ export class KaikoFetcher extends MultiRequestFetcher {
     return axios.get(this.buildKaikoApiUrl(id), KAIKO_CONFIG);
   }
 
-  processData(data: any, pricesObj: PricesObj): PricesObj {
-    if (data.result === "error") {
+  processData(response: any, pricesObj: PricesObj): PricesObj {
+    if (response.data.result === "error") {
       return pricesObj;
     }
-    const id = data.query.base_asset.toUpperCase();
-    const price = data.data[0].price;
+    const id = response.data.query.base_asset.toUpperCase();
+    const price = response.data.data[0].price;
     pricesObj[id] = Number(price);
     return pricesObj;
   }
