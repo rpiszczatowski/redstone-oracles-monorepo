@@ -10,7 +10,7 @@ interface DataFeedsPerSources {
   [source: string]: string[];
 }
 
-type Response = DexFetcherResponse | UniswapV3Response | BalancerResponse;
+type Response = DexFetcherResponse | UniswapV3Response | BalancerResponse[];
 
 interface ResponsePerSources {
   [source: string]: Response;
@@ -67,7 +67,7 @@ export class LiquidityFetcher extends BaseFetcher {
   ) {
     const uniswapV3Response = response as UniswapV3Response;
     const dexResponse = response as DexFetcherResponse;
-    const balancerResponse = response as BalancerResponse;
+    const balancerResponse = response as BalancerResponse[];
     if (!!uniswapV3Response?.data?.pools) {
       uniswapV3Response.data.pools.forEach((pool) =>
         this.populatePriceObjBasedOnCurrentDataFeed(
@@ -93,11 +93,11 @@ export class LiquidityFetcher extends BaseFetcher {
     } else if (balancerResponse?.length > 0) {
       balancerResponse.forEach((pool) =>
         this.populatePriceObjBasedOnCurrentDataFeed(
-          pool.value.assetId,
+          pool.assetId,
           "",
           source,
           dataFeedsIds,
-          pool.value.liquidity,
+          Number(pool.pool.totalLiquidity),
           pricesObj
         )
       );

@@ -46,8 +46,8 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
     const { _reserve0, _reserve1 } = await uniswapV2Pair.getReserves();
 
     return {
-      reserve0: _reserve0 as BigNumber,
-      reserve1: _reserve1 as BigNumber,
+      reserve0: _reserve0,
+      reserve1: _reserve1,
       assetId: id,
     };
   }

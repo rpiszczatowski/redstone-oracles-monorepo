@@ -8,16 +8,19 @@ import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice } from "../../db/local-db";
 import balancerPairs from "./balancer-pairs.json";
 import { config } from "../../config";
-import { PriceWithPromiseStatus, SpotPrice } from "./types";
 
 const balancerConfig: BalancerSdkConfig = {
   network: Network.MAINNET,
   rpcUrl: config.ethMainRpcUrl as string,
 };
 
-export type BalancerResponse = PriceWithPromiseStatus[];
+export interface BalancerResponse {
+  pool: PoolWithMethods;
+  assetId: string;
+  pairedTokenPrice: number;
+}
 
-export class BalancerFetcher extends DexOnChainFetcher<SpotPrice> {
+export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
   private balancer: BalancerSDK;
 
   constructor(name: string, protected readonly baseTokenSymbol: string) {
@@ -25,30 +28,18 @@ export class BalancerFetcher extends DexOnChainFetcher<SpotPrice> {
     this.balancer = new BalancerSDK(balancerConfig);
   }
 
-  async makeRequest(id: string): Promise<any> {
+  async makeRequest(id: string): Promise<BalancerResponse> {
     const pairedTokenPrice = await this.getPairedTokenPrice();
-    const priceResult = this.calculatePrice(id, pairedTokenPrice);
-    return priceResult;
+    const pool = await this.fetchPool(id);
+    return { pool, assetId: id, pairedTokenPrice };
   }
 
-  protected async calculatePrice(
-    pairId: string,
-    pairedTokenPrice: number
-  ): Promise<SpotPrice> {
-    const pool = await this.balancer.pools.find(pairId);
-    if (pool) {
-      const spotPrice = Number(
-        pool.calcSpotPrice(pool.tokens[0].address, pool.tokens[1].address)
-      );
-      const liquidity = Number(pool.totalLiquidity);
-      return {
-        assetId: this.getSymbolFromPool(pool),
-        pairedTokenPrice,
-        spotPrice,
-        liquidity,
-      };
+  private async fetchPool(poolId: string) {
+    const pool = await this.balancer.pools.find(poolId);
+    if (!pool) {
+      throw new Error(`Pool with ${poolId} not found`);
     }
-    throw new Error(`Pool with ${pairId} not found`);
+    return pool;
   }
 
   protected getSymbolFromPool(pool: PoolWithMethods): string {
@@ -69,13 +60,16 @@ export class BalancerFetcher extends DexOnChainFetcher<SpotPrice> {
     return lastPriceFromCache.value;
   }
 
-  calculateSpotPrice(_assetId: string, response: SpotPrice): number {
-    const { pairedTokenPrice, spotPrice } = response;
+  calculateSpotPrice(_assetId: string, response: BalancerResponse): number {
+    const { pool, pairedTokenPrice } = response;
+    const spotPrice = Number(
+      pool.calcSpotPrice(pool.tokens[0].address, pool.tokens[1].address)
+    );
     return pairedTokenPrice / spotPrice;
   }
 
-  calculateLiquidity(_assetId: string, response: any): number {
-    return response.liquidity;
+  calculateLiquidity(_assetId: string, response: BalancerResponse): number {
+    return Number(response.pool.totalLiquidity);
   }
 
   protected getPairIdsForAssetIds(assetIds: string[]): string[] {

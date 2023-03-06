@@ -2,7 +2,6 @@ import redstone from "redstone-api";
 import graphProxy from "../../../utils/graph-proxy";
 import axios from "axios";
 import { BalancerFetcher } from "../BalancerFetcher";
-import { SpotPrice } from "../types";
 
 const SECOND_IN_MILLISECONDS = 1000;
 const url = "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2";
@@ -19,7 +18,7 @@ export class BalancerFetcherHistorical extends BalancerFetcher {
   protected async calculatePrice(
     pairId: string,
     pairedTokenPrice: number
-  ): Promise<SpotPrice> {
+  ): Promise<any> {
     const blockNumber = await this.getBlockNumber(this.timestamp);
     const graphResults = await graphProxy.executeQuery(
       url,
