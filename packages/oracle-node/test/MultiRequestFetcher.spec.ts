@@ -51,12 +51,16 @@ class MultiRequestFetcherMock extends MultiRequestFetcher {
     return 100;
   }
 
-  processData(data: any, pricesObj: PricesObj, context?: number): PricesObj {
+  processData(
+    response: any,
+    pricesObj: PricesObj,
+    context?: number
+  ): PricesObj {
     if (context === undefined) {
       return pricesObj;
     }
 
-    pricesObj[data.id] = data.value * context;
+    pricesObj[response.data.id] = response.data.value * context;
 
     return pricesObj;
   }

@@ -2,7 +2,6 @@ import redstone from "redstone-api";
 import graphProxy from "../../../utils/graph-proxy";
 import axios from "axios";
 import { BalancerFetcher } from "../BalancerFetcher";
-import { SpotPrice } from "../types";
 
 const SECOND_IN_MILLISECONDS = 1000;
 const url = "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2";
@@ -19,7 +18,7 @@ export class BalancerFetcherHistorical extends BalancerFetcher {
   protected async calculatePrice(
     pairId: string,
     pairedTokenPrice: number
-  ): Promise<SpotPrice> {
+  ): Promise<any> {
     const blockNumber = await this.getBlockNumber(this.timestamp);
     const graphResults = await graphProxy.executeQuery(
       url,
@@ -31,9 +30,9 @@ export class BalancerFetcherHistorical extends BalancerFetcher {
 
       return {
         spotPrice: NaN,
-        symbol: "",
+        assetId: "",
         pairedTokenPrice: NaN,
-        liquidity: "",
+        liquidity: 0,
       };
     }
     const tokens = graphResults.data.pool.tokens;
@@ -45,7 +44,7 @@ export class BalancerFetcherHistorical extends BalancerFetcher {
     const symbol =
       token0.symbol == this.baseTokenSymbol ? token1.symbol! : token0.symbol!;
 
-    return { spotPrice, symbol, pairedTokenPrice, liquidity: "" };
+    return { spotPrice, assetId: symbol, pairedTokenPrice, liquidity: 0 };
   }
 
   async getBlockNumber(timestamp: number) {

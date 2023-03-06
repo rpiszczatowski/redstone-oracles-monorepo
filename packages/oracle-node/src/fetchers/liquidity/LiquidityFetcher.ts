@@ -1,9 +1,6 @@
 import { BaseFetcher } from "../BaseFetcher";
 import { PricesObj } from "../../types";
-import {
-  buildLiquidityDataFeedId,
-  getDataFromLiquidityDataFeedId,
-} from "./utils";
+import { buildLiquidityDataFeedId, parseLiquidityDataFeedId } from "./utils";
 import { DexesFetchers, dexesFetchers } from "./dexesFetchers";
 import { DexFetcherResponse } from "../DexFetcher";
 import { UniswapV3Response } from "../uniswap-v3/UniswapV3Fetcher";
@@ -13,7 +10,7 @@ interface DataFeedsPerSources {
   [source: string]: string[];
 }
 
-type Response = DexFetcherResponse | UniswapV3Response | BalancerResponse;
+type Response = DexFetcherResponse | UniswapV3Response | BalancerResponse[];
 
 interface ResponsePerSources {
   [source: string]: Response;
@@ -29,7 +26,7 @@ export class LiquidityFetcher extends BaseFetcher {
     const dataFeedsPerSources: DataFeedsPerSources = {};
     for (const liquidityDataFeedId of liquidityDataFeedIds) {
       const { source, dataFeedId } =
-        getDataFromLiquidityDataFeedId(liquidityDataFeedId);
+        parseLiquidityDataFeedId(liquidityDataFeedId);
       const newDataFeedsArray = [
         ...(dataFeedsPerSources?.[source] ?? []),
         dataFeedId,
@@ -70,7 +67,7 @@ export class LiquidityFetcher extends BaseFetcher {
   ) {
     const uniswapV3Response = response as UniswapV3Response;
     const dexResponse = response as DexFetcherResponse;
-    const balancerResponse = response as BalancerResponse;
+    const balancerResponse = response as BalancerResponse[];
     if (!!uniswapV3Response?.data?.pools) {
       uniswapV3Response.data.pools.forEach((pool) =>
         this.populatePriceObjBasedOnCurrentDataFeed(
@@ -78,7 +75,7 @@ export class LiquidityFetcher extends BaseFetcher {
           pool.token0.symbol,
           source,
           dataFeedsIds,
-          pool.liquidity,
+          Number(pool.liquidity),
           pricesObj
         )
       );
@@ -89,18 +86,18 @@ export class LiquidityFetcher extends BaseFetcher {
           pair.token0.symbol,
           source,
           dataFeedsIds,
-          pair.reserveUSD,
+          Number(pair.reserveUSD),
           pricesObj
         )
       );
     } else if (balancerResponse?.length > 0) {
       balancerResponse.forEach((pool) =>
         this.populatePriceObjBasedOnCurrentDataFeed(
-          pool.value.symbol,
+          pool.assetId,
           "",
           source,
           dataFeedsIds,
-          pool.value.liquidity,
+          Number(pool.pool.totalLiquidity),
           pricesObj
         )
       );
@@ -112,7 +109,7 @@ export class LiquidityFetcher extends BaseFetcher {
     secondTokenSymbol: string,
     source: string,
     dataFeedsIds: string[],
-    liquidity: string,
+    liquidity: number,
     pricesObj: PricesObj
   ) => {
     const firstTokenDataFeedId = buildLiquidityDataFeedId(
@@ -133,10 +130,10 @@ export class LiquidityFetcher extends BaseFetcher {
     }
   };
 
-  private parseLiquidity(liquidity: string, source: string) {
+  private parseLiquidity(liquidity: number, source: string) {
     if (source === "uniswap-v3") {
-      return parseFloat(liquidity) / 10 ** 9;
+      return liquidity / 10 ** 9;
     }
-    return parseFloat(liquidity);
+    return liquidity;
   }
 }

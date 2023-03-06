@@ -1,26 +1,26 @@
-import { PricesObj } from "../../types";
 import {
   BalancerSDK,
   BalancerSdkConfig,
   Network,
   PoolWithMethods,
 } from "@balancer-labs/sdk";
-import { config } from "../../config";
-import { BaseFetcher } from "../BaseFetcher";
+import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice } from "../../db/local-db";
 import balancerPairs from "./balancer-pairs.json";
-import { PriceWithPromiseStatus, SpotPrice } from "./types";
+import { config } from "../../config";
 
 const balancerConfig: BalancerSdkConfig = {
   network: Network.MAINNET,
   rpcUrl: config.ethMainRpcUrl as string,
 };
 
-export type BalancerResponse = PriceWithPromiseStatus[];
+export interface BalancerResponse {
+  pool: PoolWithMethods;
+  assetId: string;
+  pairedTokenPrice: number;
+}
 
-const PROMISE_STATUS_FULFILLED = "fulfilled";
-
-export class BalancerFetcher extends BaseFetcher {
+export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
   private balancer: BalancerSDK;
 
   constructor(name: string, protected readonly baseTokenSymbol: string) {
@@ -28,40 +28,21 @@ export class BalancerFetcher extends BaseFetcher {
     this.balancer = new BalancerSDK(balancerConfig);
   }
 
-  async fetchData(ids: string[]): Promise<any> {
-    const spotPricesPromises: Promise<SpotPrice | null>[] = [];
-
-    const pairIds = this.getPairIdsForAssetIds(ids);
+  async makeRequest(id: string): Promise<BalancerResponse> {
     const pairedTokenPrice = await this.getPairedTokenPrice();
-    for (const pairId of pairIds) {
-      const priceResult = this.calculatePrice(pairId, pairedTokenPrice);
-      spotPricesPromises.push(priceResult);
-    }
-    const spotPrices = await Promise.allSettled(spotPricesPromises);
-    return spotPrices;
+    const pool = await this.fetchPool(id);
+    return { pool, assetId: id, pairedTokenPrice };
   }
 
-  protected async calculatePrice(
-    pairId: string,
-    pairedTokenPrice: number
-  ): Promise<SpotPrice> {
-    const pool = await this.balancer.pools.find(pairId);
-    if (pool) {
-      const spotPrice = Number(
-        pool.calcSpotPrice(pool.tokens[0].address, pool.tokens[1].address)
-      );
-      const liquidity = pool.totalLiquidity;
-      return {
-        symbol: this.getSymbol(pool),
-        pairedTokenPrice,
-        spotPrice,
-        liquidity,
-      };
+  private async fetchPool(poolId: string) {
+    const pool = await this.balancer.pools.find(poolId);
+    if (!pool) {
+      throw new Error(`Pool with ${poolId} not found`);
     }
-    throw new Error(`Pool with ${pairId} not found`);
+    return pool;
   }
 
-  protected getSymbol(pool: PoolWithMethods): string {
+  protected getSymbolFromPool(pool: PoolWithMethods): string {
     return pool.tokens[0].symbol === this.baseTokenSymbol
       ? pool.tokens[1].symbol!
       : pool.tokens[0].symbol!;
@@ -79,17 +60,16 @@ export class BalancerFetcher extends BaseFetcher {
     return lastPriceFromCache.value;
   }
 
-  extractPrices(response: PriceWithPromiseStatus[]): PricesObj {
-    const pricesObj: PricesObj = {};
+  calculateSpotPrice(_assetId: string, response: BalancerResponse): number {
+    const { pool, pairedTokenPrice } = response;
+    const spotPrice = Number(
+      pool.calcSpotPrice(pool.tokens[0].address, pool.tokens[1].address)
+    );
+    return pairedTokenPrice / spotPrice;
+  }
 
-    for (const spotPriceWithStatus of response) {
-      if (spotPriceWithStatus.status === PROMISE_STATUS_FULFILLED) {
-        const { symbol, pairedTokenPrice, spotPrice } =
-          spotPriceWithStatus.value;
-        pricesObj[symbol] = pairedTokenPrice / spotPrice;
-      }
-    }
-    return pricesObj;
+  calculateLiquidity(_assetId: string, response: BalancerResponse): number {
+    return Number(response.pool.totalLiquidity);
   }
 
   protected getPairIdsForAssetIds(assetIds: string[]): string[] {
