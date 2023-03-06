@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 import { Signer } from "ethers";
 import { expect } from "chai";
 import { deployMockContract, MockProvider } from "ethereum-waffle";
-import { abi } from "./mock-token.json";
+import { abi } from "./mock-token.abi";
 
 describe("WrapperBuilder", () => {
   let wrappedContract: any, signer: Signer, address: string;
