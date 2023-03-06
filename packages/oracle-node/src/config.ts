@@ -23,6 +23,7 @@ const DEFAULT_COINMARKETCAP_API_KEY = "";
 const DEFAULT_KAIKO_API_KEY = "";
 const DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE = "90";
 const DEFAULT_ARBITRUM_RPC_URL = "https://arb1.arbitrum.io/rpc";
+const DEFAULT_PROVIDER_ID_FOR_PRICE_BROADCASTING = "";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -156,4 +157,8 @@ export const config: NodeConfig = Object.freeze({
     )
   ),
   arbitrumRpcUrl: getFromEnv("ARBITRUM_RPC_URL", DEFAULT_ARBITRUM_RPC_URL),
+  providerIdForPriceBroadcasting: getFromEnv(
+    "PROVIDER_ID_FOR_PRICE_BROADCASTING",
+    DEFAULT_PROVIDER_ID_FOR_PRICE_BROADCASTING
+  ),
 });
