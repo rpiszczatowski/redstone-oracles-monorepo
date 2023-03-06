@@ -40,8 +40,7 @@ export abstract class BaseWrapper {
           tx.data = tx.data + dataToAppend;
 
           if (isCall || isDryRun) {
-            const shouldUseSigner =
-              contract.signer && Signer.isSigner(contract.signer);
+            const shouldUseSigner = Signer.isSigner(contract.signer);
 
             const result = await contract[
               shouldUseSigner ? "signer" : "provider"
