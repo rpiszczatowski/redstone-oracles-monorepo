@@ -1,14 +1,11 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Contract } from "ethers";
+import { formatBytes32String } from "ethers/lib/utils";
 import { ethers, network } from "hardhat";
-import {
-  PriceFeedsManagerMock,
-  PriceFeedsRegistry,
-} from "../../typechain-types";
+import { PriceFeedsManagerMock } from "../../typechain-types";
 import {
   dataFeedsIds,
-  addDataFeedsToRegistry,
   getWrappedContract,
   btcDataFeed,
   ethDataFeed,
@@ -26,13 +23,10 @@ describe("PriceFeedsManager", () => {
   });
 
   beforeEach(async () => {
-    const RegistryContractFactory = await ethers.getContractFactory(
-      "PriceFeedsRegistry"
-    );
     const MangerContractFactory = await ethers.getContractFactory(
       "PriceFeedsManagerMock"
     );
-    contract = await MangerContractFactory.deploy();
+    contract = await MangerContractFactory.deploy(dataFeedsIds);
     await contract.deployed();
     timestamp = Date.now();
     wrappedContract = getWrappedContract(contract, timestamp);
@@ -76,37 +70,63 @@ describe("PriceFeedsManager", () => {
     );
   });
 
-  it("should update ETH price feed and get value for data feed", async () => {
+  it("should revert if invalid number of data feeds to update", async () => {
     const newTimestamp = timestamp + 1000;
     wrappedContract = getWrappedContract(contract, newTimestamp);
-    await wrappedContract.updateDataFeedValues(2, newTimestamp, [ethDataFeed]);
-    const [round, lastUpdateTimestamp] = await contract.getLastRoundParams();
-    expect(round).to.be.equal(2);
-    expect(lastUpdateTimestamp).to.be.equal(newTimestamp);
-    const ethValue = await contract.getValueForDataFeed(ethDataFeed);
-    expect(ethValue).to.be.equal(167099000000);
+    await expect(
+      wrappedContract.updateDataFeedValues(2, newTimestamp, [ethDataFeed])
+    ).to.be.rejectedWith(
+      `InvalidNumberOfDataFeedsToUpdate(${dataFeedsIds.length}, 1)`
+    );
   });
 
-  it("should update ETH, BTC price feeds and get value for data feeds", async () => {
+  it("should revert if invalid data feeds to update", async () => {
     const newTimestamp = timestamp + 1000;
     wrappedContract = getWrappedContract(contract, newTimestamp);
-    await wrappedContract.updateDataFeedValues(2, newTimestamp, dataFeedsIds);
+    const dataFeedsIdsToUpdate = [
+      ethDataFeed,
+      formatBytes32String("InvalidToken"),
+    ];
+    await expect(
+      wrappedContract.updateDataFeedValues(
+        2,
+        newTimestamp,
+        dataFeedsIdsToUpdate
+      )
+    ).to.be.rejectedWith(
+      `InvalidDataFeedsIdsToUpdate(["${ethDataFeed}", "${formatBytes32String(
+        "InvalidToken"
+      )}"])`
+    );
+  });
+
+  it("should update price feeds and get value for data feeds", async () => {
+    const newTimestamp = timestamp + 1000;
+    wrappedContract = getWrappedContract(contract, newTimestamp);
+    const dataFeedsIdsToUpdate = await contract.getDataFeedsIds();
+    await wrappedContract.updateDataFeedValues(
+      2,
+      newTimestamp,
+      dataFeedsIdsToUpdate
+    );
     const [round, lastUpdateTimestamp] = await contract.getLastRoundParams();
     expect(round).to.be.equal(2);
     expect(lastUpdateTimestamp).to.be.equal(newTimestamp);
     const dataFeedsValues = await contract.getValuesForDataFeeds(dataFeedsIds);
     expect(dataFeedsValues[1][0]).to.be.equal(167099000000);
     expect(dataFeedsValues[1][1]).to.be.equal(2307768000000);
-  });
-
-  it("should update BTC price feed and get value for data feed and round paras", async () => {
-    const newTimestamp = timestamp + 1000;
-    wrappedContract = getWrappedContract(contract, newTimestamp);
-    await wrappedContract.updateDataFeedValues(2, newTimestamp, [btcDataFeed]);
     const dataFeedValueAndRoundParams =
-      await contract.getValueForDataFeedAndLastRoundParas(btcDataFeed);
+      await contract.getValueForDataFeedAndLastRoundParams(btcDataFeed);
     expect(dataFeedValueAndRoundParams[0]).to.be.equal(2307768000000);
     expect(dataFeedValueAndRoundParams[1]).to.be.equal(2);
     expect(dataFeedValueAndRoundParams[2]).to.be.equal(newTimestamp);
+  });
+
+  it("should add new data feed", async () => {
+    const newDataFeedId = formatBytes32String("NewToke");
+    await contract.addDataFeedId(newDataFeedId);
+    const dataFeeds = await contract.getDataFeedsIds();
+    expect(dataFeeds.length).to.be.equal(3);
+    expect(dataFeeds[2]).to.be.equal(newDataFeedId);
   });
 });

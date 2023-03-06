@@ -2,12 +2,13 @@
 
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "../data-services/MainDemoConsumerBase.sol";
 
-contract PriceFeedsManager is MainDemoConsumerBase, Initializable {
+contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
   uint256 public lastRound = 0;
   uint256 public lastUpdateTimestampMilliseconds = 0;
+  bytes32[] dataFeedsIds;
   mapping(bytes32 => uint256) dataFeedsValues;
 
   error ProposedTimestampSmallerOrEqualToLastTimestamp(
@@ -19,6 +20,14 @@ contract PriceFeedsManager is MainDemoConsumerBase, Initializable {
     uint256 proposedTimestamp,
     uint256 receivedTimestampMilliseconds
   );
+
+  error InvalidNumberOfDataFeedsToUpdate(uint256 dataFeedsIds, uint256 dataFeedsIdsToUpdate);
+
+  error InvalidDataFeedsIdsToUpdate(bytes32[] dataFeedsIdsToUpdate);
+
+  constructor(bytes32[] memory dataFeedsIds_) {
+    dataFeedsIds = dataFeedsIds_;
+  }
 
   function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
     RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
@@ -43,6 +52,28 @@ contract PriceFeedsManager is MainDemoConsumerBase, Initializable {
     }
   }
 
+  function validateDataFeedsToUpdate(bytes32[] calldata dataFeedsIdsToUpdate) private view {
+    if (dataFeedsIdsToUpdate.length != dataFeedsIds.length) {
+      revert InvalidNumberOfDataFeedsToUpdate(dataFeedsIds.length, dataFeedsIdsToUpdate.length);
+    }
+    uint256 nonces = 0;
+    for (uint256 i = 0; i < dataFeedsIdsToUpdate.length; i++) {
+      for (uint256 j = 0; j < dataFeedsIds.length; j++) {
+        if (dataFeedsIdsToUpdate[i] == dataFeedsIds[j]) {
+          nonces++;
+          break;
+        }
+      }
+    }
+    if (nonces != dataFeedsIdsToUpdate.length) {
+      revert InvalidDataFeedsIdsToUpdate(dataFeedsIdsToUpdate);
+    }
+  }
+
+  function addDataFeedId(bytes32 newDataFeedId) public onlyOwner {
+    dataFeedsIds.push(newDataFeedId);
+  }
+
   function isProposedRoundValid(uint256 proposedRound) private view returns (bool) {
     return proposedRound == lastRound + 1;
   }
@@ -59,21 +90,27 @@ contract PriceFeedsManager is MainDemoConsumerBase, Initializable {
     return (lastRound, lastUpdateTimestampMilliseconds);
   }
 
+  function getDataFeedsIds() public view returns (bytes32[] memory) {
+    return dataFeedsIds;
+  }
+
   function updateDataFeedValues(
     uint256 proposedRound,
     uint256 proposedTimestamp,
-    bytes32[] calldata dataFeedsIds
+    bytes32[] calldata dataFeedsIdsToUpdate
   ) public {
     if (!isProposedRoundValid(proposedRound)) return;
     lastRound = proposedRound;
     validateProposedTimestamp(proposedTimestamp);
     lastUpdateTimestampMilliseconds = proposedTimestamp;
 
+    validateDataFeedsToUpdate(dataFeedsIdsToUpdate);
+
     /* 
       getOracleNumericValuesFromTxMsg will call validateTimestamp
       for each data package from the redstone payload 
     */
-    uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedsIds);
+    uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedsIdsToUpdate);
     for (uint256 i = 0; i < dataFeedsIds.length; i++) {
       dataFeedsValues[dataFeedsIds[i]] = values[i];
     }
@@ -83,7 +120,7 @@ contract PriceFeedsManager is MainDemoConsumerBase, Initializable {
     return dataFeedsValues[dataFeedId];
   }
 
-  function getValueForDataFeedAndLastRoundParas(bytes32 dataFeedId)
+  function getValueForDataFeedAndLastRoundParams(bytes32 dataFeedId)
     public
     view
     returns (
@@ -95,16 +132,16 @@ contract PriceFeedsManager is MainDemoConsumerBase, Initializable {
     return (dataFeedsValues[dataFeedId], lastRound, lastUpdateTimestampMilliseconds);
   }
 
-  function getValuesForDataFeeds(bytes32[] memory dataFeedsIds)
+  function getValuesForDataFeeds(bytes32[] memory dataFeedsIds_)
     public
     view
     returns (bytes32[] memory, uint256[] memory)
   {
-    uint256[] memory values = new uint256[](dataFeedsIds.length);
+    uint256[] memory values = new uint256[](dataFeedsIds_.length);
     for (uint256 i = 0; i < dataFeedsIds.length; i++) {
       values[i] = dataFeedsValues[dataFeedsIds[i]];
     }
-    return (dataFeedsIds, values);
+    return (dataFeedsIds_, values);
   }
 
   function getValuesForDataFeeds(bytes32[] memory dataFeedsIds)

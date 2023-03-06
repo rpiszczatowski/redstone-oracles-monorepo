@@ -14,7 +14,7 @@ describe("PriceFeed", () => {
     const MangerContractFactory = await ethers.getContractFactory(
       "PriceFeedsManagerMock"
     );
-    managerContract = await MangerContractFactory.deploy();
+    managerContract = await MangerContractFactory.deploy(dataFeedsIds);
     await managerContract.deployed();
 
     const ContractFactory = await ethers.getContractFactory("PriceFeed");

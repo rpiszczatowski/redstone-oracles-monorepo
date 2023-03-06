@@ -66,7 +66,7 @@ contract PriceFeed is AggregatorV3Interface {
       uint256 dataFeedValue,
       uint256 roundId_,
       uint256 lastUpdateTimestampMilliseconds
-    ) = PriceFeedsManager(priceFeedsManagerAddress).getValueForDataFeedAndLastRoundParas(
+    ) = PriceFeedsManager(priceFeedsManagerAddress).getValueForDataFeedAndLastRoundParams(
         dataFeedId
       );
     return (
