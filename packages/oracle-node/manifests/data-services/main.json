@@ -3238,6 +3238,9 @@
     "XSGD": {
       "source": ["coingecko", "uniswap"]
     },
+    "VST": {
+      "source": ["coingecko", "curve-frax"]
+    },
     "AAPL": {
       "source": ["currencycom", "yf-unofficial"]
     },

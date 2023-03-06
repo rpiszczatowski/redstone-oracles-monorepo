@@ -32,30 +32,27 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
     super(name);
   }
 
-  async getPoolDetailsWithStatus(spotAssetIds: string[]) {
-    const promises = spotAssetIds.map(async (assetId) => {
-      const { address, provider, ratioMultiplier } = this.poolsConfig[assetId];
-      const curveFactory = new Contract(address, abi as any, provider);
+  async makeRequest(id: string): Promise<Response> {
+    const { address, provider, ratioMultiplier } = this.poolsConfig[id];
+    const curveFactory = new Contract(address, abi as any, provider);
 
-      const { symbol0 } = this.poolsConfig[assetId];
-      const isSymbol0CurrentAsset = symbol0 === assetId;
-      const requestParams = {
-        param0: isSymbol0CurrentAsset ? 0 : 1,
-        param1: isSymbol0CurrentAsset ? 1 : 0,
-      };
+    const { symbol0 } = this.poolsConfig[id];
+    const isSymbol0CurrentAsset = symbol0 === id;
+    const requestParams = {
+      param0: isSymbol0CurrentAsset ? 0 : 1,
+      param1: isSymbol0CurrentAsset ? 1 : 0,
+    };
 
-      const ratio = await curveFactory.get_dy(
-        requestParams.param0,
-        requestParams.param1,
-        (DEFAULT_RATIO_QUANTITY * ratioMultiplier).toString()
-      );
+    const ratio = await curveFactory.get_dy(
+      requestParams.param0,
+      requestParams.param1,
+      (DEFAULT_RATIO_QUANTITY * ratioMultiplier).toString()
+    );
 
-      return {
-        ratio,
-        assetId,
-      };
-    });
-    return await Promise.allSettled(promises);
+    return {
+      ratio,
+      assetId: id,
+    };
   }
 
   getAssetId(response: Response) {
