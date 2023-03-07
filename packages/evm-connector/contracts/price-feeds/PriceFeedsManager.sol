@@ -44,12 +44,12 @@ contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
     }
   }
 
-  function addDataFeedId(bytes32 newDataFeedId) public onlyOwner {
+  function addDataFeedIdAndUpdateValues(bytes32 newDataFeedId, uint256 proposedTimestamp)
+    public
+    onlyOwner
+  {
     EnumerableSet.add(dataFeedsIds, newDataFeedId);
-  }
-
-  function removeDataFeedId(bytes32 dataFeedIdToRemove) public onlyOwner {
-    EnumerableSet.remove(dataFeedsIds, dataFeedIdToRemove);
+    updateDataFeedValues(lastRound + 1, proposedTimestamp);
   }
 
   function isProposedRoundValid(uint256 proposedRound) private view returns (bool) {

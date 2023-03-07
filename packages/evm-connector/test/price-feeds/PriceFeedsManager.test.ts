@@ -66,10 +66,9 @@ describe("PriceFeedsManager", () => {
   it("should revert if invalid data feeds to update", async () => {
     const newTimestamp = timestamp + 1000;
     wrappedContract = getWrappedContract(contract, newTimestamp);
-    const newDataFeedId = formatBytes32String("NewToke");
-    await contract.addDataFeedId(newDataFeedId);
+    const newDataFeedId = formatBytes32String("NewToken");
     await expect(
-      wrappedContract.updateDataFeedValues(2, newTimestamp)
+      wrappedContract.addDataFeedIdAndUpdateValues(newDataFeedId, newTimestamp)
     ).to.be.rejectedWith("InsufficientNumberOfUniqueSigners(0, 10)");
   });
 
@@ -95,22 +94,29 @@ describe("PriceFeedsManager", () => {
   });
 
   it("should add new data feed", async () => {
+    const newTimestamp = timestamp + 1000;
+    wrappedContract = getWrappedContract(contract, newTimestamp, {
+      dataFeedId: "NewToken",
+      value: 2,
+    });
     const newDataFeedId = formatBytes32String("NewToken");
-    await contract.addDataFeedId(newDataFeedId);
+    await wrappedContract.addDataFeedIdAndUpdateValues(
+      newDataFeedId,
+      newTimestamp
+    );
     const dataFeeds = await contract.getDataFeedsIds();
     expect(dataFeeds.length).to.be.equal(3);
     expect(dataFeeds[2]).to.be.equal(newDataFeedId);
   });
 
   it("should not add new data feed if already exists", async () => {
-    await contract.addDataFeedId(ethDataFeed);
+    const newTimestamp = timestamp + 1000;
+    wrappedContract = getWrappedContract(contract, newTimestamp);
+    await wrappedContract.addDataFeedIdAndUpdateValues(
+      ethDataFeed,
+      newTimestamp
+    );
     const dataFeeds = await contract.getDataFeedsIds();
     expect(dataFeeds.length).to.be.equal(2);
-  });
-
-  it("should remove data feed", async () => {
-    await contract.removeDataFeedId(btcDataFeed);
-    const dataFeeds = await contract.getDataFeedsIds();
-    expect(dataFeeds.length).to.be.equal(1);
   });
 });
