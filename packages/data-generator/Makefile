@@ -1,5 +1,4 @@
-PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=2&data-service-id=redstone-avalanche-prod&format=
-#PAYLOAD_URL=https://d33trozg86ya9x.cloudfront.net/data-packages/payload?data-packages/payload?unique-signers-count=1&data-service-id=redstone-rapid-demo&data-feed-id=BTC,ETH,BNB,AR,AVAX,CELO&format=
+PAYLOAD_URL=https://d33trozg86ya9x.cloudfront.net/data-packages/payload?data-packages/payload?unique-signers-count=1&data-service-id=redstone-rapid-demo&data-feed-id=BTC,ETH,BNB,AR,AVAX,CELO&format=
 
 DATA_DIR=./data
 SHELL := /bin/bash
