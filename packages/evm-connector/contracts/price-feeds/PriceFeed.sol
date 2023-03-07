@@ -3,7 +3,7 @@ pragma solidity ^0.8.4;
 
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "./PriceFeedsManager.sol";
-import "./DefaultsLib.sol";
+import "./CustomErrors.sol";
 
 contract PriceFeed is AggregatorV3Interface {
   address private priceFeedsManagerAddress;
@@ -50,7 +50,7 @@ contract PriceFeed is AggregatorV3Interface {
       uint80 /* answeredInRound */
     )
   {
-    revert DefaultsLib.UseLatestRoundToGetDataFeedPrice();
+    revert CustomErrors.UseLatestRoundToGetDataFeedPrice();
   }
 
   function latestRoundData()

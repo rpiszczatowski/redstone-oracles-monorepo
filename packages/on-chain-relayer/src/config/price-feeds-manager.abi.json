@@ -172,9 +172,14 @@
         "internalType": "bytes32",
         "name": "newDataFeedId",
         "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "proposedTimestamp",
+        "type": "uint256"
       }
     ],
-    "name": "addDataFeedId",
+    "name": "addDataFeedIdAndUpdateValues",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -339,7 +344,7 @@
     "inputs": [
       {
         "internalType": "bytes32[]",
-        "name": "dataFeedsIds_",
+        "name": "requestedDataFeedsIds",
         "type": "bytes32[]"
       }
     ],
@@ -391,19 +396,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "dataFeedIdToRemove",
-        "type": "bytes32"
-      }
-    ],
-    "name": "removeDataFeedId",
-    "outputs": [],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

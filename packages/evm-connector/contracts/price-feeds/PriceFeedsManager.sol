@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "../data-services/MainDemoConsumerBase.sol";
-import "./DefaultsLib.sol";
+import "./CustomErrors.sol";
 
 contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
   using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -28,7 +28,7 @@ contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
       after validation in valivalidateTimestampFromUser and equal to proposedTimestamp
     */
     if (receivedTimestampMilliseconds != lastUpdateTimestampMilliseconds) {
-      revert DefaultsLib.ProposedTimestampDoesNotMatchReceivedTimestamp(
+      revert CustomErrors.ProposedTimestampDoesNotMatchReceivedTimestamp(
         lastUpdateTimestampMilliseconds,
         receivedTimestampMilliseconds
       );
@@ -37,13 +37,18 @@ contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
 
   function validateProposedTimestamp(uint256 proposedTimestamp) private view {
     if (proposedTimestamp <= lastUpdateTimestampMilliseconds) {
-      revert DefaultsLib.ProposedTimestampSmallerOrEqualToLastTimestamp(
+      revert CustomErrors.ProposedTimestampSmallerOrEqualToLastTimestamp(
         proposedTimestamp,
         lastUpdateTimestampMilliseconds
       );
     }
   }
 
+  /*
+    We want to update data feeds values right after adding a new one.
+    This is because without it someone could get the value of the newly
+    added data feed before updating the value when it is still zero.
+  */
   function addDataFeedIdAndUpdateValues(bytes32 newDataFeedId, uint256 proposedTimestamp)
     public
     onlyOwner
@@ -92,7 +97,7 @@ contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
   function getValueForDataFeed(bytes32 dataFeedId) public view returns (uint256) {
     uint256 dataFeedValue = dataFeedsValues[dataFeedId];
     if (dataFeedValue == 0) {
-      revert DefaultsLib.DataFeedValueCannotBeZero(dataFeedId);
+      revert CustomErrors.DataFeedValueCannotBeZero(dataFeedId);
     }
     return dataFeedValue;
   }
@@ -111,14 +116,14 @@ contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
     lastUpdateTimestampInMilliseconds = lastUpdateTimestampMilliseconds;
   }
 
-  function getValuesForDataFeeds(bytes32[] memory dataFeedsIds_)
+  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedsIds)
     public
     view
     returns (uint256[] memory)
   {
-    uint256[] memory values = new uint256[](dataFeedsIds_.length);
-    for (uint256 i = 0; i < dataFeedsIds_.length; i++) {
-      values[i] = getValueForDataFeed(dataFeedsIds_[i]);
+    uint256[] memory values = new uint256[](requestedDataFeedsIds.length);
+    for (uint256 i = 0; i < requestedDataFeedsIds.length; i++) {
+      values[i] = getValueForDataFeed(requestedDataFeedsIds[i]);
     }
     return (values);
   }
