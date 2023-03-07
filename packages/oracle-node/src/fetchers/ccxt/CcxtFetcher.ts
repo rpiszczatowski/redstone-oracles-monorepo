@@ -72,7 +72,7 @@ export class CcxtFetcher extends BaseFetcher {
   }
 
   getStableCoinPrice(pairSymbol: string) {
-    let stableCoinSymbol = pairSymbol.slice(-4);
+    const stableCoinSymbol = pairSymbol.slice(-4);
     return getLastPrice(stableCoinSymbol)?.value;
   }
 
