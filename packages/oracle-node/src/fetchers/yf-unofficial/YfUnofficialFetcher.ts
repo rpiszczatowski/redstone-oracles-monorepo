@@ -9,6 +9,7 @@ const idToSymbol = _.invert(symbolToId);
 
 export class YfUnofficialFetcher extends BaseFetcher {
   private yahooFinanceProxy: YahooFinanceProxy;
+  protected retryForInvalidResponse: boolean = true;
 
   constructor() {
     super("yf-unofficial");
