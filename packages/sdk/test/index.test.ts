@@ -7,6 +7,9 @@ import {
 import { mockSignedDataPackages } from "./mocks/mock-packages";
 import { server } from "./mocks/server";
 
+const BASE_TIMESTAMP = 1654353405000;
+const MAX_ALLOWED_TIMESTAMP_DELAY = 10000;
+
 describe("SDK tests", () => {
   const reqParams: DataPackagesRequestParams = {
     dataFeeds: ["BTC", "ETH"],
@@ -93,24 +96,26 @@ describe("SDK tests", () => {
   });
 
   test("Should fail for outdated data package", async () => {
-    Date.now = jest.fn(() => 1678101790000);
+    jest
+      .useFakeTimers()
+      .setSystemTime(BASE_TIMESTAMP + MAX_ALLOWED_TIMESTAMP_DELAY + 1);
 
     await expect(() =>
       requestDataPackages({
         ...reqParams,
-        maxTimestampDelay: 10000,
+        maxTimestampDelay: MAX_ALLOWED_TIMESTAMP_DELAY,
       })
     ).rejects.toThrow(
-      "At least one datapackage is outdated. Current timestamp: 1678101790000. Outdated datapackages timestamps: [1654353400000,1654353400000]"
+      "At least one datapackage is outdated. Current timestamp: 1654353415001. Outdated datapackages timestamps: [1654353400000,1654353400000]"
     );
   });
 
   test("Should fetch data packages with valid timestamp", async () => {
-    jest.useFakeTimers().setSystemTime(1654353405000);
+    jest.useFakeTimers().setSystemTime(BASE_TIMESTAMP);
 
     const dataPackages = await requestDataPackages({
       ...reqParams,
-      maxTimestampDelay: 10000,
+      maxTimestampDelay: MAX_ALLOWED_TIMESTAMP_DELAY,
     });
     expect(mockSignedDataPackages.ETH[0]).toMatchObject(
       dataPackages["ETH"][0].toObj()

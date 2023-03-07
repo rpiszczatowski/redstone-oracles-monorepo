@@ -101,9 +101,10 @@ const validateTimestampDelay = (
       ({ timestampMilliseconds }) => timestampMilliseconds
     );
     throw new Error(
-      `At least one datapackage is outdated. Current timestamp: ${currentTimestamp}. Outdated datapackages timestamps: ${JSON.stringify(
-        outdatedDataPackagesTimestamps
-      )}`
+      `At least one datapackage is outdated. Current timestamp: ${currentTimestamp}. ` +
+        `Outdated datapackages timestamps: ${JSON.stringify(
+          outdatedDataPackagesTimestamps
+        )}`
     );
   }
 };
