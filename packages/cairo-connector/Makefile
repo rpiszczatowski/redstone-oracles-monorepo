@@ -1,7 +1,6 @@
 ACC=showroom
 DATA_NAME=test
-#PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=2&data-service-id=redstone-avalanche-prod&format=
-#PAYLOAD_URL=https://d33trozg86ya9x.cloudfront.net/data-packages/payload?data-packages/payload?unique-signers-count=1&data-service-id=redstone-rapid-demo&data-feed-id=BTC,ETH,BNB,AR,AVAX,CELO&format=
+
 #BASE_PARAMS=1 5 0x12470f7aba85c8b81d63137dd5925d6ee114952b 0x109B4a318A4F5ddcbCA6349B45f881B4137deaFB 0x1ea62d73edf8ac05dfcea1a34b9796e937a29eff 0x2c59617248994D12816EE1Fa77CE0a64eEB456BF 0x83cba8c619fb629b81a65c2e67fe15cf3e3c9747
 BASE_PARAMS=1 1 1413123745572547900128493490517406887815334304489 #0xf786a909D559F5Dee2dc6706d8e5A81728a39aE9
 
@@ -18,13 +17,13 @@ endif
 BTC=4346947
 ETH=4543560
 
-MAX_FEE=1000000000000000
+MAX_FEE=2000000000000000
 SRC=src/demo/main.cairo
 OBJ=build/main_compiled.json
 CNT=src/contracts/$(CONTRACT).cairo
 CNC=build/$(CONTRACT)_compiled.json
 ABI=build/$(CONTRACT)_abi.json
-DATA_DIR=./data
+DATA_DIR=../data-generator/data
 
 SHELL := /bin/bash
 
@@ -64,6 +63,8 @@ $(ABI): contract
 #invoke: 'make CLASS_HASH=0xabc deploy' or define the variable CLASS_HASH above
 deploy:
 	starknet deploy --account=$(ACC) --max_fee=$(MAX_FEE) \
+	--wallet=starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount \
+	--network=alpha-goerli \
 	--class_hash $(CLASS_HASH) \
 	--inputs $(CONSTRUCTOR_PARAMS)
 
@@ -89,7 +90,7 @@ save_prices:
 	--abi $(ABI) \
 	--address ${CONTRACT_ADDRESS} \
 	--function save_prices \
-	--inputs 2 $(BTC) $(ETH) $(shell (ls -lf $(DATA_DIR)/${DATA_NAME}.splitted | awk '{print $$5}' | awk '{print ($$1-1)/5}')) $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
+	--inputs 1 $(ETH) $(shell (ls -lf $(DATA_DIR)/${DATA_NAME}.splitted | awk '{print $$5}' | awk '{print ($$1-1)/5}')) $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
 
 #invoke: 'make CONTRACT_ADDRESS=0xabc get_saved_prices' or define the variable CONTRACT_ADDRESS above
 get_saved_prices:
@@ -127,17 +128,7 @@ clean:
 	rm -rf build
 
 prepare_data:
-	curl "$(PAYLOAD_URL)hex" > $(DATA_DIR)/${DATA_NAME}.hex &
-	curl "$(PAYLOAD_URL)json" | cut -c 2- | sed 's/\\"/"/g' | sed 's/.$$//g' > $(DATA_DIR)/${DATA_NAME}.json &
-	curl "$(PAYLOAD_URL)bytes" > $(DATA_DIR)/${DATA_NAME}.tmp  
-
-	printf '{"bytes":' > $(DATA_DIR)/${DATA_NAME}.input 
-	cat $(DATA_DIR)/${DATA_NAME}.tmp >> $(DATA_DIR)/${DATA_NAME}.input 
-	rm $(DATA_DIR)/${DATA_NAME}.tmp
-	echo ',' >> $(DATA_DIR)/${DATA_NAME}.input 
-	curl -L -H "Accept: application/json" unixtimesta.mp | cut -c 2- >> $(DATA_DIR)/${DATA_NAME}.input 
-	cat $(DATA_DIR)/${DATA_NAME}.hex | fold -w2 | paste -sd' ' -  | sed -E 's/[[:space:]]+/ 0x/g' | cut -c 3- >> $(DATA_DIR)/${DATA_NAME}.input > $(DATA_DIR)/${DATA_NAME}.splitted
-
+	make -C ../data-generator DATA_NAME=$(DATA_NAME) prepare_data
 
 #You may have needed:
 #	python3.9 -m venv /Users/lukaszkalbarczyk/cairo_venv
