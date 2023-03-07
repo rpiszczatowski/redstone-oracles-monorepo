@@ -18,11 +18,8 @@ describe("PriceFeedsManager", () => {
   let wrappedContract: Contract;
   let timestamp: number;
 
-  before(async () => {
-    await network.provider.send("hardhat_reset");
-  });
-
   beforeEach(async () => {
+    await network.provider.send("hardhat_reset");
     const MangerContractFactory = await ethers.getContractFactory(
       "PriceFeedsManagerMock"
     );
@@ -84,20 +81,36 @@ describe("PriceFeedsManager", () => {
     expect(round).to.be.equal(2);
     expect(lastUpdateTimestamp).to.be.equal(newTimestamp);
     const dataFeedsValues = await contract.getValuesForDataFeeds(dataFeedsIds);
-    expect(dataFeedsValues[1][0]).to.be.equal(167099000000);
-    expect(dataFeedsValues[1][1]).to.be.equal(2307768000000);
+    expect(dataFeedsValues[0]).to.be.equal(167099000000);
+    expect(dataFeedsValues[1]).to.be.equal(2307768000000);
     const dataFeedValueAndRoundParams =
       await contract.getValueForDataFeedAndLastRoundParams(btcDataFeed);
-    expect(dataFeedValueAndRoundParams[0]).to.be.equal(2307768000000);
-    expect(dataFeedValueAndRoundParams[1]).to.be.equal(2);
-    expect(dataFeedValueAndRoundParams[2]).to.be.equal(newTimestamp);
+    expect(dataFeedValueAndRoundParams.dataFeedValue).to.be.equal(
+      2307768000000
+    );
+    expect(dataFeedValueAndRoundParams.lastRoundNumber).to.be.equal(2);
+    expect(
+      dataFeedValueAndRoundParams.lastUpdateTimestampInMilliseconds
+    ).to.be.equal(newTimestamp);
   });
 
   it("should add new data feed", async () => {
-    const newDataFeedId = formatBytes32String("NewToke");
+    const newDataFeedId = formatBytes32String("NewToken");
     await contract.addDataFeedId(newDataFeedId);
     const dataFeeds = await contract.getDataFeedsIds();
     expect(dataFeeds.length).to.be.equal(3);
     expect(dataFeeds[2]).to.be.equal(newDataFeedId);
+  });
+
+  it("should not add new data feed if already exists", async () => {
+    await contract.addDataFeedId(ethDataFeed);
+    const dataFeeds = await contract.getDataFeedsIds();
+    expect(dataFeeds.length).to.be.equal(2);
+  });
+
+  it("should remove data feed", async () => {
+    await contract.removeDataFeedId(btcDataFeed);
+    const dataFeeds = await contract.getDataFeedsIds();
+    expect(dataFeeds.length).to.be.equal(1);
   });
 });
