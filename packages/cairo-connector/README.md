@@ -1,5 +1,6 @@
-1) Setting up the environment
-* install cairo & starti inside a python virtual env: <https://www.cairo-lang.org/docs/quickstart.html>
+### Setting up the cairo/starknet environment
+
+* install cairo & start inside a python virtual env: <https://www.cairo-lang.org/docs/quickstart.html>
 * install starknet CLI & set up the account: <https://www.cairo-lang.org/docs/hello_starknet/account_setup.html>
 * transfer Goerli ETH by using <https://faucet.goerli.starknet.io/> as defined in the tutorial
   * wait to have the transfer-transaction accepted on L2 (check it on <https://testnet.starkscan.co/>)
@@ -10,15 +11,15 @@
 * install protostar inside your virtual env you have started: <https://docs.swmansion.com/protostar/docs/tutorials/installation>
   * export the protostar-PATH to the virtual-env's path: `export PATH="$PATH:/Users/[you]/.protostar/dist/protostar`
 
-2) Running the cairo demo program
+### Running the cairo demo program
 * fill the value with `PAYLOAD_URL` in the Makefile (it should have the `format=` at the end). 
     * You might need the `cache-service` started locally and MongoDB installed or set up on the DigitalOcean <https://github.com/redstone-finance/redstone-oracles-monorepo/blob/main/.do/mongodb/README.md>.
 * execute `make prepare_data`. The files are saved in the `./data` directory
     * the base name of files is defined as `DATA_NAME` variable in the Makefile)
 * execute `make run`
 
-3) Using the contract(s)
-* fill the value with `CONCTRACT` by putting there `price` or `oracle_values`
+### Using the contract(s)
+* fill the value with `CONTRACT` by putting there `price` or `oracle_values`
 * run `make declare` and save the value of "class hash" hex returned by the function
   * wait to have the transaction accepted on L2 (check it on <https://testnet.starkscan.co/>)
 * run `make CLASS_HASH=0xabc deploy` where `0xabc` is the "class hash" saved in the first step and save the "contract hash".
@@ -28,5 +29,7 @@
   * for `price` contract there are `set_prices`, `get_eth_price` and `get_btc_price` calls available
 * you can modify the invocation and/or `DATA_NAME` directly in the Makefile
 
-4) Verifying the contract(s)
+#### see here how the contracts work: [README.md](src/contracts/README.md)
+
+### Verifying the contract(s)
 * Use starkscan verifier as follows: <https://github.com/starkscan/starkscan-verifier>

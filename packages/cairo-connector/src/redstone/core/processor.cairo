@@ -18,7 +18,7 @@ from redstone.core.results import Results, make_results, write_results_value
 from redstone.core.validation import (
     validate_timestamp,
     validate_signature,
-    validate_signer_count_treshold,
+    validate_signer_count_threshold,
 )
 
 func process_payload{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
@@ -108,8 +108,8 @@ func process_results{range_check_ptr}(results: Results, config: Config, index: f
         return ();
     }
 
-    validate_signer_count_treshold(
-        count=results.ptr[index].len, treshold=config.signer_count_treshold, index=index
+    validate_signer_count_threshold(
+        count=results.ptr[index].len, threshold=config.signer_count_threshold, index=index
     );
     let median = calculate_median(results.ptr[index]);
 

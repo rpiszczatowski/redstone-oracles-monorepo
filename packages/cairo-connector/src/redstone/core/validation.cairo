@@ -7,7 +7,7 @@ from redstone.crypto.signature import Signature
 from redstone.utils.array import Array, array_index
 
 const MAX_DATA_TIMESTAMP_DELAY_SECONDS = 15 * 60;
-const MAX_DATA_TIMESTAMP_AHEAD_SECONDS = 3 * 60;
+const MAX_DATA_TIMESTAMP_AHEAD_SECONDS = 5 * 60;
 
 func validate_signature{range_check_ptr, bitwise_ptr: BitwiseBuiltin*, keccak_ptr: felt*}(
     signable_arr: Array, signature: Signature, allowed_signer_addresses: Array, index: felt
@@ -34,10 +34,10 @@ func validate_timestamp{range_check_ptr}(package_ts_ms: felt, block_ts: felt) {
     return ();
 }
 
-func validate_signer_count_treshold{range_check_ptr}(count: felt, treshold: felt, index: felt) {
+func validate_signer_count_threshold{range_check_ptr}(count: felt, threshold: felt, index: felt) {
     with_attr error_message(
-            "Insufficient unique signer count for data feed #{index} (currently: {count} for required treshold: {treshold})") {
-        assert_le(treshold, count);
+            "Insufficient unique signer count for data feed #{index} (currently: {count} for required threshold: {threshold})") {
+        assert_le(threshold, count);
     }
 
     return ();
