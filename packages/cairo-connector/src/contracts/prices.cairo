@@ -7,7 +7,7 @@ from redstone.utils.array import Array, array_new
 
 from contracts.prices_core import read_prices, write_prices, timestamp
 from contracts.core import (
-    unique_signer_count_treshold,
+    unique_signer_count_threshold,
     signer_address,
     signer_address_len,
     get_aggregated_values,
@@ -16,12 +16,12 @@ from contracts.core import (
 
 @constructor
 func constructor{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(
-    signer_count_treshold: felt, addresses_len: felt, addresses: felt*
+    signer_count_threshold: felt, addresses_len: felt, addresses: felt*
 ) {
-    assert_nn(signer_count_treshold);
-    assert_in_range(signer_count_treshold, 0, addresses_len + 1);
+    assert_nn(signer_count_threshold);
+    assert_in_range(signer_count_threshold, 0, addresses_len + 1);
 
-    unique_signer_count_treshold.write(signer_count_treshold);
+    unique_signer_count_threshold.write(signer_count_threshold);
     signer_address_len.write(addresses_len);
     write_addresses(ptr=addresses, len=addresses_len, index=0);
 
