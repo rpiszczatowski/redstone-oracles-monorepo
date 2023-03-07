@@ -22,7 +22,6 @@ import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
 import { XtFetcher } from "./xt/XtFetcher";
 import { BandFetcher } from "./band/BandFetcher";
 import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
-import { config } from "../config";
 import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
@@ -32,6 +31,7 @@ import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/ArbitrumEvmFetcher";
 import { arbitrumProvider } from "./evm-chain/arbitrum/config";
 import { avalancheProvider } from "./evm-chain/avalanche/config";
 import sushiswapFetchers from "./sushiswap-on-chain/all-sushiswap-fetchers";
+import curveFetchers from "./curve/all-curve-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -63,4 +63,5 @@ export default {
   ...balancerFetchers,
   ...twapFetchers,
   ...sushiswapFetchers,
+  ...curveFetchers,
 } as { [name: string]: Fetcher };

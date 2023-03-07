@@ -14,6 +14,9 @@ const SYMBOLS = [
   "AR",
   "CELO",
   "AVAX",
+  "USDC",
+  "FRAX",
+  "VST",
 ];
 
 generateSubManifest(SYMBOLS, OUTPUT_FILE_PATH);

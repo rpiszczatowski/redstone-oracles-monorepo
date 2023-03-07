@@ -4,7 +4,7 @@ import {
   Responses,
 } from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice } from "../../db/local-db";
-import { abi } from "./UniswapV2.abi";
+import abi from "./UniswapV2.abi.json";
 
 const DEFAULT_DECIMALS = 18;
 
