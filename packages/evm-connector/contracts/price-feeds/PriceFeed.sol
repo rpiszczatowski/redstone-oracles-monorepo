@@ -9,6 +9,8 @@ contract PriceFeed is AggregatorV3Interface {
   bytes32 public dataFeedId;
   string public descriptionText;
 
+  error UseLatestRoundToGetDataFeedPrice();
+
   constructor(
     address priceFeedsManagerAddress_,
     bytes32 dataFeedId_,
@@ -47,7 +49,7 @@ contract PriceFeed is AggregatorV3Interface {
       uint80 answeredInRound
     )
   {
-    revert("Use latestRoundData to get data feed price");
+    revert UseLatestRoundToGetDataFeedPrice();
   }
 
   function latestRoundData()

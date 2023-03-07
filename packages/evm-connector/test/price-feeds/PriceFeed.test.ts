@@ -28,7 +28,7 @@ describe("PriceFeed", () => {
 
     const timestamp = Date.now();
     const wrappedContract = getWrappedContract(managerContract, timestamp);
-    await wrappedContract.updateDataFeedValues(1, timestamp, dataFeedsIds);
+    await wrappedContract.updateDataFeedValues(1, timestamp);
   });
 
   it("should properly initialize", async () => {
@@ -40,7 +40,7 @@ describe("PriceFeed", () => {
 
   it("should revert if calling getRoundData", async () => {
     await expect(contract.getRoundData(0)).to.be.rejectedWith(
-      "Use latestRoundData to get data feed price"
+      "UseLatestRoundToGetDataFeedPrice"
     );
   });
 

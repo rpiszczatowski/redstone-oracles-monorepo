@@ -30,7 +30,7 @@ describe("PriceFeedsManager", () => {
     await contract.deployed();
     timestamp = Date.now();
     wrappedContract = getWrappedContract(contract, timestamp);
-    await wrappedContract.updateDataFeedValues(1, timestamp, dataFeedsIds);
+    await wrappedContract.updateDataFeedValues(1, timestamp);
   });
 
   it("should properly initialize", async () => {
@@ -40,7 +40,7 @@ describe("PriceFeedsManager", () => {
   });
 
   it("should return if invalid proposed round", async () => {
-    await wrappedContract.updateDataFeedValues(0, timestamp, dataFeedsIds);
+    await wrappedContract.updateDataFeedValues(0, timestamp);
     const [round, lastUpdateTimestamp] = await contract.getLastRoundParams();
     expect(round).to.be.equal(1);
     expect(lastUpdateTimestamp).to.be.equal(timestamp);
@@ -49,7 +49,7 @@ describe("PriceFeedsManager", () => {
   it("should revert if proposed timestamp smaller than last update", async () => {
     const smallerTimestamp = timestamp - 1000;
     await expect(
-      wrappedContract.updateDataFeedValues(2, smallerTimestamp, dataFeedsIds)
+      wrappedContract.updateDataFeedValues(2, smallerTimestamp)
     ).to.be.rejectedWith(
       `ProposedTimestampSmallerOrEqualToLastTimestamp(${smallerTimestamp}, ${timestamp})`
     );
@@ -60,55 +60,26 @@ describe("PriceFeedsManager", () => {
     const timestampNotEqualToReceived = timestamp + 1050;
     wrappedContract = getWrappedContract(contract, newTimestamp);
     await expect(
-      wrappedContract.updateDataFeedValues(
-        2,
-        timestampNotEqualToReceived,
-        dataFeedsIds
-      )
+      wrappedContract.updateDataFeedValues(2, timestampNotEqualToReceived)
     ).to.be.rejectedWith(
       `ProposedTimestampDoesNotMatchReceivedTimestamp(${timestampNotEqualToReceived}, ${newTimestamp})`
-    );
-  });
-
-  it("should revert if invalid number of data feeds to update", async () => {
-    const newTimestamp = timestamp + 1000;
-    wrappedContract = getWrappedContract(contract, newTimestamp);
-    await expect(
-      wrappedContract.updateDataFeedValues(2, newTimestamp, [ethDataFeed])
-    ).to.be.rejectedWith(
-      `InvalidNumberOfDataFeedsToUpdate(${dataFeedsIds.length}, 1)`
     );
   });
 
   it("should revert if invalid data feeds to update", async () => {
     const newTimestamp = timestamp + 1000;
     wrappedContract = getWrappedContract(contract, newTimestamp);
-    const dataFeedsIdsToUpdate = [
-      ethDataFeed,
-      formatBytes32String("InvalidToken"),
-    ];
+    const newDataFeedId = formatBytes32String("NewToke");
+    await contract.addDataFeedId(newDataFeedId);
     await expect(
-      wrappedContract.updateDataFeedValues(
-        2,
-        newTimestamp,
-        dataFeedsIdsToUpdate
-      )
-    ).to.be.rejectedWith(
-      `InvalidDataFeedsIdsToUpdate(["${ethDataFeed}", "${formatBytes32String(
-        "InvalidToken"
-      )}"])`
-    );
+      wrappedContract.updateDataFeedValues(2, newTimestamp)
+    ).to.be.rejectedWith("InsufficientNumberOfUniqueSigners(0, 10)");
   });
 
   it("should update price feeds and get value for data feeds", async () => {
     const newTimestamp = timestamp + 1000;
     wrappedContract = getWrappedContract(contract, newTimestamp);
-    const dataFeedsIdsToUpdate = await contract.getDataFeedsIds();
-    await wrappedContract.updateDataFeedValues(
-      2,
-      newTimestamp,
-      dataFeedsIdsToUpdate
-    );
+    await wrappedContract.updateDataFeedValues(2, newTimestamp);
     const [round, lastUpdateTimestamp] = await contract.getLastRoundParams();
     expect(round).to.be.equal(2);
     expect(lastUpdateTimestamp).to.be.equal(newTimestamp);

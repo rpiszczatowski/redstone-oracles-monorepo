@@ -52,24 +52,6 @@ contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
     }
   }
 
-  function validateDataFeedsToUpdate(bytes32[] calldata dataFeedsIdsToUpdate) private view {
-    if (dataFeedsIdsToUpdate.length != dataFeedsIds.length) {
-      revert InvalidNumberOfDataFeedsToUpdate(dataFeedsIds.length, dataFeedsIdsToUpdate.length);
-    }
-    uint256 nonces = 0;
-    for (uint256 i = 0; i < dataFeedsIdsToUpdate.length; i++) {
-      for (uint256 j = 0; j < dataFeedsIds.length; j++) {
-        if (dataFeedsIdsToUpdate[i] == dataFeedsIds[j]) {
-          nonces++;
-          break;
-        }
-      }
-    }
-    if (nonces != dataFeedsIdsToUpdate.length) {
-      revert InvalidDataFeedsIdsToUpdate(dataFeedsIdsToUpdate);
-    }
-  }
-
   function addDataFeedId(bytes32 newDataFeedId) public onlyOwner {
     dataFeedsIds.push(newDataFeedId);
   }
@@ -94,23 +76,17 @@ contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
     return dataFeedsIds;
   }
 
-  function updateDataFeedValues(
-    uint256 proposedRound,
-    uint256 proposedTimestamp,
-    bytes32[] calldata dataFeedsIdsToUpdate
-  ) public {
+  function updateDataFeedValues(uint256 proposedRound, uint256 proposedTimestamp) public {
     if (!isProposedRoundValid(proposedRound)) return;
     lastRound = proposedRound;
     validateProposedTimestamp(proposedTimestamp);
     lastUpdateTimestampMilliseconds = proposedTimestamp;
 
-    validateDataFeedsToUpdate(dataFeedsIdsToUpdate);
-
     /* 
       getOracleNumericValuesFromTxMsg will call validateTimestamp
       for each data package from the redstone payload 
     */
-    uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedsIdsToUpdate);
+    uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedsIds);
     for (uint256 i = 0; i < dataFeedsIds.length; i++) {
       dataFeedsValues[dataFeedsIds[i]] = values[i];
     }
@@ -142,20 +118,5 @@ contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
       values[i] = dataFeedsValues[dataFeedsIds[i]];
     }
     return (dataFeedsIds_, values);
-  }
-
-  function getValuesForDataFeeds(bytes32[] memory dataFeedsIds)
-    public
-    view
-    returns (bytes32[] memory, int256[] memory)
-  {
-    int256[] memory values = new int256[](dataFeedsIds.length);
-    for (uint256 i = 0; i < dataFeedsIds.length; i++) {
-      (, int256 dataFeedIdValue, , , ) = PriceFeed(
-        priceFeedRegistry.getPriceFeedContractAddress(dataFeedsIds[i])
-      ).latestRoundData();
-      values[i] = dataFeedIdValue;
-    }
-    return (dataFeedsIds, values);
   }
 }
