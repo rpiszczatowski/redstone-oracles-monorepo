@@ -27,11 +27,29 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
     this.balancer = new BalancerSDK(balancerConfig);
   }
 
-  async makeRequest(id: string): Promise<BalancerResponse> {
-    const pairedTokenPrice = this.getPairedTokenPrice();
+  override async makeRequest(id: string): Promise<BalancerResponse> {
+    const pairedTokenPrice = await this.getPairedTokenPrice();
     const poolId = this.getPoolIdForAssetId(id);
     const pool = await this.fetchPool(poolId);
     return { pool, pairedTokenPrice };
+  }
+
+  override calculateSpotPrice(
+    _assetId: string,
+    response: BalancerResponse
+  ): number {
+    const { pool, pairedTokenPrice } = response;
+    const spotPrice = Number(
+      pool.calcSpotPrice(pool.tokens[0].address, pool.tokens[1].address)
+    );
+    return pairedTokenPrice / spotPrice;
+  }
+
+  override calculateLiquidity(
+    _assetId: string,
+    response: BalancerResponse
+  ): number {
+    return Number(response.pool.totalLiquidity);
   }
 
   private async fetchPool(poolId: string) {
@@ -48,7 +66,7 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
       : pool.tokens[0].symbol!;
   }
 
-  protected getPairedTokenPrice(): number {
+  protected async getPairedTokenPrice(): Promise<number> {
     let tokenToGet = this.baseTokenSymbol;
     if (tokenToGet === "WETH") {
       tokenToGet = "ETH";
@@ -58,18 +76,6 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
       throw new Error(`Cannot get last price from cache for: ${tokenToGet}`);
     }
     return lastPriceFromCache.value;
-  }
-
-  calculateSpotPrice(_assetId: string, response: BalancerResponse): number {
-    const { pool, pairedTokenPrice } = response;
-    const spotPrice = Number(
-      pool.calcSpotPrice(pool.tokens[0].address, pool.tokens[1].address)
-    );
-    return pairedTokenPrice / spotPrice;
-  }
-
-  calculateLiquidity(_assetId: string, response: BalancerResponse): number {
-    return Number(response.pool.totalLiquidity);
   }
 
   protected getPoolIdForAssetId(assetId: string) {
