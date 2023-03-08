@@ -22,7 +22,6 @@ export interface PoolsConfig {
 interface Reserves {
   reserve0: BigNumber;
   reserve1: BigNumber;
-  assetId: string;
 }
 
 export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
@@ -30,15 +29,15 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
 
   constructor(
     name: string,
-    private readonly poolsConfig: PoolsConfig,
+    protected readonly poolsConfig: PoolsConfig,
     private readonly provider: providers.JsonRpcProvider
   ) {
     super(name);
   }
 
-  async makeRequest(id: string, context?: any): Promise<Reserves> {
+  override async makeRequest(spotAssetId: string): Promise<Reserves> {
     const uniswapV2Pair = new Contract(
-      this.poolsConfig[id].address,
+      this.poolsConfig[spotAssetId].address,
       abi,
       this.provider
     );
@@ -48,12 +47,48 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
     return {
       reserve0: _reserve0,
       reserve1: _reserve1,
-      assetId: id,
     };
   }
 
-  validateResponse(response: Responses<Reserves>): boolean {
-    return response !== undefined;
+  override calculateSpotPrice(assetId: string, response: Reserves): number {
+    const {
+      isSymbol0CurrentAsset,
+      reserve0Serialized,
+      reserve1Serialized,
+      pairedTokenPrice,
+    } = this.getParamsFromResponse(assetId, response);
+
+    const balanceRatio = this.calculateBalanceRatio(
+      isSymbol0CurrentAsset,
+      reserve0Serialized,
+      reserve1Serialized
+    );
+
+    const spotPrice = balanceRatio
+      .mul(utils.parseUnits("1.0", DEFAULT_DECIMALS))
+      .div(pairedTokenPrice);
+
+    return parseFloat(utils.formatEther(spotPrice));
+  }
+
+  override calculateLiquidity(assetId: string, response: Reserves): number {
+    const {
+      isSymbol0CurrentAsset,
+      reserve0Serialized,
+      reserve1Serialized,
+      pairedTokenPrice,
+    } = this.getParamsFromResponse(assetId, response);
+
+    const reserve = isSymbol0CurrentAsset
+      ? reserve1Serialized
+      : reserve0Serialized;
+
+    const liquidityAsBigNumber = reserve
+      .mul(pairedTokenPrice)
+      .div(utils.parseUnits("1.0", DEFAULT_DECIMALS))
+      .mul(BigNumber.from(2));
+
+    return parseFloat(utils.formatEther(liquidityAsBigNumber));
   }
 
   getParamsFromResponse(assetId: string, response: Reserves) {
@@ -84,47 +119,6 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
       isSymbol0CurrentAsset: symbol0 === assetId,
       pairedTokenPrice: pairedTokenPriceAsBigNumber,
     };
-  }
-
-  calculateSpotPrice(assetId: string, response: Reserves): number {
-    const {
-      isSymbol0CurrentAsset,
-      reserve0Serialized,
-      reserve1Serialized,
-      pairedTokenPrice,
-    } = this.getParamsFromResponse(assetId, response);
-
-    const balanceRatio = this.calculateBalanceRatio(
-      isSymbol0CurrentAsset,
-      reserve0Serialized,
-      reserve1Serialized
-    );
-
-    const spotPrice = balanceRatio
-      .mul(utils.parseUnits("1.0", DEFAULT_DECIMALS))
-      .div(pairedTokenPrice);
-
-    return parseFloat(utils.formatEther(spotPrice));
-  }
-
-  calculateLiquidity(assetId: string, response: Reserves): number {
-    const {
-      isSymbol0CurrentAsset,
-      reserve0Serialized,
-      reserve1Serialized,
-      pairedTokenPrice,
-    } = this.getParamsFromResponse(assetId, response);
-
-    const reserve = isSymbol0CurrentAsset
-      ? reserve1Serialized
-      : reserve0Serialized;
-
-    const liquidityAsBigNumber = reserve
-      .mul(pairedTokenPrice)
-      .div(utils.parseUnits("1.0", DEFAULT_DECIMALS))
-      .mul(BigNumber.from(2));
-
-    return parseFloat(utils.formatEther(liquidityAsBigNumber));
   }
 
   serializeReserveDecimals(reserve: BigNumber, decimals: number): BigNumber {
