@@ -1,5 +1,7 @@
-import { PricesObj } from "../src/types";
-import { MultiRequestFetcher } from "../src/fetchers/MultiRequestFetcher";
+import {
+  MultiRequestFetcher,
+  RequestIdToResponse,
+} from "../../src/fetchers/MultiRequestFetcher";
 
 describe("MultiRequestFetcher", () => {
   const expectedResult = [
@@ -34,7 +36,7 @@ class MultiRequestFetcherMock extends MultiRequestFetcher {
     super("mock");
   }
 
-  makeRequest(id: string): Promise<any> {
+  override makeRequest(id: string): Promise<any> {
     switch (id) {
       case "Reject":
         return Promise.reject();
@@ -43,25 +45,17 @@ class MultiRequestFetcherMock extends MultiRequestFetcher {
           throw new Error("Whoops!");
         });
       default:
-        return Promise.resolve({ data: { id: id, value: id } });
+        const responseValue = id;
+        return Promise.resolve(responseValue);
     }
   }
 
-  getProcessingContext(): number {
-    return 100;
-  }
-
-  processData(
-    response: any,
-    pricesObj: PricesObj,
-    context?: number
-  ): PricesObj {
-    if (context === undefined) {
-      return pricesObj;
+  override extractPrice(
+    dataFeedId: string,
+    responses: RequestIdToResponse
+  ): number | undefined {
+    if (responses[dataFeedId]) {
+      return responses[dataFeedId] * 100;
     }
-
-    pricesObj[response.data.id] = response.data.value * context;
-
-    return pricesObj;
   }
 }

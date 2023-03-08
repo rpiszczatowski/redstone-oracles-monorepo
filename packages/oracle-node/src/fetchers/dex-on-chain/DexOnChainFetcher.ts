@@ -1,5 +1,7 @@
-import { PricesObj } from "../../types";
-import { MultiRequestFetcher } from "../MultiRequestFetcher";
+import {
+  MultiRequestFetcher,
+  RequestIdToResponse,
+} from "../MultiRequestFetcher";
 import { parseLiquidityDataFeedId, isLiquidity } from "../liquidity/utils";
 
 export interface Responses<T extends { assetId: string }> {
@@ -12,19 +14,26 @@ export abstract class DexOnChainFetcher<
   abstract calculateLiquidity(assetId: string, response: T): number;
   abstract calculateSpotPrice(assetId: string, response: T): number;
 
-  getRequestContext(assetsIds: string[]) {
-    const spotAssetIds = assetsIds.filter((assetId) => !isLiquidity(assetId));
+  override prepareRequestIds(requestedDataFeedIds: string[]): string[] {
+    const spotAssetIds = requestedDataFeedIds.filter(
+      (assetId) => !isLiquidity(assetId)
+    );
     return spotAssetIds;
   }
 
-  processData(data: T, pricesObj: PricesObj) {
-    const assetId = data.assetId;
-    if (isLiquidity(assetId)) {
-      const { dataFeedId } = parseLiquidityDataFeedId(assetId);
-      pricesObj[assetId] = this.calculateLiquidity(dataFeedId, data);
+  override extractPrice(
+    dataFeedId: string,
+    responses: RequestIdToResponse
+  ): number | undefined {
+    if (isLiquidity(dataFeedId)) {
+      const { dataFeedId: spotAssetId } = parseLiquidityDataFeedId(dataFeedId);
+      if (responses[spotAssetId]) {
+        return this.calculateLiquidity(dataFeedId, responses[spotAssetId]);
+      }
     } else {
-      pricesObj[assetId] = this.calculateSpotPrice(assetId, data);
+      if (responses[dataFeedId]) {
+        return this.calculateSpotPrice(dataFeedId, responses[dataFeedId]);
+      }
     }
-    return pricesObj;
   }
 }
