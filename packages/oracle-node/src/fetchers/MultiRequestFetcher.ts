@@ -1,5 +1,6 @@
 import { BaseFetcher } from "./BaseFetcher";
 import { PricesObj } from "../types";
+import { stringifyError } from "../utils/error-stringifier";
 
 export interface RequestIdToResponse {
   [requestId: string]: any;
@@ -33,7 +34,7 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
         requestId,
       };
     } catch (e: any) {
-      // TODO: console the error
+      this.logger.error(`Request failed: ${requestId}. ${stringifyError(e)}`);
       return {
         requestId,
         success: false,
@@ -77,8 +78,9 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
           pricesObj[dataFeedId] = extractedPrice;
         }
       } catch (e: any) {
-        // TODO: add error logging
-        console.error(`Extracting price failed for: ${dataFeedId}`);
+        this.logger.error(
+          `Extracting price failed for: ${dataFeedId}. ${stringifyError(e)}`
+        );
       }
     }
 

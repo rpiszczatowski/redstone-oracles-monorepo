@@ -1,16 +1,11 @@
-import {
-  MultiRequestFetcher,
-  RequestIdToResponse,
-} from "../MultiRequestFetcher";
+import { MultiRequestFetcher } from "../MultiRequestFetcher";
 import { parseLiquidityDataFeedId, isLiquidity } from "../liquidity/utils";
 
-export interface Responses<T extends { assetId: string }> {
+export interface Responses<T> {
   [spotAssetId: string]: T;
 }
 
-export abstract class DexOnChainFetcher<
-  T extends { assetId: string }
-> extends MultiRequestFetcher {
+export abstract class DexOnChainFetcher<T> extends MultiRequestFetcher {
   abstract calculateLiquidity(assetId: string, response: T): number;
   abstract calculateSpotPrice(assetId: string, response: T): number;
 
@@ -23,7 +18,7 @@ export abstract class DexOnChainFetcher<
 
   override extractPrice(
     dataFeedId: string,
-    responses: RequestIdToResponse
+    responses: Responses<T>
   ): number | undefined {
     if (isLiquidity(dataFeedId)) {
       const { dataFeedId: spotAssetId } = parseLiquidityDataFeedId(dataFeedId);

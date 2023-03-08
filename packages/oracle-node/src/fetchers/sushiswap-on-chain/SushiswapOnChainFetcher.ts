@@ -8,7 +8,7 @@ import { config } from "../../config";
 const provider = new providers.JsonRpcProvider(config.ethMainRpcUrl);
 
 export class SushiswapFetcher extends UniswapV2LikeFetcher {
-  constructor(name: string, private readonly poolConfig: PoolsConfig) {
-    super(name, poolConfig, provider);
+  constructor(name: string, protected readonly poolsConfig: PoolsConfig) {
+    super(name, poolsConfig, provider);
   }
 }
