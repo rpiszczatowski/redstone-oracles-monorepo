@@ -124,6 +124,36 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
     };
   }
 
+  getParamsFromResponse(assetId: string, response: Reserves) {
+    const { reserve0, reserve1 } = response;
+    const { symbol0Decimals, symbol1Decimals, symbol0, pairedToken } =
+      this.poolsConfig[assetId];
+
+    const reserve0Serialized = this.serializeReserveDecimals(
+      reserve0,
+      symbol0Decimals
+    );
+    const reserve1Serialized = this.serializeReserveDecimals(
+      reserve1,
+      symbol1Decimals
+    );
+
+    const lastPriceFromCache = getLastPrice(pairedToken);
+    if (!lastPriceFromCache) {
+      throw new Error(`Cannot get last price from cache for: ${pairedToken}`);
+    }
+    const pairedTokenPriceAsBigNumber = utils.parseEther(
+      lastPriceFromCache.value.toString()
+    );
+
+    return {
+      reserve0Serialized,
+      reserve1Serialized,
+      isSymbol0CurrentAsset: symbol0 === assetId,
+      pairedTokenPrice: pairedTokenPriceAsBigNumber,
+    };
+  }
+
   serializeReserveDecimals(reserve: BigNumber, decimals: number): BigNumber {
     const decimalsRequired = DEFAULT_DECIMALS - decimals;
     return reserve.mul(parseUnits("1.0", decimalsRequired));
