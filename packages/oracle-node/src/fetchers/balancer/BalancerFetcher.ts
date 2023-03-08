@@ -16,7 +16,6 @@ const balancerConfig: BalancerSdkConfig = {
 
 export interface BalancerResponse {
   pool: PoolWithMethods;
-  assetId: string;
   pairedTokenPrice: number;
 }
 
@@ -29,10 +28,10 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
   }
 
   async makeRequest(id: string): Promise<BalancerResponse> {
-    const pairedTokenPrice = await this.getPairedTokenPrice();
+    const pairedTokenPrice = this.getPairedTokenPrice();
     const poolId = this.getPoolIdForAssetId(id);
     const pool = await this.fetchPool(poolId);
-    return { pool, assetId: id, pairedTokenPrice };
+    return { pool, pairedTokenPrice };
   }
 
   private async fetchPool(poolId: string) {
@@ -49,7 +48,7 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
       : pool.tokens[0].symbol!;
   }
 
-  protected async getPairedTokenPrice() {
+  protected getPairedTokenPrice(): number {
     let tokenToGet = this.baseTokenSymbol;
     if (tokenToGet === "WETH") {
       tokenToGet = "ETH";
