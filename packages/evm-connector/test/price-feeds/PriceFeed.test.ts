@@ -27,7 +27,10 @@ describe("PriceFeed", () => {
     await contract.deployed();
 
     const timestamp = Date.now();
-    const wrappedContract = getWrappedContract(managerContract, timestamp);
+    const wrappedContract = await getWrappedContract(
+      managerContract,
+      timestamp
+    );
     await wrappedContract.updateDataFeedValues(1, timestamp);
   });
 

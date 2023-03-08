@@ -2,7 +2,7 @@ import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { Contract } from "ethers";
 import { formatBytes32String } from "ethers/lib/utils";
-import { ethers, network } from "hardhat";
+import { ethers } from "hardhat";
 import { PriceFeedsManagerMock } from "../../typechain-types";
 import {
   dataFeedsIds,
@@ -19,14 +19,13 @@ describe("PriceFeedsManager", () => {
   let timestamp: number;
 
   beforeEach(async () => {
-    await network.provider.send("hardhat_reset");
     const MangerContractFactory = await ethers.getContractFactory(
       "PriceFeedsManagerMock"
     );
     contract = await MangerContractFactory.deploy(dataFeedsIds);
     await contract.deployed();
     timestamp = Date.now();
-    wrappedContract = getWrappedContract(contract, timestamp);
+    wrappedContract = await getWrappedContract(contract, timestamp);
     await wrappedContract.updateDataFeedValues(1, timestamp);
   });
 
@@ -55,7 +54,7 @@ describe("PriceFeedsManager", () => {
   it("should revert if proposed timestamp is not the same as received", async () => {
     const newTimestamp = timestamp + 1000;
     const timestampNotEqualToReceived = timestamp + 1050;
-    wrappedContract = getWrappedContract(contract, newTimestamp);
+    wrappedContract = await getWrappedContract(contract, newTimestamp);
     await expect(
       wrappedContract.updateDataFeedValues(2, timestampNotEqualToReceived)
     ).to.be.rejectedWith(
@@ -65,7 +64,7 @@ describe("PriceFeedsManager", () => {
 
   it("should revert if invalid data feeds to update", async () => {
     const newTimestamp = timestamp + 1000;
-    wrappedContract = getWrappedContract(contract, newTimestamp);
+    wrappedContract = await getWrappedContract(contract, newTimestamp);
     const newDataFeedId = formatBytes32String("NewToken");
     await expect(
       wrappedContract.addDataFeedIdAndUpdateValues(newDataFeedId, newTimestamp)
@@ -74,7 +73,7 @@ describe("PriceFeedsManager", () => {
 
   it("should update price feeds and get value for data feeds", async () => {
     const newTimestamp = timestamp + 1000;
-    wrappedContract = getWrappedContract(contract, newTimestamp);
+    wrappedContract = await getWrappedContract(contract, newTimestamp);
     await wrappedContract.updateDataFeedValues(2, newTimestamp);
     const [round, lastUpdateTimestamp] = await contract.getLastRoundParams();
     expect(round).to.be.equal(2);
@@ -95,7 +94,7 @@ describe("PriceFeedsManager", () => {
 
   it("should add new data feed", async () => {
     const newTimestamp = timestamp + 1000;
-    wrappedContract = getWrappedContract(contract, newTimestamp, {
+    wrappedContract = await getWrappedContract(contract, newTimestamp, {
       dataFeedId: "NewToken",
       value: 2,
     });
@@ -111,7 +110,7 @@ describe("PriceFeedsManager", () => {
 
   it("should not add new data feed if already exists", async () => {
     const newTimestamp = timestamp + 1000;
-    wrappedContract = getWrappedContract(contract, newTimestamp);
+    wrappedContract = await getWrappedContract(contract, newTimestamp);
     await wrappedContract.addDataFeedIdAndUpdateValues(
       ethDataFeed,
       newTimestamp

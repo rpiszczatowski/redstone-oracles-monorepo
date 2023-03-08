@@ -1,4 +1,5 @@
 import { Contract } from "ethers";
+import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { formatBytes32String } from "ethers/lib/utils";
 import { WrapperBuilder } from "../../src";
 
@@ -12,7 +13,7 @@ interface DataPoint {
 
 export const dataFeedsIds = [ethDataFeed, btcDataFeed];
 
-export const getWrappedContract = (
+export const getWrappedContract = async (
   contract: Contract,
   timestamp: number,
   newDataPoint?: DataPoint
@@ -24,6 +25,8 @@ export const getWrappedContract = (
   if (newDataPoint) {
     dataPoints.push(newDataPoint);
   }
+  const blockTimestamp = await time.latest();
+  await time.setNextBlockTimestamp(blockTimestamp + 10);
   return WrapperBuilder.wrap(contract).usingSimpleNumericMock({
     mockSignersCount: 10,
     dataPoints,
