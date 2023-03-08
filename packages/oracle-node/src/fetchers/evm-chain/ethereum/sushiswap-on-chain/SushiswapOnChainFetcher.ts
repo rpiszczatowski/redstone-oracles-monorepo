@@ -2,8 +2,8 @@ import { providers } from "ethers";
 import {
   PoolsConfig,
   UniswapV2LikeFetcher,
-} from "../uniswapV2Like/UniswapV2LikeFetcher";
-import { config } from "../../config";
+} from "../../../uniswap-v2-like/UniswapV2LikeFetcher";
+import { config } from "../../../../config";
 
 const provider = new providers.JsonRpcProvider(config.ethMainRpcUrl);
 

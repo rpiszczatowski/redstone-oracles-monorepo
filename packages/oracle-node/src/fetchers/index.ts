@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { Fetcher } from "../types";
 import ccxtFetchers from "./ccxt/all-ccxt-fetchers";
 import pangolinFetchers from "./pangolin/all-pangolin-fetchers";
@@ -30,7 +29,7 @@ import balancerFetchers from "./balancer/all-balancer-fetchers";
 import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/ArbitrumEvmFetcher";
 import { arbitrumProvider } from "./evm-chain/arbitrum/config";
 import { avalancheProvider } from "./evm-chain/avalanche/config";
-import sushiswapFetchers from "./sushiswap-on-chain/all-sushiswap-fetchers";
+import sushiswapFetchers from "./evm-chain/ethereum/sushiswap-on-chain/all-sushiswap-fetchers";
 import curveFetchers from "./curve/all-curve-fetchers";
 
 export default {

@@ -23,7 +23,7 @@ export abstract class DexOnChainFetcher<T> extends MultiRequestFetcher {
     if (isLiquidity(dataFeedId)) {
       const { dataFeedId: spotAssetId } = parseLiquidityDataFeedId(dataFeedId);
       if (responses[spotAssetId]) {
-        return this.calculateLiquidity(dataFeedId, responses[spotAssetId]);
+        return this.calculateLiquidity(spotAssetId, responses[spotAssetId]);
       }
     } else {
       if (responses[dataFeedId]) {
