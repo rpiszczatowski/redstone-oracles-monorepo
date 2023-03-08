@@ -2,7 +2,6 @@ import {
   MultiRequestFetcher,
   RequestIdToResponse,
 } from "../MultiRequestFetcher";
-import { PricesObj } from "../../types";
 import { config } from "../../config";
 import axios from "axios";
 
@@ -44,15 +43,4 @@ export class KaikoFetcher extends MultiRequestFetcher {
       return price ? Number(price) : undefined;
     }
   }
-
-  // TODO: remove
-  // processData(response: any, pricesObj: PricesObj): PricesObj {
-  //   if (response.data.result === "error") {
-  //     return pricesObj;
-  //   }
-  //   const id = response.data.query.base_asset.toUpperCase();
-  //   const price = response.data.data[0].price;
-  //   pricesObj[id] = Number(price);
-  //   return pricesObj;
-  // }
 }
