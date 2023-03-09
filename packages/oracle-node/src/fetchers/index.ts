@@ -32,6 +32,8 @@ import { arbitrumProvider } from "./evm-chain/arbitrum/config";
 import { avalancheProvider } from "./evm-chain/avalanche/config";
 import sushiswapFetchers from "./sushiswap-on-chain/all-sushiswap-fetchers";
 import curveFetchers from "./curve/all-curve-fetchers";
+import { StlouisfedFetcher } from "./stlouisfed/StlouisfedFetcher";
+import { NewyorkfedFetcher } from "./newyorkfed/NewyorkfedFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -57,6 +59,8 @@ export default {
   coinmarketcap: new CoinMarketCapFetcher(),
   kaiko: new KaikoFetcher(),
   liquidity: new LiquidityFetcher(),
+  stlouisfed: new StlouisfedFetcher(),
+  newyorkfed: new NewyorkfedFetcher(),
   "arbitrum-evm-fetcher": new ArbitrumEvmFetcher(arbitrumProvider),
   ...ccxtFetchers,
   ...pangolinFetchers,

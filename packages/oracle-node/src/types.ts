@@ -158,6 +158,7 @@ export interface NodeConfig {
   twelveDataRapidApiKey?: string;
   coinmarketcapApiKey?: string;
   kaikoApiKey?: string;
+  stlouisfedApiKey?: string;
   minDataFeedsPercentageForBigPackage: number;
   providerIdForPriceBroadcasting?: string;
 }
