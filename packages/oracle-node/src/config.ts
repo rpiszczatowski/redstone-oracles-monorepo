@@ -24,6 +24,7 @@ const DEFAULT_KAIKO_API_KEY = "";
 const DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE = "90";
 const DEFAULT_ARBITRUM_RPC_URL = "https://arb1.arbitrum.io/rpc";
 const DEFAULT_PROVIDER_ID_FOR_PRICE_BROADCASTING = "";
+const DEFAULT_STLOUISFED_API_KEY = "";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -121,6 +122,10 @@ export const config: NodeConfig = Object.freeze({
     DEFAULT_COINMARKETCAP_API_KEY
   ),
   kaikoApiKey: getFromEnv("KAIKO_API_KEY", DEFAULT_KAIKO_API_KEY),
+  stlouisfedApiKey: getFromEnv(
+    "STLOUISFED_API_KEY",
+    DEFAULT_STLOUISFED_API_KEY
+  ),
   privateKeys: {
     ethereumPrivateKey,
   },
