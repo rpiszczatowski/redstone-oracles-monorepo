@@ -28,9 +28,9 @@ storage {
 impl Prices for Contract {
     #[storage(read, write)]
     fn init(
-        skip_setting_owner: u64,
         signers: Vec<b256>,
         signer_count_threshold: u64,
+        skip_setting_owner: u64,
     ) {
         log(SALT); // tech purposes
         assert(storage.owner.is_none() || storage.owner.unwrap() == msg_sender().unwrap());

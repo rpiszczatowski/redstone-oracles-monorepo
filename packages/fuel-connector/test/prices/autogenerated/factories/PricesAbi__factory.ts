@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.33.0
+  Fuels version: 0.34.1
   Forc version: 0.35.3
   Fuel-Core version: 0.17.3
 */
@@ -187,6 +187,11 @@ const _abi = {
           "name": "signer_count_threshold",
           "type": 8,
           "typeArguments": null
+        },
+        {
+          "name": "skip_setting_owner",
+          "type": 8,
+          "typeArguments": null
         }
       ],
       "name": "init",
@@ -306,7 +311,7 @@ const _abi = {
       "logId": 1,
       "loggedType": {
         "name": "",
-        "type": 8,
+        "type": 2,
         "typeArguments": null
       }
     },
@@ -330,7 +335,7 @@ const _abi = {
       "logId": 4,
       "loggedType": {
         "name": "",
-        "type": 2,
+        "type": 8,
         "typeArguments": null
       }
     },
@@ -346,7 +351,7 @@ const _abi = {
       "logId": 6,
       "loggedType": {
         "name": "",
-        "type": 8,
+        "type": 2,
         "typeArguments": null
       }
     },
@@ -362,7 +367,7 @@ const _abi = {
       "logId": 8,
       "loggedType": {
         "name": "",
-        "type": 8,
+        "type": 2,
         "typeArguments": null
       }
     },
@@ -370,7 +375,7 @@ const _abi = {
       "logId": 9,
       "loggedType": {
         "name": "",
-        "type": 8,
+        "type": 2,
         "typeArguments": null
       }
     },
@@ -378,12 +383,60 @@ const _abi = {
       "logId": 10,
       "loggedType": {
         "name": "",
-        "type": 2,
+        "type": 8,
         "typeArguments": null
       }
     },
     {
       "logId": 11,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 12,
+      "loggedType": {
+        "name": "",
+        "type": 8,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 13,
+      "loggedType": {
+        "name": "",
+        "type": 8,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 14,
+      "loggedType": {
+        "name": "",
+        "type": 8,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 15,
+      "loggedType": {
+        "name": "",
+        "type": 8,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 16,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 17,
       "loggedType": {
         "name": "",
         "type": 8,

@@ -12,7 +12,7 @@ use std::{
 
 abi Prices {
     #[storage(read, write)]
-    fn init(skip_setting_owner: u64, signers: Vec<b256>, signer_count_threshold: u64);
+    fn init(signers: Vec<b256>, signer_count_threshold: u64, skip_setting_owner: u64);
 }
 
 const SIGNER_COUNT_THRESHOLD = 1;
@@ -28,7 +28,7 @@ fn main() {
     signers.push(0x00000000000000000000000083cba8c619fb629b81a65c2e67fe15cf3e3c9747);
     signers.push(0x000000000000000000000000f786a909d559f5dee2dc6706d8e5a81728a39ae9); // redstone-rapid-demo
     let prices = abi(Prices, CONTRACT_ID);
-    let _ = prices.init(is_local, signers, SIGNER_COUNT_THRESHOLD);
+    let _ = prices.init(signers, SIGNER_COUNT_THRESHOLD, is_local);
 }
 
 fn tx_payload() -> Vec<u64> {

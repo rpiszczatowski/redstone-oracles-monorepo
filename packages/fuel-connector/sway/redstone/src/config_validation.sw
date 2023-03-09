@@ -20,7 +20,7 @@ pub const SIGNER_NOT_RECOGNIZED = 0x4e20_0000;
 trait Validation {
     fn validate_timestamps(self, payload: Payload);
     fn validate_signer_count(self, values: Vec<Vec<U256>>);
-    fn validate_signer(self, data_package: DataPackage, index: u64) -> u64;
+    fn validate_signer(self, data_package: DataPackage, index: u64) -> Option<u64>;
 }
 
 impl Validation for Config {
@@ -49,15 +49,15 @@ impl Validation for Config {
         }
     }
 
-    fn validate_signer(self, data_package: DataPackage, index: u64) -> u64 {
+    fn validate_signer(self, data_package: DataPackage, index: u64) -> Option<u64> {
         let s = self.signer_index(data_package.signer_address.value);
 
         if s.is_none() {
             log(data_package.signer_address.value);
-            revert(SIGNER_NOT_RECOGNIZED + index);
+            // revert(SIGNER_NOT_RECOGNIZED + index);
         }
 
-        return s.unwrap();
+        return s;
     }
 }
 

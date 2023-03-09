@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.33.0
+  Fuels version: 0.34.1
   Forc version: 0.35.3
   Fuel-Core version: 0.17.3
 */
@@ -35,7 +35,7 @@ interface PricesAbiInterface extends Interface {
   };
 
   encodeFunctionData(functionFragment: 'get_prices', values: [Vec<U256Input>, Vec<BigNumberish>]): Uint8Array;
-  encodeFunctionData(functionFragment: 'init', values: [Vec<string>, BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'init', values: [Vec<string>, BigNumberish, BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'read_prices', values: [Vec<U256Input>]): Uint8Array;
   encodeFunctionData(functionFragment: 'read_timestamp', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'write_prices', values: [Vec<U256Input>, Vec<BigNumberish>]): Uint8Array;
@@ -51,7 +51,7 @@ export class PricesAbi extends Contract {
   interface: PricesAbiInterface;
   functions: {
     get_prices: InvokeFunction<[feed_ids: Vec<U256Input>, payload: Vec<BigNumberish>], [U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output]>;
-    init: InvokeFunction<[signers: Vec<string>, signer_count_threshold: BigNumberish], void>;
+    init: InvokeFunction<[signers: Vec<string>, signer_count_threshold: BigNumberish, skip_setting_owner: BigNumberish], void>;
     read_prices: InvokeFunction<[feed_ids: Vec<U256Input>], [U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output]>;
     read_timestamp: InvokeFunction<[], BN>;
     write_prices: InvokeFunction<[feed_ids: Vec<U256Input>, payload: Vec<BigNumberish>], [U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output, U256Output]>;

@@ -35,6 +35,13 @@ impl Bytes {
         return self.slice_number_offset(tail_size, 0);
     }
 
+    pub fn join(self, other: Bytes) -> Bytes {
+        let mut result = self;
+        result.append(other);
+
+        return result;
+    }
+
     fn truncated(self) -> Bytes {
         let mut n = self.len - 1;
         let mut result = self;

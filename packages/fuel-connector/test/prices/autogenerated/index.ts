@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.33.0
+  Fuels version: 0.34.1
   Forc version: 0.35.3
   Fuel-Core version: 0.17.3
 */

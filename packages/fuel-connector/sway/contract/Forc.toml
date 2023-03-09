@@ -1,7 +1,7 @@
 [project]
 authors = ["Łukasz Kalbarczyk"]
 entry = "prices.sw"
-forc-version = "0.34.0"
+forc-version = "0.35.3"
 license = "Apache-2.0"
 name = "prices"
 organization = "Redstone"
@@ -11,4 +11,4 @@ redstone = { path = "../redstone" }
 
 [constants]
 FAKE_TIMESTAMP_KEY = { type = "b256", value = "0x00000000000000000000000000000000000066616b655f74696d657374616d70" }
-SALT = { type = "b256", value = "0x0000000000000000000000000000000000000000000000000000000000000001" }
+SALT = { type = "b256", value = "0x0000000000000000000000000000000000000000000000000000000000000000" }

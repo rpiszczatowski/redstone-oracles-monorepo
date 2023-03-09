@@ -2,7 +2,7 @@
 DATA_NAME=test
 IS_LOCAL=1
 
-CONTRACT_ID=0x5a0dce7918ff309fe71534aa2469a2dc3a587fe89517e35335672415ae77c13b
+CONTRACT_ID=0xbc01b40b335d443392dad1765f446e917163b151c0a4f5eb831ccddda0f25e5c
 
 ifeq ($(IS_LOCAL), 0)
 #	SIGNING_KEY= # forc-wallet export --account-index=0
@@ -14,7 +14,7 @@ else
 	GAS_PRICE=0
 endif
 
-SCRIPT=sway/script
+DEMO=sway/demo
 CONTRACT=sway/contract
 INVOKER=sway/contract_invoker
 INITIALIZER=sway/contract_initializer
@@ -23,14 +23,14 @@ DATA_GENERATOR=../data-generator
 DATA_DIR=$(DATA_GENERATOR)/data
 
 format:
-	cd $(SCRIPT) && forc-fmt
+	cd $(DEMO) && forc-fmt
 	cd $(CONTRACT) && forc-fmt
 	cd $(INVOKER) && forc-fmt
 	cd $(INITIALIZER) && forc-fmt
 	cd $(LIBRARY) && forc-fmt
 
 run: format
-	cd $(SCRIPT) && forc run --unsigned -r \
+	cd $(DEMO) && forc run --unsigned -r \
 	--data $(shell cat $(DATA_DIR)/$(DATA_NAME).hex)
 
 # make SIGNING_KEY=5b4 invoke
@@ -51,7 +51,7 @@ deploy: format
 	--node-url $(NODE_URL) \
 	--gas-price $(GAS_PRICE) $(SIGNING_KEY)
 
-initialize: format
+init: format
 	cd $(INITIALIZER) && forc run -r \
 	--data 0x0$(IS_LOCAL) \
 	--node-url $(NODE_URL) \
