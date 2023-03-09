@@ -32,6 +32,7 @@ import { arbitrumProvider } from "./evm-chain/arbitrum/config";
 import { avalancheProvider } from "./evm-chain/avalanche/config";
 import sushiswapFetchers from "./sushiswap-on-chain/all-sushiswap-fetchers";
 import curveFetchers from "./curve/all-curve-fetchers";
+import { DeribitFetcher } from "./dvol/DeribitFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -44,6 +45,7 @@ export default {
   uniswap: new UniswapFetcher(),
   "uniswap-v3": new UniswapV3Fetcher(),
   drand: new DrandFetcher(),
+  deribit: new DeribitFetcher(),
   dia: new DiaFetcher(),
   kyber: new KyberFetcher(),
   verto: new VertoFetcher(),
