@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -31,7 +31,8 @@ jobs:
           # Build images
           ON_CHAIN_RELAYER_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-on-chain-relayer
           TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
-          docker build -t "$ON_CHAIN_RELAYER_DOCKER_NAME:$TAG" packages/on-chain-relayer/
+          docker build -t "redstone-monorepo:$TAG" .
+          docker build -t "$ON_CHAIN_RELAYER_DOCKER_NAME:$TAG" -f packages/on-chain-relayer/Dockerfile --build-arg VERSION=$TAG .
 
           # Push images to ECR Public
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
