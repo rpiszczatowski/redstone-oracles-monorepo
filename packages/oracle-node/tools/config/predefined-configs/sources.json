@@ -49,6 +49,11 @@
     "url": "https://www.ecb.europa.eu/home/html/index.en.html",
     "color": "#10338e"
   },
+  "kaiko": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/kaiko.png",
+    "url": "https://www.kaiko.com",
+    "color": "#e4cd05"
+  },
   "aax": {
     "logoURI": "https://cdn-images-1.medium.com/max/1200/1*S4dDf81_14Y5FwPHTxuyMw.jpeg",
     "url": "https://www.aaxpro.com",
