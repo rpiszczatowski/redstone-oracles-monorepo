@@ -76,7 +76,7 @@ export abstract class BaseWrapper {
     const isCall = contract.interface.getFunction(functionName).constant;
     const isDryRun = functionName.endsWith("DryRun");
 
-    (wrappedContract[functionName] as any) = async function (...args: any[]) {
+    (wrappedContract[functionName] as any) = async (...args: any[]) => {
       const tx = await wrappedContract.populateTransaction[functionName](
         ...args
       );
