@@ -1,7 +1,9 @@
 import axios from "axios";
-import { PricesObj } from "../../types";
 import EvmPriceSigner from "../../signers/EvmPriceSigner";
-import { MultiRequestFetcher } from "../MultiRequestFetcher";
+import {
+  MultiRequestFetcher,
+  RequestIdToResponse,
+} from "../MultiRequestFetcher";
 
 const PRICES_URL = "https://api.redstone.finance/prices";
 const MAX_LIMIT = 1000;
@@ -29,7 +31,8 @@ export class TwapFetcher extends MultiRequestFetcher {
     return Date.now();
   }
 
-  async makeRequest(id: string, timestamp: number): Promise<any> {
+  async makeRequest(id: string): Promise<any> {
+    const timestamp = Date.now();
     const { assetSymbol, millisecondsOffset } =
       TwapFetcher.parseTwapAssetId(id);
     const fromTimestamp = timestamp - millisecondsOffset;
@@ -43,21 +46,16 @@ export class TwapFetcher extends MultiRequestFetcher {
         limit: MAX_LIMIT,
       },
     });
-    return {
-      data: {
-        id: id,
-        data: responseForSymbol.data,
-      },
-    };
+    return responseForSymbol;
   }
 
-  processData(response: any, pricesObj: PricesObj): PricesObj {
-    this.verifySignatures(response.data.data);
-
-    const twapValue = TwapFetcher.getTwapValue(response.data.data);
-    pricesObj[response.data.id] = twapValue!;
-
-    return pricesObj;
+  override extractPrice(
+    dataFeedId: string,
+    responses: RequestIdToResponse
+  ): number | undefined {
+    const response = responses[dataFeedId];
+    this.verifySignatures(response.data);
+    return TwapFetcher.getTwapValue(response.data);
   }
 
   private async verifySignatures(prices: HistoricalPrice[]) {

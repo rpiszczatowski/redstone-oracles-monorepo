@@ -1,5 +1,5 @@
 import { SushiswapOnChainFetcher } from "./SushiswapOnChainFetcher";
-import sushiswapFetchersConfig from "./sushiswap-on-chain-fetchers-config.json";
+import sushiswapFetchersConfig from "./all-sushiswap-on-chain-fetchers-config.json";
 
 const sushiswapOnChainFetchers: Record<string, SushiswapOnChainFetcher> = {};
 
