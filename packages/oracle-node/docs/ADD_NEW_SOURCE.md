@@ -38,6 +38,6 @@ Sources config file is used in the RedStone web app. If you want your source to 
 - Download logo for the newly created source
   - You can simply download it in browser and save as `<SOURCE_NAME>.<IMG_EXTENSTION>`
   - Or you can run `node tools/cdn-images/download-source-logos.js`, but it will download logos for all sources
-- Upload the source logo to RedStone-Images repository [RedStone Images](https://github.com/redstone-finance/redstone-images/tree/main/sources)
+- Upload the source logo to [redstone-images repository](https://github.com/redstone-finance/redstone-images/tree/main/sources)
 - Run `node tools/cdn-images/update-sources-config.js` to replace logo urls in sources config with redstone github-based urls
 - Update `redstone-node` dependency in redstone-app for being able to use the new source config file
