@@ -26,7 +26,7 @@ jest.mock("@balancer-labs/sdk", () => ({
         ];
       }
 
-      public calcSpotPrice(token1: string, token2: string) {
+      public calcSpotPrice(_token1: string, _token2: string) {
         return 0.1;
       }
     }

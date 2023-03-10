@@ -2,13 +2,13 @@ import { providers } from "ethers";
 import {
   PoolsConfig,
   UniswapV2LikeFetcher,
-} from "../uniswapV2Like/UniswapV2LikeFetcher";
-import { config } from "../../config";
+} from "../../../uniswap-v2-like/UniswapV2LikeFetcher";
+import { config } from "../../../../config";
 
 const provider = new providers.JsonRpcProvider(config.ethMainRpcUrl);
 
 export class SushiswapOnChainFetcher extends UniswapV2LikeFetcher {
-  constructor(name: string, private readonly poolConfig: PoolsConfig) {
-    super(name, poolConfig, provider);
+  constructor(name: string, protected readonly poolsConfig: PoolsConfig) {
+    super(name, poolsConfig, provider);
   }
 }

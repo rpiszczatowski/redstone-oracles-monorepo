@@ -24,16 +24,15 @@ import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
-import { LiquidityFetcher } from "./liquidity/LiquidityFetcher";
 import balancerFetchers from "./balancer/all-balancer-fetchers";
 import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/ArbitrumEvmFetcher";
 import { arbitrumProvider } from "./evm-chain/arbitrum/config";
 import { avalancheProvider } from "./evm-chain/avalanche/config";
-import sushiswapOnChainFetchers from "./sushiswap-on-chain/all-sushiswap-fetchers";
+import sushiswapEthereumOnChainFetchers from "./evm-chain/ethereum/sushiswap-on-chain/all-sushiswap-fetchers";
 import curveFetchers from "./curve/all-curve-fetchers";
 import { StlouisfedFetcher } from "./stlouisfed/StlouisfedFetcher";
 import { NewyorkfedFetcher } from "./newyorkfed/NewyorkfedFetcher";
-import uniswapV2OnChainFetchers from "./uniswap-v2-on-chain/all-uniswap-v2-on-chain-fetchers";
+import uniswapV2OnChainFetchers from "./evm-chain/ethereum/uniswap-v2-on-chain/all-uniswap-v2-on-chain-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -58,7 +57,6 @@ export default {
   xt: new XtFetcher(),
   coinmarketcap: new CoinMarketCapFetcher(),
   kaiko: new KaikoFetcher(),
-  liquidity: new LiquidityFetcher(),
   stlouisfed: new StlouisfedFetcher(),
   newyorkfed: new NewyorkfedFetcher(),
   "arbitrum-evm-fetcher": new ArbitrumEvmFetcher(arbitrumProvider),
@@ -66,7 +64,7 @@ export default {
   ...pangolinFetchers,
   ...balancerFetchers,
   ...twapFetchers,
-  ...sushiswapOnChainFetchers,
+  ...sushiswapEthereumOnChainFetchers,
   ...curveFetchers,
   ...uniswapV2OnChainFetchers,
 } as { [name: string]: Fetcher };
