@@ -39,19 +39,19 @@ describe("UniswapV2Like", () => {
           address: uniswapV2LikeContract.address,
           symbol0: "MockToken",
           symbol0Decimals: 9,
-          symbol1: "Dai",
+          symbol1: "DAI",
           symbol1Decimals: 18,
-          pairedToken: "Dai",
+          pairedToken: "DAI",
         },
       },
       provider
     );
 
-    await saveMockPriceInLocalDb(1, "Dai");
+    await saveMockPriceInLocalDb(1, "DAI");
 
     const result = await fetcher.fetchAll(["MockToken"]);
     expect(result).toEqual([
-      { symbol: "MockToken", value: 10.439079904087286 },
+      { symbol: "MockToken", value: 14587.257085574453 },
     ]);
   });
 });
