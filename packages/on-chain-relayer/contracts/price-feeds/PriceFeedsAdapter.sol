@@ -4,10 +4,10 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "../data-services/MainDemoConsumerBase.sol";
+import "@redstone-finance/evm-connector/contracts/data-services/MainDemoConsumerBase.sol";
 import "./CustomErrors.sol";
 
-contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
+contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable {
   using EnumerableSet for EnumerableSet.Bytes32Set;
 
   uint256 public lastRound = 0;
@@ -24,10 +24,10 @@ contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
   function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
     RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
     /* 
-      Here lastUpdateTimestampMilliseconds is already updated inside updateDataFeedValues
+      Here lastUpdateTimestampMilliseconds is already updated inside updateDataFeedsValues
       after validation in valivalidateTimestampFromUser and equal to proposedTimestamp
     */
-    if (receivedTimestampMilliseconds != lastUpdateTimestampMilliseconds) {
+    if (receivedTimestampMilliseconds < lastUpdateTimestampMilliseconds) {
       revert CustomErrors.ProposedTimestampDoesNotMatchReceivedTimestamp(
         lastUpdateTimestampMilliseconds,
         receivedTimestampMilliseconds
@@ -54,7 +54,7 @@ contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
     onlyOwner
   {
     EnumerableSet.add(dataFeedsIds, newDataFeedId);
-    updateDataFeedValues(lastRound + 1, proposedTimestamp);
+    updateDataFeedsValues(lastRound + 1, proposedTimestamp);
   }
 
   function isProposedRoundValid(uint256 proposedRound) private view returns (bool) {
@@ -77,7 +77,7 @@ contract PriceFeedsManager is MainDemoConsumerBase, Ownable {
     return dataFeedsIds._inner._values;
   }
 
-  function updateDataFeedValues(uint256 proposedRound, uint256 proposedTimestamp) public {
+  function updateDataFeedsValues(uint256 proposedRound, uint256 proposedTimestamp) public {
     if (!isProposedRoundValid(proposedRound)) return;
     lastRound = proposedRound;
     validateProposedTimestamp(proposedTimestamp);

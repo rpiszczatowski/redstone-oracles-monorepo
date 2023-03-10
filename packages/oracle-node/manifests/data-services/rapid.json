@@ -321,6 +321,37 @@
     },
     "VST": {
       "source": ["coingecko", "curve-frax"]
+    },
+    "DAI": {
+      "source": [
+        "binanceus",
+        "bitget",
+        "bitmart",
+        "bkex",
+        "coinbaseprime",
+        "coinbasepro",
+        "coingecko",
+        "curve-usdc",
+        "curve-usdt",
+        "huobipro",
+        "idex",
+        "kraken",
+        "okx",
+        "sushiswap-on-chain-weth",
+        "sushiswap",
+        "uniswap-v2-on-chain-weth",
+        "uniswap",
+        "xt"
+      ]
+    },
+    "OHM": {
+      "source": [
+        "balancer-dai",
+        "balancer-weth",
+        "coingecko",
+        "sushiswap-on-chain-dai",
+        "uniswap-v3"
+      ]
     }
   }
 }

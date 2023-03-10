@@ -62,7 +62,7 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
       ? reserve1Normalized.mul(decimalsMultiplier).div(reserve0Normalized)
       : reserve0Normalized.mul(decimalsMultiplier).div(reserve1Normalized);
 
-    return bigNumberToFloat(balanceRatioBigNumber) / pairedTokenPrice;
+    return bigNumberToFloat(balanceRatioBigNumber) * pairedTokenPrice;
   }
 
   override calculateLiquidity(assetId: string, response: Reserves): number {

@@ -1,10 +1,13 @@
-import sushiswapFetchersConfig from "./sushiswap-fetchers-config.json";
-import { SushiswapFetcher } from "./SushiswapOnChainFetcher";
+import { SushiswapOnChainFetcher } from "./SushiswapOnChainFetcher";
+import sushiswapFetchersConfig from "./sushiswap-on-chain-fetchers-config.json";
 
-const sushiswapFetchers: Record<string, SushiswapFetcher> = {};
+const sushiswapOnChainFetchers: Record<string, SushiswapOnChainFetcher> = {};
 
 for (const [fetcherName, config] of Object.entries(sushiswapFetchersConfig)) {
-  sushiswapFetchers[fetcherName] = new SushiswapFetcher(fetcherName, config);
+  sushiswapOnChainFetchers[fetcherName] = new SushiswapOnChainFetcher(
+    fetcherName,
+    config
+  );
 }
 
-export default sushiswapFetchers;
+export default sushiswapOnChainFetchers;
