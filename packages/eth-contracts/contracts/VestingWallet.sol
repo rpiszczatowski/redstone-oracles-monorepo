@@ -2,7 +2,6 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./LockingRegistry.sol";
@@ -57,7 +56,7 @@ contract VestingWallet is Initializable {
       return 0;
     } else {
       uint256 elapsedTime = start + cliffDuration + vestingDuration - timestamp;
-      return SafeMath.mul(allocation, elapsedTime) / vestingDuration;
+      return (allocation * elapsedTime) / vestingDuration;
     }
   }
 
