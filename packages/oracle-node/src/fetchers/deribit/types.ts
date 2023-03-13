@@ -5,11 +5,7 @@ interface DeribitPrice {
 interface DeribitError {
   message: string;
 }
-interface DeribitResult {
+export interface DeribitResult {
   result: DeribitPrice;
   error: DeribitError;
-}
-
-export interface DeribitResponse {
-  data: DeribitResult;
 }

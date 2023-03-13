@@ -30,7 +30,7 @@ import { arbitrumProvider } from "./evm-chain/arbitrum/config";
 import { avalancheProvider } from "./evm-chain/avalanche/config";
 import sushiswapEthereumOnChainFetchers from "./evm-chain/ethereum/sushiswap-on-chain/all-sushiswap-fetchers";
 import curveFetchers from "./curve/all-curve-fetchers";
-import { DeribitFetcher } from "./dvol/DeribitFetcher";
+import { DeribitFetcher } from "./deribit/DeribitFetcher";
 import { StlouisfedFetcher } from "./stlouisfed/StlouisfedFetcher";
 import { NewyorkfedFetcher } from "./newyorkfed/NewyorkfedFetcher";
 import uniswapV2OnChainFetchers from "./evm-chain/ethereum/uniswap-v2-on-chain/all-uniswap-v2-on-chain-fetchers";
