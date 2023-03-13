@@ -1,8 +1,17 @@
 {
-  "registry": "0x13391746cC100e3b89f65aD6171a201a1724c98B",
-  "manager": "0x52a9Fed1EE387276052F0fC49A1A11463eE18bA0",
-  "ohm-price-feed": "0x6d95d190a8db4c8740de7b636a93bdc1ec53dcd1",
-  "RPC_URL": "https://goerli.infura.io/v3/",
+  "RELAYER_ITERATION_INTERVAL": 10000,
+  "UPDATE_PRICE_INTERVAL": 110000,
+  "RPC_URL": "https://rpc.ankr.com/eth_goerli/",
   "CHAIN_NAME": "Goerli test network",
-  "CHAIN_ID": "5"
+  "CHAIN_ID": 5,
+  "MANGER_CONTRACT_ADDRESS": "0x2C31d00C1AE878F28c58B3aC0672007aECb4A124",
+  "PRIVATE_KEY": "",
+  "DATA_SERVICE_ID": "redstone-main-demo",
+  "UNIQUE_SIGNERS_COUNT": 1,
+  "DATA_FEEDS": ["OHM"],
+  "CACHE_SERVICE_URLS": ["https://d1zm8lxy9v2ddd.cloudfront.net"],
+  "UPDATE_CONDITION": "time",
+  "GAS_LIMIT": 1000000,
+
+  "OHM_PRICE_FEED": "0x00727977715f1b00BA9777C7A369A9a21BB3b4B9"
 }

@@ -898,6 +898,28 @@
         "probit"
       ]
     },
+    "DAI": {
+      "source": [
+        "binanceus",
+        "bitget",
+        "bitmart",
+        "bkex",
+        "coinbaseprime",
+        "coinbasepro",
+        "coingecko",
+        "curve-usdc",
+        "curve-usdt",
+        "huobipro",
+        "idex",
+        "kraken",
+        "okx",
+        "sushiswap-on-chain-weth",
+        "sushiswap",
+        "uniswap-v2-on-chain-weth",
+        "uniswap",
+        "xt"
+      ]
+    },
     "ENJ": {
       "source": [
         "binance",
@@ -938,27 +960,6 @@
         "lbank",
         "okx",
         "poloniex"
-      ]
-    },
-    "DAI": {
-      "source": [
-        "binanceus",
-        "bitfinex",
-        "bitfinex2",
-        "bittrex",
-        "cex",
-        "coinbaseprime",
-        "coinbasepro",
-        "coingecko",
-        "currencycom",
-        "huobipro",
-        "kraken",
-        "lbank",
-        "okx",
-        "poloniex",
-        "probit",
-        "sushiswap",
-        "uniswap"
       ]
     },
     "CHZ": {
@@ -2655,7 +2656,7 @@
       "source": ["binance", "bitfinex", "bitfinex2", "cex"]
     },
     "EUR": {
-      "source": ["binance", "currencycom", "ecb", "kraken"]
+      "source": ["binance", "currencycom", "kaiko", "kraken"]
     },
     "WRX": {
       "source": ["binance", "bitcoincom", "hitbtc", "poloniex"]
@@ -4757,6 +4758,9 @@
     "shuishui21.lens": {
       "source": ["lens"]
     },
+    "SOFR": {
+      "source": ["newyorkfed"]
+    },
     "CONV": {
       "source": ["okx"]
     },
@@ -4897,6 +4901,9 @@
     },
     "PLEX": {
       "source": ["stex"]
+    },
+    "SONIA": {
+      "source": ["stlouisfed"]
     },
     "SHERPA": {
       "source": ["trader-joe"]

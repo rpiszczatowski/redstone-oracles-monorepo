@@ -36,6 +36,7 @@ const SYMBOLS = [
   "JOE",
   "BUSD",
   "YY_GLP",
+  "DAI",
 ];
 
 generateSubManifest(SYMBOLS, OUTPUT_FILE_PATH);

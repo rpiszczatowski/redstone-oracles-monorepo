@@ -1,5 +1,7 @@
-import { MultiRequestFetcher } from "../MultiRequestFetcher";
-import { PricesObj } from "../../types";
+import {
+  MultiRequestFetcher,
+  RequestIdToResponse,
+} from "../MultiRequestFetcher";
 import { config } from "../../config";
 import axios from "axios";
 
@@ -28,17 +30,17 @@ export class KaikoFetcher extends MultiRequestFetcher {
     return `${KAIKO_PRICES_URL}/${id.toLowerCase()}/usd`;
   };
 
-  makeRequest(id: string): Promise<any> {
+  override makeRequest(id: string): Promise<any> {
     return axios.get(this.buildKaikoApiUrl(id), KAIKO_CONFIG);
   }
 
-  processData(response: any, pricesObj: PricesObj): PricesObj {
-    if (response.data.result === "error") {
-      return pricesObj;
+  override extractPrice(
+    dataFeedId: string,
+    responses: RequestIdToResponse
+  ): number | undefined {
+    if (responses[dataFeedId]) {
+      const price = responses[dataFeedId]?.data?.data[0].price;
+      return price ? Number(price) : undefined;
     }
-    const id = response.data.query.base_asset.toUpperCase();
-    const price = response.data.data[0].price;
-    pricesObj[id] = Number(price);
-    return pricesObj;
   }
 }

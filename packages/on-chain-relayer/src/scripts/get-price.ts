@@ -1,6 +1,6 @@
 import { Contract, utils } from "ethers";
-import { getProvider } from "../utils";
-import abi from "../config/price-feed.abi.json";
+import { getProvider } from "../core/contract-interactions/get-provider";
+import { abi } from "../../artifacts/contracts/price-feeds/PriceFeed.sol/PriceFeed.json";
 
 const PRICE_FEED_ADDRESS = "";
 

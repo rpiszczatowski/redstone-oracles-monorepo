@@ -12,11 +12,12 @@ const DEFAULT_RATIO_QUANTITY = 10 ** DEFAULT_DECIMALS;
 export interface PoolsConfig {
   [symbol: string]: {
     address: string;
-    symbol0: string;
-    symbol1: string;
+    tokenIndex: number;
     pairedToken: string;
+    pairedTokenIndex: number;
     provider: providers.Provider;
     ratioMultiplier: number;
+    functionName: string;
   };
 }
 
@@ -33,26 +34,27 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
   }
 
   async makeRequest(id: string): Promise<Response> {
-    const { address, provider, ratioMultiplier } = this.poolsConfig[id];
-    const curveFactory = new Contract(address, abi as any, provider);
+    try {
+      const { address, provider, ratioMultiplier, functionName } =
+        this.poolsConfig[id];
+      const curveFactory = new Contract(address, abi as any, provider);
 
-    const { symbol0 } = this.poolsConfig[id];
-    const isSymbol0CurrentAsset = symbol0 === id;
-    const requestParams = {
-      param0: isSymbol0CurrentAsset ? 0 : 1,
-      param1: isSymbol0CurrentAsset ? 1 : 0,
-    };
+      const { tokenIndex, pairedTokenIndex } = this.poolsConfig[id];
 
-    const ratio = await curveFactory.get_dy(
-      requestParams.param0,
-      requestParams.param1,
-      (DEFAULT_RATIO_QUANTITY * ratioMultiplier).toString()
-    );
+      const ratio = await curveFactory[functionName](
+        tokenIndex,
+        pairedTokenIndex,
+        (DEFAULT_RATIO_QUANTITY * ratioMultiplier).toString()
+      );
 
-    return {
-      ratio,
-      assetId: id,
-    };
+      return {
+        ratio,
+        assetId: id,
+      };
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
 
   getAssetId(response: Response) {

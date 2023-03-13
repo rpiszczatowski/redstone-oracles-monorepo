@@ -134,6 +134,11 @@
     "url": "https://www.ecb.europa.eu/home/html/index.en.html",
     "color": "#10338e"
   },
+  "kaiko": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/kaiko.png",
+    "url": "https://www.kaiko.com",
+    "color": "#e4cd05"
+  },
   "gate": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/gate.png",
     "url": " https://www.gate.io/",
