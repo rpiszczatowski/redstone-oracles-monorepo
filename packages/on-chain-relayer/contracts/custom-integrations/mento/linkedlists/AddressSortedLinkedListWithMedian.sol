@@ -1,13 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// pragma solidity ^0.5.13;
 
 pragma solidity ^0.8.4;
 
-// import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-
-// import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-
 import "./SortedLinkedListWithMedian.sol";
 
 /**
