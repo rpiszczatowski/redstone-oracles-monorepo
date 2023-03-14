@@ -19,12 +19,11 @@ export class DeribitFetcher extends MultiRequestFetcher {
     super("deribit");
   }
 
-  buildDeribitApiUrl = (id: string): string => {
-    return `${DERIBIT_PRICES_URL}${id.toLowerCase()}_usdc`;
-  };
-
-  makeRequest(id: string): Promise<AxiosResponse<DeribitResult>> {
-    return axios.get(this.buildDeribitApiUrl(id), DERIBIT_CONFIG);
+  override makeRequest(id: string): Promise<AxiosResponse<DeribitResult>> {
+    return axios.get(
+      `${DERIBIT_PRICES_URL}${id.toLowerCase()}_usdc`,
+      DERIBIT_CONFIG
+    );
   }
 
   override extractPrice(
