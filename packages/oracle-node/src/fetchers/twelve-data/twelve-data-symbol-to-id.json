@@ -1,0 +1,12 @@
+{
+  "EUR": "EUR",
+  "PEN": "PEN",
+  "MXN": "MXN",
+  "ARS": "ARS",
+  "CHF": "CHF",
+  "GBP": "GBP",
+  "JPY": "JPY",
+  "AUD": "AUD",
+  "COPUSD=X": "COP",
+  "BRLUSD=X": "BRL"
+}
