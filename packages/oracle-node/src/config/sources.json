@@ -124,6 +124,11 @@
     "url": "https://redstone.finance/",
     "color": "#FD627A"
   },
+  "deribit": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/deribit.png",
+    "url": "https://www.deribit.com/",
+    "color": "#00a8a0"
+  },
   "drand": {
     "logoURI": "https://cdn.redstone.finance/sources/drand.svg",
     "url": "https://drand.love/",
