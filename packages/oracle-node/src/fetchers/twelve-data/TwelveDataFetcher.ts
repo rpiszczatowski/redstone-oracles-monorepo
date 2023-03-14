@@ -17,6 +17,9 @@ export class TwelveDataFetcher extends BaseFetcher {
   }
 
   override convertSymbolToId(symbol: string): string {
+    if (symbol.includes("USD=X")) {
+      return `${symbol.split("USD=X")[0]}/USD`;
+    }
     return `${symbol}/USD`;
   }
 
