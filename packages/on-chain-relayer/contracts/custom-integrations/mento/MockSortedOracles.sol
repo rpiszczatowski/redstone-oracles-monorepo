@@ -3,10 +3,14 @@
 
 pragma solidity ^0.8.4;
 
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "./linkedlists/AddressSortedLinkedListWithMedian.sol";
 import "./linkedlists/SortedLinkedListWithMedian.sol";
 
 contract MockSortedOracles {
+  using SafeMath for uint256;
+  using AddressSortedLinkedListWithMedian for SortedLinkedListWithMedian.List;
+
   uint256 private constant FIXED1_UINT = 1e24;
 
   uint256 public reportExpirySeconds;
@@ -48,7 +52,7 @@ contract MockSortedOracles {
     address oldest = timestamps[token].getTail();
     uint256 timestamp = timestamps[token].getValue(oldest);
     // solhint-disable-next-line not-rely-on-time
-    if (now.sub(timestamp) >= getTokenReportExpirySeconds(token)) {
+    if (block.timestamp.sub(timestamp) >= getTokenReportExpirySeconds(token)) {
       return (true, oldest);
     }
     return (false, oldest);
@@ -85,7 +89,7 @@ contract MockSortedOracles {
     timestamps[token].insert(
       msg.sender,
       // solhint-disable-next-line not-rely-on-time
-      now,
+      block.timestamp,
       timestamps[token].getHead(),
       address(0)
     );

@@ -3,7 +3,6 @@
 
 pragma solidity ^0.8.4;
 
-// import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 import "./LinkedList.sol";
@@ -17,11 +16,11 @@ library AddressLinkedList {
   using SafeMath for uint256;
 
   function toBytes(address a) public pure returns (bytes32) {
-    return bytes32(uint256(a) << 96);
+    return bytes32(uint256(uint160(a)) << 96);
   }
 
   function toAddress(bytes32 b) public pure returns (address) {
-    return address(uint256(b) >> 96);
+    return address(uint160(uint256(b) >> 96));
   }
 
   /**
