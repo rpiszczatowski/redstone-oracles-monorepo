@@ -58,10 +58,7 @@ export default class NodeRunner {
     this.version = getVersionFromPackageJSON();
     this.useNewManifest(initialManifest);
     this.lastManifestLoadTimestamp = Date.now();
-    const httpBroadcasterURLs =
-      config.overrideDirectCacheServiceUrls ??
-      initialManifest?.httpBroadcasterURLs;
-
+    const httpBroadcasterURLs = config.overrideDirectCacheServiceUrls;
     const priceHttpBroadcasterURLs = config.overridePriceCacheServiceUrls;
 
     this.aggregatedPriceHandlers = [

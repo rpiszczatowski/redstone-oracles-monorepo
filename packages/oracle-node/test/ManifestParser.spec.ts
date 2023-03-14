@@ -6,7 +6,6 @@ describe("groupTokenBySource", () => {
     interval: 2000,
     priceAggregator: "median",
     sourceTimeout: 3000,
-    evmChainId: 1,
     deviationCheck: {
       deviationWithRecentValues: {
         maxPercent: 25,
@@ -129,7 +128,6 @@ describe("getTimeoutForSource", () => {
         maxDelayMilliseconds: 300000,
       },
     },
-    evmChainId: 1,
     tokens: {
       BTC: {
         source: ["bitfinex", "ftx"],
