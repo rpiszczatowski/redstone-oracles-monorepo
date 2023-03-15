@@ -1,12 +1,12 @@
 {
-  "EUR": "EUR",
-  "PEN": "PEN",
-  "MXN": "MXN",
-  "ARS": "ARS",
-  "CHF": "CHF",
-  "GBP": "GBP",
-  "JPY": "JPY",
-  "AUD": "AUD",
-  "COPUSD=X": "COP",
-  "BRLUSD=X": "BRL"
+  "EUR": "EUR/USD",
+  "PEN": "PEN/USD",
+  "MXN": "MXN/USD",
+  "ARS": "ARS/USD",
+  "CHF": "CHF/USD",
+  "GBP": "GBP/USD",
+  "JPY": "JPY/USD",
+  "AUD": "AUD/USD",
+  "COPUSD=X": "COP/USD",
+  "BRLUSD=X": "BRL/USD"
 }

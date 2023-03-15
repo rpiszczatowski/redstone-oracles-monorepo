@@ -17,12 +17,11 @@ export class TwelveDataFetcher extends BaseFetcher {
   }
 
   override convertIdToSymbol(id: string): string {
-    const [symbol] = id.split("/");
-    return getRequiredPropValue(idToSymbol, symbol);
+    return getRequiredPropValue(idToSymbol, id);
   }
 
   override convertSymbolToId(symbol: string): string {
-    return `${getRequiredPropValue(symbolToId, symbol)}/USD`;
+    return getRequiredPropValue(symbolToId, symbol);
   }
 
   async fetchData(ids: string[]): Promise<any> {
