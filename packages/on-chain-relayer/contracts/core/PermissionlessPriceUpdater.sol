@@ -11,10 +11,6 @@ contract PermissionlessPriceUpdater {
   uint256 constant LAST_UPDATED_TIMESTAMP_STORAGE_LOCATION =
     0x3d01e4d77237ea0f771f1786da4d4ff757fcba6a92933aa53b1dcef2d6bd6fe2; // keccak256("RedStone.lastUpdateTimestamp");
 
-  // TODO: remove
-  // uint256 public lastRound = 0;
-  // uint256 public lastUpdateTimestampMilliseconds = 0;
-
   error ProposedTimestampMustBeNewerThanLastTimestamp(
     uint256 proposedTimestamp,
     uint256 lastUpdateTimestampMilliseconds

@@ -8,9 +8,18 @@ import "./MentoDataFeedsManager.sol";
 import "../../core/PermissionlessPriceUpdater.sol";
 
 contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, MentoDataFeedsManager {
-  uint256 constant MAX_NUMBER_OF_REPORTS_TO_REMOVE = 100;
+  uint256 private constant MAX_NUMBER_OF_REPORTS_TO_REMOVE = 100;
+
+  // RedStone provides values with 8 decimals
+  // Mento sorted oracles expect 24 decimals (24 - 8 = 16)
+  uint256 private constant PRICE_MULTIPLIER = 1e16;
 
   ISortedOracles public sortedOracles;
+
+  struct LocationInSortedLinkedList {
+    address lesserKey;
+    address greaterKey;
+  }
 
   constructor(ISortedOracles sortedOracles_) {
     sortedOracles = sortedOracles_;
@@ -25,10 +34,9 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
   function updatePriceValueAndCleanOldReports(
     uint256 proposedRound,
     uint256 proposedTimestamp,
-    address[] calldata lesserKeys,
-    address[] calldata greaterKeys
+    LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists
   ) external {
-    udpatePriceValues(proposedRound, proposedTimestamp, lesserKeys, greaterKeys);
+    udpatePriceValues(proposedRound, proposedTimestamp, locationsInSortedLinkedLists);
     removeAllExpiredReports();
   }
 
@@ -43,8 +51,7 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
   function udpatePriceValues(
     uint256 proposedRound,
     uint256 proposedTimestamp,
-    address[] calldata lesserKeys,
-    address[] calldata greaterKeys
+    LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists
   ) public {
     validateAndUpdateProposedRoundAndTimestamp(proposedRound, proposedTimestamp);
 
@@ -55,10 +62,9 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     for (uint256 dataFeedIndex = 0; dataFeedIndex < dataFeedsCount; dataFeedIndex++) {
       bytes32 dataFeedId = dataFeedIds[dataFeedIndex];
       address tokenAddress = getTokenAddressByDataFeedId(dataFeedId);
-      address lesserKey = lesserKeys[dataFeedIndex];
-      address greaterKey = greaterKeys[dataFeedIndex];
-      uint256 priceValue = values[dataFeedIndex]; // TODO: think about decimals in the price values
-      sortedOracles.report(tokenAddress, priceValue, lesserKey, greaterKey);
+      uint256 priceValue = values[dataFeedIndex] * PRICE_MULTIPLIER;
+      LocationInSortedLinkedList memory location = locationsInSortedLinkedLists[dataFeedIndex];
+      sortedOracles.report(tokenAddress, priceValue, location.lesserKey, location.greaterKey);
     }
   }
 }
