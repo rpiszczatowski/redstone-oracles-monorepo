@@ -6,12 +6,9 @@ import axios, { AxiosResponse } from "axios";
 import { DeribitResult } from "./types";
 
 const DERIBIT_PRICES_URL =
-  "https://test.deribit.com/api/v2/public/get_index_price?index_name=";
+  "https://test.deribit.com/api/v2/public/get_index_price";
 const DERIBIT_REQUEST_HEADERS = {
   Accept: "application/json",
-};
-const DERIBIT_CONFIG = {
-  headers: DERIBIT_REQUEST_HEADERS,
 };
 
 export class DeribitFetcher extends MultiRequestFetcher {
@@ -20,10 +17,10 @@ export class DeribitFetcher extends MultiRequestFetcher {
   }
 
   override makeRequest(id: string): Promise<AxiosResponse<DeribitResult>> {
-    return axios.get(
-      `${DERIBIT_PRICES_URL}${id.toLowerCase()}_usdc`,
-      DERIBIT_CONFIG
-    );
+    return axios.get(DERIBIT_PRICES_URL, {
+      headers: DERIBIT_REQUEST_HEADERS,
+      params: { index_name: `${id.toLowerCase()}_usdc` },
+    });
   }
 
   override extractPrice(
