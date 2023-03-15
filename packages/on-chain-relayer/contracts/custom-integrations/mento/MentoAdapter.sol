@@ -5,30 +5,30 @@ pragma solidity ^0.8.4;
 import "@redstone-finance/evm-connector/contracts/data-services/MainDemoConsumerBase.sol";
 import "./ISortedOracles.sol";
 import "./MentoDataFeedsManager.sol";
-import "../../price-feeds/PermissionlessPriceUpdater.sol";
+import "../../core/PermissionlessPriceUpdater.sol";
 
 contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, MentoDataFeedsManager {
   uint256 constant MAX_NUMBER_OF_REPORTS_TO_REMOVE = 100;
 
   ISortedOracles public sortedOracles;
 
-  constructor(ISortedOracles sortedOraclesContractAddress) {
-    sortedOracles = sortedOraclesContractAddress;
+  constructor(ISortedOracles sortedOracles_) {
+    sortedOracles = sortedOracles_;
   }
 
   function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
     RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
-    validateTimestampComparingWothProposedTimestamp(receivedTimestampMilliseconds);
+    validateDataPackageTimestampAgainstProposedTimestamp(receivedTimestampMilliseconds);
   }
 
   // Helpful function to simplify mento-relayer code
   function updatePriceValueAndCleanOldReports(
     uint256 proposedRound,
     uint256 proposedTimestamp,
-    address lesserKey,
-    address greaterKey
+    address[] calldata lesserKeys,
+    address[] calldata greaterKeys
   ) external {
-    udpatePriceValues(proposedRound, proposedTimestamp, lesserKey, greaterKey);
+    udpatePriceValues(proposedRound, proposedTimestamp, lesserKeys, greaterKeys);
     removeAllExpiredReports();
   }
 
@@ -43,25 +43,22 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
   function udpatePriceValues(
     uint256 proposedRound,
     uint256 proposedTimestamp,
-    address lesserKey,
-    address greaterKey
+    address[] calldata lesserKeys,
+    address[] calldata greaterKeys
   ) public {
-    // TODO: maybe we should refactor this peice of code as it's duplicated in PriceFeedsAdapter.sol
-    if (!isProposedRoundValid(proposedRound)) return;
-    lastRound = proposedRound;
-    validateProposedTimestamp(proposedTimestamp);
-    lastUpdateTimestampMilliseconds = proposedTimestamp;
+    validateAndUpdateProposedRoundAndTimestamp(proposedRound, proposedTimestamp);
 
-    // TODO: implement price reporting
+    uint256 dataFeedsCount = getDataFeedsCount();
+    bytes32[] memory dataFeedIds = getDataFeedIds();
+    uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedIds);
 
-    // uint256 ethPrice = getOracleNumericValueFromTxMsg(ethToken);
-
-    // sortedOracles.report(ethToken, ethPrice, lesserKey, greaterKey);
-
-    // TODO: implement
-    // 1. Extract correct values from the calldata
-    // 2. Check if the minimal timestamp is greater than the last update timestamp
-    // 3. Update the values in mento sorted oracles
-    // 4. Run cleaning of the outdated values
+    for (uint256 dataFeedIndex = 0; dataFeedIndex < dataFeedsCount; dataFeedIndex++) {
+      bytes32 dataFeedId = dataFeedIds[dataFeedIndex];
+      address tokenAddress = getTokenAddressByDataFeedId(dataFeedId);
+      address lesserKey = lesserKeys[dataFeedIndex];
+      address greaterKey = greaterKeys[dataFeedIndex];
+      uint256 priceValue = values[dataFeedIndex]; // TODO: think about decimals in the price values
+      sortedOracles.report(tokenAddress, priceValue, lesserKey, greaterKey);
+    }
   }
 }

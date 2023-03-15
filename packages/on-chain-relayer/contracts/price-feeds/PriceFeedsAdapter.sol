@@ -5,11 +5,12 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "@redstone-finance/evm-connector/contracts/data-services/MainDemoConsumerBase.sol";
-import "./CustomErrors.sol";
-import "./PermissionlessPriceUpdater.sol";
+import "../core/PermissionlessPriceUpdater.sol";
 
 contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPriceUpdater {
   using EnumerableSet for EnumerableSet.Bytes32Set;
+
+  error DataFeedValueCannotBeZero(bytes32 dataFeedId);
 
   EnumerableSet.Bytes32Set private dataFeedsIds;
   mapping(bytes32 => uint256) dataFeedsValues;
@@ -22,7 +23,7 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
 
   function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
     RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
-    validateTimestampComparingWothProposedTimestamp(receivedTimestampMilliseconds);
+    validateDataPackageTimestampAgainstProposedTimestamp(receivedTimestampMilliseconds);
   }
 
   /*
@@ -43,10 +44,7 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
   }
 
   function updateDataFeedsValues(uint256 proposedRound, uint256 proposedTimestamp) public {
-    if (!isProposedRoundValid(proposedRound)) return;
-    lastRound = proposedRound;
-    validateProposedTimestamp(proposedTimestamp);
-    lastUpdateTimestampMilliseconds = proposedTimestamp;
+    validateAndUpdateProposedRoundAndTimestamp(proposedRound, proposedTimestamp);
 
     /* 
       getOracleNumericValuesFromTxMsg will call validateTimestamp
@@ -62,7 +60,7 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
   function getValueForDataFeed(bytes32 dataFeedId) public view returns (uint256) {
     uint256 dataFeedValue = dataFeedsValues[dataFeedId];
     if (dataFeedValue == 0) {
-      revert CustomErrors.DataFeedValueCannotBeZero(dataFeedId);
+      revert DataFeedValueCannotBeZero(dataFeedId);
     }
     return dataFeedValue;
   }

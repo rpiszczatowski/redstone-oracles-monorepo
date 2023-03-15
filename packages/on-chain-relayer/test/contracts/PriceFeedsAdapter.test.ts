@@ -56,7 +56,7 @@ describe("PriceFeedsAdapter", () => {
     await expect(
       wrappedContract.updateDataFeedsValues(2, smallerTimestamp)
     ).to.be.rejectedWith(
-      `ProposedTimestampSmallerOrEqualToLastTimestamp(${smallerTimestamp}, ${timestamp})`
+      `ProposedTimestampMustBeNewerThanLastTimestamp(${smallerTimestamp}, ${timestamp})`
     );
   });
 
@@ -70,7 +70,7 @@ describe("PriceFeedsAdapter", () => {
     await expect(
       wrappedContract.updateDataFeedsValues(2, biggerTimestamp)
     ).to.be.rejectedWith(
-      `ProposedTimestampDoesNotMatchReceivedTimestamp(${biggerTimestamp}, ${newTimestamp})`
+      `DataPackageTimestampIsOlderThanProposedTimestamp(${biggerTimestamp}, ${newTimestamp})`
     );
   });
 

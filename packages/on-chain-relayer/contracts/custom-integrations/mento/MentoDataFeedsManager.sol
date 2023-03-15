@@ -23,6 +23,20 @@ contract MentoDataFeedsManager is Ownable {
     return dataFeedIdToTokenAddressMap.length();
   }
 
+  function getTokenAddressByDataFeedId(bytes32 dataFeedId) public view returns (address) {
+    return dataFeedIdToTokenAddressMap.get(uint256(dataFeedId));
+  }
+
+  function getDataFeedIds() public view returns (bytes32[] memory) {
+    uint256 dataFeedsCount = getDataFeedsCount();
+    bytes32[] memory dataFeedIds = new bytes32[](dataFeedsCount);
+    for (uint256 dataFeedIndex = 0; dataFeedIndex < dataFeedsCount; dataFeedIndex++) {
+      (dataFeedIds[dataFeedIndex], ) = getTokenDetailsAtIndex(dataFeedIndex);
+    }
+
+    return dataFeedIds;
+  }
+
   function getTokenDetailsAtIndex(
     uint256 tokenIndex
   ) public view returns (bytes32 dataFeedId, address tokenAddress) {
@@ -30,8 +44,4 @@ contract MentoDataFeedsManager is Ownable {
     dataFeedId = bytes32(dataFeedIdNumber);
     tokenAddress = tokenAddress_;
   }
-
-  // function getTokenAddresses() public view returns (address[] memory) {
-  //   return dataFeedIdToTokenAddressMap._inner.values;
-  // }
 }
