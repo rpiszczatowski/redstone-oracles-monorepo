@@ -4,10 +4,11 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import "./ISortedOracles.sol";
 import "./linkedlists/AddressSortedLinkedListWithMedian.sol";
 import "./linkedlists/SortedLinkedListWithMedian.sol";
 
-contract MockSortedOracles {
+contract MockSortedOracles is ISortedOracles {
   using SafeMath for uint256;
   using AddressSortedLinkedListWithMedian for SortedLinkedListWithMedian.List;
 

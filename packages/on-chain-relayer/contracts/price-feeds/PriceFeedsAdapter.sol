@@ -52,7 +52,7 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
       getOracleNumericValuesFromTxMsg will call validateTimestamp
       for each data package from the redstone payload 
     */
-    bytes32[] memory dataFeedsIdsArray = dataFeedsIds._inner._values;
+    bytes32[] memory dataFeedsIdsArray = getDataFeedsIds();
     uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedsIdsArray);
     for (uint256 i = 0; i < dataFeedsIdsArray.length; i++) {
       dataFeedsValues[dataFeedsIdsArray[i]] = values[i];

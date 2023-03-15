@@ -3,22 +3,17 @@
 pragma solidity ^0.8.4;
 
 import "@redstone-finance/evm-connector/contracts/data-services/MainDemoConsumerBase.sol";
+import "./ISortedOracles.sol";
+import "./MentoDataFeedsManager.sol";
 import "../../price-feeds/PermissionlessPriceUpdater.sol";
 
-// TODO: separate common logic from PriceFeedsAdapter and reuse it here, e.g.
-// - validateTimestamp
-// - validateProposedTimestamp
-// - isProposedRoundValid
-// - getLastRound
-// - getLastUpdateTimestamp
-// - getLastRoundParams
+contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, MentoDataFeedsManager {
+  uint256 constant MAX_NUMBER_OF_REPORTS_TO_REMOVE = 100;
 
-contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater {
-  uint lastValue;
+  ISortedOracles public sortedOracles;
 
-  constructor(bytes32[] memory dataFeedsIds_) {
-    dataFeedsIds_;
-    lastValue = 42;
+  constructor(ISortedOracles sortedOraclesContractAddress) {
+    sortedOracles = sortedOraclesContractAddress;
   }
 
   function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
@@ -26,14 +21,42 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater {
     validateTimestampComparingWothProposedTimestamp(receivedTimestampMilliseconds);
   }
 
-  function udpatePriceValuesAndCleanOld(
+  // Helpful function to simplify mento-relayer code
+  function updatePriceValueAndCleanOldReports(
     uint256 proposedRound,
     uint256 proposedTimestamp,
-    address leftKey,
-    address rightKey
+    address lesserKey,
+    address greaterKey
   ) external {
-    proposedTimestamp;
-    lastValue = 43;
+    udpatePriceValues(proposedRound, proposedTimestamp, lesserKey, greaterKey);
+    removeAllExpiredReports();
+  }
+
+  function removeAllExpiredReports() public {
+    uint256 tokensLength = getDataFeedsCount();
+    for (uint256 tokenIndex = 0; tokenIndex < tokensLength; tokenIndex++) {
+      (, address tokenAddress) = getTokenDetailsAtIndex(tokenIndex);
+      sortedOracles.removeExpiredReports(tokenAddress, MAX_NUMBER_OF_REPORTS_TO_REMOVE);
+    }
+  }
+
+  function udpatePriceValues(
+    uint256 proposedRound,
+    uint256 proposedTimestamp,
+    address lesserKey,
+    address greaterKey
+  ) public {
+    // TODO: maybe we should refactor this peice of code as it's duplicated in PriceFeedsAdapter.sol
+    if (!isProposedRoundValid(proposedRound)) return;
+    lastRound = proposedRound;
+    validateProposedTimestamp(proposedTimestamp);
+    lastUpdateTimestampMilliseconds = proposedTimestamp;
+
+    // TODO: implement price reporting
+
+    // uint256 ethPrice = getOracleNumericValueFromTxMsg(ethToken);
+
+    // sortedOracles.report(ethToken, ethPrice, lesserKey, greaterKey);
 
     // TODO: implement
     // 1. Extract correct values from the calldata
