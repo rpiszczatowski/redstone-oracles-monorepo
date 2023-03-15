@@ -36,7 +36,7 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
     uint256 proposedTimestamp
   ) public onlyOwner {
     EnumerableSet.add(dataFeedsIds, newDataFeedId);
-    updateDataFeedsValues(lastRound + 1, proposedTimestamp);
+    updateDataFeedsValues(getLastRound() + 1, proposedTimestamp);
   }
 
   function getDataFeedsIds() public view returns (bytes32[] memory) {
@@ -77,8 +77,8 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
     )
   {
     dataFeedValue = getValueForDataFeed(dataFeedId);
-    lastRoundNumber = lastRound;
-    lastUpdateTimestampInMilliseconds = lastUpdateTimestampMilliseconds;
+    lastRoundNumber = getLastRound();
+    lastUpdateTimestampInMilliseconds = getLastUpdateTimestamp();
   }
 
   function getValuesForDataFeeds(
