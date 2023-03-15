@@ -164,6 +164,11 @@
     "url": "https://www.delta.exchange",
     "color": "#4eafe3"
   },
+  "deribit": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/deribit.png",
+    "url": "https://www.deribit.com/",
+    "color": "#00a8a0"
+  },
   "exx": {
     "logoURI": "https://coollogo.net/wp-content/uploads/2021/02/Exx-logo.svg",
     "url": "https://www.exx.com/",
