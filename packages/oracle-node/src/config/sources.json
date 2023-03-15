@@ -259,6 +259,11 @@
     "url": "https://www.traderjoexyz.com/",
     "color": "#e2786f"
   },
+  "twelve-data": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/twelve-data.png",
+    "url": "https://twelvedata.com",
+    "color": "#2469f0"
+  },
   "uniswap": {
     "logoURI": "https://cdn.redstone.finance/sources/uniswap.svg",
     "url": "https://uniswap.org/",

@@ -254,6 +254,11 @@
     "url": "https://timex.io",
     "color": "#6a5bcb"
   },
+  "twelve-data": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/twelve-data.png",
+    "url": "https://twelvedata.com",
+    "color": "#2469f0"
+  },
   "vcc": {
     "logoURI": "https://play-lh.googleusercontent.com/a-8r_reU9BcRojYNn9t0MDOZ1VK6cYfZItW2Gu7fpeEQJ83f6aGOiaktWf46g4Mg0pRB",
     "url": "https://vcc.exchange",
