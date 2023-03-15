@@ -69,7 +69,7 @@ contract MockSortedOracles is ISortedOracles {
    * @dev Note that only one of `lesserKey` or `greaterKey` needs to be correct to reduce friction.
    */
   function report(address token, uint256 value, address lesserKey, address greaterKey) external {
-    uint256 originalMedian = rates[token].getMedianValue();
+    // uint256 originalMedian = rates[token].getMedianValue();
     if (rates[token].contains(msg.sender)) {
       rates[token].update(msg.sender, value, lesserKey, greaterKey);
 
@@ -194,6 +194,7 @@ contract MockSortedOracles is ISortedOracles {
   }
 
   function getTokenReportExpirySeconds(address token) public view returns (uint256) {
+    token;
     return reportExpirySeconds;
   }
 
@@ -206,11 +207,11 @@ contract MockSortedOracles is ISortedOracles {
    */
   function removeReport(address token, address oracle) private {
     if (numTimestamps(token) == 1 && reportExists(token, oracle)) return;
-    uint256 originalMedian = rates[token].getMedianValue();
+    // uint256 originalMedian = rates[token].getMedianValue();
     rates[token].remove(oracle);
     timestamps[token].remove(oracle);
     // emit OracleReportRemoved(token, oracle);
-    uint256 newMedian = rates[token].getMedianValue();
+    // uint256 newMedian = rates[token].getMedianValue();
     // if (newMedian != originalMedian) {
     //   emit MedianUpdated(token, newMedian);
     // }

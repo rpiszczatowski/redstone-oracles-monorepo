@@ -166,15 +166,15 @@ library SortedLinkedList {
    * @param value The element value.
    * @param lesserKey The key of the element which could be just left of the new value.
    * @param greaterKey The key of the element which could be just right of the new value.
-   * @return The correct lesserKey keys.
-   * @return The correct greaterKey keys.
+   * @return correctLesserValue The correct lesserKey keys.
+   * @return correctGreaterValue The correct greaterKey keys.
    */
   function getLesserAndGreater(
     List storage list,
     uint256 value,
     bytes32 lesserKey,
     bytes32 greaterKey
-  ) private view returns (bytes32, bytes32) {
+  ) private view returns (bytes32 correctLesserValue, bytes32 correctGreaterValue) {
     // Check for one of the following conditions and fail if none are met:
     //   1. The value is less than the current lowest value
     //   2. The value is greater than the current greatest value
