@@ -4,10 +4,6 @@ const baseManifest = {
   interval: 2000,
   priceAggregator: "median",
   sourceTimeout: 3000,
-  evmChainId: 1,
-  httpBroadcasterURLs: ["http://mock-direct-cache-service-url"],
-  enableStreamrBroadcaster: false,
-  enableArweaveBackup: false,
   deviationCheck: {
     deviationWithRecentValues: {
       maxPercent: 25,

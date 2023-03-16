@@ -7,10 +7,7 @@ export interface Manifest {
   defaultSource?: string[];
   sourceTimeout: number;
   deviationCheck: DeviationCheckConfig;
-  evmChainId: number;
   tokens: TokensConfig;
-  httpBroadcasterURLs?: string[];
-  enableStreamrBroadcaster?: boolean;
   minValidSourcesPercentage?: number;
 }
 
