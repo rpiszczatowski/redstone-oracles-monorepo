@@ -53,4 +53,5 @@ export const MOCK_NODE_CONFIG = {
   mockPricesUrlOrPath: "",
   minDataFeedsPercentageForBigPackage: 50,
   arbitrumRpcUrl: "",
+  coingeckoApiUrl: "",
 };

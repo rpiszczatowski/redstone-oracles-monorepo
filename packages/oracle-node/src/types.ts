@@ -161,6 +161,8 @@ export interface NodeConfig {
   stlouisfedApiKey?: string;
   minDataFeedsPercentageForBigPackage: number;
   providerIdForPriceBroadcasting?: string;
+  coingeckoApiUrl: string;
+  coingeckoApiKey?: string;
 }
 
 export interface MulticallRequest {
