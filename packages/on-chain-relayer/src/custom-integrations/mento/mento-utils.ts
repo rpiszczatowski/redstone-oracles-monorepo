@@ -68,22 +68,26 @@ export const prepareLinkedListLocationsForMentoAdapterReport = async ({
   const dataFeeds = await mentoAdapter.getDataFeeds();
   const dataFeedIds = dataFeeds.map((df) => df.dataFeedId);
   const locationsInSortedLinkedLists = [];
+
+  // Calculating proposed oracle values
   const proposedValuesNormalized =
     await wrappedMentoAdapter.getNormalizedOracleValuesFromTxCalldata(
       dataFeedIds
     );
 
+  // Fetching current values and oracle addresses
+  const ratesPerToken = await Promise.all(
+    dataFeeds.map((df) => sortedOracles.getRates(df.tokenAddress))
+  );
+
   // Filling the `locationsInSortedLinkedLists` array
-  // TODO: make it using Promise.all
   for (
     let dataFeedIndex = 0;
     dataFeedIndex < dataFeeds.length;
     dataFeedIndex++
   ) {
-    const tokenAddress = dataFeeds[dataFeedIndex].tokenAddress;
-    const rates = await sortedOracles.getRates(tokenAddress);
     const locationInSortedLinkedList = calculateLinkedListPosition(
-      rates,
+      ratesPerToken[dataFeedIndex],
       proposedValuesNormalized[dataFeedIndex],
       mentoAdapter.address
     );
