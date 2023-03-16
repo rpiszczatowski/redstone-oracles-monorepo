@@ -1,18 +1,20 @@
+import axios from "axios";
 import _ from "lodash";
-import { PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
-import CoingeckoProxy from "./CoingeckoProxy";
 import { getRequiredPropValue } from "../../utils/objects";
 import symbolToId from "./coingecko-symbol-to-id.json";
+import { config } from "../../config";
+import { PricesObj } from "../../types";
 
 const idToSymbol = _.invert(symbolToId);
 
-export class CoingeckoFetcher extends BaseFetcher {
-  private coingeckoProxy: CoingeckoProxy;
+interface SimplePrices {
+  [id: string]: { usd: number };
+}
 
+export class CoingeckoFetcher extends BaseFetcher {
   constructor() {
     super("coingecko");
-    this.coingeckoProxy = new CoingeckoProxy();
   }
 
   override convertIdToSymbol(id: string) {
@@ -23,16 +25,23 @@ export class CoingeckoFetcher extends BaseFetcher {
     return getRequiredPropValue(symbolToId, symbol);
   }
 
-  async fetchData(ids: string[]): Promise<any> {
-    return await this.coingeckoProxy.getExchangeRates(ids);
+  async fetchData(ids: string[]): Promise<SimplePrices> {
+    const { coingeckoApiUrl, coingeckoApiKey } = config;
+    const response = await axios.get<SimplePrices>(coingeckoApiUrl, {
+      params: {
+        ids: ids.join(","),
+        vs_currencies: "usd",
+        ...(coingeckoApiKey && { x_cg_pro_api_key: coingeckoApiKey }),
+      },
+    });
+    return response.data;
   }
 
-  extractPrices(response: any): PricesObj {
+  extractPrices(prices: SimplePrices): PricesObj {
     const pricesObj: PricesObj = {};
 
-    const rates = response.data;
-    for (const id of Object.keys(rates)) {
-      pricesObj[id] = rates[id].usd;
+    for (const id of Object.keys(prices)) {
+      pricesObj[id] = prices[id].usd;
     }
 
     return pricesObj;
