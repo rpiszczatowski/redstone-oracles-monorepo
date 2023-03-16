@@ -138,7 +138,6 @@ function saveManifestToFile({ tokens, exchange }) {
         maxDelayMilliseconds: 300000,
       },
     },
-    evmChainId: 1,
     tokens: generateTokensObj(tokens),
   };
   fs.writeFileSync(manifestFilePath, JSON.stringify(manifest, null, 2) + "\n");

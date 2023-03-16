@@ -19,7 +19,6 @@ describe("twelve-data fetcher", () => {
         interval: 10000,
         priceAggregator: "median",
         defaultSource: ["twelve-data"],
-        evmChainId: 1,
         sourceTimeout: 8000,
         deviationCheck: {
           deviationWithRecentValues: {
