@@ -130,19 +130,19 @@ contract MockSortedOracles is ISortedOracles {
    * @return relations Relations of an unpacked list of elements from largest to smallest.
    */
   // TODO: maybe remove
-  // function getRates(
-  //   address token
-  // )
-  //   external
-  //   view
-  //   returns (
-  //     address[] memory,
-  //     uint256[] memory,
-  //     SortedLinkedListWithMedian.MedianRelation[] memory
-  //   )
-  // {
-  //   return rates[token].getElements();
-  // }
+  function getRates(
+    address token
+  )
+    external
+    view
+    returns (
+      address[] memory,
+      uint256[] memory,
+      SortedLinkedListWithMedian.MedianRelation[] memory
+    )
+  {
+    return rates[token].getElements();
+  }
 
   /**
    * @notice Returns the number of timestamps.
