@@ -3,7 +3,10 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { MockSortedOracles } from "../../../../typechain-types";
 import { BigNumber } from "ethers";
-import { calculateLinkedListPosition } from "../../../../src/custom-integrations/mento/mento-utils";
+import {
+  calculateLinkedListPosition,
+  deployMockSortedOracles,
+} from "../../../../src/custom-integrations/mento/mento-utils";
 
 describe("MockSortedOracles", () => {
   let contract: MockSortedOracles;
@@ -38,24 +41,7 @@ describe("MockSortedOracles", () => {
   });
 
   beforeEach(async () => {
-    // Deploying AddressSortedLinkedListWithMedian library
-    const AddressSortedLinkedListWithMedianFactory =
-      await ethers.getContractFactory("AddressSortedLinkedListWithMedian");
-    const sortedLinkedListContract =
-      await AddressSortedLinkedListWithMedianFactory.deploy();
-    await sortedLinkedListContract.deployed();
-
-    // Deploying MockSortedOracles contract
-    const MockSortedOraclesFactory = await ethers.getContractFactory(
-      "MockSortedOracles",
-      {
-        libraries: {
-          AddressSortedLinkedListWithMedian: sortedLinkedListContract.address,
-        },
-      }
-    );
-    contract = await MockSortedOraclesFactory.deploy();
-    await contract.deployed();
+    contract = await deployMockSortedOracles();
   });
 
   it("Different oracles should properly report their values", async () => {

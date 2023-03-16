@@ -7,6 +7,7 @@ import { formatBytes32String, parseUnits } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 import {
   calculateLinkedListPosition,
+  deployMockSortedOracles,
   prepareLinkedListLocationsForMentoAdapterReport,
 } from "../../../../src/custom-integrations/mento/mento-utils";
 import { MentoAdapter, MockSortedOracles } from "../../../../typechain-types";
@@ -98,24 +99,8 @@ describe("MentoAdapter", () => {
   });
 
   beforeEach(async () => {
-    // Deploying AddressSortedLinkedListWithMedian library
-    const AddressSortedLinkedListWithMedianFactory =
-      await ethers.getContractFactory("AddressSortedLinkedListWithMedian");
-    const sortedLinkedListContract =
-      await AddressSortedLinkedListWithMedianFactory.deploy();
-    await sortedLinkedListContract.deployed();
-
     // Deploying sorted oracles
-    const SortedOraclesFactory = await ethers.getContractFactory(
-      "MockSortedOracles",
-      {
-        libraries: {
-          AddressSortedLinkedListWithMedian: sortedLinkedListContract.address,
-        },
-      }
-    );
-    sortedOracles = await SortedOraclesFactory.deploy();
-    await sortedOracles.deployed();
+    sortedOracles = await deployMockSortedOracles();
 
     // Deploying mento adapter
     const MentoAdapterFactory = await ethers.getContractFactory(

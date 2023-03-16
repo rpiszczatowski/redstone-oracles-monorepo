@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { DataPackagesResponse } from "redstone-sdk";
+import { ethers } from "hardhat";
 import { ISortedOracles, MentoAdapter } from "../../../typechain-types";
 
 export interface MentoContracts {
@@ -95,4 +95,26 @@ export const prepareLinkedListLocationsForMentoAdapterReport = async ({
   }
 
   return locationsInSortedLinkedLists;
+};
+
+export const deployMockSortedOracles = async () => {
+  // Deploying AddressSortedLinkedListWithMedian library
+  const AddressSortedLinkedListWithMedianFactory =
+    await ethers.getContractFactory("AddressSortedLinkedListWithMedian");
+  const sortedLinkedListContract =
+    await AddressSortedLinkedListWithMedianFactory.deploy();
+  await sortedLinkedListContract.deployed();
+
+  // Deploying MockSortedOracles contract
+  const MockSortedOraclesFactory = await ethers.getContractFactory(
+    "MockSortedOracles",
+    {
+      libraries: {
+        AddressSortedLinkedListWithMedian: sortedLinkedListContract.address,
+      },
+    }
+  );
+  const contract = await MockSortedOraclesFactory.deploy();
+  await contract.deployed();
+  return contract;
 };

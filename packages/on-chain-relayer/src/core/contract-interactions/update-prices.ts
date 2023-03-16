@@ -85,13 +85,13 @@ const updatePricesInMentoAdapter = async ({
 }: UpdatePricesArgs): Promise<TransactionResponse> => {
   const sortedOraclesAddress = await adapterContract.sortedOracles();
   const sortedOracles = getSortedOraclesContractAtAddress(sortedOraclesAddress);
-  const linkedListPositions = prepareLinkedListLocationsForMentoAdapterReport({
-    mentoAdapter: adapterContract,
-    wrappedMentoAdapter: wrappedAdapterContract,
-    sortedOracles,
-  } as MentoContracts);
-
-  return await wrappedAdapterContract.updatePriceValueAndCleanOldReports(
+  const linkedListPositions =
+    await prepareLinkedListLocationsForMentoAdapterReport({
+      mentoAdapter: adapterContract,
+      wrappedMentoAdapter: wrappedAdapterContract,
+      sortedOracles,
+    } as MentoContracts);
+  return await wrappedAdapterContract.updatePriceValuesAndCleanOldReports(
     proposedRound,
     proposedTimestamp,
     linkedListPositions

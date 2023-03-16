@@ -8,8 +8,6 @@ import "./MentoDataFeedsManager.sol";
 import "../../core/PermissionlessPriceUpdater.sol";
 
 contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, MentoDataFeedsManager {
-  uint256 private constant MAX_NUMBER_OF_REPORTS_TO_REMOVE = 100;
-
   // RedStone provides values with 8 decimals
   // Mento sorted oracles expect 24 decimals (24 - 8 = 16)
   uint256 private constant PRICE_MULTIPLIER = 1e16;
@@ -35,7 +33,7 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
   }
 
   // Helpful function to simplify mento-relayer code
-  function updatePriceValueAndCleanOldReports(
+  function updatePriceValuesAndCleanOldReports(
     uint256 proposedRound,
     uint256 proposedTimestamp,
     LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists
@@ -58,7 +56,10 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     uint256 tokensLength = getDataFeedsCount();
     for (uint256 tokenIndex = 0; tokenIndex < tokensLength; tokenIndex++) {
       (, address tokenAddress) = getTokenDetailsAtIndex(tokenIndex);
-      sortedOracles.removeExpiredReports(tokenAddress, MAX_NUMBER_OF_REPORTS_TO_REMOVE);
+      uint256 curNumberOfReports = sortedOracles.numTimestamps(tokenAddress);
+      if (curNumberOfReports > 0) {
+        sortedOracles.removeExpiredReports(tokenAddress, curNumberOfReports - 1);
+      }
     }
   }
 
