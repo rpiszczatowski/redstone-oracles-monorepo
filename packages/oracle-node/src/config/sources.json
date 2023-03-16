@@ -124,6 +124,11 @@
     "url": "https://redstone.finance/",
     "color": "#FD627A"
   },
+  "deribit": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/deribit.png",
+    "url": "https://www.deribit.com/",
+    "color": "#00a8a0"
+  },
   "drand": {
     "logoURI": "https://cdn.redstone.finance/sources/drand.svg",
     "url": "https://drand.love/",
@@ -258,6 +263,11 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/trader-joe.png",
     "url": "https://www.traderjoexyz.com/",
     "color": "#e2786f"
+  },
+  "twelve-data": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/twelve-data.png",
+    "url": "https://twelvedata.com",
+    "color": "#2469f0"
   },
   "uniswap": {
     "logoURI": "https://cdn.redstone.finance/sources/uniswap.svg",
