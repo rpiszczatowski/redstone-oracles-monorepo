@@ -40,12 +40,28 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     removeAllExpiredReports();
   }
 
+  function getNormalizedOracleValuesFromTxCalldata(
+    bytes32[] calldata dataFeedIds
+  ) external view returns (uint256[] memory) {
+    uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedIds);
+    for (uint256 i = 0; i < values.length; i++) {
+      values[i] = normalizeRedstoneValueForMento(values[i]);
+    }
+    return values;
+  }
+
   function removeAllExpiredReports() public {
     uint256 tokensLength = getDataFeedsCount();
     for (uint256 tokenIndex = 0; tokenIndex < tokensLength; tokenIndex++) {
       (, address tokenAddress) = getTokenDetailsAtIndex(tokenIndex);
       sortedOracles.removeExpiredReports(tokenAddress, MAX_NUMBER_OF_REPORTS_TO_REMOVE);
     }
+  }
+
+  function normalizeRedstoneValueForMento(
+    uint256 valueFromRedstone
+  ) public pure returns (uint256) {
+    return PRICE_MULTIPLIER * valueFromRedstone;
   }
 
   function udpatePriceValues(
@@ -62,8 +78,9 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     for (uint256 dataFeedIndex = 0; dataFeedIndex < dataFeedsCount; dataFeedIndex++) {
       bytes32 dataFeedId = dataFeedIds[dataFeedIndex];
       address tokenAddress = getTokenAddressByDataFeedId(dataFeedId);
-      uint256 priceValue = values[dataFeedIndex] * PRICE_MULTIPLIER;
+      uint256 priceValue = normalizeRedstoneValueForMento(values[dataFeedIndex]);
       LocationInSortedLinkedList memory location = locationsInSortedLinkedLists[dataFeedIndex];
+
       sortedOracles.report(tokenAddress, priceValue, location.lesserKey, location.greaterKey);
     }
   }

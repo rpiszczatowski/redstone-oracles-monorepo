@@ -3,69 +3,21 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { MockSortedOracles } from "../../../../typechain-types";
 import { BigNumber } from "ethers";
+import { calculateLinkedListPosition } from "../../../../src/custom-integrations/mento/utils";
 
 describe("MockSortedOracles", () => {
   let contract: MockSortedOracles;
   let signers: SignerWithAddress[];
+
   const mockTokenAddress = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9"; // CELO token address
-
-  const addressesAreEqual = (addr1: string, addr2: string) => {
-    return addr1.toLowerCase() === addr2.toLowerCase();
-  };
-
-  const safelyGetAddressOrZero = (
-    oracleAddresses: string[],
-    uncheckedIndex: number
-  ) => {
-    const zeroAddress = "0x0000000000000000000000000000000000000000";
-    return uncheckedIndex < 0 || uncheckedIndex > oracleAddresses.length - 1
-      ? zeroAddress
-      : oracleAddresses[uncheckedIndex];
-  };
-
-  const calculateLinkedListPosition = async (
-    valueToInsert: BigNumber,
-    oracleAddress: string
-  ) => {
-    const rates = await contract.getRates(mockTokenAddress);
-    // We need to copy the arrays for being able to filter out current oracle later
-    const oracleAddresses = [...rates[0]];
-    const oracleValues = [...rates[1]];
-
-    // Removing current oracle values
-    const indexOfCurrentOracle = oracleAddresses.findIndex((elem) =>
-      addressesAreEqual(oracleAddress, elem)
-    );
-    if (indexOfCurrentOracle > -1) {
-      const numberOfItemsToRemove = 1;
-      oracleAddresses.splice(indexOfCurrentOracle, numberOfItemsToRemove);
-      oracleValues.splice(indexOfCurrentOracle, numberOfItemsToRemove);
-    }
-
-    // We use a simple O(N) algorithm here, since it's easier to read
-    // And we can safely assume that the number of oracles will not exceed 1000
-    // Note! oracleValues are sorted in descending order
-    // Greater key means key on the right (not the bigger one)
-    let indexToInsert = oracleValues.length;
-    for (let i = 0; i < oracleValues.length; i++) {
-      const currentValue = oracleValues[i];
-      if (currentValue.lt(valueToInsert)) {
-        indexToInsert = i;
-        break;
-      }
-    }
-
-    return {
-      lesserKey: safelyGetAddressOrZero(oracleAddresses, indexToInsert),
-      greaterKey: safelyGetAddressOrZero(oracleAddresses, indexToInsert - 1),
-    };
-  };
 
   const reportNewOracleValue = async (
     valueToReport: number,
     signer: SignerWithAddress
   ) => {
-    const { lesserKey, greaterKey } = await calculateLinkedListPosition(
+    const rates = await contract.getRates(mockTokenAddress);
+    const { lesserKey, greaterKey } = calculateLinkedListPosition(
+      rates,
       BigNumber.from(valueToReport),
       signer.address
     );

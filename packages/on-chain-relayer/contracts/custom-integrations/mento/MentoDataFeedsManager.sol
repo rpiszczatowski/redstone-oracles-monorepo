@@ -8,6 +8,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract MentoDataFeedsManager is Ownable {
   using EnumerableMap for EnumerableMap.UintToAddressMap;
 
+  struct DataFeedDetails {
+    bytes32 dataFeedId;
+    address tokenAddress;
+  }
+
   EnumerableMap.UintToAddressMap private dataFeedIdToTokenAddressMap;
 
   // Adds or updates token address for a given data feed id
@@ -35,6 +40,19 @@ contract MentoDataFeedsManager is Ownable {
     }
 
     return dataFeedIds;
+  }
+
+  function getDataFeeds() public view returns (DataFeedDetails[] memory) {
+    uint256 dataFeedsCount = getDataFeedsCount();
+    DataFeedDetails[] memory dataFeeds = new DataFeedDetails[](dataFeedsCount);
+    for (uint256 dataFeedIndex = 0; dataFeedIndex < dataFeedsCount; dataFeedIndex++) {
+      (bytes32 dataFeedId, address tokenAddress) = getTokenDetailsAtIndex(dataFeedIndex);
+      dataFeeds[dataFeedIndex] = DataFeedDetails({
+        dataFeedId: dataFeedId,
+        tokenAddress: tokenAddress
+      });
+    }
+    return dataFeeds;
   }
 
   function getTokenDetailsAtIndex(
