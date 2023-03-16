@@ -25,6 +25,10 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     sortedOracles = sortedOracles_;
   }
 
+  function updateSortedOraclesAddress(ISortedOracles sortedOracles_) external onlyOwner {
+    sortedOracles = sortedOracles_;
+  }
+
   function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
     RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
     validateDataPackageTimestampAgainstProposedTimestamp(receivedTimestampMilliseconds);
@@ -36,7 +40,7 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     uint256 proposedTimestamp,
     LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists
   ) external {
-    udpatePriceValues(proposedRound, proposedTimestamp, locationsInSortedLinkedLists);
+    updatePriceValues(proposedRound, proposedTimestamp, locationsInSortedLinkedLists);
     removeAllExpiredReports();
   }
 
@@ -64,7 +68,7 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     return PRICE_MULTIPLIER * valueFromRedstone;
   }
 
-  function udpatePriceValues(
+  function updatePriceValues(
     uint256 proposedRound,
     uint256 proposedTimestamp,
     LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists

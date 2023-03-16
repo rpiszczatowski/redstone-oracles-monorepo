@@ -14,40 +14,47 @@ import {
 chai.use(chaiAsPromised);
 
 describe("#updatePrices", () => {
-  let managerContract: PriceFeedsAdapterMock;
-
   before(() => {
     mockEnvVariables();
     server.listen();
   });
 
-  beforeEach(async () => {
-    const MangerContractFactory = await ethers.getContractFactory(
-      "PriceFeedsAdapterMock"
-    );
-    managerContract = await MangerContractFactory.deploy(dataFeedsIds);
-    await managerContract.deployed();
-  });
+  beforeEach(async () => {});
 
   afterEach(() => server.resetHandlers());
   after(() => server.close());
 
-  it("should update price", async () => {
+  it("should update price in price-feeds adapter", async () => {
+    // Deploy contract
+    const PriceFeedsAdapterFactory = await ethers.getContractFactory(
+      "PriceFeedsAdapterMock"
+    );
+    const priceFeedsAdapter: PriceFeedsAdapterMock =
+      await PriceFeedsAdapterFactory.deploy(dataFeedsIds);
+    await priceFeedsAdapter.deployed();
+
+    // Update prices
     const { lastRound, lastUpdateTimestamp } =
-      await getLastRoundParamsFromContract(managerContract);
+      await getLastRoundParamsFromContract(priceFeedsAdapter);
     const dataPackages = getDataPackagesResponse();
     await updatePrices(
       dataPackages,
-      managerContract,
+      priceFeedsAdapter,
       lastRound,
       lastUpdateTimestamp
     );
-    const [round] = await managerContract.getLastRoundParams();
+
+    // Check updated values
+    const [round] = await priceFeedsAdapter.getLastRoundParams();
     expect(round).to.be.equal(1);
-    const dataFeedsValues = await managerContract.getValuesForDataFeeds(
+    const dataFeedsValues = await priceFeedsAdapter.getValuesForDataFeeds(
       dataFeedsIds
     );
     expect(dataFeedsValues[0]).to.be.equal(167099000000);
     expect(dataFeedsValues[1]).to.be.equal(2307768000000);
   });
+
+  // it("should update prices in mento adapter", async () => {
+
+  // });
 });

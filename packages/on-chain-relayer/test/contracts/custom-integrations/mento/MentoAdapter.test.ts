@@ -77,7 +77,7 @@ describe("MentoAdapter", () => {
       });
 
     // Updating oracle values
-    await wrappedMentoAdapter.udpatePriceValues(
+    await wrappedMentoAdapter.updatePriceValues(
       proposedRound,
       proposedTimestamp,
       locationsInSortedLinkedLists
