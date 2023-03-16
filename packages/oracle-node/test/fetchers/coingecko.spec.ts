@@ -1,29 +1,15 @@
 import fetchers from "../../src/fetchers/index";
+import { mockFetcherResponse } from "./_helpers";
 
-jest.mock("../../src/fetchers/coingecko/CoingeckoProxy", () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      getExchangeRates: () => {
-        const exampleResponse = require("../../src/fetchers/coingecko/example-response.json");
+jest.mock("axios");
 
-        return Promise.resolve({
-          data: exampleResponse,
-        });
-      },
-    };
-  });
-});
+mockFetcherResponse("../../src/fetchers/coingecko/example-response.json");
 
 describe("coingecko fetcher", () => {
   const sut = fetchers["coingecko"];
 
   it("should properly fetch data", async () => {
-    // Given
-
-    // When
     const result = await sut.fetchAll(["BTC", "ETH", "AR"]);
-
-    // Then
     expect(result).toEqual([
       {
         symbol: "BTC",
