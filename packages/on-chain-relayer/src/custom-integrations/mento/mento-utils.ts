@@ -1,5 +1,12 @@
 import { BigNumber } from "ethers";
 import { DataPackagesResponse } from "redstone-sdk";
+import { ISortedOracles, MentoAdapter } from "../../../typechain-types";
+
+export interface MentoContracts {
+  mentoAdapter: MentoAdapter;
+  wrappedMentoAdapter: MentoAdapter;
+  sortedOracles: ISortedOracles;
+}
 
 const addressesAreEqual = (addr1: string, addr2: string) => {
   return addr1.toLowerCase() === addr2.toLowerCase();
@@ -53,7 +60,35 @@ export const calculateLinkedListPosition = (
   };
 };
 
-// TODO: implement
-export const prepareArgsForMentoAdapterReport = async (
-  dataPackages: DataPackagesResponse
-) => {};
+export const prepareLinkedListLocationsForMentoAdapterReport = async ({
+  mentoAdapter,
+  wrappedMentoAdapter,
+  sortedOracles,
+}: MentoContracts) => {
+  const dataFeeds = await mentoAdapter.getDataFeeds();
+  const dataFeedIds = dataFeeds.map((df) => df.dataFeedId);
+  const locationsInSortedLinkedLists = [];
+  const proposedValuesNormalized =
+    await wrappedMentoAdapter.getNormalizedOracleValuesFromTxCalldata(
+      dataFeedIds
+    );
+
+  // Filling the `locationsInSortedLinkedLists` array
+  // TODO: make it using Promise.all
+  for (
+    let dataFeedIndex = 0;
+    dataFeedIndex < dataFeeds.length;
+    dataFeedIndex++
+  ) {
+    const tokenAddress = dataFeeds[dataFeedIndex].tokenAddress;
+    const rates = await sortedOracles.getRates(tokenAddress);
+    const locationInSortedLinkedList = calculateLinkedListPosition(
+      rates,
+      proposedValuesNormalized[dataFeedIndex],
+      mentoAdapter.address
+    );
+    locationsInSortedLinkedLists.push(locationInSortedLinkedList);
+  }
+
+  return locationsInSortedLinkedLists;
+};

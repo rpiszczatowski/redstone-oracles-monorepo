@@ -3,7 +3,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
 import { MockSortedOracles } from "../../../../typechain-types";
 import { BigNumber } from "ethers";
-import { calculateLinkedListPosition } from "../../../../src/custom-integrations/mento/utils";
+import { calculateLinkedListPosition } from "../../../../src/custom-integrations/mento/mento-utils";
 
 describe("MockSortedOracles", () => {
   let contract: MockSortedOracles;

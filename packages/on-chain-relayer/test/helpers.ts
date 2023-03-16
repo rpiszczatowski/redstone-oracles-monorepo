@@ -53,6 +53,7 @@ export const mockEnvVariables = () => {
     gasLimit: 1000000,
     updateConditions: ["time", "value-deviation"],
     minDeviationPercentage: 10,
+    adapterContractType: "price-feeds",
   };
 };
 

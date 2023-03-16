@@ -3,6 +3,8 @@ import { ConditionChecksNames } from "./types";
 
 dotenv.config();
 
+const DEFAULT_ADAPTER_CONTRACT_TYPE = "price-feeds";
+
 const getFromEnv = (name: string, optional: boolean = false) => {
   const envVariable = process.env[name];
   const env = process.env.NODE_ENV;
@@ -40,4 +42,10 @@ export const config = Object.freeze({
       ).includes("value-deviation")
     )
   ) as number,
+  adapterContractType:
+    getFromEnv("ADAPTER_CONTRACT_TYPE", true) ?? DEFAULT_ADAPTER_CONTRACT_TYPE,
+  sortedOraclesMentoContractAddress: getFromEnv(
+    "SORTED_ORACLES_MENTO_CONTRACT_ADDRESS",
+    true
+  ),
 });

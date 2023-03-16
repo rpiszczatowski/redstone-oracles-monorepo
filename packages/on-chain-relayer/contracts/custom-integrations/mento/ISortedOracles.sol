@@ -13,6 +13,17 @@ interface ISortedOracles {
 
   function removeExpiredReports(address, uint256) external;
 
+  function getRates(
+    address
+  )
+    external
+    view
+    returns (
+      address[] memory,
+      uint256[] memory,
+      SortedLinkedListWithMedian.MedianRelation[] memory
+    );
+
   // function isOldestReportExpired(address token) external view returns (bool, address);
 
   // function numRates(address) external view returns (uint256);

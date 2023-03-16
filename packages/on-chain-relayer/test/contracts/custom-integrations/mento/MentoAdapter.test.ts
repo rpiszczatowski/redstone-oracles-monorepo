@@ -5,14 +5,17 @@ import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { formatBytes32String, parseUnits } from "ethers/lib/utils";
 import { ethers } from "hardhat";
-import { calculateLinkedListPosition } from "../../../../src/custom-integrations/mento/utils";
+import {
+  calculateLinkedListPosition,
+  prepareLinkedListLocationsForMentoAdapterReport,
+} from "../../../../src/custom-integrations/mento/mento-utils";
 import { MentoAdapter, MockSortedOracles } from "../../../../typechain-types";
 
 chai.use(chaiAsPromised);
 
 describe("MentoAdapter", () => {
   let sortedOracles: MockSortedOracles;
-  let mentoAdaper: MentoAdapter;
+  let mentoAdapter: MentoAdapter;
   let signers: SignerWithAddress[];
 
   const mockToken1Address = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9"; // CELO token address
@@ -56,7 +59,7 @@ describe("MentoAdapter", () => {
     const timestampMilliseconds = blockTimestamp * 1000;
     await time.setNextBlockTimestamp(blockTimestamp + 10);
     const wrappedMentoAdapter = WrapperBuilder.wrap(
-      mentoAdaper
+      mentoAdapter
     ).usingSimpleNumericMock({
       mockSignersCount: 10,
       dataPoints,
@@ -64,30 +67,14 @@ describe("MentoAdapter", () => {
     });
 
     // Prepare arguments
-    const dataFeeds = await mentoAdaper.getDataFeeds();
-    const dataFeedIds = dataFeeds.map((df) => df.dataFeedId);
-    const proposedRound = (await mentoAdaper.getLastRound()).add(1);
+    const proposedRound = (await mentoAdapter.getLastRound()).add(1);
     const proposedTimestamp = timestampMilliseconds;
-    const locationsInSortedLinkedLists = [];
-    const proposedValuesNormalized =
-      await wrappedMentoAdapter.getNormalizedOracleValuesFromTxCalldata(
-        dataFeedIds
-      );
-
-    for (
-      let dataFeedIndex = 0;
-      dataFeedIndex < dataFeeds.length;
-      dataFeedIndex++
-    ) {
-      const tokenAddress = dataFeeds[dataFeedIndex].tokenAddress;
-      const rates = await sortedOracles.getRates(tokenAddress);
-      const locationInSortedLinkedList = calculateLinkedListPosition(
-        rates,
-        proposedValuesNormalized[dataFeedIndex],
-        mentoAdaper.address
-      );
-      locationsInSortedLinkedLists.push(locationInSortedLinkedList);
-    }
+    const locationsInSortedLinkedLists =
+      await prepareLinkedListLocationsForMentoAdapterReport({
+        mentoAdapter,
+        wrappedMentoAdapter: wrappedMentoAdapter as MentoAdapter,
+        sortedOracles,
+      });
 
     // Updating oracle values
     await wrappedMentoAdapter.udpatePriceValues(
@@ -134,15 +121,15 @@ describe("MentoAdapter", () => {
     const MentoAdapterFactory = await ethers.getContractFactory(
       "MentoAdapterMock"
     );
-    mentoAdaper = await MentoAdapterFactory.deploy(sortedOracles.address);
-    await mentoAdaper.deployed();
+    mentoAdapter = await MentoAdapterFactory.deploy(sortedOracles.address);
+    await mentoAdapter.deployed();
 
     // Registering data feeds
-    await mentoAdaper.setDataFeed(
+    await mentoAdapter.setDataFeed(
       formatBytes32String("MOCK1"),
       mockToken1Address
     );
-    await mentoAdaper.setDataFeed(
+    await mentoAdapter.setDataFeed(
       formatBytes32String("MOCK2"),
       mockToken2Address
     );
