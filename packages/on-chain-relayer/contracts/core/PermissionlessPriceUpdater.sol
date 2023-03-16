@@ -50,7 +50,6 @@ contract PermissionlessPriceUpdater {
 
   // If the proposed round isn't valid it will stops the contract execution
   // TODO: add few words why we don't revert in this case
-  // TODO: test if it works properly
   function validateProposedRound(uint256 proposedRound) internal view {
     if (!isProposedRoundValid(proposedRound)) {
       assembly {

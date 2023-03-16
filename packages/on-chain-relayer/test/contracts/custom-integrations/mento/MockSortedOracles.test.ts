@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers } from "hardhat";
-import { MockSortedOracles } from "../../typechain-types";
+import { MockSortedOracles } from "../../../../typechain-types";
 import { BigNumber } from "ethers";
 
 describe("MockSortedOracles", () => {

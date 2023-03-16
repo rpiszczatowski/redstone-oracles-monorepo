@@ -94,33 +94,7 @@ contract MockSortedOracles is ISortedOracles {
       timestamps[token].getHead(),
       address(0)
     );
-
-    // TODO: maybe remove
-    // if (address(breakerBox) != address(0)) {
-    //   breakerBox.checkAndSetBreakers(token);
-    // }
   }
-
-  /**
-   * @notice Returns the number of rates that are currently stored for a specifed rateFeedId.
-   * @param token The rateFeedId for which to retrieve the number of rates.
-   * @return uint256 The number of reported oracle rates stored for the given rateFeedId.
-   */
-  // TODO: maybe remove
-  // function numRates(address token) public view returns (uint256) {
-  //   return rates[token].getNumElements();
-  // }
-
-  /**
-   * @notice Returns the median of the currently stored rates for a specified rateFeedId.
-   * @param token The rateFeedId of the rates for which the median value is being retrieved.
-   * @return uint256 The median exchange rate for rateFeedId.
-   * @return fixidity
-   */
-  // TOOD: maybe remove
-  // function medianRate(address token) external view returns (uint256, uint256) {
-  //   return (rates[token].getMedianValue(), numRates(token) == 0 ? 0 : FIXED1_UINT);
-  // }
 
   /**
    * @notice Gets all elements from the doubly linked list.
@@ -129,7 +103,6 @@ contract MockSortedOracles is ISortedOracles {
    * @return values Values of an unpacked list of elements from largest to smallest.
    * @return relations Relations of an unpacked list of elements from largest to smallest.
    */
-  // TODO: maybe remove
   function getRates(
     address token
   )
@@ -152,36 +125,6 @@ contract MockSortedOracles is ISortedOracles {
   function numTimestamps(address token) public view returns (uint256) {
     return timestamps[token].getNumElements();
   }
-
-  /**
-   * @notice Returns the median timestamp.
-   * @param token The rateFeedId for which the collateral asset exchange rate is being reported.
-   * @return uint256 The median report timestamp for the specified rateFeedId.
-   */
-  // TODO: maybe remove
-  // function medianTimestamp(address token) external view returns (uint256) {
-  //   return timestamps[token].getMedianValue();
-  // }
-
-  /**
-   * @notice Gets all elements from the doubly linked list.
-   * @param token The rateFeedId for which the collateral asset exchange rate is being reported.
-   * @return keys Keys of nn unpacked list of elements from largest to smallest.
-   * @return values Values of an unpacked list of elements from largest to smallest.
-   * @return relations Relations of an unpacked list of elements from largest to smallest.
-   */
-  // TODO: maybe remove
-  // function getTimestamps(address token)
-  //   external
-  //   view
-  //   returns (
-  //     address[] memory,
-  //     uint256[] memory,
-  //     SortedLinkedListWithMedian.MedianRelation[] memory
-  //   )
-  // {
-  //   return timestamps[token].getElements();
-  // }
 
   /**
    * @notice Checks if a report exists for a specified rateFeedId from a given oracle.
@@ -207,13 +150,7 @@ contract MockSortedOracles is ISortedOracles {
    */
   function removeReport(address token, address oracle) private {
     if (numTimestamps(token) == 1 && reportExists(token, oracle)) return;
-    // uint256 originalMedian = rates[token].getMedianValue();
     rates[token].remove(oracle);
     timestamps[token].remove(oracle);
-    // emit OracleReportRemoved(token, oracle);
-    // uint256 newMedian = rates[token].getMedianValue();
-    // if (newMedian != originalMedian) {
-    //   emit MedianUpdated(token, newMedian);
-    // }
   }
 }
