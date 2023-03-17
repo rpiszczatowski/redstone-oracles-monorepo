@@ -35,7 +35,8 @@ In the function parameters below, each ```feed_id``` is a cairo-represented stri
 a number consisting of hex-values of the particular letters in the string. For example:
 ```ETH``` as a ```feed_id```'s felt is ```0x455448``` in hex or ```4543560``` in decimal, as ```256*256*ord('E')+256*ord('T')+ord('H')```.
 <br />
-📟 You can use: https://cairo-utils-web.vercel.app/ to convert particular values. <br />
+
+📟 You can use: `feed_id = hexlify(toUtf8Bytes(feed_string)))` to convert particular values or the https://cairo-utils-web.vercel.app/ endpoint<br />
 
 The value of ```feed_ids``` is passed in the cairo's way: by passing the length of the array and next the array-data.
 <br />
@@ -116,8 +117,9 @@ Returns the timestamp of data last saved/written to the contract's storage by us
 
 The sample data passed to the contract deployed for the showroom/sample can be fetched by using:
 https://d33trozg86ya9x.cloudfront.net/data-packages/payload?data-packages/payload?unique-signers-count=1&data-service-id=redstone-rapid-demo&format=hex
+That's an example endpoint for `redstone-rapid-demo` data-service id, also for the sample value of the signer that can be used for the constructor (`0xf786a909D559F5Dee2dc6706d8e5A81728a39aE9`)
 
-Then they are needed to be split to single bytes, for example by using hexlify/arrayify functions of ```ethers``` or ```starknet``` node packages.
+Then the hex response is needed to be split to single bytes, for example by using hexlify/arrayify functions of ```ethers``` or ```fuel``` node packages.
 
 📟 You can use: [Makefile](../../../../protocol/scripts/payload-generator/Makefile)  by invoking ```make DATA_NAME=xxx prepare_data``` or
 directly from the  [payload-generator](../../../../protocol/scripts/payload-generator/) environment directory. 
