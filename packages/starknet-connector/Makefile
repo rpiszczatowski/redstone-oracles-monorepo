@@ -28,9 +28,10 @@ else
 	endif
 endif
 
-SRC=src/demo/main.cairo
+SRC=cairo/src
+TEST=cairo/test
 OBJ=build/main_compiled.json
-CNT=src/contracts/$(CONTRACT).cairo
+CNT=$(SRC)/contracts/$(CONTRACT).cairo
 CNC=build/$(CONTRACT)_compiled.json
 ABI=build/$(CONTRACT)_abi.json
 DATA_DIR=../protocol/scripts/payload-generator/data
@@ -38,13 +39,13 @@ DATA_DIR=../protocol/scripts/payload-generator/data
 SHELL := /bin/bash
 
 format:
-	protostar format src test
+	protostar format $(SRC) $(TEST)
 
 build_dir:
 	mkdir -p build
 
 compile: format build_dir
-	cairo-compile $(SRC) --output $(OBJ) --cairo_path=src
+	cairo-compile $(SRC)/demo/main.cairo --output $(OBJ) --cairo_path=$(SRC)
 
 run: compile
 	cairo-run --program=$(OBJ) --print_output --layout=perpetual_with_bitwise \
@@ -52,15 +53,15 @@ run: compile
 	--print_info
 
 tests: format
-	protostar test test --cairo-path=src
+	protostar test $(TEST) --cairo-path=$(SRC)
 
 contract: format build_dir
 	starknet-compile $(CNT) \
         --output $(CNC) \
-        --abi $(ABI) --cairo_path=src
+        --abi $(ABI) --cairo_path=$(SRC)
 
 contracts: format build_dir
-	protostar build  --cairo-path=src
+	protostar build  --cairo-path=$(SRC)
 
 declare: $(CNC)
 	starknet declare --account=$(ACC) --contract $(CNC) --max_fee=$(MAX_FEE) --network=$(NETWORK) \
