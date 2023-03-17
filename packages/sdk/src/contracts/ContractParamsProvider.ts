@@ -1,4 +1,3 @@
-import { BigNumberish } from "ethers";
 import { toUtf8Bytes } from "@ethersproject/strings/lib/utf8";
 import { hexlify } from "@ethersproject/bytes";
 import { arrayify } from "ethers/lib/utils";
@@ -21,7 +20,7 @@ export class ContractParamsProvider {
     return Array.from(arrayify(payloadHex));
   }
 
-  getHexlifiedFeedIds(): BigNumberish[] {
+  getHexlifiedFeedIds(): string[] {
     return this.getDataFeedIds().map((feed) => hexlify(toUtf8Bytes(feed)));
   }
 
