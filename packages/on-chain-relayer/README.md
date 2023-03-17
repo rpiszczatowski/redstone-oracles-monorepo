@@ -4,16 +4,18 @@
 [![Discord](https://img.shields.io/discord/786251205008949258?logo=discord)](https://discord.gg/2CT6hN6C)
 [![Twitter](https://img.shields.io/twitter/follow/redstone_defi?style=flat&logo=twitter)](https://twitter.com/intent/follow?screen_name=redstone_defi)
 
-On-chain relayer is designed for pushing price data to price feeds which implement Chainlink [AggregatorV3Interface](https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol). This could help different protocols quickly switch to RedStone Oracles without the need to change the codebase. On-chain relayer consists of two main parts, the first one is the [relayer](#relayer) responsible for pushing data to the contract in a customized way using [environment variables](#environment-variables). The second part is [contracts](#contracts) which enable storing prices on-chain and getting them through the Chainlink interface.
+On-chain relayer is designed for pushing price data to contracts which implement Chainlink [AggregatorV3Interface](https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol). This could help different protocols quickly switch to RedStone Oracles without the need to change the codebase. On-chain relayer consists of two main parts, the first one is the [relayer](#relayer) responsible for pushing data on-chain in a customized way using [environment variables](#environment-variables). The second part are [contracts](#contracts) which enable storing prices on-chain and getting them through the Chainlink interface.
 
 ## Relayer
 
-Relayer is a Node.js application which works in a customizable way based on [environment variables](#environment-variables). The main responsibility is to check if certain conditions are met and, if so, to update the prices of the price feeds. Currently, two conditions are implemented. The first one is `time` which describes how often prices should be updated. It is defined by the `UPDATE_PRICE_INTERVAL` environment and is defined in milliseconds. The second condition is `value-deviation` which indicates how much value should change in order to update prices. It is described by the `MIN_DEVIATION_PERCENTAGE` environment variable. If multiple conditions are passed to the `UPDATE_CONDITIONS` relayer will work in the manner that if any conditions are met then prices would be updated.
+The relayer is a Node.js application which works in a customizable way based on [environment variables](#environment-variables). It periodically checks a defined set of conditions, pushing the prices when they are satisfied. It is possible to pass multiple conditions to the `UPDATE_CONDITIONS`, then relayer will work in the manner that if any conditions are met prices would be updated. Currently, two conditions are implemented:
+
+- `time` condition described by `UPDATE_PRICE_INTERVAL` variable in milliseconds, which states how often prices should be updated, [code](./src/core/update-conditions/time-condition.ts)
+- `value-deviation` condition described by `MIN_DEVIATION_PERCENTAGE` variable which indicates how much value should change in order to update prices, [code](./src/core/update-conditions/value-deviation-condition.ts)
 
 ## Contracts
 
-In order to make on-chain relayer works at least two contracts need to be deployed.
-The first one is the [PriceFeedsAdapter](./contracts/price-feeds/PriceFeedsAdapter.sol) which is responsible for:
+The on-chain relayer is based on is the [PriceFeedsAdapter contract](./contracts/price-feeds/PriceFeedsAdapter.sol) which is responsible for:
 
 - storing all price feeds symbols (references as dataFeedId which is consistent with RedStone dataFeedId),
 - storing price feeds values,
@@ -21,7 +23,7 @@ The first one is the [PriceFeedsAdapter](./contracts/price-feeds/PriceFeedsAdapt
 - storing information regarding the round number and timestamp of the last update,
 - getting prices for multiple feeds values in batch.
 
-The second contract required is [PriceFeed](./contracts/price-feeds/PriceFeed.sol). There could be multiple price feeds on the single blockchain with different price feeds symbols (references as dataFeedId which is consistent with RedStone dataFeedId). Price feed is an interface for getting price feed values which are stored in `PriceFeedsAdapter` contract using Chainlink [AggregatorV3Interface](https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol).
+Additionally, if the protocol wants to be 100% compatible with the Chainlink PriceFeed architecture it's possible to deploy additional [PriceFeed](./contracts/price-feeds/PriceFeed.sol) contracts to mimic this solution.
 
 ## Environment variables
 
@@ -43,3 +45,12 @@ The second contract required is [PriceFeed](./contracts/price-feeds/PriceFeed.so
 | GAS_LIMIT                  | Gas limit used to push data to the price feed contract                                                                                                                                                                                      |
 
 Examples of environment variables already working can be found [here](./deployed-config/).
+
+## Run on-chain relayer
+
+1. Install dependencies - `yarn`
+2. Compile contracts - `yarn compile`
+3. Deploy contracts - [script](./src/scripts//deploy-contracts.ts)
+4. Put correct data to [environment variables](#environment-variables)
+5. Compile code - `yarn build`
+6. Start on-chain relayer - `yarn start`
