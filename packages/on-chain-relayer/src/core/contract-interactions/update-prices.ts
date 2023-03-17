@@ -39,13 +39,6 @@ export const updatePrices = async (
   if (lastUpdateTimestamp >= minimalTimestamp) {
     console.log("Cannot update prices, proposed prices are not newer");
   } else {
-    const updatePricesArgs: UpdatePricesArgs = {
-      adapterContract,
-      wrappedAdapterContract,
-      proposedTimestamp: minimalTimestamp,
-      proposedRound: lastRound + 1,
-    };
-
     // TODO: improve handling of undefined functions
     const txBuilderFunctions: {
       [adapterType: string]: (
@@ -56,9 +49,12 @@ export const updatePrices = async (
       mento: updatePricesInMentoAdapter,
     };
 
-    const updateTx = await txBuilderFunctions[config.adapterContractType](
-      updatePricesArgs
-    );
+    const updateTx = await txBuilderFunctions[config.adapterContractType]({
+      adapterContract,
+      wrappedAdapterContract,
+      proposedTimestamp: minimalTimestamp,
+      proposedRound: lastRound + 1,
+    });
     console.log(`Update prices tx sent: ${updateTx.hash}`);
     await updateTx.wait();
     console.log(`Successfully updated prices: ${updateTx.hash}`);

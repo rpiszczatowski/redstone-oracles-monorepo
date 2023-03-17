@@ -1,4 +1,5 @@
-import { BigNumber } from "ethers";
+import { BigNumber, Signer } from "ethers";
+import { parseBytes32String } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 import { ISortedOracles, MentoAdapter } from "../../../typechain-types";
 
@@ -97,10 +98,13 @@ export const prepareLinkedListLocationsForMentoAdapterReport = async ({
   return locationsInSortedLinkedLists;
 };
 
-export const deployMockSortedOracles = async () => {
+export const deployMockSortedOracles = async (signer?: Signer) => {
   // Deploying AddressSortedLinkedListWithMedian library
   const AddressSortedLinkedListWithMedianFactory =
-    await ethers.getContractFactory("AddressSortedLinkedListWithMedian");
+    await ethers.getContractFactory(
+      "AddressSortedLinkedListWithMedian",
+      signer
+    );
   const sortedLinkedListContract =
     await AddressSortedLinkedListWithMedianFactory.deploy();
   await sortedLinkedListContract.deployed();
@@ -112,6 +116,7 @@ export const deployMockSortedOracles = async () => {
       libraries: {
         AddressSortedLinkedListWithMedian: sortedLinkedListContract.address,
       },
+      signer,
     }
   );
   const contract = await MockSortedOraclesFactory.deploy();
