@@ -149,4 +149,21 @@ describe("MentoAdapter", () => {
     await expectOracleValues(mockToken1Address, [42, 30, 1]);
     await expectOracleValues(mockToken2Address, [160, 30]);
   });
+
+  it("Should remove a data feed", async () => {
+    await mentoAdapter.removeDataFeed(formatBytes32String("MOCK2"));
+    const dataFeedIds = await mentoAdapter.getDataFeedIds();
+    expect(dataFeedIds.length).to.eq(1);
+    expect(dataFeedIds[0]).to.eq(formatBytes32String("MOCK1"));
+  });
+
+  it("Should update a sorted oracle address", async () => {
+    expect(await mentoAdapter.sortedOracles()).to.eq(sortedOracles.address);
+
+    const newSortedOraclesAddress =
+      "0x0000000000000000000000000000000000000000";
+    await mentoAdapter.updateSortedOraclesAddress(newSortedOraclesAddress);
+
+    expect(await mentoAdapter.sortedOracles()).to.eq(newSortedOraclesAddress);
+  });
 });
