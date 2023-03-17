@@ -44,8 +44,21 @@ export const config = Object.freeze({
   ) as number,
   adapterContractType:
     getFromEnv("ADAPTER_CONTRACT_TYPE", true) ?? DEFAULT_ADAPTER_CONTRACT_TYPE,
-  sortedOraclesMentoContractAddress: getFromEnv(
-    "SORTED_ORACLES_MENTO_CONTRACT_ADDRESS",
-    true
-  ),
 });
+
+/// Config validation ///
+
+// Validating adapter contract type
+if (!["mento", "price-feeds"].includes(config.adapterContractType)) {
+  const errMsg = `Adapter contract type not supported: ${config.adapterContractType}`;
+  throw new Error(errMsg);
+}
+
+// Preventing unsupported update condition for mento adapter type
+if (
+  config.adapterContractType === "mento" &&
+  config.updateConditions.includes("value-deviation")
+) {
+  const errMsg = `Mento adapter does not support the value-deviation update condition`;
+  throw new Error(errMsg);
+}

@@ -3,7 +3,7 @@ import { abi as priceFeedsAdapterABI } from "../../../artifacts/contracts/price-
 import { abi as mentoAdapterABI } from "../../../artifacts/contracts/custom-integrations/mento/MentoAdapter.sol/MentoAdapter.json";
 import { abi as sortedOraclesABI } from "../../../artifacts/contracts/custom-integrations/mento/ISortedOracles.sol/ISortedOracles.json";
 import { config } from "../../config";
-import { getProvider } from "./get-provider";
+import { getProvider } from "./get-provider-or-signer";
 
 export const getAdapterContract = () => {
   const { privateKey, adapterContractAddress } = config;
@@ -23,7 +23,6 @@ export const getSortedOraclesContractAtAddress = (
   );
 };
 
-// TODO: maybre replace switch case with something better (e.g. object) later
 const getAbiForAdapter = () => {
   switch (config.adapterContractType) {
     case "price-feeds":

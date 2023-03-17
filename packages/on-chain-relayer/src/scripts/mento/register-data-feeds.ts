@@ -1,6 +1,9 @@
 import { formatBytes32String } from "ethers/lib/utils";
 import { getAdapterContract } from "../../core/contract-interactions/get-contract";
 
+// Usage: yarn run-script src/scripts/mento/register-data-feeds.ts
+// Note! You should configure the .env file properly before running this script
+
 // Alfajorez data feeds
 const DATA_FEEDS = {
   CUSD: "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1",

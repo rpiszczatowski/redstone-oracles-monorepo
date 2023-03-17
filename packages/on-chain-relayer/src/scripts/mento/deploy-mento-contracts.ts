@@ -1,11 +1,9 @@
 import { deployMockSortedOracles } from "../../custom-integrations/mento/mento-utils";
 import { ethers } from "hardhat";
-import { getProvider } from "../../core/contract-interactions/get-provider";
-import { Wallet } from "ethers";
-import { config } from "../../config";
+import { getSigner } from "../../core/contract-interactions/get-provider-or-signer";
 
-// TODO: add requirements for env configuration
-// to run this script
+// Usage: yarn run-script src/scripts/mento/deploy-mento-contracts.ts
+// Note! You should configure the .env file properly before running this script
 
 const SORTED_ORACLES_ADDRESS = "";
 
@@ -40,11 +38,4 @@ async function deployMentoAdapter(sortedOraclesAddress: string) {
   const mentoAdapter = await MentoAdapterFactory.deploy(sortedOraclesAddress);
   await mentoAdapter.deployed();
   return mentoAdapter;
-}
-
-// TODO: move the getSigner function to a seprate module
-function getSigner() {
-  const provider = getProvider();
-  const signer = new Wallet(config.privateKey, provider);
-  return signer;
 }

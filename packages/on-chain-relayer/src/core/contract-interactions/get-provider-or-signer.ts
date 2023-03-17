@@ -1,4 +1,4 @@
-import { providers, getDefaultProvider } from "ethers";
+import { providers, Wallet } from "ethers";
 import { config } from "../../config";
 
 export const getProvider = () => {
@@ -13,4 +13,10 @@ export const getProvider = () => {
     name: chainName,
     chainId: Number(chainId),
   });
+};
+
+export const getSigner = () => {
+  const provider = getProvider();
+  const signer = new Wallet(config.privateKey, provider);
+  return signer;
 };

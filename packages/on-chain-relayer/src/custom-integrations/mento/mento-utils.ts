@@ -1,5 +1,4 @@
 import { BigNumber, Signer } from "ethers";
-import { parseBytes32String } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 import { ISortedOracles, MentoAdapter } from "../../../typechain-types";
 
