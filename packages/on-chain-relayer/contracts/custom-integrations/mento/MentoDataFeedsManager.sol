@@ -5,6 +5,12 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+/**
+ * @title Mapping between Redstone's data feed ids and token addresses
+ * @author The Redstone Oracles team
+ * @dev This contract contains the logic of managing the mapping by the
+ * contract owner. It should be used as a base contract in MentoAdapter.sol
+ */
 contract MentoDataFeedsManager is Ownable {
   using EnumerableMap for EnumerableMap.UintToAddressMap;
 

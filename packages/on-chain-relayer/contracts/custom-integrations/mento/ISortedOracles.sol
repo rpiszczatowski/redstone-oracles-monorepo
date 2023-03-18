@@ -4,6 +4,10 @@ pragma solidity ^0.8.4;
 
 import "./linkedlists/SortedLinkedListWithMedian.sol";
 
+/**
+ * @title Simplified interface of the SortedOracles contract
+ * @author The Mento team (modified by the Redstone team)
+ */
 interface ISortedOracles {
   function report(address, uint256, address, address) external;
 

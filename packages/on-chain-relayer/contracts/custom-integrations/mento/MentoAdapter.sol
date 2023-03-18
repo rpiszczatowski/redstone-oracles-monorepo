@@ -7,6 +7,16 @@ import "./ISortedOracles.sol";
 import "./MentoDataFeedsManager.sol";
 import "../../core/PermissionlessPriceUpdater.sol";
 
+/**
+ * @title Redstone oracles adapter for the Mento SortedOracles contract
+ * @author The Redstone Oracles team
+ * @dev This contract should be whitelisted as an oracle client in the
+ * SortedOracles contract. It allows anyone to push signed oracle data
+ * to report them in the Mento SortedOracles contract. It is ownable,
+ * the owner can manage delivered data feeds and corresponding token
+ * addresses.
+ *
+ */
 contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, MentoDataFeedsManager {
   // RedStone provides values with 8 decimals
   // Mento sorted oracles expect 24 decimals (24 - 8 = 16)
@@ -42,6 +52,7 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     removeAllExpiredReports();
   }
 
+  // This function is used for getting proposed values from RedStone's data package
   function getNormalizedOracleValuesFromTxCalldata(
     bytes32[] calldata dataFeedIds
   ) external view returns (uint256[] memory) {

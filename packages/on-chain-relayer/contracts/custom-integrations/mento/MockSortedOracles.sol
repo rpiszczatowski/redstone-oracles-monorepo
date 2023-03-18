@@ -8,7 +8,8 @@ import "./linkedlists/AddressSortedLinkedListWithMedian.sol";
 import "./linkedlists/SortedLinkedListWithMedian.sol";
 
 /**
- * @title Simplified mock version of the SortedOracles contract by Mento
+ * @title Simplified mock version of the SortedOracles contract
+ * @author The Mento team (the code modified by the RedStone team)
  * @dev It is used fo testing RedStone's adapter contract for Mento
  */
 contract MockSortedOracles is ISortedOracles {
