@@ -42,7 +42,7 @@ export const calculateLinkedListPosition = (
   }
 
   // We use a simple O(N) algorithm here, since it's easier to read
-  // And we can safely assume that the number of oracles will not be too big
+  // And we can safely assume that the number of oracles is not large
   // Note! oracleValues are sorted in descending order
   let indexToInsert = oracleValues.length;
   for (let i = 0; i < oracleValues.length; i++) {

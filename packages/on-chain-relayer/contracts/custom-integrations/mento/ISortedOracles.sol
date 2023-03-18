@@ -9,7 +9,7 @@ import "./linkedlists/SortedLinkedListWithMedian.sol";
  * @author The Mento team (modified by the Redstone team)
  * @dev Some functions were removed to simplify implementation
  * of the mock SortedOracles contract. Interfaces of the functions
- * below is identical with the original ISortedOracles interface
+ * below are identical with the original ISortedOracles interface
  */
 interface ISortedOracles {
   function report(address, uint256, address, address) external;

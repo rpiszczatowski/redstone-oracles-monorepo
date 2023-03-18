@@ -43,7 +43,7 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
   }
 
   /**
-   * @notice Helpful function to simplify mento-relayer code
+   * @notice Helpful function to simplify the mento relayer implementation
    */
   function updatePriceValuesAndCleanOldReports(
     uint256 proposedRound,
@@ -56,9 +56,8 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
 
   /**
    * @notice Used for getting proposed values from RedStone's data packages
-   * and timestamps, and reports it to the SortedOracles contract
    * @param dataFeedIds An array of data feed identifiers
-   * @return values The values for corresponding data feeds
+   * @return values The normalized values for corresponding data feeds
    */
   function getNormalizedOracleValuesFromTxCalldata(
     bytes32[] calldata dataFeedIds
