@@ -7,7 +7,9 @@ import "./LinkedList.sol";
 
 /**
  * @title Maintains a doubly linked list keyed by address.
- * @dev Following the `next` pointers will lead you to the head, rather than the tail.
+ * @author The Mento team (the code modified by the RedStone team)
+ * @dev The code has been slightly modified to be compatible with ^0.8.0 version
+ * Following the `next` pointers will lead you to the head, rather than the tail.
  */
 library AddressLinkedList {
   using LinkedList for LinkedList.List;

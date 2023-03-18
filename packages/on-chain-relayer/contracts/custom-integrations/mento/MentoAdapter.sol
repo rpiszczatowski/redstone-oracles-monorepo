@@ -42,7 +42,9 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     validateDataPackageTimestampAgainstProposedTimestamp(receivedTimestampMilliseconds);
   }
 
-  // Helpful function to simplify mento-relayer code
+  /**
+   * @notice Helpful function to simplify mento-relayer code
+   */
   function updatePriceValuesAndCleanOldReports(
     uint256 proposedRound,
     uint256 proposedTimestamp,
@@ -52,7 +54,12 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     removeAllExpiredReports();
   }
 
-  // This function is used for getting proposed values from RedStone's data package
+  /**
+   * @notice Used for getting proposed values from RedStone's data packages
+   * and timestamps, and reports it to the SortedOracles contract
+   * @param dataFeedIds An array of data feed identifiers
+   * @return values The values for corresponding data feeds
+   */
   function getNormalizedOracleValuesFromTxCalldata(
     bytes32[] calldata dataFeedIds
   ) external view returns (uint256[] memory) {

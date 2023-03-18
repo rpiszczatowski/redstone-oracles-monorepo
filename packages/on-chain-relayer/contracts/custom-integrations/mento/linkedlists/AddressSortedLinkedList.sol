@@ -8,6 +8,8 @@ import "./SortedLinkedList.sol";
 
 /**
  * @title Maintains a sorted list of unsigned ints keyed by address.
+ * @author The Mento team (the code modified by the RedStone team)
+ * @dev The code has been slightly modified to be compatible with ^0.8.0 version
  */
 library AddressSortedLinkedList {
   using SafeMath for uint256;

@@ -10,7 +10,7 @@ import "./linkedlists/SortedLinkedListWithMedian.sol";
 /**
  * @title Simplified mock version of the SortedOracles contract
  * @author The Mento team (the code modified by the RedStone team)
- * @dev It is used fo testing RedStone's adapter contract for Mento
+ * @dev It is used for testing the Mento adapter contract
  */
 contract MockSortedOracles is ISortedOracles {
   using SafeMath for uint256;

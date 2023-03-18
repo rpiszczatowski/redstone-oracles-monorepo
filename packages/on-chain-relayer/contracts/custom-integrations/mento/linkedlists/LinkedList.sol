@@ -6,7 +6,9 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 /**
  * @title Maintains a doubly linked list keyed by bytes32.
- * @dev Following the `next` pointers will lead you to the head, rather than the tail.
+ * @author The Mento team (the code modified by the RedStone team)
+ * @dev The code has been slightly modified to be compatible with ^0.8.0 version
+ * Following the `next` pointers will lead you to the head, rather than the tail.
  */
 library LinkedList {
   using SafeMath for uint256;
