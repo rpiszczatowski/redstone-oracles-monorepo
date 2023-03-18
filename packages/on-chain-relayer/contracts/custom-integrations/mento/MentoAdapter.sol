@@ -80,6 +80,14 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     return PRICE_MULTIPLIER * valueFromRedstone;
   }
 
+  /**
+   * @notice Extracts Redstone's oracle values from calldata, verifying signatures
+   * and timestamps, and reports it to the SortedOracles contract
+   * @param proposedRound Proposed round (should be equal to latestRound + 1)
+   * @param proposedTimestamp Timestamp that should be lesser or equal to each
+   * timestamp from the signed data packages in calldata
+   * @param locationsInSortedLinkedLists The array of locations in linked list for reported values
+   */
   function updatePriceValues(
     uint256 proposedRound,
     uint256 proposedTimestamp,
