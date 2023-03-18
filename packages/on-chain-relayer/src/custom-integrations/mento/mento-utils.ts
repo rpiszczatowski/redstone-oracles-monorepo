@@ -44,7 +44,6 @@ export const calculateLinkedListPosition = (
   // We use a simple O(N) algorithm here, since it's easier to read
   // And we can safely assume that the number of oracles will not exceed 1000
   // Note! oracleValues are sorted in descending order
-  // Greater key means key on the right (not the bigger one)
   let indexToInsert = oracleValues.length;
   for (let i = 0; i < oracleValues.length; i++) {
     const currentValue = oracleValues[i];

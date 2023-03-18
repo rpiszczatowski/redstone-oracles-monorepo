@@ -2,8 +2,13 @@
 
 pragma solidity ^0.8.4;
 
-// TODO: add more description to this contract
-// TODO: describe how it can be integrated to the new adapter
+/**
+ * @title Core logic of RedStone price updater contract
+ * @author The Redstone Oracles team
+ * @dev This contract is used to save RedStone data in blockchain
+ * storage in a secure yet permissionless way. It allows anyone to
+ * update prices in the contract storage in a round-based model
+ */
 contract PermissionlessPriceUpdater {
   // We don't use storage variables to avoid problems with upgradable contracts
   uint256 constant LAST_ROUND_STORAGE_LOCATION =
@@ -48,8 +53,12 @@ contract PermissionlessPriceUpdater {
     }
   }
 
-  // If the proposed round isn't valid it will stops the contract execution
-  // TODO: add few words why we don't revert in this case
+  /*
+    If the proposed round isn't valid it will stops the contract execution.
+    We intentionally do not revert the execution to prevent misleading rare
+    failed transactions in blockchain explorers that can be caused by race
+    conditions between independent relayers
+  */
   function validateProposedRound(uint256 proposedRound) internal view {
     if (!isProposedRoundValid(proposedRound)) {
       assembly {

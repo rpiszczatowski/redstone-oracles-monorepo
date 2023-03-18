@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-// pragma solidity ^0.5.13;
 
 pragma solidity ^0.8.4;
 
@@ -8,6 +7,10 @@ import "./ISortedOracles.sol";
 import "./linkedlists/AddressSortedLinkedListWithMedian.sol";
 import "./linkedlists/SortedLinkedListWithMedian.sol";
 
+/**
+ * @title Simplified mock version of the SortedOracles contract by Mento
+ * @dev It is used fo testing RedStone's adapter contract for Mento
+ */
 contract MockSortedOracles is ISortedOracles {
   using SafeMath for uint256;
   using AddressSortedLinkedListWithMedian for SortedLinkedListWithMedian.List;

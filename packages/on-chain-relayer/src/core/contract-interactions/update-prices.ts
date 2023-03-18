@@ -19,7 +19,6 @@ interface UpdatePricesArgs {
 
 const TX_CONFIG = { gasLimit: config.gasLimit };
 
-// TODO: refactor this function
 export const updatePrices = async (
   dataPackages: DataPackagesResponse,
   adapterContract: Contract,
@@ -39,17 +38,7 @@ export const updatePrices = async (
   if (lastUpdateTimestamp >= minimalTimestamp) {
     console.log("Cannot update prices, proposed prices are not newer");
   } else {
-    // TODO: improve handling of undefined functions
-    const txBuilderFunctions: {
-      [adapterType: string]: (
-        args: UpdatePricesArgs
-      ) => Promise<TransactionResponse>;
-    } = {
-      "price-feeds": updatePricesInPriceFeedsAdapter,
-      mento: updatePricesInMentoAdapter,
-    };
-
-    const updateTx = await txBuilderFunctions[config.adapterContractType]({
+    const updateTx = await updatePriceInAdapterContract({
       adapterContract,
       wrappedAdapterContract,
       proposedTimestamp: minimalTimestamp,
@@ -58,6 +47,21 @@ export const updatePrices = async (
     console.log(`Update prices tx sent: ${updateTx.hash}`);
     await updateTx.wait();
     console.log(`Successfully updated prices: ${updateTx.hash}`);
+  }
+};
+
+const updatePriceInAdapterContract = async (
+  args: UpdatePricesArgs
+): Promise<TransactionResponse> => {
+  switch (config.adapterContractType) {
+    case "price-feeds":
+      return await updatePricesInPriceFeedsAdapter(args);
+    case "mento":
+      return await updatePricesInMentoAdapter(args);
+    default:
+      throw new Error(
+        `Unsupported adapter contract type: ${config.adapterContractType}`
+      );
   }
 };
 
