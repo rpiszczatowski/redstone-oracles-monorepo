@@ -7,10 +7,7 @@ export interface Manifest {
   defaultSource?: string[];
   sourceTimeout: number;
   deviationCheck: DeviationCheckConfig;
-  evmChainId: number;
   tokens: TokensConfig;
-  httpBroadcasterURLs?: string[];
-  enableStreamrBroadcaster?: boolean;
   minValidSourcesPercentage?: number;
 }
 
@@ -158,8 +155,11 @@ export interface NodeConfig {
   twelveDataRapidApiKey?: string;
   coinmarketcapApiKey?: string;
   kaikoApiKey?: string;
+  stlouisfedApiKey?: string;
   minDataFeedsPercentageForBigPackage: number;
   providerIdForPriceBroadcasting?: string;
+  coingeckoApiUrl: string;
+  coingeckoApiKey?: string;
 }
 
 export interface MulticallRequest {

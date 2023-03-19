@@ -49,6 +49,11 @@
     "url": "https://www.ecb.europa.eu/home/html/index.en.html",
     "color": "#10338e"
   },
+  "kaiko": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/kaiko.png",
+    "url": "https://www.kaiko.com",
+    "color": "#e4cd05"
+  },
   "aax": {
     "logoURI": "https://cdn-images-1.medium.com/max/1200/1*S4dDf81_14Y5FwPHTxuyMw.jpeg",
     "url": "https://www.aaxpro.com",
@@ -159,6 +164,11 @@
     "url": "https://www.delta.exchange",
     "color": "#4eafe3"
   },
+  "deribit": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/deribit.png",
+    "url": "https://www.deribit.com/",
+    "color": "#00a8a0"
+  },
   "exx": {
     "logoURI": "https://coollogo.net/wp-content/uploads/2021/02/Exx-logo.svg",
     "url": "https://www.exx.com/",
@@ -248,6 +258,11 @@
     "logoURI": "https://neironix.io/assets/thumbnails/a6/a639b7e77c9b5fa83704e4b65cbef5f4.png",
     "url": "https://timex.io",
     "color": "#6a5bcb"
+  },
+  "twelve-data": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/twelve-data.png",
+    "url": "https://twelvedata.com",
+    "color": "#2469f0"
   },
   "vcc": {
     "logoURI": "https://play-lh.googleusercontent.com/a-8r_reU9BcRojYNn9t0MDOZ1VK6cYfZItW2Gu7fpeEQJ83f6aGOiaktWf46g4Mg0pRB",

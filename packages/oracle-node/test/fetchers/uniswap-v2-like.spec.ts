@@ -1,6 +1,6 @@
 import { Contract } from "ethers";
 import { MockProvider, deployContract } from "ethereum-waffle";
-import { UniswapV2LikeFetcher } from "../../src/fetchers/uniswapV2Like/UniswapV2LikeFetcher";
+import { UniswapV2LikeFetcher } from "../../src/fetchers/uniswap-v2-like/UniswapV2LikeFetcher";
 import UniswapV2Mock from "./mocks/UniswapV2Mock.json";
 import { saveMockPriceInLocalDb } from "./_helpers";
 import {
@@ -39,19 +39,27 @@ describe("UniswapV2Like", () => {
           address: uniswapV2LikeContract.address,
           symbol0: "MockToken",
           symbol0Decimals: 9,
-          symbol1: "Dai",
+          symbol1: "DAI",
           symbol1Decimals: 18,
-          pairedToken: "Dai",
+          pairedToken: "DAI",
         },
       },
       provider
     );
 
-    await saveMockPriceInLocalDb(1, "Dai");
+    await saveMockPriceInLocalDb(1, "DAI");
 
-    const result = await fetcher.fetchAll(["MockToken"]);
+    const result = await fetcher.fetchAll([
+      "MockToken",
+      "MockToken_uniswap-v2-like-mock_liquidity",
+    ]);
+
     expect(result).toEqual([
       { symbol: "MockToken", value: 10.439079904087286 },
+      {
+        symbol: "MockToken_uniswap-v2-like-mock_liquidity",
+        value: 153215.79754985688,
+      },
     ]);
   });
 });

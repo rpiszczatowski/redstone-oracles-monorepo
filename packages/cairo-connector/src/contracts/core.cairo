@@ -13,7 +13,7 @@ from redstone.core.config import Config
 from redstone.core.processor import process_payload as redstone_process_payload
 
 @storage_var
-func unique_signer_count_treshold() -> (res: felt) {
+func unique_signer_count_threshold() -> (res: felt) {
 }
 
 @storage_var
@@ -33,13 +33,13 @@ func get_aggregated_values{
 
     let (block_ts) = get_block_timestamp();
     let allowed_signer_addresses = get_allowed_signer_addresses();
-    let (signer_count_treshold) = unique_signer_count_treshold.read();
+    let (signer_count_threshold) = unique_signer_count_threshold.read();
 
     local config: Config = Config(
         block_ts=block_ts,
         allowed_signer_addresses=allowed_signer_addresses,
         requested_feed_ids=requested_feed_ids,
-        signer_count_treshold=signer_count_treshold,
+        signer_count_threshold=signer_count_threshold,
     );
 
     let (_, _, aggregated) = redstone_process_payload(

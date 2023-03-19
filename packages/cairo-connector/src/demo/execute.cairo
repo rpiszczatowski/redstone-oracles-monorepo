@@ -47,7 +47,7 @@ func execute{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(test_id: felt) -> (
         block_ts=block_ts,
         allowed_signer_addresses=allowed_signer_addresses,
         requested_feed_ids=requested_feed_ids,
-        signer_count_treshold=1,
+        signer_count_threshold=1,
     );
 
     let res = process_payload(data_ptr=payload_data_ptr, data_len=payload_data_len, config=config);

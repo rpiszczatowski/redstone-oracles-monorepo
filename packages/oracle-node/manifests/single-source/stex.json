@@ -9,19 +9,14 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
   "tokens": {
     "BTC": {},
     "XRP": {},
     "LTC": {},
     "DASH": {},
     "ETH": {},
-    "NEXO": {},
     "CLO": {},
-    "NWC": {},
-    "TNC": {},
     "XHT": {},
-    "TRR": {},
     "PLEX": {}
   }
 }

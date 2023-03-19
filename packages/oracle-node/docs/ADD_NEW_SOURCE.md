@@ -22,7 +22,7 @@ We strongly recommend to implement tests for your fetcher. It's generaly a good 
 ## Manifest(s)
 
 - Create a manifest with the name of the newly added fetcher and place it in the [manifests](../manifests) folder
-- [Optional] If the source should be used in the main redstone provider, run `node tools/manifest/generate-main-manifest.js`
+- [Optional] If the source should be used in the main redstone provider, run `node tools/manifest/generate-main-manifest.ts`
 
 ## Sources config [optional]
 
@@ -38,6 +38,6 @@ Sources config file is used in the RedStone web app. If you want your source to 
 - Download logo for the newly created source
   - You can simply download it in browser and save as `<SOURCE_NAME>.<IMG_EXTENSTION>`
   - Or you can run `node tools/cdn-images/download-source-logos.js`, but it will download logos for all sources
-- Upload the source logo to RedStone CDN (manually through AWS S3 web interface)
-- Run `node tools/cdn-images/update-sources-config.js` to replace logo urls in sources config with redstone CDN urls
+- Upload the source logo to [redstone-images repository](https://github.com/redstone-finance/redstone-images/tree/main/sources)
+- Run `node tools/cdn-images/update-sources-config.js` to replace logo urls in sources config with redstone github-based urls
 - Update `redstone-node` dependency in redstone-app for being able to use the new source config file

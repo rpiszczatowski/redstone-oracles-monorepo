@@ -9,7 +9,6 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
   "tokens": {
     "DOGE": {},
     "BTC": {},
@@ -34,7 +33,6 @@
     "BNT": {},
     "KNC": {},
     "GBP": {},
-    "DAI": {},
     "AUD": {},
     "ANT": {},
     "OCEAN": {},
