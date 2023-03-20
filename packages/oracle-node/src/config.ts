@@ -1,6 +1,5 @@
 import "dotenv/config";
-import { JWKInterface } from "arweave/node/lib/wallet";
-import { Manifest, NodeConfig } from "./types";
+import { Manifest } from "./types";
 import { readJSON } from "./utils/objects";
 import { ethers } from "ethers";
 
@@ -16,7 +15,6 @@ const DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS = "900000";
 const DEFAULT_ETHERSCAN_API_URL = "";
 const DEFAULT_ETHERSCAN_API_KEY = "";
 const DEFAULT_AVALANCHE_RPC_URL = "https://api.avax.network/ext/bc/C/rpc";
-const DEFAULT_ARBITRUM_RPC_URL = "https://arb1.arbitrum.io/rpc";
 const DEFAULT_MOCK_PRICES_URL_OR_PATH =
   "https://raw.githubusercontent.com/redstone-finance/redstone-mock-prices/main/mock-prices.json";
 const DEFAULT_COINBASE_INDEXER_MONGODB_URL = "";
@@ -166,7 +164,6 @@ export const config = Object.freeze({
       DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE
     )
   ),
-  arbitrumRpcUrl: getFromEnv("ARBITRUM_RPC_URL", DEFAULT_ARBITRUM_RPC_URL),
   providerIdForPriceBroadcasting: getFromEnv(
     "PROVIDER_ID_FOR_PRICE_BROADCASTING",
     DEFAULT_PROVIDER_ID_FOR_PRICE_BROADCASTING
