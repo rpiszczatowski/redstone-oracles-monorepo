@@ -12,6 +12,18 @@ jobs:
         working-directory: packages/integration
     steps:
       - uses: actions/checkout@v2
+      - name: Install cache service modules
+        run: cd ../cache-service && yarn
+      - name: Build cache service
+        run: yarn build
+      - name: Install oracle-node modules
+        run: cd ../oracle-node && yarn
+      - name: Build oracle-node
+        run: yarn build
+      - name: Install evm-connector modules
+        run: cd ../evm-connector && yarn
+      - name: Build evm-connector
+        run: yarn build
       - name: Run tests
         run: bash integration-test.sh
         env:
