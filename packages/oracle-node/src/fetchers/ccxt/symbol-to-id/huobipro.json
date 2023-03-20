@@ -498,5 +498,6 @@
   "CUSD": "CUSD/USDT",
   "EVMOS": "EVMOS/USDT",
   "APT": "APT/USDT",
-  "GMX": "GMX/USDT"
+  "GMX": "GMX/USDT",
+  "UFT": "UFT/USDT"
 }
