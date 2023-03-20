@@ -40,4 +40,5 @@ export const config = Object.freeze({
       ).includes("value-deviation")
     )
   ) as number,
+  uptimeKumaUrl: getFromEnv("UPTIME_KUMA_URL") as string,
 });
