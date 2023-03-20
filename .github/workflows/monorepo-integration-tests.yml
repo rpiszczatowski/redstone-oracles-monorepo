@@ -22,6 +22,8 @@ jobs:
         run: cd ../oracle-node && yarn build
       - name: Install evm-connector modules
         run: cd ../evm-connector && yarn
+      - name: Compile contracts in evm-connector
+        run: cd ../evm-connector && yarn compile
       - name: Build evm-connector
         run: cd ../evm-connector && yarn build
       - name: Run tests
