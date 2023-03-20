@@ -42,11 +42,13 @@ func get_aggregated_values{
         signer_count_threshold=signer_count_threshold,
     );
 
-    let (_, _, aggregated) = redstone_process_payload(
+    let (payload, _, aggregated) = redstone_process_payload(
         data_ptr=payload_data, data_len=payload_data_len, config=config
     );
 
-    return (aggregated=aggregated, timestamp=block_ts);
+    let timestamp = payload.min_timestamp;
+
+    return (aggregated=aggregated, timestamp=timestamp);
 }
 
 func get_allowed_signer_addresses{syscall_ptr: felt*, pedersen_ptr: HashBuiltin*, range_check_ptr}(

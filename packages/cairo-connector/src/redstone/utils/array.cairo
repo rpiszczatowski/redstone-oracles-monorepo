@@ -195,6 +195,13 @@ func _array_sort{range_check_ptr}(
     );
 }
 
+func array_min{range_check_ptr}(arr: Array) -> felt {
+    let sorted_array = array_sort(arr=arr);
+    let min_value = sorted_array.ptr[0];
+
+    return min_value;
+}
+
 func serialize_array{output_ptr: felt*, range_check_ptr}(arr: Array, index: felt) {
     if (index == arr.len) {
         return ();
