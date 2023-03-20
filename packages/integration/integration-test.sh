@@ -2,10 +2,8 @@ set -e # to exit when any command fails
 set -x # to display commands during execution
 
 MONGO_URI_FILE=./tmp-mongo-db-uri.log
-
-printTitle() {
-  echo "\n\n$1"
-}
+CACHE_SERVICE_URL=http://localhost:3000
+HARDHAT_MOCK_PRIVATE_KEY=ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 
 installAndBuild() {
   # Lazily install NPM deps
@@ -28,15 +26,30 @@ installAndBuild() {
 }
 
 waitForFile() {
-  until [ -f $1 ]
+  filename=$1
+  until [ -f $filename ]
   do
     sleep 5
   done
 }
 
+waitForUrl() {
+  url=$1
+
+  exitCode=1
+  until [ $exitCode -eq 0 ]
+  do
+    sleep 5
+    set +e # Allow the curl below to fail
+    curl $url
+    exitCode=$?
+    set -e # Setting back to the mode with exiting when any command fails
+  done
+}
+
 updateDotEnvFile() {
   varName=$1
-  newValue=$2
+  newValue=$(echo $2 | sed 's;/;\\/;g') # escaping all slashes
   find ./.env -type f -exec sed -i '' -e "/^$varName=/s/=.*/=\'$newValue\'/" {} \;
 }
 
@@ -58,30 +71,33 @@ main() {
 
   # Run cache layer
   cp .env.example .env
-  updateDotEnvFile "MONGO_DB_URL" "$MEMORY_MONGO_DB_URI"
+  updateDotEnvFile "MONGO_DB_URL" "$MEMORY_MONGO_DB_URL"
   updateDotEnvFile "API_KEY_FOR_ACCESS_TO_ADMIN_ROUTES" "hehe"
   updateDotEnvFile "ENABLE_DIRECT_POSTING_ROUTES" "true"
   updateDotEnvFile "ENABLE_STREAMR_LISTENING" "false"
+  updateDotEnvFile "USE_MOCK_ORACLE_STATE" "true"
   cat .env
-  # runWithLogPrefix "yarn start" "cache-service" &
+  runWithLogPrefix "yarn start" "cache-service" &
+  waitForUrl $CACHE_SERVICE_URL
 
   # Launching one iteration of oracle-node
-  # cd ../oracle-node
-  # installAndBuild
-  # cp .env.example .env
-  # runWithLogPrefix "OVERRIDE_DIRECT_CACHE_SERVICE_URLS=[http://localhost:3000] yarn run-ts tools/"
+  cd ../oracle-node
+  installAndBuild
+  cp .env.example .env
+  updateDotEnvFile "OVERRIDE_DIRECT_CACHE_SERVICE_URLS" '["http://localhost:3000"]'
+  updateDotEnvFile "OVERRIDE_MANIFEST_USING_FILE" "./manifests/single-source/mock.json"
+  updateDotEnvFile "STOP_NODE_AFTER_ONE_ITERATION" "true"
+  updateDotEnvFile "ECDSA_PRIVATE_KEY" $HARDHAT_MOCK_PRIVATE_KEY
+  runWithLogPrefix "yarn start:prod" "oracle-node"
 
   # Checking if data packages are accessible from cache service
-  # curl http://localhost:3000/data-packages
+  curl http://localhost:3000/data-packages/latest/mock-data-service
 
   # Using data in evm-connector
   # TODO: implement later
 
-  # Stop cache service
+  # Cleaning
   pkill -f cache-service/node_modules/.bin/nest start
-
-  # Close mongo DB
-  # Note! It doesn't work with last pid because of mongod "features"
   pkill -f scripts/launch-mongodb-in-memory.ts
 }
 

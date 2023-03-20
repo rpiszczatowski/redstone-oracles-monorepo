@@ -1,6 +1,7 @@
 import axios from "axios";
 import { RedstoneOraclesState } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
 import redstoneOraclesInitialState from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/initial-state.json";
+import { mockOraclesState } from "./mock-oracles-state";
 import {
   RedstonePayload,
   SignedDataPackage,
@@ -28,7 +29,10 @@ export interface DataPackagesResponse {
 
 export const getOracleRegistryState =
   async (): Promise<RedstoneOraclesState> => {
-    return redstoneOraclesInitialState;
+    // Mock data service is used for monorepo integration tests
+    const shouldUseMockState =
+      process && process.env.USE_MOCK_ORACLE_STATE === "true";
+    return shouldUseMockState ? mockOraclesState : redstoneOraclesInitialState;
   };
 
 export const getDataServiceIdForSigner = (

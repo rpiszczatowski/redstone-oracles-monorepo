@@ -160,6 +160,7 @@ export interface NodeConfig {
   providerIdForPriceBroadcasting?: string;
   coingeckoApiUrl: string;
   coingeckoApiKey?: string;
+  stopNodeAfterOneIteration: boolean;
 }
 
 export interface MulticallRequest {

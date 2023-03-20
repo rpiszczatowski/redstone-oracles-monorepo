@@ -124,6 +124,12 @@ export default class NodeRunner {
 
     try {
       await this.runIteration();
+
+      if (config.stopNodeAfterOneIteration) {
+        console.log(`Stopped the oracle node after one iteration`);
+        process.exit();
+      }
+
       const cronScheduleString = intervalMsToCronFormat(
         this.currentManifest!.interval
       );
