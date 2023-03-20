@@ -24,6 +24,14 @@ contract Benchmark is RedstoneConsumerNumericMock {
     someStorageVar = 0;
   }
 
+  function extractOracleValuesView(bytes32[] calldata dataFeedIds)
+    external
+    view
+    returns (uint256[] memory)
+  {
+    return getOracleNumericValuesFromTxMsg(dataFeedIds);
+  }
+
   // `emptyExtractOracleValues` is used to calculate gas costs for pure
   // calling the function and calculate the exact gas costs for getting
   // the oracle values

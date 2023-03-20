@@ -4,6 +4,7 @@ set -x # to display commands during execution
 MONGO_URI_FILE=./tmp-mongo-db-uri.log
 CACHE_SERVICE_URL=http://localhost:3000
 HARDHAT_MOCK_PRIVATE_KEY=ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+LAST_PID=
 
 installAndBuild() {
   # Lazily install NPM deps
@@ -78,6 +79,7 @@ main() {
   updateDotEnvFile "USE_MOCK_ORACLE_STATE" "true"
   cat .env
   runWithLogPrefix "yarn start" "cache-service" &
+  cacheLayerPid=$!
   waitForUrl $CACHE_SERVICE_URL
 
   # Launching one iteration of oracle-node
@@ -94,10 +96,12 @@ main() {
   curl http://localhost:3000/data-packages/latest/mock-data-service
 
   # Using data in evm-connector
-  # TODO: implement later
+  cd ../evm-connector
+  installAndBuild
+  runWithLogPrefix "yarn test benchmarks/local-mock-test.ts" "evm-connector"
 
   # Cleaning
-  pkill -f cache-service/node_modules/.bin/nest start
+  kill $cacheLayerPid
   pkill -f scripts/launch-mongodb-in-memory.ts
 }
 
