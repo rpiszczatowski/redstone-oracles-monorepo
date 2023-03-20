@@ -1,7 +1,7 @@
 import { Contract } from "ethers";
 import { MockProvider, deployContract } from "ethereum-waffle";
 import { AvalancheEvmFetcher } from "../../src/fetchers/evm-chain/avalanche/AvalancheEvmFetcher";
-import Multicall2 from "../../src/fetchers/evm-chain/avalanche/contracts-details/common/Multicall2.json";
+import Multicall2 from "../../src/fetchers/evm-chain/shared/abis/Multicall2.abi.json";
 import { yieldYakContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/yield-yak";
 import { lpTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/lp-tokens";
 import { mooTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/moo-joe";
@@ -49,7 +49,6 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      yieldYakContractsDetails.YY_AAVE_AVAX.abi = YYMock.abi;
       yieldYakContractsDetails.YY_AAVE_AVAX.address = Yycontract.address;
     });
 
@@ -80,7 +79,6 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      yieldYakContractsDetails.YY_PTP_sAVAX.abi = YYMock.abi;
       yieldYakContractsDetails.YY_PTP_sAVAX.address = Yycontract.address;
     });
 
@@ -111,7 +109,6 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      lpTokensContractsDetails.TJ_AVAX_USDC_LP.abi = LPTokenMock.abi;
       lpTokensContractsDetails.TJ_AVAX_USDC_LP.address =
         lpTokenContract.address;
     });
@@ -126,7 +123,7 @@ describe("Avalanche EVM fetcher", () => {
 
       const result = await fetcher.fetchAll(["TJ_AVAX_USDC_LP"]);
       expect(result).toEqual([
-        { symbol: "TJ_AVAX_USDC_LP", value: 10864910.562549423 },
+        { symbol: "TJ_AVAX_USDC_LP", value: 10864354.524753695 },
       ]);
     });
   });
@@ -145,7 +142,6 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      mooTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.abi = MooTokenMock.abi;
       mooTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.address =
         mooTokenContract.address;
     });
@@ -179,7 +175,6 @@ describe("Avalanche EVM fetcher", () => {
         abi: Multicall2.abi,
       });
 
-      oracleAdaptersContractsDetails.sAVAX.abi = OracleAdaptersMock.abi;
       oracleAdaptersContractsDetails.sAVAX.address =
         oracleTokenContract.address;
     });

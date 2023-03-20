@@ -1,7 +1,6 @@
 import NodeRunner from "../../src/NodeRunner";
 import { JWKInterface } from "arweave/node/lib/wallet";
 import { mocked } from "ts-jest/utils";
-import { ArweaveProxy } from "../../src/arweave/ArweaveProxy";
 import fetchers from "../../src/fetchers";
 import axios from "axios";
 import ArweaveService from "../../src/arweave/ArweaveService";
@@ -17,18 +16,12 @@ import {
 } from "../../src/db/local-db";
 import emptyManifest from "../../manifests/dev/empty.json";
 
+const TEST_PROVIDER_EVM_ADDRESS = "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A";
+
 /****** MOCKS START ******/
 const broadcastingUrl =
   "http://mock-direct-cache-service-url/data-packages/bulk";
 const priceDataBroadcastingUrl = "http://mock-price-cache-service-url/prices";
-const mockArProxy = {
-  getAddress: () => Promise.resolve("mockArAddress"),
-};
-jest.mock("../../src/arweave/ArweaveProxy", () => {
-  return {
-    ArweaveProxy: jest.fn().mockImplementation(() => mockArProxy),
-  };
-});
 
 jest.mock("../../src/signers/EvmPriceSigner", () => {
   return jest.fn().mockImplementation(() => {
@@ -131,15 +124,12 @@ describe("NodeRunner", () => {
 
   describe("node set up", () => {
     it("should create node instance", async () => {
-      const mockedArProxy = mocked(ArweaveProxy, true);
-
       const sut = await NodeRunner.create({
         ...nodeConfig,
         overrideManifestUsingFile: manifest,
       });
 
       expect(sut).not.toBeNull();
-      expect(mockedArProxy).toHaveBeenCalledWith(jwk);
     });
 
     it("should throw if interval not divisble by 1000", async () => {
@@ -235,7 +225,7 @@ describe("NodeRunner", () => {
           liteEvmSignature: "mock_evm_signed_lite",
           id: "00000000-0000-0000-0000-000000000000",
           permawebTx: "mock-permaweb-tx",
-          provider: "mockArAddress",
+          provider: TEST_PROVIDER_EVM_ADDRESS,
           source: { coingecko: 444, uniswap: 445 },
           symbol: "BTC",
           timestamp: 111111000,
@@ -246,7 +236,7 @@ describe("NodeRunner", () => {
           liteEvmSignature: "mock_evm_signed_lite",
           id: "00000000-0000-0000-0000-000000000000",
           permawebTx: "mock-permaweb-tx",
-          provider: "mockArAddress",
+          provider: TEST_PROVIDER_EVM_ADDRESS,
           source: { uniswap: 42 },
           symbol: "ETH",
           timestamp: 111111000,

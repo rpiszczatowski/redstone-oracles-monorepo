@@ -8,10 +8,7 @@ export interface Manifest {
   defaultSource?: string[];
   sourceTimeout: number;
   deviationCheck: DeviationCheckConfig;
-  evmChainId: number;
   tokens: TokensConfig;
-  httpBroadcasterURLs?: string[];
-  enableStreamrBroadcaster?: boolean;
   minValidSourcesPercentage?: number;
   signBlockNumbersInsteadOfTimestamps?: boolean;
 }
@@ -59,7 +56,8 @@ export interface Fetcher {
 
 export interface Aggregator {
   getAggregatedValue: (
-    price: PriceDataBeforeAggregation
+    price: PriceDataBeforeAggregation,
+    allPrices?: PriceDataBeforeAggregation[]
   ) => PriceDataAfterAggregation;
 }
 
@@ -134,7 +132,6 @@ export interface ArweaveTransactionTags {
 }
 
 export interface PrivateKeys {
-  arweaveJwk: JWKInterface;
   ethereumPrivateKey: string;
 }
 
@@ -155,12 +152,17 @@ export interface NodeConfig {
   etherscanApiKey?: string;
   ttlForPricesInLocalDBInMilliseconds: number;
   avalancheRpcUrl: string;
+  arbitrumRpcUrl: string;
   enableStreamrBroadcasting: boolean;
   mockPricesUrlOrPath: string;
   twelveDataRapidApiKey?: string;
   coinmarketcapApiKey?: string;
   kaikoApiKey?: string;
+  stlouisfedApiKey?: string;
   minDataFeedsPercentageForBigPackage: number;
+  providerIdForPriceBroadcasting?: string;
+  coingeckoApiUrl: string;
+  coingeckoApiKey?: string;
 }
 
 export interface MulticallRequest {

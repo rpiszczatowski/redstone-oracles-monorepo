@@ -50,7 +50,7 @@ export class CcxtFetcher extends BaseFetcher {
     return await this.exchange.fetchTickers(ids);
   }
 
-  async extractPrices(response: any): Promise<PricesObj> {
+  extractPrices(response: any): PricesObj {
     const pricesObj: PricesObj = {};
 
     for (const ticker of Object.values(response) as Ticker[]) {
@@ -72,7 +72,7 @@ export class CcxtFetcher extends BaseFetcher {
   }
 
   getStableCoinPrice(pairSymbol: string) {
-    let stableCoinSymbol = pairSymbol.slice(-4);
+    const stableCoinSymbol = pairSymbol.slice(-4);
     return getLastPrice(stableCoinSymbol)?.value;
   }
 

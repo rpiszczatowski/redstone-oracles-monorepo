@@ -9,7 +9,6 @@ import {
   PriceDataBeforeAggregation,
   PriceDataBeforeSigning,
   PriceDataFetched,
-  Source,
 } from "../types";
 import { trackEnd, trackStart } from "../utils/performance-tracker";
 import ManifestConfigError from "../manifest/ManifestConfigError";
@@ -193,7 +192,8 @@ export default class PricesService {
 
         // Calculating final aggregated value based on the values from the "valid" sources
         const priceAfterAggregation = aggregator.getAggregatedValue(
-          sanitizedPriceBeforeAggregation
+          sanitizedPriceBeforeAggregation,
+          prices
         );
 
         // Throwing an error if price is invalid or too deviated

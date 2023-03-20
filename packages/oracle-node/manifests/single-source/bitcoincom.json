@@ -9,7 +9,6 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
   "tokens": {
     "DOGE": {},
     "BTC": {},
@@ -48,7 +47,6 @@
     "DOT": {},
     "CAKE": {},
     "AKRO": {},
-    "FTT": {},
     "VET": {},
     "ZEC": {},
     "BAT": {},

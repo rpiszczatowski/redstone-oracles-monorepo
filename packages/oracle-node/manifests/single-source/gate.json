@@ -9,12 +9,12 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
   "tokens": {
     "PNG": {},
     "XAVA": {},
     "GMX": {},
     "JOE": {},
-    "BIT": {}
+    "BIT": {},
+    "CANTO": {}
   }
 }

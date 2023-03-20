@@ -1,12 +1,11 @@
-FROM node:18
+ARG VERSION
+FROM redstone-monorepo:${VERSION}
 
-WORKDIR /app
-
-COPY package.json package.json
+WORKDIR /app/packages/on-chain-relayer
 
 RUN yarn
-
-COPY . .
+RUN yarn compile
+RUN yarn build
 
 ENV RELAYER_ITERATION_INTERVAL=600000
 ENV UPDATE_PRICE_INTERVAL=3600000
@@ -14,8 +13,11 @@ ENV RPC_URL=https://rpc.ankr.com/eth_goerli
 ENV CHAIN_NAME="Goerli test network"
 ENV CHAIN_ID=5
 ENV PRIVATE_KEY=
-ENV MANGER_CONTRACT_ADDRESS=0x2C787Db499BD7BF1f592D8DDd79ead9a72420763
-
-RUN yarn build
+ENV ADAPTER_CONTRACT_ADDRESS=
+ENV DATA_SERVICE_ID=redstone-main-demo
+ENV UNIQUE_SIGNERS_COUNT=1
+ENV DATA_FEEDS=
+ENV CACHE_SERVICE_URLS='["https://d1zm8lxy9v2ddd.cloudfront.net"]'
+ENV GAS_LIMIT=5000000
 
 CMD [ "yarn", "start" ]

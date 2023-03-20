@@ -15,7 +15,7 @@ export class DrandFetcher extends BaseFetcher {
     return await axios.get(DRAND_URL);
   }
 
-  async extractPrices(response: any, symbols: string[]): Promise<PricesObj> {
+  extractPrices(response: any, symbols: string[]): PricesObj {
     if (symbols.length !== 1 || symbols[0] !== ENTROPY_SYMBOL) {
       throw new Error(`Only one symbol supported by drand: ${ENTROPY_SYMBOL}`);
     }

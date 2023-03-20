@@ -9,7 +9,6 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
   "tokens": {
     "BTC": {},
     "CHZ": {},
@@ -168,7 +167,6 @@
     "ASP": {},
     "KLV": {},
     "NFT": {},
-    "CCE": {},
     "INSUR": {},
     "HYDRA": {},
     "LOC": {},

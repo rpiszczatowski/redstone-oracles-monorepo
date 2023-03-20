@@ -17,7 +17,6 @@ import PricesService, {
 } from "./fetchers/PricesService";
 import { Manifest, NodeConfig, PriceDataAfterAggregation } from "./types";
 import { fetchIp } from "./utils/ip-fetcher";
-import { ArweaveProxy } from "./arweave/ArweaveProxy";
 import { config } from "./config";
 import { connectToDb } from "./db/remote-mongo/db-connector";
 import { AggregatedPriceHandler } from "./aggregated-price-handlers/AggregatedPriceHandler";
@@ -59,10 +58,7 @@ export default class NodeRunner {
     this.version = getVersionFromPackageJSON();
     this.useNewManifest(initialManifest);
     this.lastManifestLoadTimestamp = Date.now();
-    const httpBroadcasterURLs =
-      config.overrideDirectCacheServiceUrls ??
-      initialManifest?.httpBroadcasterURLs;
-
+    const httpBroadcasterURLs = config.overrideDirectCacheServiceUrls;
     const priceHttpBroadcasterURLs = config.overridePriceCacheServiceUrls;
 
     this.aggregatedPriceHandlers = [
@@ -91,8 +87,9 @@ export default class NodeRunner {
     // Otherwise App Runner crashes ¯\_(ツ)_/¯
     new ExpressAppRunner(nodeConfig).run();
     await connectToDb();
-    const arweave = new ArweaveProxy(nodeConfig.privateKeys.arweaveJwk);
-    const providerAddress = await arweave.getAddress();
+    const providerAddress = new ethers.Wallet(
+      nodeConfig.privateKeys.ethereumPrivateKey
+    ).address;
     const arweaveService = new ArweaveService();
 
     let manifestData = null;
@@ -138,11 +135,8 @@ export default class NodeRunner {
   }
 
   private async printInitialNodeDetails() {
-    const evmPrivateKey = this.nodeConfig.privateKeys.ethereumPrivateKey;
-    const evmAddress = new ethers.Wallet(evmPrivateKey).address;
     const ipAddress = await fetchIp();
-    logger.info(`Node evm address: ${evmAddress}`);
-    logger.info(`Node arweave address: ${this.providerAddress}`);
+    logger.info(`Node evm address: ${this.providerAddress}`);
     logger.info(`Version from package.json: ${this.version}`);
     logger.info(`Node's IP address: ${ipAddress}`);
     logger.info(

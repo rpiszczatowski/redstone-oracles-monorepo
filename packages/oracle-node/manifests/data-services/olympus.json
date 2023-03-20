@@ -1,0 +1,122 @@
+{
+  "interval": 10000,
+  "priceAggregator": "median",
+  "defaultSource": ["coingecko"],
+  "sourceTimeout": 7000,
+  "deviationCheck": {
+    "deviationWithRecentValues": {
+      "maxPercent": 30,
+      "maxDelayMilliseconds": 300000
+    }
+  },
+  "tokens": {
+    "ETH": {
+      "source": [
+        "bequant",
+        "binance",
+        "binancecoinm",
+        "binanceus",
+        "binanceusdm",
+        "bitcoincom",
+        "bitfinex",
+        "bitfinex2",
+        "bittrex",
+        "btcturk",
+        "cex",
+        "coinbaseprime",
+        "coinbasepro",
+        "coingecko",
+        "currencycom",
+        "hitbtc",
+        "hollaex",
+        "huobipro",
+        "kraken",
+        "kucoin",
+        "oceanex",
+        "okx",
+        "poloniex",
+        "probit",
+        "stex"
+      ]
+    },
+    "DAI": {
+      "source": [
+        "binanceus",
+        "bitfinex",
+        "bitfinex2",
+        "bittrex",
+        "cex",
+        "coinbaseprime",
+        "coinbasepro",
+        "coingecko",
+        "currencycom",
+        "huobipro",
+        "kraken",
+        "okx",
+        "poloniex",
+        "probit",
+        "sushiswap",
+        "uniswap"
+      ]
+    },
+    "USDC": {
+      "source": [
+        "binanceus",
+        "bitfinex",
+        "bitfinex2",
+        "bittrex",
+        "btcturk",
+        "cex",
+        "coingecko",
+        "currencycom",
+        "huobipro",
+        "kraken",
+        "kucoin",
+        "oceanex",
+        "okx",
+        "probit",
+        "sushiswap",
+        "uniswap"
+      ],
+      "deviationWithRecentValues": {
+        "maxPercent": 5,
+        "maxDelayMilliseconds": 300000
+      }
+    },
+    "USDT": {
+      "source": [
+        "binanceus",
+        "bitfinex",
+        "bitfinex2",
+        "bittrex",
+        "cex",
+        "coinbaseprime",
+        "coinbasepro",
+        "coingecko",
+        "currencycom",
+        "kraken",
+        "uniswap"
+      ],
+      "deviationWithRecentValues": {
+        "maxPercent": 5,
+        "maxDelayMilliseconds": 300000
+      }
+    },
+    "OHM": {
+      "source": ["balancer-dai", "balancer-weth", "sushiswap-on-chain-dai"],
+      "priceAggregator": "lwap"
+    },
+    "OHM_balancer-dai_liquidity": {
+      "skipSigning": true,
+      "source": ["balancer-dai"]
+    },
+    "OHM_balancer-weth_liquidity": {
+      "skipSigning": true,
+      "source": ["balancer-weth"]
+    },
+    "OHM_sushiswap-on-chain-dai_liquidity": {
+      "skipSigning": true,
+      "source": ["sushiswap-on-chain-dai"]
+    }
+  }
+}

@@ -64,7 +64,7 @@ export class LensFetcher extends BaseFetcher {
     return profiles !== undefined && profiles.length > 0;
   }
 
-  async extractPrices(profiles: LensProfile[]): Promise<ReputationObject> {
+  extractPrices(profiles: LensProfile[]): ReputationObject {
     const reputationObject: ReputationObject = {};
 
     for (const profile of profiles) {

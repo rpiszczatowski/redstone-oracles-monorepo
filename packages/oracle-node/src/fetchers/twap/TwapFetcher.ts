@@ -1,7 +1,9 @@
 import axios from "axios";
-import { PricesObj } from "../../types";
 import EvmPriceSigner from "../../signers/EvmPriceSigner";
-import { MultiRequestFetcher } from "../MultiRequestFetcher";
+import {
+  MultiRequestFetcher,
+  RequestIdToResponse,
+} from "../MultiRequestFetcher";
 
 const PRICES_URL = "https://api.redstone.finance/prices";
 const MAX_LIMIT = 1000;
@@ -29,38 +31,31 @@ export class TwapFetcher extends MultiRequestFetcher {
     return Date.now();
   }
 
-  makeRequest(id: string, timestamp: number): Promise<any> {
+  async makeRequest(id: string): Promise<any> {
+    const timestamp = Date.now();
     const { assetSymbol, millisecondsOffset } =
       TwapFetcher.parseTwapAssetId(id);
     const fromTimestamp = timestamp - millisecondsOffset;
 
-    return axios
-      .get(PRICES_URL, {
-        params: {
-          symbol: assetSymbol,
-          provider: this.sourceProviderId,
-          fromTimestamp,
-          toTimestamp: timestamp,
-          limit: MAX_LIMIT,
-        },
-      })
-      .then((responseForSymbol) => {
-        return {
-          data: {
-            id: id,
-            data: responseForSymbol.data,
-          },
-        };
-      });
+    const responseForSymbol = await axios.get(PRICES_URL, {
+      params: {
+        symbol: assetSymbol,
+        provider: this.sourceProviderId,
+        fromTimestamp,
+        toTimestamp: timestamp,
+        limit: MAX_LIMIT,
+      },
+    });
+    return responseForSymbol;
   }
 
-  processData(data: any, pricesObj: PricesObj): PricesObj {
-    this.verifySignatures(data.data);
-
-    const twapValue = TwapFetcher.getTwapValue(data.data);
-    pricesObj[data.id] = twapValue!;
-
-    return pricesObj;
+  override extractPrice(
+    dataFeedId: string,
+    responses: RequestIdToResponse
+  ): number | undefined {
+    const response = responses[dataFeedId];
+    this.verifySignatures(response.data);
+    return TwapFetcher.getTwapValue(response.data);
   }
 
   private async verifySignatures(prices: HistoricalPrice[]) {

@@ -1,10 +1,15 @@
+import _ from "lodash";
 import axios from "axios";
 import { PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
 import { config } from "../../config";
+import symbolToId from "./twelve-data-symbol-to-id.json";
+import { getRequiredPropValue } from "../../utils/objects";
 
 const TWELVE_DATA_RATE_URL =
   "https://twelve-data1.p.rapidapi.com/exchange_rate";
+
+const idToSymbol = _.invert(symbolToId);
 
 export class TwelveDataFetcher extends BaseFetcher {
   constructor() {
@@ -12,12 +17,11 @@ export class TwelveDataFetcher extends BaseFetcher {
   }
 
   override convertIdToSymbol(id: string): string {
-    const [symbol] = id.split("/");
-    return symbol;
+    return getRequiredPropValue(idToSymbol, id);
   }
 
   override convertSymbolToId(symbol: string): string {
-    return `${symbol}/USD`;
+    return getRequiredPropValue(symbolToId, symbol);
   }
 
   async fetchData(ids: string[]): Promise<any> {
@@ -29,7 +33,7 @@ export class TwelveDataFetcher extends BaseFetcher {
     });
   }
 
-  async extractPrices(result: any): Promise<PricesObj> {
+  extractPrices(result: any): PricesObj {
     const pricesObj: PricesObj = {};
 
     const rates = result.data;

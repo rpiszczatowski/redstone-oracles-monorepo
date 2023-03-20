@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { Fetcher } from "../types";
 import ccxtFetchers from "./ccxt/all-ccxt-fetchers";
 import pangolinFetchers from "./pangolin/all-pangolin-fetchers";
@@ -22,14 +21,19 @@ import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
 import { XtFetcher } from "./xt/XtFetcher";
 import { BandFetcher } from "./band/BandFetcher";
 import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
-import { config } from "../config";
 import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
-import { LiquidityFetcher } from "./liquidity/LiquidityFetcher";
-
-const AVALANCHE_NETWORK_NAME = "Avalanche Network";
-const AVALANCHE_CHAIN_ID = 43114;
+import balancerFetchers from "./balancer/all-balancer-fetchers";
+import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/ArbitrumEvmFetcher";
+import { arbitrumProvider } from "./evm-chain/arbitrum/config";
+import { avalancheProvider } from "./evm-chain/avalanche/config";
+import sushiswapEthereumOnChainFetchers from "./evm-chain/ethereum/sushiswap-on-chain/all-sushiswap-fetchers";
+import curveFetchers from "./curve/all-curve-fetchers";
+import { DeribitFetcher } from "./deribit/DeribitFetcher";
+import { StlouisfedFetcher } from "./stlouisfed/StlouisfedFetcher";
+import { NewyorkfedFetcher } from "./newyorkfed/NewyorkfedFetcher";
+import uniswapV2OnChainFetchers from "./evm-chain/ethereum/uniswap-v2-on-chain/all-uniswap-v2-on-chain-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -42,25 +46,27 @@ export default {
   uniswap: new UniswapFetcher(),
   "uniswap-v3": new UniswapV3Fetcher(),
   drand: new DrandFetcher(),
+  deribit: new DeribitFetcher(),
   dia: new DiaFetcher(),
   kyber: new KyberFetcher(),
   verto: new VertoFetcher(),
   ecb: new EcbFetcher(),
   band: new BandFetcher(),
-  "avalanche-evm-fetcher": new AvalancheEvmFetcher(
-    new ethers.providers.StaticJsonRpcProvider(config.avalancheRpcUrl, {
-      name: AVALANCHE_NETWORK_NAME,
-      chainId: AVALANCHE_CHAIN_ID,
-    })
-  ),
+  "avalanche-evm-fetcher": new AvalancheEvmFetcher(avalancheProvider),
   platypus: new PlatypusFetcher(),
   chainlink: new ChainlinkFetcher(),
   lens: new LensFetcher(),
   xt: new XtFetcher(),
   coinmarketcap: new CoinMarketCapFetcher(),
   kaiko: new KaikoFetcher(),
-  liquidity: new LiquidityFetcher(),
+  stlouisfed: new StlouisfedFetcher(),
+  newyorkfed: new NewyorkfedFetcher(),
+  "arbitrum-evm-fetcher": new ArbitrumEvmFetcher(arbitrumProvider),
   ...ccxtFetchers,
   ...pangolinFetchers,
+  ...balancerFetchers,
   ...twapFetchers,
+  ...sushiswapEthereumOnChainFetchers,
+  ...curveFetchers,
+  ...uniswapV2OnChainFetchers,
 } as { [name: string]: Fetcher };

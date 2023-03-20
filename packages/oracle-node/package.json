@@ -27,12 +27,12 @@
     "Peter Pedziwiatr <peter@redstone.finance>"
   ],
   "dependencies": {
+    "@balancer-labs/sdk": "^0.1.47",
     "@bundlr-network/client": "^0.7.4",
     "@metamask/eth-sig-util": "^4.0.1",
     "arweave": "^1.10.23",
     "axios": "^0.21.1",
     "ccxt": "^1.94.12",
-    "coingecko-api": "^1.0.10",
     "consola": "^2.15.3",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
@@ -47,12 +47,12 @@
     "mongoose": "^6.7.0",
     "node-schedule": "^2.1.0",
     "prompts": "^2.4.2",
+    "redstone-api": "^0.4.11",
     "sort-deep-object-arrays": "^1.1.2",
     "uuid": "^9.0.0",
     "yahoo-finance": "^0.3.7"
   },
   "devDependencies": {
-    "@types/coingecko-api": "^1.0.10",
     "@types/cors": "^2.8.12",
     "@types/exchange-rates-api": "^1.0.0",
     "@types/express": "^4.17.14",

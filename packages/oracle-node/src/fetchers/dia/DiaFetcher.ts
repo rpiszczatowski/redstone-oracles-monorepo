@@ -1,10 +1,16 @@
-import { MultiRequestFetcher } from "../MultiRequestFetcher";
-import { PricesObj } from "../../types";
+import {
+  MultiRequestFetcher,
+  RequestIdToResponse,
+} from "../MultiRequestFetcher";
 
 const axios = require("axios");
 
 const DIA_BASE_URL = "https://api.diadata.org/v1";
 const DIA_QUOTATION_PATH = "quotation";
+
+interface Response {
+  data: Quotation;
+}
 
 interface Quotation {
   Symbol: string;
@@ -16,13 +22,14 @@ export class DiaFetcher extends MultiRequestFetcher {
     super("dia");
   }
 
-  makeRequest(id: string): Promise<any> {
+  override makeRequest(id: string): Promise<Response> {
     return axios.get(`${DIA_BASE_URL}/${DIA_QUOTATION_PATH}/${id}`);
   }
 
-  processData(quotation: Quotation, pricesObj: PricesObj): PricesObj {
-    pricesObj[quotation.Symbol] = quotation.Price;
-
-    return pricesObj;
+  override extractPrice(
+    dataFeedId: string,
+    responses: RequestIdToResponse
+  ): number | undefined {
+    return responses[dataFeedId]?.data?.Price;
   }
 }
