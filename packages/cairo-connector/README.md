@@ -14,8 +14,8 @@
 ### Running the cairo demo program
 1. fill the value with `PAYLOAD_URL` in the Makefile (it should have the `format=` at the end). 
    * You might need the `cache-service` started locally and MongoDB installed or set up on the DigitalOcean <https://github.com/redstone-finance/redstone-oracles-monorepo/blob/main/.do/mongodb/README.md>.
-1. execute `make prepare_data`. The files are saved in the `./data-generator/data` directory
-   * the base name of files is defined as `DATA_NAME` variable in the [Makefile](./../data-generator/Makefile) in the `/data-generator` directory)
+1. execute `make prepare_data`. The files are saved in the `../protocol/scripts/payload-generator/data` directory
+   * the base name of files is defined as `DATA_NAME` variable in the [Makefile](packages/protocol/scripts/payload-generator/Makefile) in the `../protocol/scripts/payload-generator` directory)
 1. execute `make run`
 
 ### Using the contract(s)

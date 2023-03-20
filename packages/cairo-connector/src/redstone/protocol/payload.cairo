@@ -1,4 +1,5 @@
 from starkware.cairo.common.math import assert_nn
+from starkware.cairo.common.serialize import serialize_word
 
 from redstone.protocol.data_point import data_point_array_index
 from redstone.protocol.data_package import (
@@ -6,7 +7,14 @@ from redstone.protocol.data_package import (
     get_data_packages,
     serialize_data_package_array,
 )
-from redstone.utils.array import Array, array_slice_tail_offset, array_slice_number, array_to_number
+from redstone.utils.array import (
+    Array,
+    array_slice_tail_offset,
+    array_slice_number,
+    array_to_number,
+    array_new,
+    array_min,
+)
 from redstone.protocol.constants import (
     REDSTONE_MARKER,
     REDSTONE_MARKER_BS,
@@ -16,6 +24,7 @@ from redstone.protocol.constants import (
 
 struct Payload {
     data_packages: DataPackageArray,
+    min_timestamp: felt,
 }
 
 func get_payload{range_check_ptr}(bytes_arr: Array) -> Payload {
@@ -41,7 +50,9 @@ func get_payload{range_check_ptr}(bytes_arr: Array) -> Payload {
     let data_packages = get_data_packages(arr=data_package_count_rest, count=data_package_count);
     assert data_packages.len = data_package_count;
 
-    local payload: Payload = Payload(data_packages=data_packages);
+    let min_timestamp = get_min_timestamp(data_packages=data_packages);
+
+    local payload: Payload = Payload(data_packages=data_packages, min_timestamp=min_timestamp);
 
     return payload;
 }
@@ -58,7 +69,30 @@ func get_price{range_check_ptr}(payload: Payload, package_index: felt, feed_id: 
     return dp.value;
 }
 
+func get_min_timestamp{range_check_ptr}(data_packages: DataPackageArray) -> felt {
+    alloc_locals;
+
+    let arr = array_new(len=data_packages.len);
+
+    get_timestamps(arr=data_packages, index=0, res=arr);
+
+    let min_timestamp = array_min(arr=arr);
+
+    return min_timestamp;
+}
+
+func get_timestamps(arr: DataPackageArray, index: felt, res: Array) {
+    if (index == arr.len) {
+        return ();
+    }
+
+    assert res.ptr[index] = arr.ptr[index].timestamp;
+
+    return get_timestamps(arr, index=index + 1, res=res);
+}
+
 func serialize_payload{output_ptr: felt*, range_check_ptr}(payload: Payload) {
+    serialize_word(payload.min_timestamp);
     serialize_data_package_array(payload.data_packages, 0);
 
     return ();
