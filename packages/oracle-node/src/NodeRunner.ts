@@ -117,8 +117,6 @@ export default class NodeRunner {
   }
 
   async run(): Promise<void> {
-    // TODO: implement manifest validation here
-
     await this.printInitialNodeDetails();
     this.maybeRunDiagnosticInfoPrinting();
 

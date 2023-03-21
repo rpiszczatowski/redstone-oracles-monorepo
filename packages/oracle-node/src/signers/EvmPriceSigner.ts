@@ -10,8 +10,6 @@ import {
 } from "../types";
 import _ from "lodash";
 
-// TODO: remove this service. Use Universal signer from redstone-protocol instead
-
 const serializePriceValue = (value: number) => Math.round(value * 10 ** 8);
 
 export default class EvmPriceSigner {
