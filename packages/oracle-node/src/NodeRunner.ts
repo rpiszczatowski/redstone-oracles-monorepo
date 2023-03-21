@@ -24,7 +24,6 @@ import { AggregatedPriceLocalDBSaver } from "./aggregated-price-handlers/Aggrega
 import { DataPackageBroadcastPerformer } from "./aggregated-price-handlers/DataPackageBroadcastPerformer";
 import { PriceDataBroadcastPerformer } from "./aggregated-price-handlers/PriceDataBroadcastPerformer";
 import { ManifestDataProvider } from "./aggregated-price-handlers/ManifestDataProvider";
-import { getScheduler } from "./schedulers";
 import { IterationContext } from "./schedulers/IScheduler";
 
 const logger = require("./utils/logger")("runner") as Consola;
@@ -32,7 +31,6 @@ const pjson = require("../package.json") as any;
 
 const MANIFEST_LOAD_TIMEOUT_MS = 25 * 1000;
 const DIAGNOSTIC_INFO_PRINTING_INTERVAL = 60 * 1000;
-const DEFAULT_SCHEDULER_NAME = "interval";
 
 export default class NodeRunner {
   private readonly version: string;
@@ -125,9 +123,7 @@ export default class NodeRunner {
     this.maybeRunDiagnosticInfoPrinting();
 
     try {
-      const schedulerName =
-        this.currentManifest!.useCustomScheduler ?? DEFAULT_SCHEDULER_NAME;
-      const scheduler = getScheduler(schedulerName, this.currentManifest!);
+      const scheduler = ManifestHelper.getScheduler(this.currentManifest!);
       await scheduler.startIterations(this.runIteration);
     } catch (e: any) {
       NodeRunner.reThrowIfManifestConfigError(e);

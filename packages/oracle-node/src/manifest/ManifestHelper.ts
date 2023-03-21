@@ -1,9 +1,13 @@
 import aggregators from "../aggregators";
+import { CronScheduler } from "../schedulers/CronScheduler";
+import { OnBlockScheduler } from "../schedulers/OnBlockScheduler";
 import { Manifest } from "../types";
+import { arbitrumProvider } from "../utils/blockchain-providers";
 
 export type TokensBySource = { [source: string]: string[] };
 
 const DEFAULT_MIN_VALID_SOURCE_PERCENTAGE = 50;
+const DEFAULT_SCHEDULER_NAME = "interval";
 
 export default class ManifestHelper {
   // This function converts tokens from manifest to object with the following
@@ -85,5 +89,16 @@ export default class ManifestHelper {
     const aggregatorName =
       manifest.tokens[symbol]?.priceAggregator ?? manifest.priceAggregator;
     return aggregators[aggregatorName];
+  }
+
+  static getScheduler(manifest: Manifest) {
+    const schedulerName = manifest.useCustomScheduler ?? DEFAULT_SCHEDULER_NAME;
+
+    const schedulerGetters = {
+      "on-each-arbitrum-block": () => new OnBlockScheduler(arbitrumProvider),
+      interval: (manifest: Manifest) => new CronScheduler(manifest.interval!),
+    };
+
+    return schedulerGetters[schedulerName](manifest);
   }
 }

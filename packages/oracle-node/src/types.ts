@@ -2,7 +2,7 @@ import { JWKInterface } from "arweave/node/lib/wallet";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
-  interval: number; // It is ifnored if the `useCustomScheduler` option is specified
+  interval: number; // It is ignored if the `useCustomScheduler` is not set to `interval`
   useCustomScheduler?: "on-each-arbitrum-block" | "interval";
   priceAggregator: string;
   defaultSource?: string[];
