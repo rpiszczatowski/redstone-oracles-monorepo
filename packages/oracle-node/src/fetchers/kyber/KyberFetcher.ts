@@ -2,6 +2,7 @@ import axios from "axios";
 import { BaseFetcher } from "../BaseFetcher";
 import { getLastPrice } from "../../db/local-db";
 import { PricesObj } from "../../types";
+import { stringifyError } from "../../utils/error-stringifier";
 
 const ETH_PAIRS_URL = "https://api.kyber.network/api/tokens/pairs";
 
@@ -21,9 +22,15 @@ export class KyberFetcher extends BaseFetcher {
 
     const pairs = response.data;
     for (const id of ids) {
-      const pair = pairs["ETH_" + id];
-      if (pair !== undefined && lastEthPrice) {
-        pricesObj[id] = lastEthPrice * pair.currentPrice;
+      try {
+        const pair = pairs["ETH_" + id];
+        if (pair !== undefined && lastEthPrice) {
+          pricesObj[id] = lastEthPrice * pair.currentPrice;
+        }
+      } catch (e: any) {
+        this.logger.error(
+          `Extracting price failed for: ${id}. ${stringifyError(e)}`
+        );
       }
     }
 

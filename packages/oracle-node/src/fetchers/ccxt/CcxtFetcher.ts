@@ -5,6 +5,7 @@ import { getLastPrice } from "../../db/local-db";
 import { getRequiredPropValue } from "../../utils/objects";
 import symbolToIdForExchanges from "./symbol-to-id/index";
 import { PricesObj } from "../../types";
+import { stringifyError } from "../../utils/error-stringifier";
 
 const CCXT_FETCHER_MAX_REQUEST_TIMEOUT_MS = 120000;
 
@@ -54,18 +55,24 @@ export class CcxtFetcher extends BaseFetcher {
     const pricesObj: PricesObj = {};
 
     for (const ticker of Object.values(response) as Ticker[]) {
-      let pairSymbol = ticker.symbol;
-      pairSymbol = this.serializePairSymbol(pairSymbol);
-      const lastPrice = ticker.last as number;
-      if (pairSymbol.endsWith("/USD")) {
-        pricesObj[pairSymbol] = lastPrice;
-      } else {
-        if (!pricesObj[pairSymbol]) {
-          const lastUsdInStablePrice = this.getStableCoinPrice(pairSymbol);
-          if (lastUsdInStablePrice) {
-            pricesObj[pairSymbol] = lastPrice * lastUsdInStablePrice;
+      try {
+        let pairSymbol = ticker.symbol;
+        pairSymbol = this.serializePairSymbol(pairSymbol);
+        const lastPrice = ticker.last as number;
+        if (pairSymbol.endsWith("/USD")) {
+          pricesObj[pairSymbol] = lastPrice;
+        } else {
+          if (!pricesObj[pairSymbol]) {
+            const lastUsdInStablePrice = this.getStableCoinPrice(pairSymbol);
+            if (lastUsdInStablePrice) {
+              pricesObj[pairSymbol] = lastPrice * lastUsdInStablePrice;
+            }
           }
         }
+      } catch (e: any) {
+        this.logger.error(
+          `Extracting price failed for: ${ticker}. ${stringifyError(e)}`
+        );
       }
     }
     return pricesObj;

@@ -1,5 +1,6 @@
 import * as exchangeRates from "ecb-euro-exchange-rates";
 import { PricesObj } from "../../types";
+import { stringifyError } from "../../utils/error-stringifier";
 import { BaseFetcher } from "../BaseFetcher";
 
 export class EcbFetcher extends BaseFetcher {
@@ -17,10 +18,16 @@ export class EcbFetcher extends BaseFetcher {
     const { rates } = response;
     const usdRate = rates.USD;
     for (const id of ids) {
-      if (id === "EUR") {
-        pricesObj[id] = usdRate;
-      } else {
-        pricesObj[id] = (1 / rates[id]) * usdRate;
+      try {
+        if (id === "EUR") {
+          pricesObj[id] = usdRate;
+        } else {
+          pricesObj[id] = (1 / rates[id]) * usdRate;
+        }
+      } catch (e) {
+        this.logger.error(
+          `Extracting price failed for: ${id}. ${stringifyError(e)}`
+        );
       }
     }
 

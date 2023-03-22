@@ -1,6 +1,7 @@
 import graphProxy from "../utils/graph-proxy";
 import { PricesObj } from "../types";
 import { BaseFetcher } from "./BaseFetcher";
+import { stringifyError } from "../utils/error-stringifier";
 
 export interface DexFetcherResponse {
   data: {
@@ -72,25 +73,31 @@ export class DexFetcher extends BaseFetcher {
     const pricesObj: PricesObj = {};
 
     for (const currentAssetId of assetIds) {
-      const pairId = this.symbolToPairIdObj[currentAssetId];
-      const pair = response.data.pairs.find((pair) => pair.id === pairId);
+      try {
+        const pairId = this.symbolToPairIdObj[currentAssetId];
+        const pair = response.data.pairs.find((pair) => pair.id === pairId);
 
-      if (!pair) {
-        this.logger.warn(
-          `Pair is not in response. Id: ${pairId}. Symbol: ${currentAssetId}. Source: ${this.name}`
-        );
-      } else {
-        const symbol0 = pair.token0.symbol;
-        const symbol1 = pair.token1.symbol;
-        const reserve0 = parseFloat(pair.reserve0);
-        const reserve1 = parseFloat(pair.reserve1);
-        const reserveUSD = parseFloat(pair.reserveUSD);
+        if (!pair) {
+          this.logger.warn(
+            `Pair is not in response. Id: ${pairId}. Symbol: ${currentAssetId}. Source: ${this.name}`
+          );
+        } else {
+          const symbol0 = pair.token0.symbol;
+          const symbol1 = pair.token1.symbol;
+          const reserve0 = parseFloat(pair.reserve0);
+          const reserve1 = parseFloat(pair.reserve1);
+          const reserveUSD = parseFloat(pair.reserveUSD);
 
-        if (symbol0 === currentAssetId) {
-          pricesObj[currentAssetId] = reserveUSD / (2 * reserve0);
-        } else if (symbol1 === currentAssetId) {
-          pricesObj[currentAssetId] = reserveUSD / (2 * reserve1);
+          if (symbol0 === currentAssetId) {
+            pricesObj[currentAssetId] = reserveUSD / (2 * reserve0);
+          } else if (symbol1 === currentAssetId) {
+            pricesObj[currentAssetId] = reserveUSD / (2 * reserve1);
+          }
         }
+      } catch (e: any) {
+        this.logger.error(
+          `Extracting price failed for: ${currentAssetId}. ${stringifyError(e)}`
+        );
       }
     }
 

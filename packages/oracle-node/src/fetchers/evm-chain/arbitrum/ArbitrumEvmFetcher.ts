@@ -4,6 +4,7 @@ import { EvmMulticallService } from "../EvmMulticallService";
 import { prepareMulticallRequests } from "./prepare-multicall-request";
 import { MulticallParsedResponses, PricesObj } from "../../../types";
 import { extractPrice } from "./extract-price";
+import { stringifyError } from "../../../utils/error-stringifier";
 
 const MUTLICALL_CONTRACT_ADDRESS = "0x842eC2c7D803033Edf55E478F461FC547Bc54EB2";
 
@@ -43,9 +44,15 @@ export class ArbitrumEvmFetcher extends BaseFetcher {
   extractPrices(response: MulticallParsedResponses, ids: string[]): PricesObj {
     const pricesObject: PricesObj = {};
     for (const id of ids) {
-      const price = extractPrice(response, id);
-      if (price) {
-        pricesObject[id] = Number(price);
+      try {
+        const price = extractPrice(response, id);
+        if (price) {
+          pricesObject[id] = Number(price);
+        }
+      } catch (e: any) {
+        this.logger.error(
+          `Extracting price failed for: ${id}. ${stringifyError(e)}`
+        );
       }
     }
     return pricesObject;

@@ -5,6 +5,7 @@ import { getRequiredPropValue } from "../../utils/objects";
 import { PricesObj } from "../../types";
 import symbolToId from "./symbol-to-id.json";
 import { config } from "../../config";
+import { stringifyError } from "../../utils/error-stringifier";
 const idToSymbol = _.invert(symbolToId);
 
 const url = "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest";
@@ -43,12 +44,18 @@ export class CoinMarketCapFetcher extends BaseFetcher {
     const tokenData = response.data;
 
     for (const id of ids) {
-      const price = tokenData?.[id]?.quote?.USD?.price;
-      if (price) {
-        pricesObj[id] = price;
-      } else {
-        this.logger.warn(
-          `CoinMarketCap fetcher: Id ${id} not included in response`
+      try {
+        const price = tokenData?.[id]?.quote?.USD?.price;
+        if (price) {
+          pricesObj[id] = price;
+        } else {
+          this.logger.warn(
+            `CoinMarketCap fetcher: Id ${id} not included in response`
+          );
+        }
+      } catch (e: any) {
+        this.logger.error(
+          `Extracting price failed for: ${id}. ${stringifyError(e)}`
         );
       }
     }

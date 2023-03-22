@@ -5,6 +5,7 @@ import { getRequiredPropValue } from "../../utils/objects";
 import symbolToId from "./coingecko-symbol-to-id.json";
 import { config } from "../../config";
 import { PricesObj } from "../../types";
+import { stringifyError } from "../../utils/error-stringifier";
 
 const idToSymbol = _.invert(symbolToId);
 
@@ -41,7 +42,13 @@ export class CoingeckoFetcher extends BaseFetcher {
     const pricesObj: PricesObj = {};
 
     for (const id of Object.keys(prices)) {
-      pricesObj[id] = prices[id].usd;
+      try {
+        pricesObj[id] = prices[id].usd;
+      } catch (e: any) {
+        this.logger.error(
+          `Extracting price failed for: ${id}. ${stringifyError(e)}`
+        );
+      }
     }
 
     return pricesObj;

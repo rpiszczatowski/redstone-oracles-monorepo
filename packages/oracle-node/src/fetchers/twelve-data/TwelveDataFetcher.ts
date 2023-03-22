@@ -5,6 +5,7 @@ import { BaseFetcher } from "../BaseFetcher";
 import { config } from "../../config";
 import symbolToId from "./twelve-data-symbol-to-id.json";
 import { getRequiredPropValue } from "../../utils/objects";
+import { stringifyError } from "../../utils/error-stringifier";
 
 const TWELVE_DATA_RATE_URL =
   "https://twelve-data1.p.rapidapi.com/exchange_rate";
@@ -38,8 +39,14 @@ export class TwelveDataFetcher extends BaseFetcher {
 
     const rates = result.data;
     for (const symbol of Object.keys(rates)) {
-      const id = rates[symbol].symbol;
-      pricesObj[id] = rates[symbol].rate;
+      try {
+        const id = rates[symbol].symbol;
+        pricesObj[id] = rates[symbol].rate;
+      } catch (error: any) {
+        this.logger.error(
+          `Extracting price failed for: ${symbol}. ${stringifyError(error)}`
+        );
+      }
     }
 
     return pricesObj;

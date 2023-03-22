@@ -1,6 +1,7 @@
 import axios from "axios";
 import { BaseFetcher } from "../BaseFetcher";
 import { PricesObj } from "../../types";
+import { stringifyError } from "../../utils/error-stringifier";
 
 const BAND_ORACLE_API_URL = `https://laozi1.bandchain.org/api/oracle/v1/request_prices`;
 const symbols = ["BTC", "ETH", "AAVE", "UNI"];
@@ -39,7 +40,13 @@ export class BandFetcher extends BaseFetcher {
     const pricesArray = response.data.price_results;
     const pricesObj: PricesObj = {};
     for (const asset of pricesArray) {
-      pricesObj[asset.symbol] = asset.px / asset.multiplier;
+      try {
+        pricesObj[asset.symbol] = asset.px / asset.multiplier;
+      } catch (e: any) {
+        this.logger.error(
+          `Extracting price failed for: ${asset?.symbol}. ${stringifyError(e)}`
+        );
+      }
     }
     return pricesObj;
   }
