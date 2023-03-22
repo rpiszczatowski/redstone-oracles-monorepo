@@ -9,7 +9,6 @@ interface CacheServiceConfigRequiredFields {
   mockDataServiceIdForPackages: boolean;
   apiKeyForAccessToAdminRoutes: string;
   allowedStreamrDataServiceIds: string[];
-  secondMongoDbUrl?: string;
 }
 
 type CacheServiceConfig =
@@ -48,7 +47,6 @@ const config = {
   allowedStreamrDataServiceIds: JSON.parse(
     getEnv("ALLOWED_STREAMR_DATA_SERVICE_IDS", false) || "[]"
   ),
-  secondMongoDbUrl: getEnv("SECOND_MONGO_DB_URL", false),
 } as CacheServiceConfig;
 
 if (config.enableArchivingOnArweave) {
