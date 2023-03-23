@@ -1,0 +1,3 @@
+[crate_roots]
+demo = "."
+redstone = "../redstone"

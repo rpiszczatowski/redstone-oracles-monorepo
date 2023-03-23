@@ -21,7 +21,7 @@ ifeq ($(IS_OWNABLE), 1)
 	CONSTRUCTOR_PARAMS=$(OWNER_ADDRESS) $(BASE_PARAMS)
 else
 	ifeq ($(IS_CONSUMER), 1)
-		CONSTRUCTOR_PARAMS=$(MANAGER_ADDRESS) $(BTC)
+		CONSTRUCTOR_PARAMS=$(MANAGER_ADDRESS) $(ETH)
 	else
 		CONSTRUCTOR_PARAMS=$(BASE_PARAMS)
 	endif
@@ -156,14 +156,12 @@ latest_round_data:
 	--address ${CONTRACT_ADDRESS} \
 	--function latest_round_data 
 
-
 write_prices:
 	starknet invoke --account=$(ACC) --network=$(NETWORK) \
 	--wallet=starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount \
 	--address ${CONTRACT_ADDRESS} \
 	--function write_prices \
 	--inputs 1 2 $(ETH) $(BTC) 2 1255 5421 5463334
-
 
 clean:
 	rm -rf build

@@ -1,0 +1,9 @@
+const REDSTONE_MARKER: felt252 = 0x000002ed57011e0000;
+const REDSTONE_MARKER_BS: usize = 9_usize;
+const UNSIGNED_METADATA_BYTE_SIZE_BS: usize = 3_usize;
+const DATA_PACKAGES_COUNT_BS: usize = 2_usize;
+const SIGNATURE_BS: usize = 65_usize;
+const DATA_POINTS_COUNT_BS: usize = 3_usize;
+const DATA_POINT_VALUE_BYTE_SIZE_BS: usize = 4_usize;
+const TIMESTAMP_BS: usize = 6_usize;
+const DATA_FEED_ID_BS: usize = 32_usize;
