@@ -84,7 +84,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       uint256 signaturesBytesCount = signersCount.mul(SIG_BS);
       uint256 signedMessageBytesCount = dataPointsCount.mul(
         eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS
-      ) + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS; //DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
+      ) + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS; // DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
 
       uint256 timestampCalldataOffset = msg.data.length.sub(
         calldataNegativeOffset +
@@ -291,9 +291,8 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       bytes memory signedMessage;
       uint256 signedMessageBytesCount;
 
-      signedMessageBytesCount =
-        dataPointsCount.mul(eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS) +
-        DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS; //DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
+      signedMessageBytesCount = dataPointsCount.mul(eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS) 
+        + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS; // DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
 
       uint256 timestampCalldataOffset = msg.data.length.sub(
         calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS
