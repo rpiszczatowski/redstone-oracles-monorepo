@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { Manifest } from "./types";
+import { Manifest, NodeConfig } from "./types";
 import { readJSON } from "./utils/objects";
 import { ethers } from "ethers";
 
@@ -96,7 +96,7 @@ const ethereumPrivateKey = parserFromString.hex(
   getFromEnv("ECDSA_PRIVATE_KEY")
 );
 
-export const config = Object.freeze({
+export const config: NodeConfig = Object.freeze({
   enableJsonLogs: parserFromString.boolean(
     getFromEnv("ENABLE_JSON_LOGS", DEFAULT_ENABLE_JSON_LOGS)
   ),
