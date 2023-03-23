@@ -17,10 +17,17 @@ export const arbitrumProvider = new providers.StaticJsonRpcProvider(
   }
 );
 
+const avalancheNetworkConfig = {
+  name: "Avalanche Network",
+  chainId: 43114,
+};
+
 export const avalancheProvider = new providers.StaticJsonRpcProvider(
   config.avalancheRpcUrl,
-  {
-    name: "Avalanche Network",
-    chainId: 43114,
-  }
+  avalancheNetworkConfig
+);
+
+export const fallbackProvider = new providers.StaticJsonRpcProvider(
+  config.fallbackAvalancheRpcUrl,
+  avalancheNetworkConfig
 );

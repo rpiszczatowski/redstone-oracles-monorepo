@@ -29,6 +29,7 @@ import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/ArbitrumEvmFetcher";
 import {
   arbitrumProvider,
   avalancheProvider,
+  fallbackProvider,
 } from "../utils/blockchain-providers";
 import sushiswapEthereumOnChainFetchers from "./evm-chain/ethereum/sushiswap-on-chain/all-sushiswap-fetchers";
 import curveFetchers from "./curve/all-curve-fetchers";
@@ -54,7 +55,10 @@ export default {
   verto: new VertoFetcher(),
   ecb: new EcbFetcher(),
   band: new BandFetcher(),
-  "avalanche-evm-fetcher": new AvalancheEvmFetcher(avalancheProvider),
+  "avalanche-evm-fetcher": new AvalancheEvmFetcher({
+    avalancheProvider,
+    fallbackProvider,
+  }),
   platypus: new PlatypusFetcher(),
   chainlink: new ChainlinkFetcher(),
   lens: new LensFetcher(),
