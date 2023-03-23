@@ -6,7 +6,7 @@ import {
   groupDataPackagesByField,
   getDeviationPercentage,
   formatTime,
-} from "./commons";
+} from "./common";
 
 // USAGE: yarn run-ts scripts/analyze-data-packages.ts
 

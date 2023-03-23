@@ -1,125 +1,48 @@
 yarn run v1.22.18
 $ ts-node scripts/compare-prices-from-dbs.ts
-Start time: 2023-03-22T10:10:41.065Z
-Comparing prices from 5 days
-First MongoDB connected
-Fetched from first Mongo 8574 data packages
-Second MongoDB connected
-Fetched from second Mongo 86329 data packages
-
-==== 2023-03-21T16:55:50.000Z ====
+Start time: 2023-03-23T11:55:31.394Z
+Comparing prices from 2 days
+Fetching data packages from first MongoDb
+MongoDB connected
+Fetched 8576 data packages
+MongoDB disconnected
+Fetching data packages from second MongoDb
+MongoDB connected
+Fetched 86330 data packages
+MongoDB disconnected
+Data points mismatch, timestamp: 2023-03-22T09:14:30.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T09:14:30.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T09:14:30.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T09:14:30.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T09:14:30.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T09:14:30.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T09:14:30.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T09:14:30.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T09:14:30.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T09:14:30.000Z, data points from first and second DB, difference: DAI,MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T05:08:40.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T05:08:40.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T05:08:40.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T05:08:40.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T05:08:40.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T05:08:40.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T05:08:40.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T05:08:40.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T05:08:40.000Z, data points from second DB, difference: MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
+Data points mismatch, timestamp: 2023-03-22T05:08:40.000Z, data points from first and second DB, difference: DAI,MOO_TJ_AVAX_USDC_LP,YY_PNG_AVAX_ETH_LP,YY_PNG_AVAX_USDC_LP,YY_TJ_AVAX_ETH_LP,YY_TJ_AVAX_USDC_LP,YY_TJ_AVAX_sAVAX_LP
 Max deviation for PTP: 3.0268789433789753, timestamp: 2023-03-21T16:55:50.000Z
-
-==== 2023-03-21T16:55:40.000Z ====
 Max deviation for PTP: 3.021736335942016, timestamp: 2023-03-21T16:55:40.000Z
-
-==== 2023-03-21T16:55:30.000Z ====
 Max deviation for PTP: 3.021736335942016, timestamp: 2023-03-21T16:55:30.000Z
-
-==== 2023-03-21T16:55:20.000Z ====
 Max deviation for PTP: 3.034410301209939, timestamp: 2023-03-21T16:55:20.000Z
-
-==== 2023-03-21T16:55:10.000Z ====
 Max deviation for PTP: 3.0292673178437344, timestamp: 2023-03-21T16:55:10.000Z
-
-==== 2023-03-21T16:55:00.000Z ====
 Max deviation for PTP: 3.008582113961705, timestamp: 2023-03-21T16:55:00.000Z
-First MongoDB connected
-Fetched from first Mongo 8598 data packages
-Second MongoDB connected
-Fetched from second Mongo 86380 data packages
-First MongoDB connected
-Fetched from first Mongo 8585 data packages
-Second MongoDB connected
-Fetched from second Mongo 86384 data packages
-
-==== 2023-03-19T12:22:40.000Z ====
-Max deviation for JOE: 3.549130277777491, timestamp: 2023-03-19T12:22:40.000Z
-First MongoDB connected
-Fetched from first Mongo 8607 data packages
-Second MongoDB connected
-Fetched from second Mongo 86367 data packages
-
-==== 2023-03-18T20:32:10.000Z ====
-Max deviation for PTP: 3.576459821497395, timestamp: 2023-03-18T20:32:10.000Z
-
-==== 2023-03-18T20:32:00.000Z ====
-Max deviation for PTP: 3.576459821497395, timestamp: 2023-03-18T20:32:00.000Z
-
-==== 2023-03-18T20:31:50.000Z ====
-Max deviation for PTP: 4.296628530161826, timestamp: 2023-03-18T20:31:50.000Z
-
-==== 2023-03-18T20:31:40.000Z ====
-Max deviation for PTP: 4.332365319910599, timestamp: 2023-03-18T20:31:40.000Z
-
-==== 2023-03-18T20:31:30.000Z ====
-Max deviation for PTP: 3.88889817380761, timestamp: 2023-03-18T20:31:30.000Z
-
-==== 2023-03-18T20:30:50.000Z ====
-Max deviation for PTP: 3.1880932154377124, timestamp: 2023-03-18T20:30:50.000Z
-
-==== 2023-03-18T20:30:30.000Z ====
-Max deviation for PTP: 3.070802102621938, timestamp: 2023-03-18T20:30:30.000Z
-
-==== 2023-03-18T16:32:00.000Z ====
-Max deviation for JOE: 4.420898921485702, timestamp: 2023-03-18T16:32:00.000Z
-
-==== 2023-03-18T16:31:20.000Z ====
-Max deviation for JOE: 3.320615159220728, timestamp: 2023-03-18T16:31:20.000Z
-
-==== 2023-03-18T16:31:10.000Z ====
-Max deviation for JOE: 3.5801006598725413, timestamp: 2023-03-18T16:31:10.000Z
-
-==== 2023-03-18T16:31:00.000Z ====
-Max deviation for JOE: 3.3969944169993713, timestamp: 2023-03-18T16:31:00.000Z
-
-==== 2023-03-18T16:23:20.000Z ====
-Max deviation for PNG: 3.121150573314075, timestamp: 2023-03-18T16:23:20.000Z
-
-==== 2023-03-18T16:23:10.000Z ====
-Max deviation for PNG: 4.513966840584764, timestamp: 2023-03-18T16:23:10.000Z
-
-==== 2023-03-18T16:23:00.000Z ====
-Max deviation for PNG: 4.513966840584764, timestamp: 2023-03-18T16:23:00.000Z
-
-==== 2023-03-18T16:22:50.000Z ====
-Max deviation for PNG: 4.513966840584764, timestamp: 2023-03-18T16:22:50.000Z
-First MongoDB connected
-Fetched from first Mongo 8610 data packages
-Second MongoDB connected
-Fetched from second Mongo 86389 data packages
-
-==== 2023-03-17T10:17:30.000Z ====
-Max deviation for PTP: 3.3663250932581117, timestamp: 2023-03-17T10:17:30.000Z
-
-==== 2023-03-17T10:17:20.000Z ====
-Max deviation for PTP: 3.3660667579292083, timestamp: 2023-03-17T10:17:20.000Z
-
-==== 2023-03-17T10:17:10.000Z ====
-Max deviation for PTP: 3.3660667579292083, timestamp: 2023-03-17T10:17:10.000Z
-
-==== 2023-03-17T10:17:00.000Z ====
-Max deviation for PTP: 3.3660667579292083, timestamp: 2023-03-17T10:17:00.000Z
-
-==== 2023-03-17T10:16:50.000Z ====
-Max deviation for PTP: 3.3663250932581117, timestamp: 2023-03-17T10:16:50.000Z
-
-==== 2023-03-17T10:16:40.000Z ====
-Max deviation for PTP: 3.366732381444436, timestamp: 2023-03-17T10:16:40.000Z
-
-==== 2023-03-17T10:16:30.000Z ====
-Max deviation for PTP: 3.694479980110766, timestamp: 2023-03-17T10:16:30.000Z
-
-==== 2023-03-17T10:16:20.000Z ====
-Max deviation for PTP: 3.687752866616724, timestamp: 2023-03-17T10:16:20.000Z
-
-==== 2023-03-17T10:16:10.000Z ====
-Max deviation for PTP: 3.687752866616724, timestamp: 2023-03-17T10:16:10.000Z
-
-==== 2023-03-17T10:16:00.000Z ====
-Max deviation for PTP: 3.687752866616724, timestamp: 2023-03-17T10:16:00.000Z
-
-==== 2023-03-17T10:15:50.000Z ====
-Max deviation for PTP: 3.678961123229222, timestamp: 2023-03-17T10:15:50.000Z
-End time: 2023-03-22T10:20:28.472Z
-Done in 592.35s.
+Fetching data packages from first MongoDb
+MongoDB connected
+Fetched 8600 data packages
+MongoDB disconnected
+Fetching data packages from second MongoDb
+MongoDB connected
+Fetched 86381 data packages
+MongoDB disconnected
+End time: 2023-03-23T11:59:56.026Z
+Done in 269.69s.
