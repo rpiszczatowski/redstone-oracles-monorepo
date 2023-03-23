@@ -147,6 +147,10 @@ export const config: NodeConfig = Object.freeze({
     )
   ),
   avalancheRpcUrl: getFromEnv("AVALANCHE_RPC_URL", DEFAULT_AVALANCHE_RPC_URL),
+  fallbackAvalancheRpcUrl: getFromEnv(
+    "FALLBACK_AVALANCHE_RPC_URL",
+    DEFAULT_AVALANCHE_RPC_URL
+  ),
   arbitrumRpcUrl: getFromEnv("ARBITRUM_RPC_URL", DEFAULT_ARBITRUM_RPC_URL),
   enableStreamrBroadcasting: parserFromString.boolean(
     getFromEnv(
