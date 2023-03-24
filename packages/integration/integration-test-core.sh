@@ -1,6 +1,7 @@
 set -e # to exit when any command fails
 set -x # to display commands during execution
 
+export MONOREPO_INTEGRATION_TEST=true
 MONGO_URI_FILE=./tmp-mongo-db-uri.log
 CACHE_SERVICE_URL=http://localhost:3000
 HARDHAT_MOCK_PRIVATE_KEY=ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
@@ -105,7 +106,7 @@ main() {
   lazilyInstallNPMDeps
   yarn compile
   lazilyBuildTypescript
-  runWithLogPrefix "MONOREPO_INTEGRATION_TEST=true yarn test benchmarks/localhost-mock-test.ts" "evm-connector"
+  runWithLogPrefix "yarn test benchmarks/localhost-mock-test.ts" "evm-connector"
 
   # Cleaning
   kill $cacheLayerPid
