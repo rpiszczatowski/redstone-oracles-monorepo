@@ -2,12 +2,15 @@ import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { formatBytes32String } from "ethers/lib/utils";
 import { ethers } from "hardhat";
-import { WrapperBuilder } from "../src/index";
-import { Benchmark } from "../typechain-types";
+import { WrapperBuilder } from "../../src/index";
+import { SampleForLocalhostMockTest } from "../../typechain-types";
+
+const dynamicDescribe =
+  process.env.MONOREPO_INTETGRATION_TEST === "true" ? describe : describe.skip;
 
 // This test is used in monorepo intergration tests
-describe("Local mock test", function () {
-  let contract: Benchmark;
+dynamicDescribe("Localhost mock test", function () {
+  let contract: SampleForLocalhostMockTest;
   const bytes32Symbols = ["ETH", "BTC", "AAVE"].map(formatBytes32String);
 
   const testShouldPass = async (dataFeedIds?: string[]) => {
@@ -34,10 +37,11 @@ describe("Local mock test", function () {
   };
 
   this.beforeEach(async () => {
-    const ContractFactory = await ethers.getContractFactory("Benchmark");
+    const ContractFactory = await ethers.getContractFactory(
+      "SampleForLocalhostMockTest"
+    );
     contract = await ContractFactory.deploy();
     await contract.deployed();
-    await contract.updateUniqueSignersThreshold(1);
   });
 
   it("Should properly extract prices with small data packages", async () => {
