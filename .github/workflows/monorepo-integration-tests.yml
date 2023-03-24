@@ -4,6 +4,8 @@ on:
   push:
     branches: "**"
 
+# We can integration tests for X and classic models in future
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,22 +13,8 @@ jobs:
       run:
         working-directory: packages/integration
     steps:
-      - uses: actions/checkout@v2
-      - name: Install cache service modules
-        run: cd ../cache-service && yarn
-      - name: Build cache service
-        run: cd ../cache-service && yarn build
-      - name: Install oracle-node modules
-        run: cd ../oracle-node && yarn
-      - name: Build oracle-node
-        run: cd ../oracle-node && yarn build
-      - name: Install evm-connector modules
-        run: cd ../evm-connector && yarn
-      - name: Compile contracts in evm-connector
-        run: cd ../evm-connector && yarn compile
-      - name: Build evm-connector
-        run: cd ../evm-connector && yarn build
+      - uses: actions/checkout@v3
       - name: Run tests
-        run: bash integration-test.sh
+        run: bash integration-test-core.sh
         env:
           NODE_ENV: test

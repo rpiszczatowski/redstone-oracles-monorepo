@@ -6,8 +6,7 @@ CACHE_SERVICE_URL=http://localhost:3000
 HARDHAT_MOCK_PRIVATE_KEY=ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 LAST_PID=
 
-installAndBuild() {
-  # Lazily install NPM deps
+lazilyInstallNPMDeps() {
   if [ -d "node_modules" ]; then
     echo "Node modules are already installed. Skipping..."
   else
@@ -15,8 +14,9 @@ installAndBuild() {
     yarn > /dev/null
     echo "Installed NPM deps"
   fi
+}
 
-  # Lazily build typescript code
+lazilyBuildTypescript() {
   if [ -d "dist" ]; then
     echo "Already built. Skipping..."
   else
@@ -24,6 +24,11 @@ installAndBuild() {
     yarn build > /dev/null
     echo "Building completed"
   fi
+}
+
+installAndBuild() {
+  lazilyInstallNPMDeps
+  lazilyBuildTypescript
 }
 
 waitForFile() {
@@ -97,7 +102,9 @@ main() {
 
   # Using data in evm-connector
   cd ../evm-connector
-  installAndBuild
+  lazilyInstallNPMDeps
+  yarn compile
+  lazilyBuildTypescript
   runWithLogPrefix "yarn test benchmarks/local-mock-test.ts" "evm-connector"
 
   # Cleaning
