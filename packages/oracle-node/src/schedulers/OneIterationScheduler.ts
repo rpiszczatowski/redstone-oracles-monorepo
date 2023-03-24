@@ -7,5 +7,7 @@ export class OneIterationScheduler implements IScheduler {
     await runIterationFn({
       timestamp: Date.now(),
     });
+    console.log("Stopped the oracle node after one iteration");
+    process.exit();
   }
 }
