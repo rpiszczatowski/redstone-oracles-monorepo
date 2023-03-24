@@ -106,7 +106,7 @@ main() {
   lazilyInstallNPMDeps
   yarn compile
   lazilyBuildTypescript
-  runWithLogPrefix "yarn test benchmarks/localhost-mock-test.ts" "evm-connector"
+  runWithLogPrefix "yarn test test/monorepo-integration-tests/localhost-mock.test.ts" "evm-connector"
 
   # Cleaning
   kill $cacheLayerPid
