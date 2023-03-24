@@ -1,6 +1,7 @@
 import aggregators from "../aggregators";
 import { CronScheduler } from "../schedulers/CronScheduler";
 import { OnBlockScheduler } from "../schedulers/OnBlockScheduler";
+import { OneIterationScheduler } from "../schedulers/OneIterationScheduler";
 import { Manifest } from "../types";
 import { arbitrumProvider } from "../utils/blockchain-providers";
 
@@ -96,6 +97,7 @@ export default class ManifestHelper {
 
     const schedulerGetters = {
       "on-each-arbitrum-block": () => new OnBlockScheduler(arbitrumProvider),
+      "one-iteration": () => new OneIterationScheduler(),
       interval: (manifest: Manifest) => new CronScheduler(manifest.interval!),
     };
 

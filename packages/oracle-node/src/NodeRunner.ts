@@ -121,13 +121,6 @@ export default class NodeRunner {
     this.maybeRunDiagnosticInfoPrinting();
 
     try {
-      // TODO: create a custom scheduler called "one-iteration" instead
-      if (config.stopNodeAfterOneIteration) {
-        await this.runIteration({ timestamp: Date.now() });
-        console.log(`Stopped the oracle node after one iteration`);
-        process.exit();
-      }
-
       const scheduler = ManifestHelper.getScheduler(this.currentManifest!);
       await scheduler.startIterations(this.runIteration);
     } catch (e: any) {

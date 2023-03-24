@@ -93,8 +93,7 @@ main() {
   installAndBuild
   cp .env.example .env
   updateDotEnvFile "OVERRIDE_DIRECT_CACHE_SERVICE_URLS" '["http://localhost:3000"]'
-  updateDotEnvFile "OVERRIDE_MANIFEST_USING_FILE" "./manifests/single-source/mock.json"
-  updateDotEnvFile "STOP_NODE_AFTER_ONE_ITERATION" "true"
+  updateDotEnvFile "OVERRIDE_MANIFEST_USING_FILE" "./manifests/dev/one-iteration-mock.json"
   updateDotEnvFile "ECDSA_PRIVATE_KEY" $HARDHAT_MOCK_PRIVATE_KEY
   runWithLogPrefix "yarn start:prod" "oracle-node"
 
