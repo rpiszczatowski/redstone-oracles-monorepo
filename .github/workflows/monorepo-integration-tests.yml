@@ -4,8 +4,6 @@ on:
   push:
     branches: "**"
 
-# We can integration tests for X and classic models in future
-
 jobs:
   build:
     runs-on: LargeRunner
