@@ -12,9 +12,10 @@ const KAIKO_REQUEST_HEADERS = {
   Accept: "application/json",
 };
 const KAIKO_REQUEST_PARAMS = {
-  page_size: 1,
+  page_size: 10,
   interval: "1m",
   sort: "desc",
+  extrapolate_missing_values: true,
 };
 const KAIKO_CONFIG = {
   headers: KAIKO_REQUEST_HEADERS,

@@ -54,7 +54,7 @@ describe("Avalanche EVM fetcher", () => {
 
     test("Should properly fetch data", async () => {
       const fetcher = new AvalancheEvmFetcher(
-        provider,
+        { avalancheProvider: provider },
         multicallContract.address
       );
 
@@ -84,7 +84,7 @@ describe("Avalanche EVM fetcher", () => {
 
     test("Should properly fetch data", async () => {
       const fetcher = new AvalancheEvmFetcher(
-        provider,
+        { avalancheProvider: provider },
         multicallContract.address
       );
 
@@ -115,7 +115,7 @@ describe("Avalanche EVM fetcher", () => {
 
     test("Should properly fetch data", async () => {
       const fetcher = new AvalancheEvmFetcher(
-        provider,
+        { avalancheProvider: provider },
         multicallContract.address
       );
 
@@ -148,7 +148,7 @@ describe("Avalanche EVM fetcher", () => {
 
     test("Should properly fetch data", async () => {
       const fetcher = new AvalancheEvmFetcher(
-        provider,
+        { avalancheProvider: provider },
         multicallContract.address
       );
 
@@ -181,12 +181,37 @@ describe("Avalanche EVM fetcher", () => {
 
     test("Should properly fetch data", async () => {
       const fetcher = new AvalancheEvmFetcher(
-        provider,
+        { avalancheProvider: provider },
         multicallContract.address
       );
 
       const result = await fetcher.fetchAll(["sAVAX"]);
       expect(result).toEqual([{ symbol: "sAVAX", value: 13.71346982 }]);
     });
+  });
+
+  test("Should use fallback if first provider failed", async () => {
+    const fallbackProvider = new MockProvider();
+    const [wallet] = fallbackProvider.getWallets();
+    const oracleTokenContract = await deployContract(wallet, {
+      bytecode: OracleAdaptersMock.bytecode,
+      abi: OracleAdaptersMock.abi,
+    });
+
+    multicallContract = await deployContract(wallet, {
+      bytecode: Multicall2.bytecode,
+      abi: Multicall2.abi,
+    });
+
+    oracleAdaptersContractsDetails.sAVAX.abi = OracleAdaptersMock.abi;
+    oracleAdaptersContractsDetails.sAVAX.address = oracleTokenContract.address;
+
+    const fetcher = new AvalancheEvmFetcher(
+      { avalancheProvider: {} as any, fallbackProvider },
+      multicallContract.address
+    );
+
+    const result = await fetcher.fetchAll(["sAVAX"]);
+    expect(result).toEqual([{ symbol: "sAVAX", value: 13.71346982 }]);
   });
 });

@@ -8,6 +8,8 @@ import { PricesObj } from "../../types";
 
 const idToSymbol = _.invert(symbolToId);
 
+const COINGECKO_TOKENS_LIMIT = 500;
+
 interface SimplePrices {
   [id: string]: { usd: number };
 }
@@ -27,14 +29,21 @@ export class CoingeckoFetcher extends BaseFetcher {
 
   async fetchData(ids: string[]): Promise<SimplePrices> {
     const { coingeckoApiUrl, coingeckoApiKey } = config;
-    const response = await axios.get<SimplePrices>(coingeckoApiUrl, {
-      params: {
-        ids: ids.join(","),
-        vs_currencies: "usd",
-        ...(coingeckoApiKey && { x_cg_pro_api_key: coingeckoApiKey }),
-      },
-    });
-    return response.data;
+    const idsChunks = _.chunk(ids, COINGECKO_TOKENS_LIMIT);
+
+    let mergedPrices: SimplePrices = {};
+    for (const idsChunk of idsChunks) {
+      const response = await axios.get<SimplePrices>(coingeckoApiUrl, {
+        params: {
+          ids: idsChunk.join(","),
+          vs_currencies: "usd",
+          ...(coingeckoApiKey && { x_cg_pro_api_key: coingeckoApiKey }),
+        },
+      });
+      mergedPrices = { ...mergedPrices, ...response.data };
+    }
+
+    return mergedPrices;
   }
 
   extractPrices(prices: SimplePrices): PricesObj {

@@ -1,6 +1,7 @@
-import { providers } from "ethers";
-import { config } from "../../config";
-import { arbitrumProvider } from "../evm-chain/arbitrum/config";
+import {
+  arbitrumProvider,
+  ethereumProvider,
+} from "../../utils/blockchain-providers";
 
 export const curveFetchersConfig = {
   "curve-frax": {
@@ -20,10 +21,7 @@ export const curveFetchersConfig = {
       tokenIndex: 0,
       pairedTokenIndex: 1,
       pairedToken: "USDC",
-      provider: new providers.StaticJsonRpcProvider(config.ethMainRpcUrl, {
-        name: "Ethereum Mainnet",
-        chainId: 1,
-      }),
+      provider: ethereumProvider,
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy",
     },
@@ -32,10 +30,7 @@ export const curveFetchersConfig = {
       tokenIndex: 0,
       pairedTokenIndex: 1,
       pairedToken: "USDC",
-      provider: new providers.StaticJsonRpcProvider(config.ethMainRpcUrl, {
-        name: "Ethereum Mainnet",
-        chainId: 1,
-      }),
+      provider: ethereumProvider,
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy_underlying",
     },
@@ -46,10 +41,7 @@ export const curveFetchersConfig = {
       tokenIndex: 0,
       pairedTokenIndex: 2,
       pairedToken: "USDT",
-      provider: new providers.StaticJsonRpcProvider(config.ethMainRpcUrl, {
-        name: "Ethereum Mainnet",
-        chainId: 1,
-      }),
+      provider: ethereumProvider,
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy_underlying",
     },

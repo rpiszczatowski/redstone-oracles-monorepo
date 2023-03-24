@@ -1,5 +1,4 @@
 import "dotenv/config";
-import { JWKInterface } from "arweave/node/lib/wallet";
 import { Manifest, NodeConfig } from "./types";
 import { readJSON } from "./utils/objects";
 import { ethers } from "ethers";
@@ -149,6 +148,11 @@ export const config: NodeConfig = Object.freeze({
     )
   ),
   avalancheRpcUrl: getFromEnv("AVALANCHE_RPC_URL", DEFAULT_AVALANCHE_RPC_URL),
+  fallbackAvalancheRpcUrl: getFromEnv(
+    "FALLBACK_AVALANCHE_RPC_URL",
+    DEFAULT_AVALANCHE_RPC_URL
+  ),
+  arbitrumRpcUrl: getFromEnv("ARBITRUM_RPC_URL", DEFAULT_ARBITRUM_RPC_URL),
   enableStreamrBroadcasting: parserFromString.boolean(
     getFromEnv(
       "ENABLE_STREAMR_BROADCASTING",
@@ -165,7 +169,6 @@ export const config: NodeConfig = Object.freeze({
       DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE
     )
   ),
-  arbitrumRpcUrl: getFromEnv("ARBITRUM_RPC_URL", DEFAULT_ARBITRUM_RPC_URL),
   providerIdForPriceBroadcasting: getFromEnv(
     "PROVIDER_ID_FOR_PRICE_BROADCASTING",
     DEFAULT_PROVIDER_ID_FOR_PRICE_BROADCASTING
