@@ -6,7 +6,7 @@ import { WrapperBuilder } from "../../src/index";
 import { SampleForLocalhostMockTest } from "../../typechain-types";
 
 const dynamicDescribe =
-  process.env.MONOREPO_INTETGRATION_TEST === "true" ? describe : describe.skip;
+  process.env.MONOREPO_INTEGRATION_TEST === "true" ? describe : describe.skip;
 
 // This test is used in monorepo intergration tests
 dynamicDescribe("Localhost mock test", function () {
