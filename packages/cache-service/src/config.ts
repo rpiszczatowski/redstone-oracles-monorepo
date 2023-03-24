@@ -9,6 +9,7 @@ interface CacheServiceConfigRequiredFields {
   mockDataServiceIdForPackages: boolean;
   apiKeyForAccessToAdminRoutes: string;
   allowedStreamrDataServiceIds: string[];
+  useMockOracleRegistryState: boolean;
 }
 
 type CacheServiceConfig =
@@ -47,6 +48,7 @@ const config = {
   allowedStreamrDataServiceIds: JSON.parse(
     getEnv("ALLOWED_STREAMR_DATA_SERVICE_IDS", false) || "[]"
   ),
+  useMockOracleRegistryState: getEnv("USE_MOCK_ORACLE_STATE", false) === "true",
 } as CacheServiceConfig;
 
 if (config.enableArchivingOnArweave) {
