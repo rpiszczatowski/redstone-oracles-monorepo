@@ -32,12 +32,12 @@ export const updatePrices = async (
       )
   );
   const minimalTimestamp = Math.min(...dataPackagesTimestamps);
-  const wrappedAdapterContract =
-    WrapperBuilder.wrap(adapterContract).usingDataPackages(dataPackages);
 
   if (lastUpdateTimestamp >= minimalTimestamp) {
     console.log("Cannot update prices, proposed prices are not newer");
   } else {
+    const wrappedAdapterContract =
+      WrapperBuilder.wrap(adapterContract).usingDataPackages(dataPackages);
     const updateTx = await updatePriceInAdapterContract({
       adapterContract,
       wrappedAdapterContract,

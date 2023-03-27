@@ -24,8 +24,6 @@ describe("#updatePrices", () => {
     server.listen();
   });
 
-  beforeEach(async () => {});
-
   afterEach(() => server.resetHandlers());
   after(() => server.close());
 
