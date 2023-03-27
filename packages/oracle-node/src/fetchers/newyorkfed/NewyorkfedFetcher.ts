@@ -28,23 +28,20 @@ export class NewyorkfedFetcher extends BaseFetcher {
     response: AxiosResponse<NewyorkfedResponse>,
     ids: string[]
   ): PricesObj {
-    const pricesObj: PricesObj = {};
+    return this.extractPricesSafely(
+      ids,
+      (id) => this.extractPrice(response, id),
+      (id) => id
+    );
+  }
 
-    for (const id of ids) {
-      try {
-        const rateFound = response.data.refRates.find(
-          (rate) => rate.type === id
-        );
-        if (rateFound) {
-          pricesObj[id] = rateFound.percentRate;
-        }
-      } catch (error: any) {
-        this.logger.error(
-          `Extracting price failed for: ${id}. ${stringifyError(error)}`
-        );
-      }
+  private extractPrice(
+    response: AxiosResponse<NewyorkfedResponse>,
+    id: string
+  ): number | undefined {
+    const rateFound = response.data.refRates.find((rate) => rate.type === id);
+    if (rateFound) {
+      return rateFound.percentRate;
     }
-
-    return pricesObj;
   }
 }

@@ -52,30 +52,27 @@ export class CcxtFetcher extends BaseFetcher {
   }
 
   extractPrices(response: any): PricesObj {
-    const pricesObj: PricesObj = {};
+    return this.extractPricesSafely(
+      Object.values(response) as Ticker[],
+      this.extractPrice.bind(this),
+      (ticker) => ticker?.symbol
+    );
+  }
 
-    for (const ticker of Object.values(response) as Ticker[]) {
-      try {
-        let pairSymbol = ticker.symbol;
-        pairSymbol = this.serializePairSymbol(pairSymbol);
-        const lastPrice = ticker.last as number;
-        if (pairSymbol.endsWith("/USD")) {
-          pricesObj[pairSymbol] = lastPrice;
-        } else {
-          if (!pricesObj[pairSymbol]) {
-            const lastUsdInStablePrice = this.getStableCoinPrice(pairSymbol);
-            if (lastUsdInStablePrice) {
-              pricesObj[pairSymbol] = lastPrice * lastUsdInStablePrice;
-            }
-          }
+  private extractPrice(ticker: ccxt.Ticker, pricesObj: PricesObj) {
+    let pairSymbol = ticker.symbol;
+    pairSymbol = this.serializePairSymbol(pairSymbol);
+    const lastPrice = ticker.last as number;
+    if (pairSymbol.endsWith("/USD")) {
+      return lastPrice;
+    } else {
+      if (!pricesObj[pairSymbol]) {
+        const lastUsdInStablePrice = this.getStableCoinPrice(pairSymbol);
+        if (lastUsdInStablePrice) {
+          return lastPrice * lastUsdInStablePrice;
         }
-      } catch (e: any) {
-        this.logger.error(
-          `Extracting price failed for: ${ticker}. ${stringifyError(e)}`
-        );
       }
     }
-    return pricesObj;
   }
 
   getStableCoinPrice(pairSymbol: string) {

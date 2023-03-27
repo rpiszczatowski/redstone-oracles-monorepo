@@ -30,31 +30,31 @@ export class YfUnofficialFetcher extends BaseFetcher {
   }
 
   extractPrices(response: any): PricesObj {
-    const pricesObj: PricesObj = {};
+    return this.extractPricesSafely(
+      Object.keys(response),
+      (symbol, pricesObj) => this.extractPrice(response, symbol, pricesObj),
+      (symbol) => symbol
+    );
+  }
 
-    for (const symbol of Object.keys(response)) {
-      try {
-        const details = response[symbol];
+  private extractPrice(
+    response: any,
+    symbol: string,
+    pricesObj: PricesObj
+  ): number | undefined {
+    const details = response[symbol];
+    let value: any = details.price.regularMarketPrice;
 
-        let value: any = details.price.regularMarketPrice;
-        if (isNaN(value)) {
-          if (!!value && value.raw) {
-            value = value.raw;
-          } else {
-            this.logger.warn(
-              `Empty regular market price: ${JSON.stringify(details.price)}`
-            );
-          }
-        }
-
-        pricesObj[symbol] = value;
-      } catch (e: any) {
-        this.logger.error(
-          `Extracting price failed for: ${symbol}. ${stringifyError(e)}`
+    if (isNaN(value)) {
+      if (!!value && value.raw) {
+        value = value.raw;
+      } else {
+        this.logger.warn(
+          `Empty regular market price: ${JSON.stringify(details.price)}`
         );
       }
     }
 
-    return pricesObj;
+    return value;
   }
 }

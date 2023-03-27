@@ -28,7 +28,7 @@ We strongly recommend to implement tests for your fetcher. It's generaly a good 
 
 - Don't make assumptions about data which comes from third party APIs or libraries **validate and parse responses**
 - Understand `BaseFetcher` class before writing own fetcher
-- Isolate errors between symbols. If u are fetching prices for multiple symbols and then parsing them in `extractPrices`, in most cases if one of the symbol is corrupted it should not affect other symbols. Usually simple `try/catch` block is enough
+- Isolate errors between symbols. If u are fetching prices for multiple symbols and then parsing them in `extractPrices`, in most cases if one of the symbol is corrupted it should not affect other symbols. Use `BaseFetcher::extractPricesSafely` if possible.
 
 ## Sources config [optional]
 

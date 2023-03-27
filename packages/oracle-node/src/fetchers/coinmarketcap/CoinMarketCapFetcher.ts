@@ -40,26 +40,15 @@ export class CoinMarketCapFetcher extends BaseFetcher {
   }
 
   extractPrices(response: any, ids: string[]): PricesObj {
-    const pricesObj: PricesObj = {};
     const tokenData = response.data;
 
-    for (const id of ids) {
-      try {
+    return this.extractPricesSafely(
+      ids,
+      (id) => {
         const price = tokenData?.[id]?.quote?.USD?.price;
-        if (price) {
-          pricesObj[id] = price;
-        } else {
-          this.logger.warn(
-            `CoinMarketCap fetcher: Id ${id} not included in response`
-          );
-        }
-      } catch (e: any) {
-        this.logger.error(
-          `Extracting price failed for: ${id}. ${stringifyError(e)}`
-        );
-      }
-    }
-
-    return pricesObj;
+        return price;
+      },
+      (id) => id
+    );
   }
 }

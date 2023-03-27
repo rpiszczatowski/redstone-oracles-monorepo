@@ -1,5 +1,6 @@
 import { Consola } from "consola";
 import { Fetcher, PriceDataFetched, FetcherOpts, PricesObj } from "../types";
+import { stringifyError } from "../utils/error-stringifier";
 import createLogger from "../utils/logger";
 
 const MAX_RESPONSE_TIME_TO_RETRY_FETCHING_MS = 3000;
@@ -94,5 +95,35 @@ export abstract class BaseFetcher implements Fetcher {
       }
     }
     return prices;
+  }
+
+  protected extractPricesSafely<T>(
+    items: T[],
+    extractPriceFn: (item: T, pricesObj: PricesObj) => number | undefined,
+    extractIdFn: (item: T) => string
+  ): PricesObj {
+    const pricesObj: PricesObj = {};
+    for (const item of items) {
+      let id;
+      try {
+        id = extractIdFn(item);
+        if (!id) {
+          throw Error("Could not extract id from response");
+        }
+        const price = extractPriceFn(item, pricesObj);
+
+        if (price) {
+          pricesObj[id] = price;
+        } else {
+          throw Error("Could not extract price from response");
+        }
+      } catch (e: unknown) {
+        this.logger.error(
+          `Extracting price failed for id: ${id} error: ${stringifyError(e)}`
+        );
+      }
+    }
+
+    return pricesObj;
   }
 }

@@ -38,16 +38,13 @@ export class BandFetcher extends BaseFetcher {
 
   extractPrices(response: BandResponse): PricesObj {
     const pricesArray = response.data.price_results;
-    const pricesObj: PricesObj = {};
-    for (const asset of pricesArray) {
-      try {
-        pricesObj[asset.symbol] = asset.px / asset.multiplier;
-      } catch (e: any) {
-        this.logger.error(
-          `Extracting price failed for: ${asset?.symbol}. ${stringifyError(e)}`
-        );
-      }
-    }
-    return pricesObj;
+
+    return this.extractPricesSafely(
+      pricesArray,
+      (asset) => {
+        return asset.px / asset.multiplier;
+      },
+      (asset) => asset?.symbol
+    );
   }
 }

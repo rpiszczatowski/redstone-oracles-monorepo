@@ -39,18 +39,12 @@ export class CoingeckoFetcher extends BaseFetcher {
   }
 
   extractPrices(prices: SimplePrices): PricesObj {
-    const pricesObj: PricesObj = {};
-
-    for (const id of Object.keys(prices)) {
-      try {
-        pricesObj[id] = prices[id].usd;
-      } catch (e: any) {
-        this.logger.error(
-          `Extracting price failed for: ${id}. ${stringifyError(e)}`
-        );
-      }
-    }
-
-    return pricesObj;
+    return this.extractPricesSafely(
+      Object.keys(prices),
+      (id) => {
+        return prices[id].usd;
+      },
+      (id) => id
+    );
   }
 }

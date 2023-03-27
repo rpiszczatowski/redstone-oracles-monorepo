@@ -35,20 +35,12 @@ export class TwelveDataFetcher extends BaseFetcher {
   }
 
   extractPrices(result: any): PricesObj {
-    const pricesObj: PricesObj = {};
-
     const rates = result.data;
-    for (const symbol of Object.keys(rates)) {
-      try {
-        const id = rates[symbol].symbol;
-        pricesObj[id] = rates[symbol].rate;
-      } catch (error: any) {
-        this.logger.error(
-          `Extracting price failed for: ${symbol}. ${stringifyError(error)}`
-        );
-      }
-    }
 
-    return pricesObj;
+    return this.extractPricesSafely(
+      Object.keys(rates),
+      (key) => rates[key].rate,
+      (key) => rates[key].symbol
+    );
   }
 }
