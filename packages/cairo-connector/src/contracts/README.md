@@ -119,14 +119,14 @@ https://d33trozg86ya9x.cloudfront.net/data-packages/payload?data-packages/payloa
 
 Then they are needed to be split to single bytes, for example by using hexlify/arrayify functions of ```ethers``` or ```starknet``` node packages.
 
-📟 You can use: [Makefile](../../../data-generator/Makefile) by invoking ```make DATA_NAME=xxx prepare_data``` or
+📟 You can use: [Makefile](packages/protocol/scripts/payload-generator/Makefile) by invoking ```make DATA_NAME=xxx prepare_data``` or
 directly from the [cairo-connector](../../) environment directory. 
 
 📖 See: [README.md](../../README.md) to see the environment possibilities and sample scripts invoking the functions.
 
 [//]: # (You can fetch also the utf-encoded raw-bytes format of the payload by using: https://d33trozg86ya9x.cloudfront.net/data-packages/payload?data-packages/payload?unique-signers-count=1&data-service-id=redstone-rapid-demo&format=raw)
 
-To have defined your custom data-service id and signers, [contact us](#-contact).
+To have defined your custom data-service id and signers, [contact us](#contact).
 
 ## ⚠ Possible transaction failures
 

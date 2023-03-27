@@ -35,7 +35,8 @@ export async function reportError(args: {
   const errorId = uuidv4();
   try {
     console.log(`Reporting an error ${errorId}`, JSON.stringify(args));
-    await axios.post(URL, args);
+    // We will implement error reporting using grafana instead
+    // await axios.post(URL, args);
     console.log(`Error reported ${errorId}`);
   } catch (e: any) {
     console.error(`Error occurred during error reporting ${errorId}`, e.stack);

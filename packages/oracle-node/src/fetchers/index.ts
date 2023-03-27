@@ -26,8 +26,11 @@ import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
 import balancerFetchers from "./balancer/all-balancer-fetchers";
 import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/ArbitrumEvmFetcher";
-import { arbitrumProvider } from "./evm-chain/arbitrum/config";
-import { avalancheProvider } from "./evm-chain/avalanche/config";
+import {
+  arbitrumProvider,
+  avalancheProvider,
+  fallbackProvider,
+} from "../utils/blockchain-providers";
 import sushiswapEthereumOnChainFetchers from "./evm-chain/ethereum/sushiswap-on-chain/all-sushiswap-fetchers";
 import curveFetchers from "./curve/all-curve-fetchers";
 import { DeribitFetcher } from "./deribit/DeribitFetcher";
@@ -52,7 +55,10 @@ export default {
   verto: new VertoFetcher(),
   ecb: new EcbFetcher(),
   band: new BandFetcher(),
-  "avalanche-evm-fetcher": new AvalancheEvmFetcher(avalancheProvider),
+  "avalanche-evm-fetcher": new AvalancheEvmFetcher({
+    avalancheProvider,
+    fallbackProvider,
+  }),
   platypus: new PlatypusFetcher(),
   chainlink: new ChainlinkFetcher(),
   lens: new LensFetcher(),

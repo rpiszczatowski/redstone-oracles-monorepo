@@ -5,10 +5,19 @@ import { prepareMulticallRequests } from "./prepare-multicall-request";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
-import { MulticallParsedResponses, PricesObj } from "../../../types";
+import {
+  MulticallParsedResponses,
+  MulticallRequest,
+  PricesObj,
+} from "../../../types";
 import { extractPrice } from "./extract-price";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
 import { stringifyError } from "../../../utils/error-stringifier";
+
+interface Providers {
+  avalancheProvider: providers.Provider;
+  fallbackProvider?: providers.Provider;
+}
 
 export type YieldYakDetailsKeys = keyof typeof yieldYakContractsDetails;
 export type LpTokensDetailsKeys = keyof typeof lpTokensContractsDetails;
@@ -26,17 +35,26 @@ const MUTLICALL_CONTRACT_ADDRESS = "0x8755b94F88D120AB2Cc13b1f6582329b067C760d";
 export class AvalancheEvmFetcher extends BaseFetcher {
   protected retryForInvalidResponse: boolean = true;
 
+  private multicallContractAddress: string;
   private evmMulticallService: EvmMulticallService;
+  private fallbackMulticallService: EvmMulticallService | undefined;
 
   constructor(
-    provider: providers.Provider,
+    providers: Providers,
     multicallContractAddress: string = MUTLICALL_CONTRACT_ADDRESS
   ) {
     super("avalanche-evm-fetcher");
+    this.multicallContractAddress = multicallContractAddress;
     this.evmMulticallService = new EvmMulticallService(
-      provider,
+      providers.avalancheProvider,
       multicallContractAddress
     );
+    if (providers.fallbackProvider) {
+      this.fallbackMulticallService = new EvmMulticallService(
+        providers.fallbackProvider,
+        this.multicallContractAddress
+      );
+    }
   }
 
   override validateResponse(response: any): boolean {
@@ -44,7 +62,7 @@ export class AvalancheEvmFetcher extends BaseFetcher {
   }
 
   async fetchData(ids: string[]) {
-    const requests = [];
+    const requests: MulticallRequest[] = [];
     for (const id of ids) {
       const requestsPerId = prepareMulticallRequests(id);
       requests.push(...requestsPerId);
@@ -52,8 +70,18 @@ export class AvalancheEvmFetcher extends BaseFetcher {
     try {
       return await this.evmMulticallService.performMulticall(requests);
     } catch (error) {
-      return error;
+      this.logger.warn(
+        `[${this.name}]: multicall request failed, trying to use fallback provider`
+      );
+      return await this.tryToRunFallback(error, requests);
     }
+  }
+
+  async tryToRunFallback(error: any, requests: MulticallRequest[]) {
+    if (!this.fallbackMulticallService) {
+      throw error;
+    }
+    return await this.fallbackMulticallService.performMulticall(requests);
   }
 
   extractPrices(response: MulticallParsedResponses, ids: string[]): PricesObj {

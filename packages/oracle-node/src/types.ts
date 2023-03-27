@@ -2,16 +2,15 @@ import { JWKInterface } from "arweave/node/lib/wallet";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
-  interval: number;
+  interval: number; // It is ignored if the `useCustomScheduler` is not set to `interval`
+  useCustomScheduler?: "on-each-arbitrum-block" | "interval";
   priceAggregator: string;
   defaultSource?: string[];
   sourceTimeout: number;
   deviationCheck: DeviationCheckConfig;
-  evmChainId: number;
   tokens: TokensConfig;
-  httpBroadcasterURLs?: string[];
-  enableStreamrBroadcaster?: boolean;
   minValidSourcesPercentage?: number;
+  signBlockNumbersInsteadOfTimestamps?: boolean;
 }
 
 export interface TokensConfig {
@@ -84,6 +83,7 @@ export interface PriceDataBeforeAggregation {
   symbol: string;
   source: Source;
   timestamp: number;
+  blockNumber?: number;
   version: string;
 }
 
@@ -152,6 +152,7 @@ export interface NodeConfig {
   etherscanApiKey?: string;
   ttlForPricesInLocalDBInMilliseconds: number;
   avalancheRpcUrl: string;
+  fallbackAvalancheRpcUrl?: string;
   arbitrumRpcUrl: string;
   enableStreamrBroadcasting: boolean;
   mockPricesUrlOrPath: string;
@@ -161,6 +162,8 @@ export interface NodeConfig {
   stlouisfedApiKey?: string;
   minDataFeedsPercentageForBigPackage: number;
   providerIdForPriceBroadcasting?: string;
+  coingeckoApiUrl: string;
+  coingeckoApiKey?: string;
 }
 
 export interface MulticallRequest {
