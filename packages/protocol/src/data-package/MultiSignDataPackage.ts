@@ -39,7 +39,7 @@ export class MultiSignDataPackage extends Serializable
     const signaturesBytes = concat(
       this.serializeSignaturesToHex().map((signature) => arrayify(signature))
     );
-    return concat([signaturesBytes, this.serializeSignaturesCount()]);
+    return signaturesBytes;
   }
 
   protected serializeSignaturesCount(): Uint8Array {
@@ -66,6 +66,7 @@ export class MultiSignDataPackage extends Serializable
     return concat([
       this.dataPackage.toBytes(),
       this.serializeSignaturesToBytes(),
+      this.serializeSignaturesCount(),
     ]);
   }
 

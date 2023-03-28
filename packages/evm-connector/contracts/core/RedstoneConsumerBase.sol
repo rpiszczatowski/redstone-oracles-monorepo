@@ -133,10 +133,11 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       // Validating signatures
       uint256 uniqueSignersCount = 0;
       uint256 singersBitmap = 0;
+      uint256 singatureOffset = SIG_BS;
       for (uint256 i = 0; i < signersCount; i++) {
         uint256 signatureCalldataOffset = calldataNegativeOffset +
           SIGNERS_COUNT_BS +
-          (i + 1).mul(SIG_BS);
+          singatureOffset;
 
         address signerAddress = SignatureLib.recoverSignerAddress(
           signedHash,
@@ -148,6 +149,8 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
           singersBitmap = BitmapLib.setBitInBitmap(singersBitmap, signerIndex);
           uniqueSignersCount++;
         }
+
+        singatureOffset = singatureOffset.add(SIG_BS);
       }
       
       if (uniqueSignersCount < uniqueSignersThreshold) {
@@ -156,34 +159,37 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
     }
 
     {
-      uint256 dataFeedIdsBitmap = 0;
-      uint256 uniqueDataFeedIdsCount = 0;
+      uint256 dataFeedsMatched = 0; // Detects if all requested data feeds are present in the data package
+      
       // Extracting data points values
       bytes32 dataPointDataFeedId;
       uint256 dataPointValue;
       uint256[] memory dataPointsValues = new uint256[](dataFeedIds.length);
 
+      uint256 dataPointNegativeOffset = calldataNegativeOffset
+      .add(signersCount.mul(SIG_BS))
+      .add(DATA_PACKAGE_WITH_SIGNERS_COUNT_WITHOUT_SIG_BS);
+
       for (uint256 dataPointIndex = 0; dataPointIndex < dataPointsCount; dataPointIndex++) {
+
+        dataPointNegativeOffset = dataPointNegativeOffset.add(
+          eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS
+        );
+        
         (dataPointDataFeedId, dataPointValue) = _extractDataPointValueAndDataFeedIdMultiSign(
-          calldataNegativeOffset,
-          eachDataPointValueByteSize,
-          dataPointIndex,
-          signersCount
+          dataPointNegativeOffset
         );
 
         for (uint256 i = 0; i < dataFeedIds.length; i++) {
           if (dataFeedIds[i] == dataPointDataFeedId) {
-            if (!BitmapLib.getBitFromBitmap(dataFeedIdsBitmap, i)) {
-              dataFeedIdsBitmap = BitmapLib.setBitInBitmap(dataFeedIdsBitmap, i);
-              uniqueDataFeedIdsCount++;
-            }
-
+            dataFeedsMatched++;
             dataPointsValues[i] = dataPointValue;
+            break;
           }
         }
       }
 
-      if (uniqueDataFeedIdsCount < dataFeedIds.length) {
+      if (dataFeedsMatched < dataFeedIds.length) {
         revert InsufficientNumberOfUniqueSigners(0, uniqueSignersThreshold);
       }
 

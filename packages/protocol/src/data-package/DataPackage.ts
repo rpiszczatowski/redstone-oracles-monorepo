@@ -1,3 +1,4 @@
+import { Signature } from "ethers";
 import {
   arrayify,
   concat,
@@ -90,13 +91,13 @@ export class DataPackage extends Serializable {
     // Prepare hash for signing
     const signableHashBytes = this.getSignableHash();
 
-    // Generating a signature
-    const signingKeys = privateKeys.map(
-      (privateKey) => new SigningKey(privateKey)
-    );
-    const fullSignatures = signingKeys.map((signingKey) =>
-      signingKey.signDigest(signableHashBytes)
-    );
+    const fullSignatures: Signature[] = [];
+    privateKeys.forEach((privateKey) => {
+      const signingKey = new SigningKey(privateKey);
+      const fullSignature = signingKey.signDigest(signableHashBytes);
+      fullSignatures.push(fullSignature);
+    });
+
     // Return a signed data package
     return new MultiSignDataPackage(this, fullSignatures);
   }
