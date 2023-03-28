@@ -66,6 +66,12 @@ runWithLogPrefix() {
   $cmd > >(trap "" INT TERM; sed "s/^/$logPrefix: /") 2> >(trap "" INT TERM; sed "s/^/$logPrefix (stderr): /")
 }
 
+waitForDataPackages() {
+  expectedDataPackageCount=$1
+  feedId=$2
+  runWithLogPrefix "yarn run-ts wait-for-data-packages.ts $expectedDataPackageCount $feedId" "wait-for-data-packages.ts ($feedId)"
+}
+
 main() {
   cd ../cache-service
   installAndBuild
@@ -93,11 +99,19 @@ main() {
   installAndBuild
   cp .env.example .env
   updateDotEnvFile "OVERRIDE_DIRECT_CACHE_SERVICE_URLS" '["http://localhost:3000"]'
-  updateDotEnvFile "OVERRIDE_MANIFEST_USING_FILE" "./manifests/dev/one-iteration-mock.json"
+  updateDotEnvFile "OVERRIDE_MANIFEST_USING_FILE" "./manifests/single-source/mock.json"
   updateDotEnvFile "ECDSA_PRIVATE_KEY" $HARDHAT_MOCK_PRIVATE_KEY
-  runWithLogPrefix "yarn start:prod" "oracle-node"
+  runWithLogPrefix "yarn start:prod" "oracle-node" &
+  oracleNodePid=$!
 
-  # Checking if data packages are accessible from cache service
+  # Waiting for data packages to be available in cache service
+  cd ../cache-service
+  waitForDataPackages 1 ___ALL_FEEDS___
+  waitForDataPackages 1 ETH
+  waitForDataPackages 1 BTC
+  waitForDataPackages 1 AAVE  
+
+  # Querying data packages from cache service
   curl http://localhost:3000/data-packages/latest/mock-data-service
 
   # Using data in evm-connector
@@ -109,6 +123,7 @@ main() {
 
   # Cleaning
   kill $cacheLayerPid
+  kill $oracleNodePid
   pkill -f scripts/launch-mongodb-in-memory.ts
 }
 
