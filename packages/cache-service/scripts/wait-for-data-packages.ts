@@ -3,7 +3,7 @@ import { ALL_FEEDS_KEY } from "../src/data-packages/data-packages.service";
 import mongoose from "mongoose";
 import config from "../src/config";
 
-// USAGE: yarn run-ts wait-for-data-packages.ts <expected-count> <data-feed-id>
+// USAGE: yarn run-ts scripts/wait-for-data-packages.ts <expected-count> <data-feed-id>
 
 // Note! This script is used only in monorepo integration tests
 

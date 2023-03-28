@@ -69,7 +69,7 @@ runWithLogPrefix() {
 waitForDataPackages() {
   expectedDataPackageCount=$1
   feedId=$2
-  runWithLogPrefix "yarn run-ts wait-for-data-packages.ts $expectedDataPackageCount $feedId" "wait-for-data-packages.ts ($feedId)"
+  runWithLogPrefix "yarn run-ts scripts/wait-for-data-packages.ts $expectedDataPackageCount $feedId" "Waiting $feedId"
 }
 
 main() {
