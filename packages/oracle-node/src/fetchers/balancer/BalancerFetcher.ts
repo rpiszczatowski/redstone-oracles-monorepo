@@ -40,9 +40,10 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
   ): number {
     const { pool, pairedTokenPrice } = response;
     const spotPrice = Number(
-      pool.calcSpotPrice(pool.tokens[0].address, pool.tokens[1].address)
+      pool.calcSpotPrice(pool.tokens[1].address, pool.tokens[0].address)
     );
-    return pairedTokenPrice / spotPrice;
+
+    return spotPrice * pairedTokenPrice;
   }
 
   override calculateLiquidity(
