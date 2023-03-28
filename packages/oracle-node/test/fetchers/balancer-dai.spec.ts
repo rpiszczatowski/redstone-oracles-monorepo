@@ -27,7 +27,7 @@ jest.mock("@balancer-labs/sdk", () => ({
       }
 
       public calcSpotPrice(_token1: string, _token2: string) {
-        return 0.1;
+        return 10;
       }
     }
     class Pools {
@@ -62,6 +62,6 @@ describe("balancer-dai fetcher", () => {
     // When
     const result = await sut.fetchAll(["OHM"]);
     // Then
-    expect(result).toEqual([{ symbol: "OHM", value: 9.899999999999999 }]);
+    expect(result).toEqual([{ symbol: "OHM", value: 9.9 }]);
   });
 });
