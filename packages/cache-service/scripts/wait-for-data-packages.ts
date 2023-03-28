@@ -11,8 +11,6 @@ const INTERVAL_MILLISECONDS = 5000; // 5 seconds
 const DATA_FEED_ID = process.argv[3] || ALL_FEEDS_KEY;
 const EXPECTED_COUNT = parseInt(process.argv[2]);
 
-let timer: NodeJS.Timer;
-
 main();
 
 async function main() {
@@ -20,7 +18,7 @@ async function main() {
   console.log("MongoDB connected");
 
   await checkDataPackagesCount();
-  timer = setInterval(checkDataPackagesCount, INTERVAL_MILLISECONDS);
+  setInterval(checkDataPackagesCount, INTERVAL_MILLISECONDS);
 }
 
 async function checkDataPackagesCount() {
