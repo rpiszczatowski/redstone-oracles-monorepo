@@ -356,7 +356,8 @@ export default class PricesService {
 
   assertSourcesNumber(price: PriceDataAfterAggregation, manifest: Manifest) {
     const { symbol, source } = price;
-    const sourcesFetchedCount = Object.keys(source).length;
+    const sources = Object.keys(source);
+    const sourcesFetchedCount = sources.length;
     const minValidSourcesPercentage =
       ManifestHelper.getMinValidSourcesPercentage(manifest);
     const allSourcesCount = ManifestHelper.getAllSourceCount(symbol, manifest);
@@ -366,7 +367,9 @@ export default class PricesService {
       validSourcesPercentage >= minValidSourcesPercentage;
     if (!isSourcesNumberValid) {
       throw new Error(
-        `Invalid sources number for symbol ${symbol}, valid sources count: ${sourcesFetchedCount}`
+        `Invalid sources number for symbol ${symbol}. ` +
+          `Valid sources count: ${sourcesFetchedCount}. ` +
+          `Valid sources: ${sources.join(",")}`
       );
     }
   }

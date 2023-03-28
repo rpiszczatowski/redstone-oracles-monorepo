@@ -931,5 +931,6 @@
   "ZBC": "zebec-protocol",
   "ZEON": "zeon",
   "stETH": "staked-ether",
-  "ANKRETH": "ankreth"
+  "ANKRETH": "ankreth",
+  "WSTETH": "wrapped-steth"
 }
