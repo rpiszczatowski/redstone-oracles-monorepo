@@ -101,7 +101,7 @@ main() {
   updateDotEnvFile "OVERRIDE_DIRECT_CACHE_SERVICE_URLS" '["http://localhost:3000"]'
   updateDotEnvFile "OVERRIDE_MANIFEST_USING_FILE" "./manifests/single-source/mock.json"
   updateDotEnvFile "ECDSA_PRIVATE_KEY" $HARDHAT_MOCK_PRIVATE_KEY
-  runWithLogPrefix "yarn start:prod" "oracle-node" &
+  runWithLogPrefix "node dist/index.js" "oracle-node" &
   oracleNodePid=$!
 
   # Waiting for data packages to be available in cache service
