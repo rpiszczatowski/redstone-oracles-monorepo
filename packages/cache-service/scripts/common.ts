@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
   CachedDataPackage,
   DataPackage,
@@ -12,6 +13,11 @@ interface QueryDataPackagesParams {
 
 interface DataPackagesGroupedByField {
   [signer: string]: CachedDataPackage[];
+}
+
+export interface TimestampIntervals {
+  startTimestamp: number;
+  endTimestamp: number;
 }
 
 export async function queryDataPackages({
@@ -55,4 +61,17 @@ export function getDeviationPercentage(a: number, b: number) {
 
 export function formatTime(timestamp: number) {
   return new Date(timestamp).toISOString();
+}
+
+export async function fetchDataPackages(
+  mongoDbUrl: string,
+  queryParams: QueryDataPackagesParams
+) {
+  const mongoConnection = await mongoose.connect(mongoDbUrl);
+  console.log("MongoDB connected");
+  const dataPackages = await queryDataPackages(queryParams);
+  console.log(`Fetched ${dataPackages.length} data packages`);
+  await mongoConnection.disconnect();
+  console.log("MongoDB disconnected");
+  return dataPackages;
 }

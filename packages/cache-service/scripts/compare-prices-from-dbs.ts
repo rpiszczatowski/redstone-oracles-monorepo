@@ -1,21 +1,16 @@
-import mongoose from "mongoose";
 import { DataPointPlainObj } from "redstone-protocol";
 import { ALL_FEEDS_KEY } from "../src/data-packages/data-packages.service";
 import { CachedDataPackage } from "../src/data-packages/data-packages.model";
 import {
+  fetchDataPackages,
   formatTime,
   getDeviationPercentage,
   groupDataPackagesByField,
-  queryDataPackages,
+  TimestampIntervals,
 } from "./common";
 import config from "../src/config";
 
 // USAGE: yarn run-ts scripts/compare-prices-from-dbs.ts
-
-interface TimestampIntervals {
-  startTimestamp: number;
-  endTimestamp: number;
-}
 
 /* 
   Because we want to compare big time periods e.g. 14 days
@@ -114,11 +109,12 @@ async function fetchDataPackagesFromBothMongoDbs(
       timestampIntervals
     )}`
   );
-  const dataPackagesFromFirst = await fetchDataPackages(
-    config.mongoDbUrl,
-    timestampIntervals,
-    FIRST_DATA_SERVICE_ID
-  );
+  const dataPackagesFromFirst = await fetchDataPackages(config.mongoDbUrl, {
+    startTimestamp: timestampIntervals.startTimestamp,
+    endTimestamp: timestampIntervals.endTimestamp,
+    dataServiceId: FIRST_DATA_SERVICE_ID,
+    dataFeedId: ALL_FEEDS_KEY,
+  });
 
   const secondMongoDbUrl = process.env.SECOND_MONGO_DB_URL;
   if (!secondMongoDbUrl) {
@@ -129,31 +125,13 @@ async function fetchDataPackagesFromBothMongoDbs(
       timestampIntervals
     )}`
   );
-  const dataPackagesFromSecond = await fetchDataPackages(
-    secondMongoDbUrl,
-    timestampIntervals,
-    SECOND_DATA_SERVICE_ID
-  );
-  return { dataPackagesFromFirst, dataPackagesFromSecond };
-}
-
-async function fetchDataPackages(
-  mongoDbUrl: string,
-  timestampIntervals: TimestampIntervals,
-  dataServiceId: string
-) {
-  const mongoConnection = await mongoose.connect(mongoDbUrl);
-  console.log("MongoDB connected");
-  const dataPackages = await queryDataPackages({
+  const dataPackagesFromSecond = await fetchDataPackages(secondMongoDbUrl, {
     startTimestamp: timestampIntervals.startTimestamp,
     endTimestamp: timestampIntervals.endTimestamp,
+    dataServiceId: SECOND_DATA_SERVICE_ID,
     dataFeedId: ALL_FEEDS_KEY,
-    dataServiceId: dataServiceId,
   });
-  console.log(`Fetched ${dataPackages.length} data packages`);
-  await mongoConnection.disconnect();
-  console.log("MongoDB disconnected");
-  return dataPackages;
+  return { dataPackagesFromFirst, dataPackagesFromSecond };
 }
 
 function compareDataPointsValuesFromFirstAndSecond(
