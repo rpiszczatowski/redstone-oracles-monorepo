@@ -29,10 +29,8 @@ export const calculateDeviationPercent = (args: {
   trueValue: number;
 }) => {
   const { measuredValue, trueValue } = args;
-  if (trueValue === 0) {
-    throw new Error(
-      "Calculating deviation with zero true value would cause division by zero"
-    );
-  }
-  return Math.abs((measuredValue - trueValue) / trueValue) * 100;
+
+  const secureTrueValue = trueValue === 0 ? Number.MIN_VALUE : trueValue;
+
+  return Math.abs((measuredValue - trueValue) / secureTrueValue) * 100;
 };

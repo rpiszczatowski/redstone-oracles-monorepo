@@ -105,12 +105,10 @@ describe("utils/numbers", () => {
       ).toBe(200);
     });
 
-    it("Should throw for zero true value", () => {
-      expect(() =>
+    it("Should work with zero value", () => {
+      expect(
         calculateDeviationPercent({ measuredValue: 1, trueValue: 0 })
-      ).toThrow(
-        "Calculating deviation with zero true value would cause division by zero"
-      );
+      ).toBe(Infinity);
     });
 
     it("Should properly calculate deviation for zero measured value and non-zero true value", () => {
