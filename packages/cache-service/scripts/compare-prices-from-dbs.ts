@@ -10,35 +10,35 @@ import {
 } from "./common";
 import config from "../src/config";
 
-// USAGE: yarn run-ts scripts/analyze-data-packages.ts
+// USAGE: yarn run-ts scripts/compare-prices-from-dbs.ts
 
-interface TimestampConfig {
+interface TimestampIntervals {
   startTimestamp: number;
   endTimestamp: number;
 }
 
 /* 
-  Because we want to compare big time periods f.g. 14 days
+  Because we want to compare big time periods e.g. 14 days
   we need to split it into one day batches. 
   If you want to compare shorter periods than 1 day define DAYS = 1,
-  and BATCH_SIZE_MILLISECONDS to expected time period f.g. 1 hour.
+  and BATCH_SIZE_MILLISECONDS to expected time period e.g. 1 hour.
 */
 const BATCH_SIZE_MILLISECONDS = 24 * 60 * 60 * 1000;
-const CURRENT_TIMESTAMP = Date.now() - 24 * 60 * 60 * 1000;
+const START_TIMESTAMP = Date.now() - 24 * 60 * 60 * 1000;
 const DAYS = 2;
 const FIRST_DATA_SERVICE_ID = "redstone-avalanche-demo";
 const SECOND_DATA_SERVICE_ID = "redstone-avalanche-prod";
 const MIN_DEVIATION_PERCENTAGE_TO_LOG = 1;
 
+const TOKENS_ONLY_IN_DEV = ["DAI"];
+
 (async () => {
-  console.log(`Start time: ${formatTime(Date.now())}`);
   console.log(`Comparing prices from ${DAYS} days`);
+  const timestampsConfigs = defineTimestampsIntervals();
 
-  const timestampsConfigs = defineTimestampsConfigs();
-
-  for (const timestampConfig of timestampsConfigs) {
+  for (const timestampIntervals of timestampsConfigs) {
     const { dataPackagesFromFirst, dataPackagesFromSecond } =
-      await fetchDataPackagesFromBothMongoDbs(timestampConfig);
+      await fetchDataPackagesFromBothMongoDbs(timestampIntervals);
     if (
       dataPackagesFromFirst.length === 0 ||
       dataPackagesFromSecond.length === 0
@@ -70,11 +70,14 @@ const MIN_DEVIATION_PERCENTAGE_TO_LOG = 1;
       const arrayOfUniqueDataFeedsIdsFromSecond: Set<string>[] = [];
       for (const dataPackageFromFirst of dataPackagesFromFirst) {
         const allDataPoints = dataPackageFromFirst.dataPoints;
+        addUniqueDataFeedsIdsSetsFromSecond(
+          dataPackagesFromSecond,
+          arrayOfUniqueDataFeedsIdsFromSecond
+        );
         const warnings = compareDataPointsValuesFromFirstAndSecond(
           allDataPoints,
           dataPackagesFromSecond,
-          timestampAsNumber,
-          arrayOfUniqueDataFeedsIdsFromSecond
+          timestampAsNumber
         );
 
         if (warnings.length > 0) {
@@ -84,32 +87,36 @@ const MIN_DEVIATION_PERCENTAGE_TO_LOG = 1;
         arrayOfUniqueDataFeedsIdsFromFirst.push(
           getSetOfDataFeedsIds(allDataPoints)
         );
-
-        handleComparingSetsOfDataPoints(
-          arrayOfUniqueDataFeedsIdsFromFirst,
-          arrayOfUniqueDataFeedsIdsFromSecond,
-          timestampAsNumber
-        );
       }
+
+      handleComparingSetsOfDataPoints(
+        arrayOfUniqueDataFeedsIdsFromFirst,
+        arrayOfUniqueDataFeedsIdsFromSecond,
+        timestampAsNumber
+      );
     }
   }
   console.log(`End time: ${formatTime(Date.now())}`);
 })();
 
-function defineTimestampsConfigs(): TimestampConfig[] {
+function defineTimestampsIntervals(): TimestampIntervals[] {
   return [...Array(DAYS).keys()].map((index) => ({
-    startTimestamp: CURRENT_TIMESTAMP - BATCH_SIZE_MILLISECONDS * (index + 1),
-    endTimestamp: CURRENT_TIMESTAMP - BATCH_SIZE_MILLISECONDS * index,
+    startTimestamp: START_TIMESTAMP - BATCH_SIZE_MILLISECONDS * (index + 1),
+    endTimestamp: START_TIMESTAMP - BATCH_SIZE_MILLISECONDS * index,
   }));
 }
 
 async function fetchDataPackagesFromBothMongoDbs(
-  timestampConfig: TimestampConfig
+  timestampIntervals: TimestampIntervals
 ) {
-  console.log("Fetching data packages from first MongoDb");
+  console.log(
+    `Fetching data packages from first MongoDb, timestamp intervals: ${JSON.stringify(
+      timestampIntervals
+    )}`
+  );
   const dataPackagesFromFirst = await fetchDataPackages(
     config.mongoDbUrl,
-    timestampConfig,
+    timestampIntervals,
     FIRST_DATA_SERVICE_ID
   );
 
@@ -117,10 +124,14 @@ async function fetchDataPackagesFromBothMongoDbs(
   if (!secondMongoDbUrl) {
     throw new Error("Missing second MongoDb URL");
   }
-  console.log("Fetching data packages from second MongoDb");
+  console.log(
+    `Fetching data packages from second MongoDb, timestamp intervals: ${JSON.stringify(
+      timestampIntervals
+    )}`
+  );
   const dataPackagesFromSecond = await fetchDataPackages(
     secondMongoDbUrl,
-    timestampConfig,
+    timestampIntervals,
     SECOND_DATA_SERVICE_ID
   );
   return { dataPackagesFromFirst, dataPackagesFromSecond };
@@ -128,14 +139,14 @@ async function fetchDataPackagesFromBothMongoDbs(
 
 async function fetchDataPackages(
   mongoDbUrl: string,
-  timestampConfig: TimestampConfig,
+  timestampIntervals: TimestampIntervals,
   dataServiceId: string
 ) {
   const mongoConnection = await mongoose.connect(mongoDbUrl);
   console.log("MongoDB connected");
   const dataPackages = await queryDataPackages({
-    startTimestamp: timestampConfig.startTimestamp,
-    endTimestamp: timestampConfig.endTimestamp,
+    startTimestamp: timestampIntervals.startTimestamp,
+    endTimestamp: timestampIntervals.endTimestamp,
     dataFeedId: ALL_FEEDS_KEY,
     dataServiceId: dataServiceId,
   });
@@ -148,14 +159,8 @@ async function fetchDataPackages(
 function compareDataPointsValuesFromFirstAndSecond(
   allDataPoints: DataPointPlainObj[],
   dataPackagesFromSecond: CachedDataPackage[],
-  timestamp: number,
-  arrayOfUniqueDataFeedsIdsFromSecond: Set<string>[]
+  timestamp: number
 ) {
-  addUniqueDataFeedsIdsSetsFromSecond(
-    dataPackagesFromSecond,
-    arrayOfUniqueDataFeedsIdsFromSecond
-  );
-
   const warnings: string[] = [];
   for (const dataPoint of allDataPoints) {
     const dataPointsFromSecond = getDataPointsFromSecond(
@@ -237,10 +242,17 @@ function compareEachSetInTwoArrays(
 
 function compareDataPointsSets(leftSet: Set<string>, rightSet: Set<string>) {
   const diff = new Set(
-    [...leftSet].filter((dataFeedId) => !rightSet.has(dataFeedId))
+    [...leftSet]
+      .filter((leftSetElement) => !rightSet.has(leftSetElement))
+      .concat(
+        [...rightSet].filter((rightSetElement) => !leftSet.has(rightSetElement))
+      )
   );
-  const firstSetValue = diff.values().next().value;
-  if (diff.size > 1 || (diff.size === 1 && firstSetValue !== "DAI")) {
+  const firstValueOfDiffSet = diff.values().next().value;
+  if (
+    diff.size > 1 ||
+    (diff.size === 1 && TOKENS_ONLY_IN_DEV.includes(firstValueOfDiffSet))
+  ) {
     return diff;
   }
 }
