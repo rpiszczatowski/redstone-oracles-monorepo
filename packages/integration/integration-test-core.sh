@@ -123,8 +123,8 @@ main() {
 
   # Cleaning
   kill $cacheLayerPid
-  kill $oracleNodePid
   pkill -f scripts/launch-mongodb-in-memory.ts
+  kill $oracleNodePid
 }
 
 # Run the script
