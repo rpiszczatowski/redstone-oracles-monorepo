@@ -1,6 +1,5 @@
 import _ from "lodash";
 import { PricesObj } from "../../types";
-import { stringifyError } from "../../utils/error-stringifier";
 import { getRequiredPropValue } from "../../utils/objects";
 import { BaseFetcher } from "../BaseFetcher";
 import YahooFinanceProxy from "./YahooFinanceProxy";
@@ -30,18 +29,12 @@ export class YfUnofficialFetcher extends BaseFetcher {
   }
 
   extractPrices(response: any): PricesObj {
-    return this.extractPricesSafely(
-      Object.keys(response),
-      (symbol, pricesObj) => this.extractPrice(response, symbol, pricesObj),
-      (symbol) => symbol
+    return this.extractPricesSafely(Object.keys(response), (symbol) =>
+      this.extractPricePair(response, symbol)
     );
   }
 
-  private extractPrice(
-    response: any,
-    symbol: string,
-    pricesObj: PricesObj
-  ): number | undefined {
+  private extractPricePair(response: any, symbol: string) {
     const details = response[symbol];
     let value: any = details.price.regularMarketPrice;
 
@@ -55,6 +48,6 @@ export class YfUnofficialFetcher extends BaseFetcher {
       }
     }
 
-    return value;
+    return { id: symbol, value };
   }
 }

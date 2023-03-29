@@ -44,16 +44,11 @@ export class CustomUrlsFetcher extends BaseFetcher {
   extractPrices(responses: any, _ids: string[], opts: FetcherOpts): PricesObj {
     return this.extractPricesSafely(
       Object.entries(responses),
-      ([id, response]) => this.extractPrice(opts, id, response),
-      ([id]) => id
+      ([id, response]) => this.extractPricePair(opts, id, response)
     );
   }
 
-  private extractPrice(
-    opts: FetcherOpts,
-    id: string,
-    response: unknown
-  ): number | undefined {
+  private extractPricePair(opts: FetcherOpts, id: string, response: unknown) {
     const jsonpath = opts.manifest.tokens[id].customUrlDetails!.jsonpath;
     const [extractedValue] = jp.query(response, jsonpath);
     let valueWithoutCommas = extractedValue;
@@ -64,13 +59,13 @@ export class CustomUrlsFetcher extends BaseFetcher {
     const isEmptyString =
       typeof valueWithoutCommas === "string" && valueWithoutCommas.length === 0;
     if (isNaN(extractedValueAsNumber) || isEmptyString) {
-      this.logger.error(
+      throw new Error(
         `Request to ${
           opts.manifest.tokens[id].customUrlDetails!.url
         } returned non-numeric value`
       );
     } else {
-      return extractedValueAsNumber;
+      return { value: extractedValueAsNumber, id };
     }
   }
 }

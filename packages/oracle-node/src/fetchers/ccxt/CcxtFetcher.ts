@@ -54,25 +54,23 @@ export class CcxtFetcher extends BaseFetcher {
   extractPrices(response: any): PricesObj {
     return this.extractPricesSafely(
       Object.values(response) as Ticker[],
-      this.extractPrice.bind(this),
-      (ticker) => ticker?.symbol
+      this.extractPricePair.bind(this)
     );
   }
 
-  private extractPrice(ticker: ccxt.Ticker, pricesObj: PricesObj) {
+  private extractPricePair(ticker: ccxt.Ticker) {
     let pairSymbol = ticker.symbol;
     pairSymbol = this.serializePairSymbol(pairSymbol);
     const lastPrice = ticker.last as number;
     if (pairSymbol.endsWith("/USD")) {
-      return lastPrice;
+      return { value: lastPrice, id: pairSymbol };
     } else {
-      if (!pricesObj[pairSymbol]) {
-        const lastUsdInStablePrice = this.getStableCoinPrice(pairSymbol);
-        if (lastUsdInStablePrice) {
-          return lastPrice * lastUsdInStablePrice;
-        }
+      const lastUsdInStablePrice = this.getStableCoinPrice(pairSymbol);
+      if (lastUsdInStablePrice) {
+        return { value: lastPrice * lastUsdInStablePrice, id: pairSymbol };
       }
     }
+    throw new Error(`Pair symbol not supported: ${pairSymbol}`);
   }
 
   getStableCoinPrice(pairSymbol: string) {

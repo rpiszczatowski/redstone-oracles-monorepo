@@ -28,20 +28,20 @@ export class NewyorkfedFetcher extends BaseFetcher {
     response: AxiosResponse<NewyorkfedResponse>,
     ids: string[]
   ): PricesObj {
-    return this.extractPricesSafely(
-      ids,
-      (id) => this.extractPrice(response, id),
-      (id) => id
+    return this.extractPricesSafely(ids, (id) =>
+      this.extractPricePair(response, id)
     );
   }
 
-  private extractPrice(
+  private extractPricePair(
     response: AxiosResponse<NewyorkfedResponse>,
     id: string
-  ): number | undefined {
+  ) {
     const rateFound = response.data.refRates.find((rate) => rate.type === id);
     if (rateFound) {
-      return rateFound.percentRate;
+      return { value: rateFound.percentRate, id };
+    } else {
+      throw new Error(`Rate ${id} not found`);
     }
   }
 }

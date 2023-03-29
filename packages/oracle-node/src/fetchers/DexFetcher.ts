@@ -69,14 +69,15 @@ export class DexFetcher extends BaseFetcher {
   }
 
   extractPrices(response: DexFetcherResponse, assetIds: string[]): PricesObj {
-    return this.extractPricesSafely(
-      assetIds,
-      (assetId) => this.extractPrice(assetId, response),
-      (id) => id
+    return this.extractPricesSafely(assetIds, (assetId) =>
+      this.extractPricePair(assetId, response)
     );
   }
 
-  private extractPrice(currentAssetId: string, response: DexFetcherResponse) {
+  private extractPricePair(
+    currentAssetId: string,
+    response: DexFetcherResponse
+  ) {
     const pairId = this.symbolToPairIdObj[currentAssetId];
     const pair = response.data.pairs.find((pair) => pair.id === pairId);
 
@@ -92,11 +93,14 @@ export class DexFetcher extends BaseFetcher {
       const reserveUSD = parseFloat(pair.reserveUSD);
 
       if (symbol0 === currentAssetId) {
-        return reserveUSD / (2 * reserve0);
+        return { id: symbol0, value: reserveUSD / (2 * reserve0) };
       } else if (symbol1 === currentAssetId) {
-        return reserveUSD / (2 * reserve1);
+        return { id: symbol1, value: reserveUSD / (2 * reserve1) };
+      } else {
+        throw new Error("Couldn't find matching symbol");
       }
     }
+    throw new Error(`Pair ${pairId} not found in response`);
   }
 
   protected convertSymbolsToPairIds(

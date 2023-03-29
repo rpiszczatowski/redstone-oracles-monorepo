@@ -39,12 +39,9 @@ export class CoingeckoFetcher extends BaseFetcher {
   }
 
   extractPrices(prices: SimplePrices): PricesObj {
-    return this.extractPricesSafely(
-      Object.keys(prices),
-      (id) => {
-        return prices[id].usd;
-      },
-      (id) => id
-    );
+    return this.extractPricesSafely(Object.keys(prices), (id) => ({
+      value: prices[id].usd,
+      id,
+    }));
   }
 }

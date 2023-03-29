@@ -15,23 +15,16 @@ export class EcbFetcher extends BaseFetcher {
     const { rates } = response;
     const usdRate = rates.USD;
 
-    return this.extractPricesSafely(
-      ids,
-      (id, pricesObj) => this.extractPrice(id, pricesObj, usdRate, rates),
-      (id) => id
+    return this.extractPricesSafely(ids, (id) =>
+      this.extractPricePair(id, usdRate, rates)
     );
   }
 
-  private extractPrice(
-    id: string,
-    pricesObj: PricesObj,
-    usdRate: any,
-    rates: any
-  ): number | undefined {
+  private extractPricePair(id: string, usdRate: any, rates: any) {
     if (id === "EUR") {
-      return usdRate;
+      return { value: usdRate, id };
     } else {
-      return (1 / rates[id]) * usdRate;
+      return { value: (1 / rates[id]) * usdRate, id };
     }
   }
 }

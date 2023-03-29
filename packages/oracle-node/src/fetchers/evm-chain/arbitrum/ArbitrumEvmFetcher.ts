@@ -41,10 +41,9 @@ export class ArbitrumEvmFetcher extends BaseFetcher {
   }
 
   extractPrices(response: MulticallParsedResponses, ids: string[]): PricesObj {
-    return this.extractPricesSafely(
-      ids,
-      (id) => Number(extractPrice(response, id)),
-      (id) => id
-    );
+    return this.extractPricesSafely(ids, (id) => ({
+      value: Number(extractPrice(response, id)),
+      id,
+    }));
   }
 }

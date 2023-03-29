@@ -2,8 +2,10 @@ import { Consola } from "consola";
 import { Fetcher, PriceDataFetched, FetcherOpts, PricesObj } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 import createLogger from "../utils/logger";
+import { isDefined } from "../utils/objects";
 
 const MAX_RESPONSE_TIME_TO_RETRY_FETCHING_MS = 3000;
+export type ExtractPricePairFn<T> = (item: T) => { id: string; value: number };
 
 export abstract class BaseFetcher implements Fetcher {
   protected name: string;
@@ -97,26 +99,43 @@ export abstract class BaseFetcher implements Fetcher {
     return prices;
   }
 
+  /**
+   * Function used to map items to pricesObj. Errors between extracts are isolated.
+   * @param items list of objects that price and id will be extracted from
+   * @param extractPricePairFn this function should extract price pair from item.
+   *  If any of return values will be undefined or function wil throw, price pair
+   * will not be added to result.
+   * @returns pricesObj
+   */
   protected extractPricesSafely<T>(
     items: T[],
-    extractPriceFn: (item: T, pricesObj: PricesObj) => number | undefined,
-    extractIdFn: (item: T) => string
+    extractPricePairFn: ExtractPricePairFn<T>
   ): PricesObj {
     const pricesObj: PricesObj = {};
     for (const item of items) {
       let id;
       try {
-        id = extractIdFn(item);
-        if (!id) {
-          throw Error("Could not extract id from response");
-        }
-        const price = extractPriceFn(item, pricesObj);
+        const pricePair = extractPricePairFn(item);
 
-        if (price) {
-          pricesObj[id] = price;
-        } else {
-          throw Error("Could not extract price from response");
+        if (!isDefined(pricePair)) {
+          throw new Error("Could not extract price pair from response");
         }
+
+        if (!isDefined(pricePair.id)) {
+          throw new Error("Could not extract id from response");
+        }
+        id = pricePair.id;
+
+        if (!isDefined(pricePair.value)) {
+          throw new Error("Could not extract price from response");
+        }
+
+        if (isDefined(pricesObj[pricePair.id])) {
+          // case were same id is extracted more than once
+          continue;
+        }
+
+        pricesObj[pricePair.id] = pricePair.value as number;
       } catch (e: unknown) {
         this.logger.error(
           `Extracting price failed for id: ${id} error: ${stringifyError(e)}`

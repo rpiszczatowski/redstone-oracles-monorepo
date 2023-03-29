@@ -66,10 +66,8 @@ export class LensFetcher extends BaseFetcher {
   }
 
   extractPrices(profiles: LensProfile[]): ReputationObject {
-    return this.extractPricesSafely(
-      profiles,
-      (profile) => this.extractReputation(profile),
-      (profile) => profile?.handle
+    return this.extractPricesSafely(profiles, (profile) =>
+      this.extractReputation(profile)
     );
   }
 
@@ -90,6 +88,6 @@ export class LensFetcher extends BaseFetcher {
       totalMirrors * 1 +
       totalPublications * 0.5 +
       totalCollects * 1;
-    return reputation;
+    return { value: reputation, id: symbol };
   }
 }

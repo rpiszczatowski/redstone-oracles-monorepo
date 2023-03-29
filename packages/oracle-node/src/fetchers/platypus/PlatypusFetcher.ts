@@ -35,8 +35,10 @@ export class PlatypusFetcher extends BaseFetcher {
   extractPrices(response: any): PricesObj {
     return this.extractPricesSafely(
       response.data.tokens as Token[],
-      ({ lastPriceUSD }) => Number(lastPriceUSD),
-      ({ symbol }) => symbol
+      ({ lastPriceUSD, symbol }) => ({
+        value: Number(lastPriceUSD),
+        id: symbol,
+      })
     );
   }
 

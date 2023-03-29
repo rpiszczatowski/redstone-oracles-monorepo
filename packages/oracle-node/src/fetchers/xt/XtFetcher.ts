@@ -1,7 +1,6 @@
 import axios from "axios";
 import _ from "lodash";
 import { PricesObj } from "../../types";
-import { stringifyError } from "../../utils/error-stringifier";
 import { getRequiredPropValue } from "../../utils/objects";
 import { BaseFetcher } from "../BaseFetcher";
 import symbolToId from "./symbol-to-id.json";
@@ -31,10 +30,9 @@ export class XtFetcher extends BaseFetcher {
 
   extractPrices(response: any): PricesObj {
     const results = response.result as PriceResult[];
-    return this.extractPricesSafely(
-      results,
-      (result) => Number(result.p),
-      (result) => result.s
-    );
+    return this.extractPricesSafely(results, (result) => ({
+      value: Number(result.p),
+      id: result.s,
+    }));
   }
 }

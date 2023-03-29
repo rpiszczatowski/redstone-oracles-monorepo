@@ -21,21 +21,21 @@ export class KyberFetcher extends BaseFetcher {
 
     const pairs = response.data as Pair;
 
-    return this.extractPricesSafely(
-      ids,
-      (id) => this.extractPrice(pairs, id, lastEthPrice),
-      (id) => id
+    return this.extractPricesSafely(ids, (id) =>
+      this.extractPricePair(pairs, id, lastEthPrice)
     );
   }
 
-  private extractPrice(
+  private extractPricePair(
     pairs: Pair,
     id: string,
     lastEthPrice: number | undefined
-  ): number | undefined {
+  ) {
     const pair = pairs["ETH_" + id];
     if (pair !== undefined && lastEthPrice) {
-      return lastEthPrice * pair.currentPrice;
+      return { value: lastEthPrice * pair.currentPrice, id };
+    } else {
+      throw new Error(`Pair not found ${id}`);
     }
   }
 }

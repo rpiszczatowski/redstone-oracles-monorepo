@@ -42,13 +42,9 @@ export class CoinMarketCapFetcher extends BaseFetcher {
   extractPrices(response: any, ids: string[]): PricesObj {
     const tokenData = response.data;
 
-    return this.extractPricesSafely(
-      ids,
-      (id) => {
-        const price = tokenData?.[id]?.quote?.USD?.price;
-        return price;
-      },
-      (id) => id
-    );
+    return this.extractPricesSafely(ids, (id) => ({
+      value: tokenData?.[id]?.quote?.USD?.price,
+      id,
+    }));
   }
 }

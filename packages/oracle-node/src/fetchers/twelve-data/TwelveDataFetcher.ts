@@ -5,7 +5,6 @@ import { BaseFetcher } from "../BaseFetcher";
 import { config } from "../../config";
 import symbolToId from "./twelve-data-symbol-to-id.json";
 import { getRequiredPropValue } from "../../utils/objects";
-import { stringifyError } from "../../utils/error-stringifier";
 
 const TWELVE_DATA_RATE_URL =
   "https://twelve-data1.p.rapidapi.com/exchange_rate";
@@ -37,10 +36,9 @@ export class TwelveDataFetcher extends BaseFetcher {
   extractPrices(result: any): PricesObj {
     const rates = result.data;
 
-    return this.extractPricesSafely(
-      Object.keys(rates),
-      (key) => rates[key].rate,
-      (key) => rates[key].symbol
-    );
+    return this.extractPricesSafely(Object.keys(rates), (key) => ({
+      value: rates[key].rate,
+      id: rates[key].symbol,
+    }));
   }
 }
