@@ -37,10 +37,10 @@ export class BandFetcher extends BaseFetcher {
 
   extractPrices(response: BandResponse): PricesObj {
     const pricesArray = response.data.price_results;
-    const pricesObj: PricesObj = {};
-    for (const asset of pricesArray) {
-      pricesObj[asset.symbol] = asset.px / asset.multiplier;
-    }
-    return pricesObj;
+
+    return this.extractPricesSafely(pricesArray, (asset) => ({
+      id: asset.symbol,
+      value: asset.px / asset.multiplier,
+    }));
   }
 }

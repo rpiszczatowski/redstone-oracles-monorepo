@@ -1,5 +1,5 @@
-import graphProxy from "../utils/graph-proxy";
 import { PricesObj } from "../types";
+import graphProxy from "../utils/graph-proxy";
 import { BaseFetcher } from "./BaseFetcher";
 
 export interface DexFetcherResponse {
@@ -69,32 +69,38 @@ export class DexFetcher extends BaseFetcher {
   }
 
   extractPrices(response: DexFetcherResponse, assetIds: string[]): PricesObj {
-    const pricesObj: PricesObj = {};
+    return this.extractPricesSafely(assetIds, (assetId) =>
+      this.extractPricePair(assetId, response)
+    );
+  }
 
-    for (const currentAssetId of assetIds) {
-      const pairId = this.symbolToPairIdObj[currentAssetId];
-      const pair = response.data.pairs.find((pair) => pair.id === pairId);
+  private extractPricePair(
+    currentAssetId: string,
+    response: DexFetcherResponse
+  ) {
+    const pairId = this.symbolToPairIdObj[currentAssetId];
+    const pair = response.data.pairs.find((pair) => pair.id === pairId);
 
-      if (!pair) {
-        this.logger.warn(
-          `Pair is not in response. Id: ${pairId}. Symbol: ${currentAssetId}. Source: ${this.name}`
-        );
+    if (!pair) {
+      this.logger.warn(
+        `Pair is not in response. Id: ${pairId}. Symbol: ${currentAssetId}. Source: ${this.name}`
+      );
+    } else {
+      const symbol0 = pair.token0.symbol;
+      const symbol1 = pair.token1.symbol;
+      const reserve0 = parseFloat(pair.reserve0);
+      const reserve1 = parseFloat(pair.reserve1);
+      const reserveUSD = parseFloat(pair.reserveUSD);
+
+      if (symbol0 === currentAssetId) {
+        return { id: symbol0, value: reserveUSD / (2 * reserve0) };
+      } else if (symbol1 === currentAssetId) {
+        return { id: symbol1, value: reserveUSD / (2 * reserve1) };
       } else {
-        const symbol0 = pair.token0.symbol;
-        const symbol1 = pair.token1.symbol;
-        const reserve0 = parseFloat(pair.reserve0);
-        const reserve1 = parseFloat(pair.reserve1);
-        const reserveUSD = parseFloat(pair.reserveUSD);
-
-        if (symbol0 === currentAssetId) {
-          pricesObj[currentAssetId] = reserveUSD / (2 * reserve0);
-        } else if (symbol1 === currentAssetId) {
-          pricesObj[currentAssetId] = reserveUSD / (2 * reserve1);
-        }
+        throw new Error("Couldn't find matching symbol");
       }
     }
-
-    return pricesObj;
+    throw new Error(`Pair ${pairId} not found in response`);
   }
 
   protected convertSymbolsToPairIds(

@@ -41,13 +41,9 @@ export class ArbitrumEvmFetcher extends BaseFetcher {
   }
 
   extractPrices(response: MulticallParsedResponses, ids: string[]): PricesObj {
-    const pricesObject: PricesObj = {};
-    for (const id of ids) {
-      const price = extractPrice(response, id);
-      if (price) {
-        pricesObject[id] = Number(price);
-      }
-    }
-    return pricesObject;
+    return this.extractPricesSafely(ids, (id) => ({
+      value: Number(extractPrice(response, id)),
+      id,
+    }));
   }
 }

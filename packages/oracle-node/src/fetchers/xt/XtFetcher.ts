@@ -7,6 +7,8 @@ import symbolToId from "./symbol-to-id.json";
 
 const url = `https://sapi.xt.com/v4/public/ticker/price?symbols=`;
 
+type PriceResult = { p: string; s: string };
+
 export class XtFetcher extends BaseFetcher {
   constructor() {
     super("xt");
@@ -27,15 +29,10 @@ export class XtFetcher extends BaseFetcher {
   }
 
   extractPrices(response: any): PricesObj {
-    const pricesObj: PricesObj = {};
-
-    const results = response.result;
-    for (const result of results) {
-      const symbol = result.s;
-      const price = result.p;
-      pricesObj[symbol] = Number(price);
-    }
-
-    return pricesObj;
+    const results = response.result as PriceResult[];
+    return this.extractPricesSafely(results, (result) => ({
+      value: Number(result.p),
+      id: result.s,
+    }));
   }
 }

@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { PricesObj } from "../../types";
+import { stringifyError } from "../../utils/error-stringifier";
 import { BaseFetcher } from "../BaseFetcher";
 
 interface NewyorkfedResponse {
@@ -27,15 +28,20 @@ export class NewyorkfedFetcher extends BaseFetcher {
     response: AxiosResponse<NewyorkfedResponse>,
     ids: string[]
   ): PricesObj {
-    const pricesObj: PricesObj = {};
+    return this.extractPricesSafely(ids, (id) =>
+      this.extractPricePair(response, id)
+    );
+  }
 
-    for (const id of ids) {
-      const rateFound = response.data.refRates.find((rate) => rate.type === id);
-      if (rateFound) {
-        pricesObj[id] = rateFound.percentRate;
-      }
+  private extractPricePair(
+    response: AxiosResponse<NewyorkfedResponse>,
+    id: string
+  ) {
+    const rateFound = response.data.refRates.find((rate) => rate.type === id);
+    if (rateFound) {
+      return { value: rateFound.percentRate, id };
+    } else {
+      throw new Error(`Rate ${id} not found`);
     }
-
-    return pricesObj;
   }
 }

@@ -5,6 +5,8 @@ import { PricesObj } from "../../types";
 
 const ETH_PAIRS_URL = "https://api.kyber.network/api/tokens/pairs";
 
+type Pair = Record<string, undefined | { currentPrice: number }>;
+
 export class KyberFetcher extends BaseFetcher {
   constructor() {
     super("kyber");
@@ -17,16 +19,23 @@ export class KyberFetcher extends BaseFetcher {
   extractPrices(response: any, ids: string[]): PricesObj {
     const lastEthPrice = getLastPrice("ETH")?.value;
 
-    const pricesObj: PricesObj = {};
+    const pairs = response.data as Pair;
 
-    const pairs = response.data;
-    for (const id of ids) {
-      const pair = pairs["ETH_" + id];
-      if (pair !== undefined && lastEthPrice) {
-        pricesObj[id] = lastEthPrice * pair.currentPrice;
-      }
+    return this.extractPricesSafely(ids, (id) =>
+      this.extractPricePair(pairs, id, lastEthPrice)
+    );
+  }
+
+  private extractPricePair(
+    pairs: Pair,
+    id: string,
+    lastEthPrice: number | undefined
+  ) {
+    const pair = pairs["ETH_" + id];
+    if (pair !== undefined && lastEthPrice) {
+      return { value: lastEthPrice * pair.currentPrice, id };
+    } else {
+      throw new Error(`Pair not found ${id}`);
     }
-
-    return pricesObj;
   }
 }

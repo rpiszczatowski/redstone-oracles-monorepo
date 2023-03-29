@@ -34,14 +34,11 @@ export class TwelveDataFetcher extends BaseFetcher {
   }
 
   extractPrices(result: any): PricesObj {
-    const pricesObj: PricesObj = {};
-
     const rates = result.data;
-    for (const symbol of Object.keys(rates)) {
-      const id = rates[symbol].symbol;
-      pricesObj[id] = rates[symbol].rate;
-    }
 
-    return pricesObj;
+    return this.extractPricesSafely(Object.keys(rates), (key) => ({
+      value: rates[key].rate,
+      id: rates[key].symbol,
+    }));
   }
 }

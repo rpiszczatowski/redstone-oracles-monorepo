@@ -6,6 +6,8 @@ import graphProxy from "../../utils/graph-proxy";
 const PLATYPUS_SUBGRAPH_FETCHER =
   "https://api.thegraph.com/subgraphs/name/messari/platypus-finance-avalanche";
 
+type Token = { symbol: string; lastPriceUSD: string };
+
 export class PlatypusFetcher extends BaseFetcher {
   constructor() {
     super("platypus-finance");
@@ -31,12 +33,13 @@ export class PlatypusFetcher extends BaseFetcher {
   }
 
   extractPrices(response: any): PricesObj {
-    const pricesObj: PricesObj = {};
-    for (const token of response.data.tokens) {
-      const { symbol, lastPriceUSD } = token;
-      pricesObj[symbol] = Number(lastPriceUSD);
-    }
-    return pricesObj;
+    return this.extractPricesSafely(
+      response.data.tokens as Token[],
+      ({ lastPriceUSD, symbol }) => ({
+        value: Number(lastPriceUSD),
+        id: symbol,
+      })
+    );
   }
 
   private getTokenIdsForAssetIds(assetIds: string[]): string[] {
