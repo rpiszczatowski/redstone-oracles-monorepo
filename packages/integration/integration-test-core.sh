@@ -101,7 +101,7 @@ main() {
   updateDotEnvFile "OVERRIDE_DIRECT_CACHE_SERVICE_URLS" '["http://localhost:3000"]'
   updateDotEnvFile "OVERRIDE_MANIFEST_USING_FILE" "./manifests/single-source/mock.json"
   updateDotEnvFile "ECDSA_PRIVATE_KEY" $HARDHAT_MOCK_PRIVATE_KEY
-  runWithLogPrefix "node dist/index.js" "oracle-node" &
+  runWithLogPrefix "yarn start:prod" "oracle-node" &
   oracleNodePid=$!
 
   # Waiting for data packages to be available in cache service
@@ -123,8 +123,8 @@ main() {
 
   # Cleaning
   kill $cacheLayerPid
-  pkill -f scripts/launch-mongodb-in-memory.ts
   kill $oracleNodePid
+  pkill -f scripts/launch-mongodb-in-memory.ts
 }
 
 # Run the script
