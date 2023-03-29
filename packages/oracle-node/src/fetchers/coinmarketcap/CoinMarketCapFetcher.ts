@@ -5,6 +5,7 @@ import { getRequiredPropValue } from "../../utils/objects";
 import { PricesObj } from "../../types";
 import symbolToId from "./symbol-to-id.json";
 import { config } from "../../config";
+import { stringifyError } from "../../utils/error-stringifier";
 const idToSymbol = _.invert(symbolToId);
 
 const url = "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest";
@@ -39,20 +40,11 @@ export class CoinMarketCapFetcher extends BaseFetcher {
   }
 
   extractPrices(response: any, ids: string[]): PricesObj {
-    const pricesObj: PricesObj = {};
     const tokenData = response.data;
 
-    for (const id of ids) {
-      const price = tokenData?.[id]?.quote?.USD?.price;
-      if (price) {
-        pricesObj[id] = price;
-      } else {
-        this.logger.warn(
-          `CoinMarketCap fetcher: Id ${id} not included in response`
-        );
-      }
-    }
-
-    return pricesObj;
+    return this.extractPricesSafely(ids, (id) => ({
+      value: tokenData?.[id]?.quote?.USD?.price,
+      id,
+    }));
   }
 }

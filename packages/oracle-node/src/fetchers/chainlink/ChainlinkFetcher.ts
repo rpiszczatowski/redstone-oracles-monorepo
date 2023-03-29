@@ -15,14 +15,11 @@ export class ChainlinkFetcher extends BaseFetcher {
   }
 
   extractPrices(response: any): PricesObj {
-    const pricesObj: PricesObj = {};
-
-    for (const id of Object.keys(response)) {
+    return this.extractPricesSafely(Object.keys(response), (id) => {
       const decimalPrice =
         Number(response[id].price) * Math.pow(10, -response[id].decimalPlaces);
 
-      pricesObj[id] = parseFloat(decimalPrice.toFixed(8));
-    }
-    return pricesObj;
+      return { value: parseFloat(decimalPrice.toFixed(8)), id: id };
+    });
   }
 }

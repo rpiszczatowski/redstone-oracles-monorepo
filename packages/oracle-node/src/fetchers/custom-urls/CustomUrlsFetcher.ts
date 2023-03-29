@@ -42,28 +42,30 @@ export class CustomUrlsFetcher extends BaseFetcher {
   }
 
   extractPrices(responses: any, _ids: string[], opts: FetcherOpts): PricesObj {
-    const pricesObj: PricesObj = {};
-    for (const [id, response] of Object.entries(responses)) {
-      const jsonpath = opts.manifest.tokens[id].customUrlDetails!.jsonpath;
-      const [extractedValue] = jp.query(response, jsonpath);
-      let valueWithoutCommas = extractedValue;
-      if (typeof extractedValue === "string") {
-        valueWithoutCommas = extractedValue.replace(/,/g, "");
-      }
-      const extractedValueAsNumber = Number(valueWithoutCommas);
-      const isEmptyString =
-        typeof valueWithoutCommas === "string" &&
-        valueWithoutCommas.length === 0;
-      if (isNaN(extractedValueAsNumber) || isEmptyString) {
-        this.logger.error(
-          `Request to ${
-            opts.manifest.tokens[id].customUrlDetails!.url
-          } returned non-numeric value`
-        );
-      } else {
-        pricesObj[id] = extractedValueAsNumber;
-      }
+    return this.extractPricesSafely(
+      Object.entries(responses),
+      ([id, response]) => this.extractPricePair(opts, id, response)
+    );
+  }
+
+  private extractPricePair(opts: FetcherOpts, id: string, response: unknown) {
+    const jsonpath = opts.manifest.tokens[id].customUrlDetails!.jsonpath;
+    const [extractedValue] = jp.query(response, jsonpath);
+    let valueWithoutCommas = extractedValue;
+    if (typeof extractedValue === "string") {
+      valueWithoutCommas = extractedValue.replace(/,/g, "");
     }
-    return pricesObj;
+    const extractedValueAsNumber = Number(valueWithoutCommas);
+    const isEmptyString =
+      typeof valueWithoutCommas === "string" && valueWithoutCommas.length === 0;
+    if (isNaN(extractedValueAsNumber) || isEmptyString) {
+      throw new Error(
+        `Request to ${
+          opts.manifest.tokens[id].customUrlDetails!.url
+        } returned non-numeric value`
+      );
+    } else {
+      return { value: extractedValueAsNumber, id };
+    }
   }
 }
