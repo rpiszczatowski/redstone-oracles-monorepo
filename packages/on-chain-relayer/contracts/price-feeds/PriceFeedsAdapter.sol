@@ -13,11 +13,6 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
   error DataFeedValueCannotBeZero(bytes32 dataFeedId);
   error RoundNotFound(uint256 roundId);
 
-  struct RoundData {
-    uint256 value;
-    uint256 timestamp;
-  }
-
   EnumerableSet.Bytes32Set private dataFeedsIds;
 
   mapping(bytes32 => mapping(uint256 => uint256)) public roundValues; // dataFeedId => (roundId => value)
