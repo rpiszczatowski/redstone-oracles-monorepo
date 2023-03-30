@@ -12,8 +12,15 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
 
   error DataFeedValueCannotBeZero(bytes32 dataFeedId);
 
+  struct RoundData {
+    uint256 value;
+    uint256 timestamp;
+  }
+
   EnumerableSet.Bytes32Set private dataFeedsIds;
-  mapping(bytes32 => uint256) dataFeedsValues;
+
+  mapping(bytes32 => mapping(uint256 => uint256)) public roundValues; // dataFeedId => (roundId => value)
+  mapping(uint256 => uint256) public roundTimestamps; // roundId => timestamp
 
   constructor(bytes32[] memory dataFeedsIds_) {
     for (uint256 i = 0; i < dataFeedsIds_.length; i++) {
@@ -53,12 +60,15 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
     bytes32[] memory dataFeedsIdsArray = getDataFeedsIds();
     uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedsIdsArray);
     for (uint256 i = 0; i < dataFeedsIdsArray.length; i++) {
-      dataFeedsValues[dataFeedsIdsArray[i]] = values[i];
+      bytes32 dataFeedId = dataFeedsIdsArray[i];
+      roundValues[dataFeedId][proposedRound] = values[i];
     }
+    roundTimestamps[proposedRound] = proposedTimestamp;
   }
 
   function getValueForDataFeed(bytes32 dataFeedId) public view returns (uint256) {
-    uint256 dataFeedValue = dataFeedsValues[dataFeedId];
+    uint256 lastRound = getLastRound();
+    uint256 dataFeedValue = roundValues[dataFeedId][lastRound];
     if (dataFeedValue == 0) {
       revert DataFeedValueCannotBeZero(dataFeedId);
     }
@@ -76,9 +86,16 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
       uint256 lastUpdateTimestampInMilliseconds
     )
   {
-    dataFeedValue = getValueForDataFeed(dataFeedId);
     lastRoundNumber = getLastRound();
-    lastUpdateTimestampInMilliseconds = getLastUpdateTimestamp();
+    (dataFeedValue, lastUpdateTimestampInMilliseconds) = getRoundData(dataFeedId, lastRoundNumber);
+  }
+
+  function getRoundData(
+    bytes32 dataFeedId,
+    uint256 roundNumber
+  ) public view returns (uint256 dataFeedValue, uint256 roundTimestampInMilliseconds) {
+    dataFeedValue = roundValues[dataFeedId][roundNumber];
+    roundTimestampInMilliseconds = roundTimestamps[roundNumber];
   }
 
   function getValuesForDataFeeds(
