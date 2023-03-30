@@ -46,6 +46,26 @@ yarn add @redstone-finance/evm-connector
 npm install @redstone-finance/evm-connector
 ```
 
+### Foundry
+
+Foundry installs dependencies using [git submodules](). Thus additional steps are needed to [install dependencies](https://book.getfoundry.sh/projects/dependencies).
+
+```bash
+# In foundry project
+
+# Install @redstone-finance/evm-connector - it will install current code from main branch
+forge install redstone-finance/redstone-oracles-monorepo
+
+# Install @OpenZeppelin contracts (dependency of @redstone-finance/evm-connector) - it will install current code from main branch
+forge install OpenZeppelin/openzeppelin-contracts
+
+# Add libraries to remappings.txt
+echo "@redstone-finance/evm-connector/dist/contracts/=lib/redstone-oracles-monorepo/packages/evm-connector/contracts/
+@openzeppelin/contracts=lib/openzeppelin-contracts/contracts/" >> remappings.txt
+```
+
+Import example: `import "redstone-finance/core/CalldataExtractor.sol";`
+
 ## 🔥 Getting started
 
 ### 1. Modifying your contracts
