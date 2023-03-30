@@ -1,7 +1,9 @@
 import { Consola } from "consola";
 import { v4 as uuidv4 } from "uuid";
-import fetchers from "./index";
+import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import ManifestHelper, { TokensBySource } from "../manifest/ManifestHelper";
+import { IterationContext } from "../schedulers/IScheduler";
+import { terminateWithManifestConfigError } from "../Terminator";
 import {
   DeviationCheckConfig,
   Manifest,
@@ -10,17 +12,15 @@ import {
   PriceDataBeforeSigning,
   PriceDataFetched,
 } from "../types";
-import { trackEnd, trackStart } from "../utils/performance-tracker";
-import { promiseTimeout } from "../utils/promise-timeout";
-import { getPrices, PriceValueInLocalDB } from "../db/local-db";
+import { stringifyError } from "../utils/error-stringifier";
 import {
   calculateAverageValue,
-  safelyConvertAnyValueToNumber,
   calculateDeviationPercent,
+  tryToParseToSafeNumber,
 } from "../utils/numbers";
-import { IterationContext } from "../schedulers/IScheduler";
-import { terminateWithManifestConfigError } from "../Terminator";
-import { stringifyError } from "../utils/error-stringifier";
+import { trackEnd, trackStart } from "../utils/performance-tracker";
+import { promiseTimeout } from "../utils/promise-timeout";
+import fetchers from "./index";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -217,8 +217,10 @@ export default class PricesService {
     return aggregatedPrices;
   }
 
-  // This function converts all source values to numbers
-  // and excludes sources with invalid values
+  /**
+   * This function converts all source values to numbers
+   * and excludes sources with invalid values
+   * */
   sanitizeSourceValues(
     price: PriceDataBeforeAggregation,
     recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
@@ -227,9 +229,18 @@ export default class PricesService {
     const newSources: { [symbol: string]: number } = {};
 
     for (const [sourceName, valueFromSource] of Object.entries(price.source)) {
-      const valueFromSourceNum = safelyConvertAnyValueToNumber(valueFromSource);
+      const { number: valueFromSourceNum, isValid: isNumber } =
+        tryToParseToSafeNumber(valueFromSource);
+
+      if (!isNumber) {
+        logger.warn(
+          `Excluding ${price.symbol} value ${valueFromSourceNum} for source: ${sourceName}. Reason: value is not valid REDSTONE number`
+        );
+        continue;
+      }
+
       const { isValid, reason } = this.validatePrice({
-        value: valueFromSourceNum,
+        value: valueFromSource,
         timestamp: price.timestamp,
         deviationConfig: deviationCheckConfig,
         recentPrices: recentPricesInLocalDBForSymbol,

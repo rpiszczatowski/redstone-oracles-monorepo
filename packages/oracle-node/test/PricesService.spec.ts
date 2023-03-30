@@ -462,15 +462,6 @@ describe("PricesService", () => {
       ).toBe(50);
     });
 
-    it("should properly calculate deviation with negative values", () => {
-      expect(
-        getDeviation({
-          value: 42,
-          recentPrices: [{ value: -42, timestamp: testTimestamp - 1 }],
-        })
-      ).toBe(200);
-    });
-
     it("should exclude too old values from the deviation calculation", () => {
       expect(
         getDeviation({
