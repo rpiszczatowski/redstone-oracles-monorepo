@@ -16,7 +16,10 @@ import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
 import { sqrt } from "../../../utils/math";
-import { extractPriceForGlpToken } from "../shared/extract-prices";
+import {
+  extractPriceForGlpToken,
+  extractValueFromMulticallResponse,
+} from "../shared/extract-prices";
 import { glpToken } from "../shared/contracts-details/glp-manager";
 import { glpManagerAddress } from "./contracts-details/glp-manager";
 
@@ -54,10 +57,18 @@ const extractPriceForYieldYakOrMoo = (
   secondFunctionName: string = "totalSupply"
 ) => {
   const totalDeposits = BigNumber.from(
-    multicallResult[address][firstFunctionName].value
+    extractValueFromMulticallResponse(
+      multicallResult,
+      address,
+      firstFunctionName
+    )
   );
   const totalSupply = BigNumber.from(
-    multicallResult[address][secondFunctionName].value
+    extractValueFromMulticallResponse(
+      multicallResult,
+      address,
+      secondFunctionName
+    )
   );
 
   const tokenValue = totalDeposits
@@ -80,7 +91,11 @@ const extractPriceForLpTokens = (
 ) => {
   const { address, tokensToFetch } =
     lpTokensContractsDetails[id as LpTokensDetailsKeys];
-  const reserves = multicallResult[address].getReserves.value;
+  const reserves = extractValueFromMulticallResponse(
+    multicallResult,
+    address,
+    "getReserves"
+  );
 
   const firstTokenReserve = BigNumber.from(reserves.slice(0, 66));
   const firstToken = tokensToFetch[0];
@@ -113,7 +128,7 @@ const extractPriceForLpTokens = (
       reservesMultipliedSqrt.mul(pricesMultipliedSqrt);
 
     const totalSupply = BigNumber.from(
-      multicallResult[address].totalSupply.value
+      extractValueFromMulticallResponse(multicallResult, address, "totalSupply")
     );
 
     const lpTokenPrice = reservesPricesMulitplied.div(totalSupply).mul(2);
@@ -155,7 +170,7 @@ const extractPriceForOracleAdapterTokens = (
   const { address } =
     oracleAdaptersContractsDetails[id as OracleAdaptersDetailsKeys];
   const latestAnswer = BigNumber.from(
-    multicallResult[address].latestAnswer.value
+    extractValueFromMulticallResponse(multicallResult, address, "latestAnswer")
   );
   return ethers.utils.formatUnits(latestAnswer, 8);
 };

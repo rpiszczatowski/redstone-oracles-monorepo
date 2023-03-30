@@ -18,14 +18,14 @@ export class ExpressAppRunner {
   constructor(private nodeConfig: NodeConfig) {}
 
   run() {
-    if (process.env.NODE_ENV === "test") {
-      logger.info(`Express server running skipped in test environment`);
+    if (process.env.NODE_ENV === "test" || !this.nodeConfig.enableHttpServer) {
+      logger.info(`Http server is disabled`);
       return;
     }
     const app = express();
     app.use(cors());
     setExpressRoutes(app, this.nodeConfig);
-    logger.info(`Running express server on port: ${PORT}`);
+    logger.info(`Running http server on port: ${PORT}`);
     app.listen(PORT, () => {
       logger.info(`Server started at http://localhost:${PORT}`);
     });

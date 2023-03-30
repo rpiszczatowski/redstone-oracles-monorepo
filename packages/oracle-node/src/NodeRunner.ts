@@ -25,6 +25,7 @@ import { DataPackageBroadcastPerformer } from "./aggregated-price-handlers/DataP
 import { PriceDataBroadcastPerformer } from "./aggregated-price-handlers/PriceDataBroadcastPerformer";
 import { ManifestDataProvider } from "./aggregated-price-handlers/ManifestDataProvider";
 import { IterationContext } from "./schedulers/IScheduler";
+import { stringifyError } from "./utils/error-stringifier";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -124,7 +125,7 @@ export default class NodeRunner {
       const scheduler = ManifestHelper.getScheduler(this.currentManifest!);
       await scheduler.startIterations(this.runIteration);
     } catch (e: any) {
-      NodeRunner.reThrowIfManifestConfigError(e);
+      logger.error(stringifyError(e));
     }
   }
 
@@ -192,7 +193,7 @@ export default class NodeRunner {
     try {
       await this.doProcessTokens(iterationContext);
     } catch (e: any) {
-      NodeRunner.reThrowIfManifestConfigError(e);
+      logger.error(stringifyError(e));
     } finally {
       trackEnd(processingAllTrackingId);
     }
@@ -255,14 +256,6 @@ export default class NodeRunner {
       logger.info(
         `Fetched price : ${price.symbol} : ${price.value} | ${sourcesData}`
       );
-    }
-  }
-
-  private static reThrowIfManifestConfigError(e: Error) {
-    if (e.name == "ManifestConfigError") {
-      throw e;
-    } else {
-      logger.error(e.stack);
     }
   }
 

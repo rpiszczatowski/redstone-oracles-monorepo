@@ -23,7 +23,7 @@ describe("EVM chain multicall service", () => {
     );
   });
 
-  test("Should perform multcall", async () => {
+  test("Should perform multicall", async () => {
     const blockNumberData = new Interface(Multicall2.abi).encodeFunctionData(
       "getBlockNumber"
     );
@@ -37,11 +37,38 @@ describe("EVM chain multicall service", () => {
     const result = await multicallService.performMulticall(requests);
     expect(result).toEqual({
       [multicallContract.address]: {
-        getBlockNumber: {
-          success: true,
-          value:
-            "0x0000000000000000000000000000000000000000000000000000000000000001",
-        },
+        getBlockNumber:
+          "0x0000000000000000000000000000000000000000000000000000000000000001",
+      },
+    });
+  });
+
+  test("Should return undefined value for failed call", async () => {
+    const theOneThatFailsData = new Interface(
+      Multicall2.abi
+    ).encodeFunctionData("theOneThatFails");
+    const blockNumberData = new Interface(Multicall2.abi).encodeFunctionData(
+      "getBlockNumber"
+    );
+    const requests = [
+      {
+        address: multicallContract.address,
+        data: theOneThatFailsData,
+        name: "theOneThatFails",
+      },
+      {
+        address: multicallContract.address,
+        data: blockNumberData,
+        name: "getBlockNumber",
+      },
+    ];
+
+    const result = await multicallService.performMulticall(requests);
+    expect(result).toEqual({
+      [multicallContract.address]: {
+        theOneThatFails: undefined,
+        getBlockNumber:
+          "0x0000000000000000000000000000000000000000000000000000000000000001",
       },
     });
   });

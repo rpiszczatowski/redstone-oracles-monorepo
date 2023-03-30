@@ -27,6 +27,7 @@ const DEFAULT_STLOUISFED_API_KEY = "";
 const DEFAULT_COINGECKO_API_URL =
   "https://api.coingecko.com/api/v3/simple/price";
 const DEFAULT_COINGECKO_API_KEY = "";
+const DEFAULT_ENABLE_HTTP_SERVER = "false";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -174,4 +175,7 @@ export const config: NodeConfig = Object.freeze({
   ),
   coingeckoApiUrl: getFromEnv("COINGECKO_API_URL", DEFAULT_COINGECKO_API_URL),
   coingeckoApiKey: getFromEnv("COINGECKO_API_KEY", DEFAULT_COINGECKO_API_KEY),
+  enableHttpServer: parserFromString.boolean(
+    getFromEnv("ENABLE_HTTP_SERVER", DEFAULT_ENABLE_HTTP_SERVER)
+  ),
 });

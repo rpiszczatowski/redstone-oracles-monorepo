@@ -1,5 +1,3 @@
-import { JWKInterface } from "arweave/node/lib/wallet";
-
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
   interval: number; // It is ignored if the `useCustomScheduler` is not set to `interval`
@@ -164,6 +162,7 @@ export interface NodeConfig {
   providerIdForPriceBroadcasting?: string;
   coingeckoApiUrl: string;
   coingeckoApiKey?: string;
+  enableHttpServer: boolean;
 }
 
 export interface MulticallRequest {
@@ -172,8 +171,9 @@ export interface MulticallRequest {
   name: string;
 }
 
+// If value is undefined it means that request failed
 export type MulticallParsedResponses = {
   [address in string]: {
-    [functionName in string]: { success: boolean; value: string };
+    [functionName in string]?: string;
   };
 };
