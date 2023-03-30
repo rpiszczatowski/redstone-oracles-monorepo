@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { NodeConfig } from "../src/types";
 
 const baseManifest = {
   interval: 2000,
@@ -30,18 +31,16 @@ export const MOCK_MANIFEST = {
 const MOCK_ETH_PRIV_KEY =
   "0x1111111111111111111111111111111111111111111111111111111111111111";
 
-export const MOCK_NODE_CONFIG = {
+export const MOCK_NODE_CONFIG: NodeConfig = {
   enableJsonLogs: false,
   enablePerformanceTracking: false,
   printDiagnosticInfo: false,
   manifestRefreshInterval: 120000,
   overrideManifestUsingFile: MOCK_MANIFEST,
   privateKeys: {
-    arweaveJwk: { e: "e", kty: "kty", n: "n" },
     ethereumPrivateKey: MOCK_ETH_PRIV_KEY,
   },
   ethereumAddress: new ethers.Wallet(MOCK_ETH_PRIV_KEY).address,
-  credentials: {},
   levelDbLocation: "oracle-node-level-db-tests",
   ttlForPricesInLocalDBInMilliseconds: 900000,
   avalancheRpcUrl: "",
@@ -50,4 +49,5 @@ export const MOCK_NODE_CONFIG = {
   minDataFeedsPercentageForBigPackage: 50,
   arbitrumRpcUrl: "",
   coingeckoApiUrl: "",
+  enableHttpServer: false,
 };

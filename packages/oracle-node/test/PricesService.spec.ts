@@ -16,6 +16,12 @@ import {
 } from "../src/types";
 import { preparePrices, preparePrice } from "./fetchers/_helpers";
 
+jest.mock("../src/Terminator", () => ({
+  terminateWithManifestConfigError: (details: string) => {
+    throw new Error(`Mock manifest config termination: ${details}`);
+  },
+}));
+
 // Having hard time to mock uuid..so far only this solution is working: https://stackoverflow.com/a/61150430
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 const testTimestamp = Date.now();
@@ -540,6 +546,19 @@ describe("PricesService", () => {
       ).toThrowError(
         "Invalid sources number for symbol TestToken. Valid sources count: 0. Valid sources: "
       );
+    });
+  });
+
+  describe("doFetchFromSource", () => {
+    test("should shutdown if fetcher for given source doesn't exist", async () => {
+      const pricesService = new PricesService({
+        ...emptyManifest,
+        defaultSource: ["non-existing"],
+      });
+
+      await expect(
+        pricesService.doFetchFromSource("non-existing", ["BTC"])
+      ).rejects.toThrowError(/Mock manifest config termination/);
     });
   });
 });

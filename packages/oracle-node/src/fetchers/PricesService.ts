@@ -11,7 +11,6 @@ import {
   PriceDataFetched,
 } from "../types";
 import { trackEnd, trackStart } from "../utils/performance-tracker";
-import ManifestConfigError from "../manifest/ManifestConfigError";
 import { promiseTimeout } from "../utils/promise-timeout";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import {
@@ -20,6 +19,8 @@ import {
   calculateDeviationPercent,
 } from "../utils/numbers";
 import { IterationContext } from "../schedulers/IScheduler";
+import { terminateWithManifestConfigError } from "../Terminator";
+import { stringifyError } from "../utils/error-stringifier";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -69,27 +70,22 @@ export default class PricesService {
         [source]: pricesFromSource,
       };
     } catch (e: any) {
-      //not sure why instanceof is not working, crap.
-      if (e.name == "ManifestConfigError") {
-        throw e;
-      } else {
-        // We don't throw an error because we want to continue with
-        // other fetchers even if some fetchers failed
-        const resData = e.response ? e.response.data : "";
+      // We don't throw an error because we want to continue with
+      // other fetchers even if some fetchers failed
+      const resData = e.response ? e.response.data : "";
 
-        // We use warn level instead of error because
-        // price fetching errors occur quite often
-        logger.warn(
-          `Fetching failed for source: ${source}: ${resData}`,
-          e.stack
-        );
-        return {
-          [source]: tokens.map((symbol) => ({
-            symbol,
-            value: VALUE_FOR_FAILED_FETCHER,
-          })),
-        };
-      }
+      // We use warn level instead of error because
+      // price fetching errors occur quite often
+      logger.warn(
+        `Fetching failed for source: ${source}: ${resData}`,
+        stringifyError(e)
+      );
+      return {
+        [source]: tokens.map((symbol) => ({
+          symbol,
+          value: VALUE_FOR_FAILED_FETCHER,
+        })),
+      };
     }
   }
 
@@ -98,8 +94,14 @@ export default class PricesService {
     tokens: string[]
   ): Promise<PriceDataFetched[]> {
     if (tokens.length === 0) {
-      throw new ManifestConfigError(
+      terminateWithManifestConfigError(
         `${source} fetcher received an empty array of symbols`
+      );
+    }
+
+    if (!fetchers[source]) {
+      terminateWithManifestConfigError(
+        `Fetcher for source ${source} doesn't exist`
       );
     }
 
@@ -113,7 +115,7 @@ export default class PricesService {
       this.manifest
     );
     if (sourceTimeout === null) {
-      throw new ManifestConfigError(
+      terminateWithManifestConfigError(
         `No timeout configured for ${source}. Did you forget to add "sourceTimeout" field in manifest file?`
       );
     }
@@ -346,7 +348,7 @@ export default class PricesService {
         this.manifest
       );
     if (!deviationCheckConfig) {
-      throw new ManifestConfigError(
+      terminateWithManifestConfigError(
         `Could not determine deviationCheckConfig for ${priceSymbol}. ` +
           `Did you forget to add deviationCheck parameter in the manifest file?`
       );

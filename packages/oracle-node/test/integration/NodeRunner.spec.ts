@@ -1,6 +1,5 @@
 import NodeRunner from "../../src/NodeRunner";
 import { JWKInterface } from "arweave/node/lib/wallet";
-import { mocked } from "ts-jest/utils";
 import fetchers from "../../src/fetchers";
 import axios from "axios";
 import ArweaveService from "../../src/arweave/ArweaveService";
@@ -15,6 +14,7 @@ import {
   savePrices,
 } from "../../src/db/local-db";
 import emptyManifest from "../../manifests/dev/empty.json";
+import * as Terminator from "../../src/Terminator";
 
 const TEST_PROVIDER_EVM_ADDRESS = "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A";
 
@@ -22,6 +22,14 @@ const TEST_PROVIDER_EVM_ADDRESS = "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A";
 const broadcastingUrl =
   "http://mock-direct-cache-service-url/data-packages/bulk";
 const priceDataBroadcastingUrl = "http://mock-price-cache-service-url/prices";
+
+const terminateWithManifestConfigErrorSpy = jest.spyOn(
+  Terminator,
+  "terminateWithManifestConfigError"
+);
+terminateWithManifestConfigErrorSpy.mockImplementation((message: string) => {
+  throw new Error(`Terminate mock manifest config error: ${message}`);
+});
 
 jest.mock("../../src/signers/EvmPriceSigner", () => {
   return jest.fn().mockImplementation(() => {
@@ -102,6 +110,8 @@ describe("NodeRunner", () => {
       ]),
     };
 
+    terminateWithManifestConfigErrorSpy.mockClear();
+
     manifest = {
       ...emptyManifest,
       defaultSource: ["uniswap"],
@@ -138,7 +148,10 @@ describe("NodeRunner", () => {
         ...nodeConfig,
         overrideManifestUsingFile: manifest,
       });
-      await expect(sut.run()).rejects.toThrowError(
+      await sut.run();
+
+      expect(terminateWithManifestConfigErrorSpy).toBeCalledTimes(1);
+      expect(terminateWithManifestConfigErrorSpy).toBeCalledWith(
         "Interval needs to be divisible by 1000"
       );
     });
@@ -151,8 +164,10 @@ describe("NodeRunner", () => {
         overrideManifestUsingFile: manifestWithoutDeviationCheck,
       });
 
-      await expect(sut.run()).rejects.toThrowError(
-        "Could not determine deviationCheckConfig"
+      await sut.run();
+      expect(terminateWithManifestConfigErrorSpy).toBeCalledTimes(1);
+      expect(terminateWithManifestConfigErrorSpy).toBeCalledWith(
+        expect.stringMatching(/Could not determine deviationCheckConfig/)
       );
     });
 
@@ -164,7 +179,10 @@ describe("NodeRunner", () => {
         overrideManifestUsingFile: manifestWithoutSourceTimeout,
       });
 
-      await expect(sut.run()).rejects.toThrowError("No timeout configured for");
+      await sut.run();
+      expect(terminateWithManifestConfigErrorSpy).toBeCalledWith(
+        expect.stringMatching(/No timeout configured for/)
+      );
     });
   });
 

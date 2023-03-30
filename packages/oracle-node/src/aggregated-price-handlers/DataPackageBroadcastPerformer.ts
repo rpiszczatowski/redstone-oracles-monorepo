@@ -58,6 +58,12 @@ export class DataPackageBroadcastPerformer
     const pricesForSigning =
       pricesService.filterPricesForSigning(aggregatedPrices);
 
+    // When nothing to broadcast
+    if (pricesForSigning.length === 0) {
+      logger.warn("No prices to broadcast, skipping broadcasting.");
+      return;
+    }
+
     // Signing
     const signedDataPackages = this.signPrices(
       pricesForSigning,
