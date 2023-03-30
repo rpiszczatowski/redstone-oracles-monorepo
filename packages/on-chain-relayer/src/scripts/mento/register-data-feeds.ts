@@ -6,8 +6,11 @@ import { getAdapterContract } from "../../core/contract-interactions/get-contrac
 
 // Alfajorez data feeds
 const DATA_FEEDS = {
-  CUSD: "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1",
-  EUR: "0x10c892A6EC43a53E45D0B916B4b7D383B1b78C0F",
+  // CUSD: "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1",
+  // EUR: "0x10c892A6EC43a53E45D0B916B4b7D383B1b78C0F",
+
+  CELO: "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1",
+  USDC: "0xA1A8003936862E7a15092A91898D69fa8bCE290c",
 };
 
 (async () => {
