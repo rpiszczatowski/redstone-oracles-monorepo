@@ -8,7 +8,7 @@ on:
 
 jobs:
   run-tests:
-    runs-on: ubuntu-latest
+    runs-on: LargeRunner
     defaults:
       run:
         working-directory: packages/on-chain-relayer
