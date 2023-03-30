@@ -11,6 +11,7 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
   using EnumerableSet for EnumerableSet.Bytes32Set;
 
   error DataFeedValueCannotBeZero(bytes32 dataFeedId);
+  error RoundNotFound(uint256 roundId);
 
   struct RoundData {
     uint256 value;
@@ -94,6 +95,9 @@ contract PriceFeedsAdapter is MainDemoConsumerBase, Ownable, PermissionlessPrice
     bytes32 dataFeedId,
     uint256 roundNumber
   ) public view returns (uint256 dataFeedValue, uint256 roundTimestampInMilliseconds) {
+    if (roundNumber > getLastRound() || roundNumber == 0) {
+      revert RoundNotFound(roundNumber);
+    }
     dataFeedValue = roundValues[dataFeedId][roundNumber];
     roundTimestampInMilliseconds = roundTimestamps[roundNumber];
   }

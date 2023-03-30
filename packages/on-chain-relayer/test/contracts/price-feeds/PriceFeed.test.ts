@@ -50,10 +50,10 @@ describe("PriceFeed", () => {
     expect(description).to.be.equal("RedStone price feed for TestToken");
   });
 
-  it("should revert if calling getRoundData", async () => {
-    await expect(contract.getRoundData(0)).to.be.rejectedWith(
-      "UseLatestRoundToGetDataFeedPrice"
-    );
+  it("should revert for non-existent round", async () => {
+    const errCode = "0xf8ae8137";
+    await expect(contract.getRoundData(0)).to.be.rejectedWith(errCode);
+    await expect(contract.getRoundData(42)).to.be.rejectedWith(errCode);
   });
 
   it("should store data feed value and fetch latest value", async () => {
