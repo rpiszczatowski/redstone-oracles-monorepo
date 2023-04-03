@@ -22,7 +22,7 @@ func execute{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(test_id: felt) -> (
     %{
         import json
 
-        program_input = json.loads(open(f'./test/demo/test{ids.test_id}.input', 'r').read()) if ids.test_id else program_input
+        program_input = json.loads(open(f'./cairo/test/demo/test{ids.test_id}.input', 'r').read()) if ids.test_id else program_input
         bytes = program_input['bytes']
         ids.payload_data_ptr = payload_data_ptr = segments.add()
         for i, val in enumerate(bytes):
