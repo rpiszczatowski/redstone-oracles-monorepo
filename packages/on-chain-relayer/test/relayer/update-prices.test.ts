@@ -12,6 +12,10 @@ import {
 } from "../helpers";
 import { parseUnits } from "ethers/lib/utils";
 import { deployMockSortedOracles } from "../../src/custom-integrations/mento/mento-utils";
+import * as sinon from "sinon";
+import * as getProviderOrSigner from "../../src/core/contract-interactions/get-provider-or-signer";
+import * as hardhat from "hardhat";
+import { StaticJsonRpcProvider } from "@ethersproject/providers";
 
 chai.use(chaiAsPromised);
 
@@ -19,13 +23,25 @@ const mockToken1Address = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9"; // CELO 
 const mockToken2Address = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"; // cUSD token address
 
 describe("#updatePrices", () => {
+  let getProviderStub: sinon.SinonStub<
+    [providerIndex?: number | undefined],
+    StaticJsonRpcProvider
+  >;
   before(() => {
     mockEnvVariables();
     server.listen();
+    getProviderStub = sinon.stub(getProviderOrSigner, "getProvider");
+    getProviderStub.returns(hardhat.ethers.provider);
   });
 
-  afterEach(() => server.resetHandlers());
-  after(() => server.close());
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  after(() => {
+    server.close();
+    getProviderStub.restore();
+  });
 
   it("should update price in price-feeds adapter", async () => {
     // Deploy contract
