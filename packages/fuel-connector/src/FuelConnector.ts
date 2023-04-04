@@ -8,10 +8,10 @@ export interface Block {
 }
 
 export class FuelConnector {
-  constructor(protected providerUrl: string) {}
+  constructor(protected providerUrl: string | undefined) {}
 
   getGasLimit(): number {
-    return !!this.providerUrl.indexOf("127.0.0.1") ? 0 : FUEL_BASE_GAS_LIMIT;
+    return !!this.providerUrl?.indexOf("127.0.0.1") ? 0 : FUEL_BASE_GAS_LIMIT;
   }
 
   async getBlockNumber(): Promise<number> {

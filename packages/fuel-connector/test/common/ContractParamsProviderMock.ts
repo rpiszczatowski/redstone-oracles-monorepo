@@ -4,6 +4,8 @@ import {
 } from "redstone-sdk";
 import fs from "fs";
 import path from "path";
+import { hexlify } from "@ethersproject/bytes";
+import { toUtf8Bytes } from "@ethersproject/strings/lib/utf8";
 
 export class ContractParamsProviderMock extends ContractParamsProvider {
   overriddenFeedIds?: string[];
@@ -21,6 +23,9 @@ export class ContractParamsProviderMock extends ContractParamsProvider {
   }
 
   override getHexlifiedFeedIds(): string[] {
-    return this.overriddenFeedIds || super.getHexlifiedFeedIds();
+    return (
+      this.overriddenFeedIds?.map((feed) => hexlify(toUtf8Bytes(feed))) ||
+      super.getHexlifiedFeedIds()
+    );
   }
 }

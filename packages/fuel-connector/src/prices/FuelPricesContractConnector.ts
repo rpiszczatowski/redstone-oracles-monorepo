@@ -8,14 +8,14 @@ export type FuelPricesContract = PricesAbi & Contract;
 
 export class FuelPricesContractConnector extends FuelContractConnector<IPricesContractAdapter> {
   constructor(
-    wallet: WalletLocked | WalletUnlocked,
+    wallet: WalletLocked | WalletUnlocked | undefined,
     private contractId: string
   ) {
     super(wallet);
   }
 
   async getContract(): Promise<FuelPricesContract> {
-    return PricesAbi__factory.connect(this.contractId, this.wallet);
+    return PricesAbi__factory.connect(this.contractId, this.wallet!);
   }
 
   async getAdapter(): Promise<IPricesContractAdapter> {

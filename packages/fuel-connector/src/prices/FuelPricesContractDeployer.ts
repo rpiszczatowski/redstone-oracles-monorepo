@@ -66,7 +66,7 @@ export class FuelPricesContractDeployer extends FuelContractConnector<IPricesCon
     const factory = new PricesContractFactory(
       bytecode,
       PricesAbi__factory.abi,
-      this.wallet,
+      this.wallet!,
       this.getGasLimit()
     );
     const storageSlots = this.getStorageSlots();
