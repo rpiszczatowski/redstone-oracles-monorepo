@@ -3,10 +3,10 @@ import {
   FuelPricesContractConnector,
 } from "../../src";
 import { InvocationResult } from "fuels";
-import { PricesContractAdapter } from "redstone-sdk";
+import { IPricesContractAdapter } from "redstone-sdk";
 
 export class GasUsageFuelPricesContractConnector extends FuelPricesContractConnector {
-  async getAdapter(): Promise<PricesContractAdapter> {
+  async getAdapter(): Promise<IPricesContractAdapter> {
     return new GasUsageFuelPricesContractAdapter(
       await this.getContract(),
       this.getGasLimit()

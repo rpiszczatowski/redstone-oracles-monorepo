@@ -1,5 +1,5 @@
 import { Provider } from "@fuel-ts/providers";
-import { PricesContractAdapter } from "redstone-sdk";
+import { IPricesContractAdapter } from "redstone-sdk";
 import { Wallet } from "@fuel-ts/wallet";
 import { NativeAssetId } from "fuels";
 import { GasUsageFuelPricesContractConnector } from "./GasUsageFuelPricesContractConnector";
@@ -13,7 +13,7 @@ export const SAMPLE_PACKAGES_TIMESTAMP = 1678113540;
 export const connectPricesContract = async (
   provider?: string | Provider,
   forGasUsageOnly: boolean = false
-): Promise<PricesContractAdapter> => {
+): Promise<IPricesContractAdapter> => {
   if (!!process.env.CONTRACT_ID && process.env.GENESIS_SECRET) {
     const wallet = Wallet.fromPrivateKey(process.env.GENESIS_SECRET, provider);
 
@@ -30,7 +30,7 @@ export const connectPricesContract = async (
 
 export const deployPricesContract = async (
   provider?: Provider
-): Promise<PricesContractAdapter> => {
+): Promise<IPricesContractAdapter> => {
   const wallet = await generateTestWallet(provider, [[1_000, NativeAssetId]]);
 
   return new FuelPricesContractDeployer(wallet, {

@@ -20,7 +20,7 @@ export class ContractParamsProviderMock extends ContractParamsProvider {
       .toString();
   }
 
-  getDataFeedIds(): string[] {
-    return this.overriddenFeedIds || super.getDataFeedIds();
+  override getHexlifiedFeedIds(): string[] {
+    return this.overriddenFeedIds || super.getHexlifiedFeedIds();
   }
 }

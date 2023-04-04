@@ -1,4 +1,4 @@
-import { ContractParamsProvider, PricesContractAdapter } from "redstone-sdk";
+import { ContractParamsProvider, IPricesContractAdapter } from "redstone-sdk";
 import { ContractParamsProviderMock } from "../common/ContractParamsProviderMock";
 import {
   deployPricesContract,
@@ -17,7 +17,7 @@ describe("Prices contract", () => {
 
   const performPayloadTest = async (
     callback: (
-      adapter: PricesContractAdapter,
+      adapter: IPricesContractAdapter,
       paramsProvider: ContractParamsProvider
     ) => Promise<number[]>
   ): Promise<number[]> => {
@@ -33,7 +33,7 @@ describe("Prices contract", () => {
   it("get_prices should return the price data", async () => {
     const values = await performPayloadTest(
       async (
-        adapter: PricesContractAdapter,
+        adapter: IPricesContractAdapter,
         paramsProvider: ContractParamsProvider
       ) => {
         return await adapter.getPricesFromPayload(paramsProvider);
@@ -47,7 +47,7 @@ describe("Prices contract", () => {
   it("write_prices should write the price data that can be read then", async () => {
     const values = await performPayloadTest(
       async (
-        adapter: PricesContractAdapter,
+        adapter: IPricesContractAdapter,
         paramsProvider: ContractParamsProvider
       ) => {
         await adapter.writePricesFromPayloadToContract(paramsProvider);

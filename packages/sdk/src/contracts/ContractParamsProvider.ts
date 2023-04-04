@@ -24,7 +24,7 @@ export class ContractParamsProvider {
     return this.getDataFeedIds().map((feed) => hexlify(toUtf8Bytes(feed)));
   }
 
-    protected getDataFeedIds(): string[] {
+  protected getDataFeedIds(): string[] {
     if (!this.requestParams.dataFeeds) {
       throw new Error("That invocation requires non-empty dataFeeds");
     }

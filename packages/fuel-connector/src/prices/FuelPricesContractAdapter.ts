@@ -1,9 +1,9 @@
-import { ContractParamsProvider, PricesContractAdapter } from "redstone-sdk";
+import { ContractParamsProvider, IPricesContractAdapter } from "redstone-sdk";
 import { FuelPricesContract } from "./FuelPricesContractConnector";
 import { num, u256 } from "../u256-utils";
 import { InvocationResult } from "fuels";
 
-export class FuelPricesContractAdapter implements PricesContractAdapter {
+export class FuelPricesContractAdapter implements IPricesContractAdapter {
   constructor(
     protected contract: FuelPricesContract,
     private gasLimit: number
@@ -15,7 +15,7 @@ export class FuelPricesContractAdapter implements PricesContractAdapter {
     return this.extractNumbers(
       await this.contract.functions
         .get_prices(
-          paramsProvider.getFeedIds().map(u256),
+          paramsProvider.getHexlifiedFeedIds().map(u256),
           (await paramsProvider.getPayloadData()) as number[]
         )
         .get()
@@ -28,7 +28,7 @@ export class FuelPricesContractAdapter implements PricesContractAdapter {
     return this.extractNumbers(
       await this.contract.functions
         .write_prices(
-          paramsProvider.getFeedIds().map(u256),
+          paramsProvider.getHexlifiedFeedIds().map(u256),
           (await paramsProvider.getPayloadData()) as number[]
         )
         .txParams({
@@ -44,7 +44,7 @@ export class FuelPricesContractAdapter implements PricesContractAdapter {
   ): Promise<number[]> {
     return this.extractNumbers(
       await this.contract.functions
-        .read_prices(paramsProvider.getFeedIds().map(u256))
+        .read_prices(paramsProvider.getHexlifiedFeedIds().map(u256))
         .get()
     );
   }
