@@ -4,12 +4,14 @@ import {
   SignedDataPackage,
   NumericDataPoint,
   RedstonePayload,
+  MultiSignDataPackage,
 } from "../src";
 import { hexlifyWithout0xPrefix } from "../src/common/utils";
 
 const TIMESTAMP_FOR_TESTS = 1654353400000;
 const UNSIGNED_METADATA = "1.1.2#test-data-feed";
 const EXPECTED_UNSIGNED_METADATA_BYTE_SIZE = "000014"; // 20 in hex
+const EXPECTED_UNSIGNED_METADATA_WITH_VERSION_BYTE_SIZE = "000016"; // 22 in hex
 const REDSTONE_MARKER = "000002ed57011e0000";
 const PRIVATE_KEY_FOR_TESTS_1 =
   "0x1111111111111111111111111111111111111111111111111111111111111111";
@@ -25,6 +27,7 @@ const EXPECTED_SIGNATURES = [
 describe("Fixed size data package", () => {
   let dataPackage: DataPackage;
   let signedDataPackages: SignedDataPackage[];
+  let multiSignedDataPackages: MultiSignDataPackage[];
 
   beforeEach(() => {
     // Prepare data points
@@ -43,6 +46,11 @@ describe("Fixed size data package", () => {
       dataPackage.sign(PRIVATE_KEY_FOR_TESTS_1),
       dataPackage.sign(PRIVATE_KEY_FOR_TESTS_2),
     ];
+
+    // Prepare multi-signed data packages
+    multiSignedDataPackages = [
+      dataPackage.multiSign([PRIVATE_KEY_FOR_TESTS_1, PRIVATE_KEY_FOR_TESTS_2])
+    ];
   });
 
   test("Should correctly serialize many signed data packages", () => {
@@ -59,6 +67,25 @@ describe("Fixed size data package", () => {
         "0002" + // data packages count
         hexlifyWithout0xPrefix(toUtf8Bytes(UNSIGNED_METADATA)) +
         EXPECTED_UNSIGNED_METADATA_BYTE_SIZE +
+        REDSTONE_MARKER
+    );
+  });
+
+  test("Should correctly serialize multi signed data package", () => {
+    const serializedHex = RedstonePayload.prepare(
+      multiSignedDataPackages,
+      UNSIGNED_METADATA,
+    );
+
+    expect(serializedHex).toBe(
+      EXPECTED_SERIALIZED_DATA_PACKAGE +
+        EXPECTED_SIGNATURES[0] +
+        EXPECTED_SIGNATURES[1] +
+        "0002" + // signatures count
+        "0001" + // data packages count
+        "0002" + // payload version
+        hexlifyWithout0xPrefix(toUtf8Bytes(UNSIGNED_METADATA)) +
+        EXPECTED_UNSIGNED_METADATA_WITH_VERSION_BYTE_SIZE +
         REDSTONE_MARKER
     );
   });
@@ -85,4 +112,27 @@ describe("Fixed size data package", () => {
     );
     expect(newRedstonePayloadHex).toBe(redstonePayloadHex);
   });
+
+  test("Should correctly parse redstone payload with multi signed data package", () => {
+    const remainderPrefixHex = "0x1234";
+    const redstonePayloadHex = RedstonePayload.prepare(
+      multiSignedDataPackages,
+      UNSIGNED_METADATA,
+    );
+
+    const parsingResult = RedstonePayload.parse(
+      arrayify(remainderPrefixHex + redstonePayloadHex)
+    );
+
+    expect(toUtf8String(parsingResult.unsignedMetadata)).toBe(
+      UNSIGNED_METADATA
+    );
+    expect(hexlify(parsingResult.remainderPrefix)).toBe(remainderPrefixHex);
+
+    const newRedstonePayloadHex = RedstonePayload.prepare(
+      parsingResult.signedDataPackages,
+      UNSIGNED_METADATA,
+    );
+    expect(newRedstonePayloadHex).toBe(redstonePayloadHex);
+    });
 });

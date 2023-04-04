@@ -37,3 +37,12 @@ export const SIGNATURE_BS = 65;
 
 // Byte size of data feed id
 export const DATA_FEED_ID_BS = 32;
+
+// Byte size of redstone payload version
+export const REDSTONE_PAYLOAD_VERSION_BS = 2;
+
+// MultiSign Redstone payload version
+export const MULTISIGN_REDSTONE_PAYLOAD_VERSION = 2;
+
+// SingleSign Redstone payload version
+export const SINGLESIGN_REDSTONE_PAYLOAD_VERSION = 1;

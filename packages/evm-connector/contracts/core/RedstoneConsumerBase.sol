@@ -66,7 +66,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
     view
     returns (uint256[] memory)
   {
-    uint256 calldataNegativeOffset = _extractByteSizeOfUnsignedMetadata();
+    uint256 calldataNegativeOffset = _extractByteSizeOfUnsignedMetadata() + DATA_PACKAGES_COUNT_BS;
 
     uint256 signersCount = _extractDataPackageSignersCountFromCalldata(calldataNegativeOffset);
     bytes32 signedHash;

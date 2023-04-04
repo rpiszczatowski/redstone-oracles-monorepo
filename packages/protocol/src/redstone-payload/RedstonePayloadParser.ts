@@ -10,17 +10,27 @@ import {
   SIGNATURE_BS,
   TIMESTAMP_BS,
   UNSIGNED_METADATA_BYTE_SIZE_BS,
+  REDSTONE_PAYLOAD_VERSION_BS,
+  SINGLESIGN_REDSTONE_PAYLOAD_VERSION,
+  MULTISIGN_REDSTONE_PAYLOAD_VERSION,
+  SIGNERS_COUNT_BS,
 } from "../common/redstone-constants";
 import { convertBytesToNumber } from "../common/utils";
 import { DataPackage } from "../data-package/DataPackage";
+import { MultiSignDataPackage } from "../data-package/MultiSignDataPackage";
 import { SignedDataPackage } from "../data-package/SignedDataPackage";
 import { DataPoint } from "../data-point/DataPoint";
 import { NumericDataPoint } from "../data-point/NumericDataPoint";
 
 export interface RedstonePayloadParsingResult {
-  signedDataPackages: SignedDataPackage[];
+  signedDataPackages: SignedDataPackage[] | MultiSignDataPackage[];
   unsignedMetadata: Uint8Array;
   remainderPrefix: Uint8Array;
+}
+
+interface DataPointExtractionResult {
+  dataPoints: DataPoint[];
+  timestamp: number;
 }
 
 type SliceConfig = { negativeOffset: number; length: number };
@@ -32,10 +42,20 @@ export class RedstonePayloadParser {
   parse(): RedstonePayloadParsingResult {
     this.assertValidRedstoneMarker();
 
-    let unsignedMetadata = this.extractUnsignedMetadata();
+    const unsignedMetadataSize = this.extractNumber({
+      negativeOffset: REDSTONE_MARKER_BS,
+      length: UNSIGNED_METADATA_BYTE_SIZE_BS,
+    });
+
+    const version = this.extractPayloadVersion(unsignedMetadataSize);
+
+    let unsignedMetadata = this.extractUnsignedMetadata(
+      unsignedMetadataSize,
+      version
+    );
 
     let negativeOffset =
-      unsignedMetadata.length +
+      unsignedMetadataSize +
       UNSIGNED_METADATA_BYTE_SIZE_BS +
       REDSTONE_MARKER_BS;
 
@@ -46,13 +66,31 @@ export class RedstonePayloadParser {
 
     negativeOffset += DATA_PACKAGES_COUNT_BS;
 
-    // Extracting all data packages
-    const signedDataPackages: SignedDataPackage[] = [];
-    for (let i = 0; i < numberOfDataPackages; i++) {
-      const signedDataPackage = this.extractSignedDataPackage(negativeOffset);
-      signedDataPackages.push(signedDataPackage);
-      negativeOffset += signedDataPackage.toBytes().length;
+    // TODO: refactor this to be more readable
+    const sigleSignedDataPackages: SignedDataPackage[] = [];
+    const multiSignedDataPackages: MultiSignDataPackage[] = [];
+
+    if (version === SINGLESIGN_REDSTONE_PAYLOAD_VERSION) {
+      for (let i = 0; i < numberOfDataPackages; i++) {
+        const signedDataPackage = this.extractSignedDataPackage(negativeOffset);
+        sigleSignedDataPackages.push(signedDataPackage);
+        negativeOffset += signedDataPackage.toBytes().length;
+      }
+    } else if (version === MULTISIGN_REDSTONE_PAYLOAD_VERSION) {
+      for (let i = 0; i < numberOfDataPackages; i++) {
+        const signedDataPackage =
+          this.extractMultiSignDataPackage(negativeOffset);
+        multiSignedDataPackages.push(signedDataPackage);
+        negativeOffset += signedDataPackage.toBytes().length;
+      }
+    } else {
+      throw new Error(`Unsupported redstone payload version: ${version}`);
     }
+
+    const signedDataPackages =
+      version === SINGLESIGN_REDSTONE_PAYLOAD_VERSION
+        ? sigleSignedDataPackages
+        : multiSignedDataPackages;
 
     // Preparing remainder prefix bytes
     const remainderPrefix = this.slice({
@@ -67,15 +105,51 @@ export class RedstonePayloadParser {
     };
   }
 
-  extractUnsignedMetadata(): Uint8Array {
-    const unsignedMetadataSize = this.extractNumber({
-      negativeOffset: REDSTONE_MARKER_BS,
-      length: UNSIGNED_METADATA_BYTE_SIZE_BS,
+  extractPayloadVersion(unsignedMetadataSize: number): number {
+    // In the first version of the payload (single-sign), the unsigned metadata does not contain
+    // a version number. In the second version (multi-sign), the unsigned metadata contains a
+    // version_number field. This method checks for the presence of the version_number field and
+    // determines the appropriate payload version accordingly.
+
+    // Check if there's enough space for a version number
+    if (unsignedMetadataSize < REDSTONE_PAYLOAD_VERSION_BS) {
+      return SINGLESIGN_REDSTONE_PAYLOAD_VERSION;
+    }
+
+    const potentialVersionOffset =
+      REDSTONE_MARKER_BS +
+      UNSIGNED_METADATA_BYTE_SIZE_BS +
+      unsignedMetadataSize -
+      REDSTONE_PAYLOAD_VERSION_BS;
+
+    const potentialVersion = this.extractNumber({
+      negativeOffset: potentialVersionOffset,
+      length: REDSTONE_PAYLOAD_VERSION_BS,
     });
 
+    // Check if the extracted value matches the known version number
+    if (potentialVersion === MULTISIGN_REDSTONE_PAYLOAD_VERSION) {
+      return MULTISIGN_REDSTONE_PAYLOAD_VERSION;
+    }
+
+    // If the version number is not present or doesn't match a known version, assume the first version
+    return SINGLESIGN_REDSTONE_PAYLOAD_VERSION;
+  }
+
+  extractUnsignedMetadata(
+    unsignedMetadataSize: number,
+    version: number
+  ): Uint8Array {
+    const negativeOffset = REDSTONE_MARKER_BS + UNSIGNED_METADATA_BYTE_SIZE_BS;
+
+    const hasVersionField = version === MULTISIGN_REDSTONE_PAYLOAD_VERSION;
+    const length = hasVersionField
+      ? unsignedMetadataSize - REDSTONE_PAYLOAD_VERSION_BS
+      : unsignedMetadataSize;
+
     return this.slice({
-      negativeOffset: REDSTONE_MARKER_BS + UNSIGNED_METADATA_BYTE_SIZE_BS,
-      length: unsignedMetadataSize,
+      negativeOffset: negativeOffset,
+      length: length,
     });
   }
 
@@ -91,16 +165,58 @@ export class RedstonePayloadParser {
     }
   }
 
+  extractMultiSignDataPackage(
+    initialNegativeOffset: number
+  ): MultiSignDataPackage {
+    // Extracting signature
+    let negativeOffset = initialNegativeOffset;
+    const signaturesCount = this.extractNumber({
+      negativeOffset,
+      length: SIGNERS_COUNT_BS,
+    });
+
+    negativeOffset += SIGNERS_COUNT_BS;
+
+    const signatures = [];
+    for (let i = 0; i < signaturesCount; i++) {
+      const signature = this.slice({
+        negativeOffset,
+        length: SIGNATURE_BS,
+      });
+      signatures.push(signature);
+      negativeOffset += SIGNATURE_BS;
+    }
+
+    // Extracting number of data points
+    const { dataPoints, timestamp } = this.extractDataPoints(negativeOffset);
+
+    return new MultiSignDataPackage(
+      new DataPackage(dataPoints, timestamp),
+      signatures.map((signature) => hexlify(signature)).reverse()
+    );
+  }
+
   extractSignedDataPackage(initialNegativeOffset: number): SignedDataPackage {
     // Extracting signature
     let negativeOffset = initialNegativeOffset;
+
     const signature = this.slice({
       negativeOffset,
       length: SIGNATURE_BS,
     });
 
-    // Extracting number of data points
     negativeOffset += SIGNATURE_BS;
+
+    // Extracting number of data points
+    const { dataPoints, timestamp } = this.extractDataPoints(negativeOffset);
+
+    return new SignedDataPackage(
+      new DataPackage(dataPoints, timestamp),
+      hexlify(signature)
+    );
+  }
+
+  extractDataPoints(negativeOffset: number): DataPointExtractionResult {
     const dataPointsCount = this.extractNumber({
       negativeOffset,
       length: DATA_POINTS_COUNT_BS,
@@ -148,10 +264,10 @@ export class RedstonePayloadParser {
       dataPoints.unshift(dataPoint);
     }
 
-    return new SignedDataPackage(
-      new DataPackage(dataPoints, timestamp),
-      hexlify(signature)
-    );
+    return {
+      dataPoints,
+      timestamp,
+    };
   }
 
   // This is a bit hacky, but should be enough for us at this point
