@@ -15,6 +15,24 @@ import "./RedstoneConstants.sol";
 contract CalldataExtractor is RedstoneConstants {
   using SafeMath for uint256;
 
+  // Extracts Redstone payload version from calldata. Used to differentiate between single and multi sign approach
+  function _extractVersionFromUnsignedMetadata(uint256 calldataNegativeOffset) internal pure returns (uint256) { 
+    uint256 unsignedMetadataByteSize = calldataNegativeOffset - UNSIGNED_METADATA_BYTE_SIZE_BS - REDSTONE_MARKER_BS;
+
+    // Version 1 does not have a version field in the unsigned metadata
+    if (unsignedMetadataByteSize < VERSION_BS) {
+      return 1;
+    }
+
+    uint16 version;
+    assembly {
+      let versionOffset := sub(calldatasize(), add(sub(calldataNegativeOffset, VERSION_BS), STANDARD_SLOT_BS))
+      version := calldataload(versionOffset)
+    }
+
+    return version;
+  }
+
   function _extractByteSizeOfUnsignedMetadata() internal pure returns (uint256) {
     // Checking if the calldata ends with the RedStone marker
     bool hasValidRedstoneMarker;
@@ -66,6 +84,7 @@ contract CalldataExtractor is RedstoneConstants {
     return dataPackagesCount;
   }
 
+  // Used for multi sign approach
   function _extractDataPackageSignersCountFromCalldata(uint256 calldataNegativeOffset) internal pure returns (uint16 signerCount) {
     uint256 calldataNegativeOffsetWithStandardSlot = calldataNegativeOffset + STANDARD_SLOT_BS;
 
@@ -95,6 +114,7 @@ contract CalldataExtractor is RedstoneConstants {
     }
   }
 
+  // Used for multi sign approach
   function _extractDataPointValueAndDataFeedIdMultiSign(
     uint256 dataPointNegativeOffset
   ) internal pure virtual returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
@@ -135,9 +155,9 @@ contract CalldataExtractor is RedstoneConstants {
     eachDataPointValueByteSize = eachDataPointValueByteSize_;
   }
 
+  // Used for multi sign approach
   function _extractDataPointsDetailsForDataPackageMultiSign (
-    uint256 calldataNegativeOffsetForDataPackage, 
-    uint256 signatureCount
+    uint256 calldataNegativeOffset
   ) internal pure returns (uint256 dataPointsCount, uint256 eachDataPointValueByteSize)
   {
     // Using uint24, because data points count byte size number has 3 bytes
@@ -146,9 +166,7 @@ contract CalldataExtractor is RedstoneConstants {
     // Using uint32, because data point value byte size has 4 bytes
     uint32 eachDataPointValueByteSize_;
 
-    uint256 negativeCalldataOffset = calldataNegativeOffsetForDataPackage + signatureCount * SIG_BS + SIGNERS_COUNT_BS;
-
-    uint256 calldataOffset = msg.data.length.sub(negativeCalldataOffset + STANDARD_SLOT_BS);
+    uint256 calldataOffset = msg.data.length.sub(calldataNegativeOffset + STANDARD_SLOT_BS);
     assembly {
       dataPointsCount_ := calldataload(calldataOffset)
     }

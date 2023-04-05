@@ -9,7 +9,7 @@ import {
 import { WrapperBuilder } from "../src/index";
 import { MockDataPackageConfig } from "../src/wrappers/MockWrapper";
 import { MockMultiSignDataPackageConfig } from "../src/wrappers/MockWrapperMultiSign";
-import { Benchmark, MultiSignBenchmark } from "../typechain-types";
+import { Benchmark } from "../typechain-types";
 
 interface BenchmarkTestCaseParams {
   requiredSignersCount: number;
@@ -33,7 +33,7 @@ const TEST_CASES = {
 
 describe("Benchmark", function () {
   let singleSignContract: Benchmark;
-  let multiSignContract: MultiSignBenchmark;
+  let multiSignContract: Benchmark;
   const fullGasReport: any = {};
 
   this.beforeEach(async () => {
@@ -42,7 +42,7 @@ describe("Benchmark", function () {
     await singleSignContract.deployed();
 
     const MultiSignBenchmarkFactory = await ethers.getContractFactory(
-      "MultiSignBenchmark"
+      "Benchmark"
     );
     multiSignContract = await MultiSignBenchmarkFactory.deploy();
     await multiSignContract.deployed();

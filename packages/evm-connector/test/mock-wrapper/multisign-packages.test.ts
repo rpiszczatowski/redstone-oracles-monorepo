@@ -6,19 +6,17 @@ import {
   getMockNumericMultiSignPackage,
 } from "../../src/helpers/test-utils";
 import { WrapperBuilder } from "../../src/index";
-import { MockDataPackageConfig } from "../../src/wrappers/MockWrapper";
 import { MockMultiSignDataPackageConfig } from "../../src/wrappers/MockWrapperMultiSign";
-import { SampleRedstoneConsumerNumericMockMultiSign } from "../../typechain-types";
+import { SampleRedstoneConsumerNumericMock } from "../../typechain-types";
 import {
   expectedNumericValues,
   mockNumericPackageMultiSignConfig,
   mockNumericPackageMultiSign,
-  NUMBER_OF_MOCK_NUMERIC_SIGNERS,
   UNAUTHORISED_SIGNER_INDEX,
 } from "../tests-common";
 
 describe("SampleRedstoneConsumerNumericMockMultiSign", function () {
-  let contract: SampleRedstoneConsumerNumericMockMultiSign;
+  let contract: SampleRedstoneConsumerNumericMock;
 
   const testShouldPass = async (
     mockNumericPackage: MockMultiSignDataPackageConfig,
@@ -58,7 +56,7 @@ describe("SampleRedstoneConsumerNumericMockMultiSign", function () {
 
   this.beforeEach(async () => {
     const ContractFactory = await ethers.getContractFactory(
-      "SampleRedstoneConsumerNumericMockMultiSign"
+      "SampleRedstoneConsumerNumericMock"
     );
     contract = await ContractFactory.deploy();
     await contract.deployed();

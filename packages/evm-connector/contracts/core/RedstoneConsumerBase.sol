@@ -61,121 +61,100 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
 
   /* ========== FUNCTIONS WITH IMPLEMENTATION (CAN NOT BE OVERRIDDEN) ========== */
 
-  function _securelyExtractOracleValuesFromTxMsgMultiSign(bytes32[] memory dataFeedIds)
-    internal
-    view
-    returns (uint256[] memory)
-  {
-    uint256 calldataNegativeOffset = _extractByteSizeOfUnsignedMetadata() + DATA_PACKAGES_COUNT_BS;
+  /**
+   * @dev This function securely extracts and verifies oracle values from the calldata of a transaction.
+   * It determines the version of the payload (single or multi-signature) based on the unsigned metadata in
+   * the transaction calldata and calls the appropriate internal function to extract the oracle values.
+   *
+   * Note that this function should not be called from a consumer contract. Instead, use `getOracleNumericValuesFromTxMsg`
+   * or `getOracleNumericValueFromTxMsg` as appropriate.
+   *
+   * @param dataFeedIds An array of unique data feed identifiers.
+   * @return An array of the extracted and verified oracle values in the same order as the requested data feed identifiers.
+   */
+  function _securelyExtractOracleValuesFromTxMsg(
+    bytes32[] memory dataFeedIds
+  ) internal view returns (uint256[] memory) {
+    // Attempt to extract version from unsigned metadata
+    uint256 calldataNegativeOffset = _extractByteSizeOfUnsignedMetadata();
+    uint256 version = _extractVersionFromUnsignedMetadata(calldataNegativeOffset);
 
+    if (version == MULTISIGN_PAYLOAD_VERSION) {
+      return _securelyExtractOracleValuesFromTxMsgMultiSign(dataFeedIds, calldataNegativeOffset);
+    } else {
+      return _securelyExtractOracleValuesFromTxMsgSingleSign(dataFeedIds, calldataNegativeOffset);
+    }
+  }
+
+  /**
+   * @dev This is an internal helpful function for secure extraction oracle values
+   * from the tx calldata. Security is achieved by verifying signatures, validating
+   * the timestamp, and ensuring a sufficient number of authorized signers have provided values.
+   * If any of these conditions are not met, the function will revert.
+   *
+   * Note! You should not call this function in a consumer contract. You can use
+   * `getOracleNumericValuesFromTxMsg` or `getOracleNumericValueFromTxMsg` instead.
+   *
+   * @param dataFeedIds An array of unique data feed identifiers
+   * @param calldataNegativeOffset The offset from the end of calldata
+   * @return An array of the extracted and verified oracle values in the same order
+   * as they are requested in dataFeedIds array
+   */
+  function _securelyExtractOracleValuesFromTxMsgMultiSign(
+    bytes32[] memory dataFeedIds,
+    uint256 calldataNegativeOffset
+  ) internal view returns (uint256[] memory) {
+    calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;
     uint256 signersCount = _extractDataPackageSignersCountFromCalldata(calldataNegativeOffset);
-    bytes32 signedHash;
 
-    // Extracting the number of data points
+    calldataNegativeOffset += SIGNERS_COUNT_BS;
+    uint256 signaturesByteSize = signersCount.mul(SIG_BS);
+
     (
       uint256 dataPointsCount,
       uint256 eachDataPointValueByteSize
-    ) = _extractDataPointsDetailsForDataPackageMultiSign(calldataNegativeOffset, signersCount);
-
-    {
-      bytes memory signedMessage;
-      uint48 extractedTimestamp;
-
-      uint256 signaturesBytesCount = signersCount.mul(SIG_BS);
-      uint256 signedMessageBytesCount = dataPointsCount.mul(
-        eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS
-      ) + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS; // DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
-
-      uint256 timestampCalldataOffset = msg.data.length.sub(
-        calldataNegativeOffset +
-          SIGNERS_COUNT_BS +
-          signaturesBytesCount +
-          DATA_POINT_VALUE_BYTE_SIZE_BS +
-          DATA_POINTS_COUNT_BS +
-          STANDARD_SLOT_BS
+    ) = _extractDataPointsDetailsForDataPackageMultiSign(
+        calldataNegativeOffset + signaturesByteSize
       );
 
-      uint256 signedMessageCalldataOffset = msg.data.length.sub(
-        calldataNegativeOffset + SIGNERS_COUNT_BS + signaturesBytesCount + signedMessageBytesCount
-      );
-
-      assembly {
-        // Extracting the signed message
-        signedMessage := extractBytesFromCalldata(
-          signedMessageCalldataOffset,
-          signedMessageBytesCount
-        )
-
-        // Hashing the signed message
-        signedHash := keccak256(add(signedMessage, BYTES_ARR_LEN_VAR_BS), signedMessageBytesCount)
-
-        extractedTimestamp := calldataload(timestampCalldataOffset)
-
-        function initByteArray(bytesCount) -> ptr {
-          ptr := mload(FREE_MEMORY_PTR)
-          mstore(ptr, bytesCount)
-          ptr := add(ptr, BYTES_ARR_LEN_VAR_BS)
-          mstore(FREE_MEMORY_PTR, add(ptr, bytesCount))
-        }
-
-        function extractBytesFromCalldata(offset, bytesCount) -> extractedBytes {
-          let extractedBytesStartPtr := initByteArray(bytesCount)
-          calldatacopy(extractedBytesStartPtr, offset, bytesCount)
-          extractedBytes := sub(extractedBytesStartPtr, BYTES_ARR_LEN_VAR_BS)
-        }
-      }
-
-      validateTimestamp(extractedTimestamp);
-    }
     uint256 uniqueSignersThreshold = getUniqueSignersThreshold();
 
     {
-      // Validating signatures
-      uint256 uniqueSignersCount = 0;
-      uint256 singersBitmap = 0;
-      uint256 singatureOffset = SIG_BS;
-      for (uint256 i = 0; i < signersCount; i++) {
-        uint256 signatureCalldataOffset = calldataNegativeOffset +
-          SIGNERS_COUNT_BS +
-          singatureOffset;
+      bytes32 signedHash = _extractSignedHash(
+        calldataNegativeOffset + signaturesByteSize,
+        dataPointsCount,
+        eachDataPointValueByteSize
+      );
 
-        address signerAddress = SignatureLib.recoverSignerAddress(
-          signedHash,
-          signatureCalldataOffset
-        );
-        uint256 signerIndex = getAuthorisedSignerIndex(signerAddress);
-
-        if (!BitmapLib.getBitFromBitmap(singersBitmap, signerIndex)) {
-          singersBitmap = BitmapLib.setBitInBitmap(singersBitmap, signerIndex);
-          uniqueSignersCount++;
-        }
-
-        singatureOffset = singatureOffset.add(SIG_BS);
-      }
-      
-      if (uniqueSignersCount < uniqueSignersThreshold) {
-        revert InsufficientNumberOfUniqueSigners(uniqueSignersCount, uniqueSignersThreshold);
-      }
+      _validateSignatures(
+        signedHash,
+        calldataNegativeOffset,
+        signersCount,
+        uniqueSignersThreshold
+      );
     }
 
+    _extractAndValidateTimestamp(calldataNegativeOffset + signaturesByteSize);
+
+    // Extracting data points values
     {
-      uint256 dataFeedsMatched = 0; // Detects if all requested data feeds are present in the data package
-      
-      // Extracting data points values
+      // Detects if all requested data feeds are present in the data package
+      uint256 dataFeedsMatched = 0; 
+
       bytes32 dataPointDataFeedId;
       uint256 dataPointValue;
       uint256[] memory dataPointsValues = new uint256[](dataFeedIds.length);
 
-      uint256 dataPointNegativeOffset = calldataNegativeOffset
-      .add(signersCount.mul(SIG_BS))
-      .add(DATA_PACKAGE_WITH_SIGNERS_COUNT_WITHOUT_SIG_BS);
+      uint256 dataPointNegativeOffset = calldataNegativeOffset +
+        signaturesByteSize +
+        DATA_PACKAGE_WITHOUT_SIG_BS;
 
       for (uint256 dataPointIndex = 0; dataPointIndex < dataPointsCount; dataPointIndex++) {
+        dataPointNegativeOffset =
+          dataPointNegativeOffset +
+          eachDataPointValueByteSize +
+          DATA_POINT_SYMBOL_BS;
 
-        dataPointNegativeOffset = dataPointNegativeOffset.add(
-          eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS
-        );
-        
         (dataPointDataFeedId, dataPointValue) = _extractDataPointValueAndDataFeedIdMultiSign(
           dataPointNegativeOffset
         );
@@ -198,6 +177,124 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
   }
 
   /**
+   * @dev This internal function extracts the signed message from the transaction calldata, hashes it using
+   * keccak256, and returns the resulting hash.
+   *
+   * Note that this function should not be called from a consumer contract. It is intended for internal use only.
+   *
+   * @param calldataNegativeOffset The negative offset of the transaction calldata.
+   * @param dataPointsCount The number of data points in the data package.
+   * @param eachDataPointValueByteSize The byte size of each data point value in the data package.
+   * @return signedHash The keccak256 hash of the signed message extracted from the data package.
+   */
+  function _extractSignedHash(
+    uint256 calldataNegativeOffset,
+    uint256 dataPointsCount,
+    uint256 eachDataPointValueByteSize
+  ) internal pure returns (bytes32 signedHash) {
+    bytes memory signedMessage;
+    uint256 signedMessageBytesCount = dataPointsCount.mul(
+      eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS
+    ) + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS; // DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
+
+    uint256 signedMessageCalldataOffset = msg.data.length.sub(
+      calldataNegativeOffset + signedMessageBytesCount
+    );
+
+    assembly {
+      // Extracting the signed message
+      signedMessage := extractBytesFromCalldata(
+        signedMessageCalldataOffset,
+        signedMessageBytesCount
+      )
+
+      // Hashing the signed message
+      signedHash := keccak256(add(signedMessage, BYTES_ARR_LEN_VAR_BS), signedMessageBytesCount)
+
+      function initByteArray(bytesCount) -> ptr {
+        ptr := mload(FREE_MEMORY_PTR)
+        mstore(ptr, bytesCount)
+        ptr := add(ptr, BYTES_ARR_LEN_VAR_BS)
+        mstore(FREE_MEMORY_PTR, add(ptr, bytesCount))
+      }
+
+      function extractBytesFromCalldata(offset, bytesCount) -> extractedBytes {
+        let extractedBytesStartPtr := initByteArray(bytesCount)
+        calldatacopy(extractedBytesStartPtr, offset, bytesCount)
+        extractedBytes := sub(extractedBytesStartPtr, BYTES_ARR_LEN_VAR_BS)
+      }
+    }
+  }
+
+  /**
+   * @dev This internal function extracts the timestamp from the transaction calldata, validates that it is within
+   * an acceptable range based on the current block timestamp, and reverts the transaction if it is too old.
+   *
+   * Note that this function should not be called from a consumer contract. It is intended for internal use only.
+   *
+   * @param calldataNegativeOffset The negative offset of the transaction calldata.
+   */
+  function _extractAndValidateTimestamp(uint256 calldataNegativeOffset) internal view {
+    uint256 timestampCalldataOffset = msg.data.length.sub(
+      calldataNegativeOffset +
+        DATA_POINT_VALUE_BYTE_SIZE_BS +
+        DATA_POINTS_COUNT_BS +
+        STANDARD_SLOT_BS
+    );
+
+    uint48 extractedTimestamp;
+    assembly {
+      extractedTimestamp := calldataload(timestampCalldataOffset)
+    }
+
+    validateTimestamp(extractedTimestamp);
+  }
+
+  /**
+ * @dev This internal function validates the signatures of authorized signers for the transaction calldata
+ * based on a given signed hash. It recovers the signer address from each signature in the calldata and checks
+ * that the address is authorized. The function keeps track of the unique signers and reverts the transaction if
+ * the number of unique signers is below a certain threshold. The signed hash, negative offset of the transaction
+ * calldata, number of signers, and unique signers threshold are passed as parameters.
+ *
+ * Note that this function should not be called from a consumer contract. It is intended for internal use only.
+ *
+ * @param signedHash The keccak256 hash of the signed message in the transaction calldata.
+ * @param calldataNegativeOffset The negative offset of the transaction calldata.
+ * @param signersCount The number of authorized signers for the transaction.
+ * @param uniqueSignersThreshold The minimum number of unique authorized signers required to validate the signatures.
+ */
+  function _validateSignatures(
+    bytes32 signedHash,
+    uint256 calldataNegativeOffset,
+    uint256 signersCount,
+    uint256 uniqueSignersThreshold
+  ) internal view {
+    uint256 uniqueSignersCount = 0;
+    uint256 singersBitmap = 0;
+    uint256 signatureCalldataOffset = calldataNegativeOffset += SIG_BS;
+
+    for (uint256 i = 0; i < signersCount; i++) {
+      address signerAddress = SignatureLib.recoverSignerAddress(
+        signedHash,
+        signatureCalldataOffset
+      );
+      uint256 signerIndex = getAuthorisedSignerIndex(signerAddress);
+
+      if (!BitmapLib.getBitFromBitmap(singersBitmap, signerIndex)) {
+        singersBitmap = BitmapLib.setBitInBitmap(singersBitmap, signerIndex);
+        uniqueSignersCount++;
+      }
+
+      signatureCalldataOffset = signatureCalldataOffset += SIG_BS;
+    }
+
+    if (uniqueSignersCount < uniqueSignersThreshold) {
+      revert InsufficientNumberOfUniqueSigners(uniqueSignersCount, uniqueSignersThreshold);
+    }
+  }
+
+  /**
    * @dev This is an internal helpful function for secure extraction oracle values
    * from the tx calldata. Security is achieved by signatures verification, timestamp
    * validation, and aggregating values from different authorised signers into a
@@ -208,14 +305,14 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
    * `getOracleNumericValuesFromTxMsg` or `getOracleNumericValueFromTxMsg` instead.
    *
    * @param dataFeedIds An array of unique data feed identifiers
+   * @param calldataNegativeOffset The offset from the end of calldata
    * @return An array of the extracted and verified oracle values in the same order
    * as they are requested in dataFeedIds array
    */
-  function _securelyExtractOracleValuesFromTxMsg(bytes32[] memory dataFeedIds)
-    internal
-    view
-    returns (uint256[] memory)
-  {
+  function _securelyExtractOracleValuesFromTxMsgSingleSign(
+    bytes32[] memory dataFeedIds,
+    uint256 calldataNegativeOffset
+  ) internal view returns (uint256[] memory) {
     // Initializing helpful variables and allocating memory
     uint256[] memory uniqueSignerCountForDataFeedIds = new uint256[](dataFeedIds.length);
     uint256[] memory signersBitmapForDataFeedIds = new uint256[](dataFeedIds.length);
@@ -226,9 +323,8 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       // signersBitmapForDataFeedIds[i] = 0; // <- setting to an empty bitmap
       valuesForDataFeeds[i] = new uint256[](getUniqueSignersThreshold());
     }
-
+    
     // Extracting the number of data packages from calldata
-    uint256 calldataNegativeOffset = _extractByteSizeOfUnsignedMetadata();
     uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(calldataNegativeOffset);
     calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;
 
