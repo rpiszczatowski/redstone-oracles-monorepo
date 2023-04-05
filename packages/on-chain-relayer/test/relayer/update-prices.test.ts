@@ -7,16 +7,16 @@ import { getLastRoundParamsFromContract } from "../../src/core/contract-interact
 import { server } from "./mock-server";
 import {
   dataFeedsIds,
+  deployMockSortedOracles,
   getDataPackagesResponse,
   mockEnvVariables,
 } from "../helpers";
 import { parseUnits } from "ethers/lib/utils";
-import { deployMockSortedOracles } from "../../src/custom-integrations/mento/mento-utils";
 import * as sinon from "sinon";
-import * as getProviderOrSigner from "../../src/core/contract-interactions/get-provider-or-signer";
 import * as hardhat from "hardhat";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import { ProviderWithFallback } from "redstone-rpc-providers";
+import * as getProviderOrSigner from "../../src/core/contract-interactions/get-provider-or-signer";
 
 chai.use(chaiAsPromised);
 
@@ -75,6 +75,8 @@ describe("#updatePrices", () => {
   });
 
   it("should update prices in mento adapter", async () => {
+    (getProviderOrSigner as any).getProvider = () => ethers.provider;
+
     // Deploying sorted oracles
     const sortedOracles = await deployMockSortedOracles();
 
