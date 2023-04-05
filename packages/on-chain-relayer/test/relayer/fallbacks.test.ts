@@ -9,13 +9,16 @@ import * as hardhat from "hardhat";
 import { mockEnvVariables } from "../helpers";
 import chaiAsPromised from "chai-as-promised";
 import { network } from "hardhat";
+import { WrapperBuilder } from "@redstone-finance/evm-connector";
+import { DataPackage, DataPoint } from "redstone-protocol";
+import { ProviderWithFallback } from "redstone-rpc-providers";
 
 chai.use(chaiAsPromised);
 
-describe("fallback contract decorator", () => {
+describe("fallbacks", () => {
   let getProviderStub: sinon.SinonStub<
-    [providerIndex?: number | undefined],
-    StaticJsonRpcProvider
+    [],
+    StaticJsonRpcProvider | ProviderWithFallback
   >;
 
   before(async () => {
@@ -64,6 +67,34 @@ describe("fallback contract decorator", () => {
       .returns(hardhat.ethers.provider);
 
     const contract = getAdapterContract() as PriceFeedsAdapter;
+
+    const result = await contract.addDataFeedIdAndUpdateValues(
+      "0x" + "0".repeat(64),
+      new Date().getTime() + 1000
+    );
+
+    expect(result).to.be.not.undefined;
+  });
+
+  it("should fallback to second provider if first fails, when contract wrapped by Redstone Wrapper", async () => {
+    getProviderStub.reset();
+    getProviderStub
+      .onFirstCall()
+      .returns(new StaticJsonRpcProvider("https://blaba.xd"))
+      .onSecondCall()
+      .returns(hardhat.ethers.provider);
+
+    const contract = WrapperBuilder.wrap(
+      getAdapterContract()
+    ).usingMockDataPackages([
+      {
+        signer: "0x14dC79964da2C08b23698B3D3cc7Ca32193d9955",
+        dataPackage: new DataPackage(
+          [new DataPoint("BTC", new Uint8Array(0))],
+          new Date().getTime()
+        ),
+      },
+    ]);
 
     const result = await contract.addDataFeedIdAndUpdateValues(
       "0x" + "0".repeat(64),

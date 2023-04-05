@@ -15,7 +15,8 @@
     "@redstone-finance/evm-connector": "^0.0.19",
     "dotenv": "^16.0.3",
     "ethers": "^5.7.2",
-    "toad-scheduler": "^2.2.0"
+    "toad-scheduler": "^2.2.0",
+    "redstone-rpc-providers": "*"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",

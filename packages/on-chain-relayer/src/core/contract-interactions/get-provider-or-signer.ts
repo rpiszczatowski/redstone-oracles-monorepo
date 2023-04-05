@@ -1,22 +1,28 @@
-import { JsonRpcProvider } from "@ethersproject/providers";
-import { providers, Wallet } from "ethers";
+import { providers as Providers, Wallet } from "ethers";
+import { ProviderWithFallback } from "redstone-rpc-providers";
 import { config } from "../../config";
 
-export const getProvider = (providerIndex = 0) => {
+export const getProvider = () => {
   const { rpcUrls, chainName, chainId } = config;
 
-  if (!rpcUrls[providerIndex]) {
-    throw new Error(`No provider with index ${providerIndex}.`);
-  }
+  const providers = rpcUrls.map(
+    (rpcUrl: string) =>
+      new Providers.StaticJsonRpcProvider(rpcUrl, {
+        name: chainName,
+        chainId: Number(chainId),
+      })
+  );
 
-  return new providers.StaticJsonRpcProvider(rpcUrls[providerIndex], {
-    name: chainName,
-    chainId: Number(chainId),
-  });
+  if (providers.length === 0) {
+    throw new Error("Please provide at least one RPC_URL in RPC_URLS");
+  } else if (providers.length === 1) {
+    return providers[0];
+  } else {
+    return new ProviderWithFallback(providers);
+  }
 };
 
-export const getSigner = (overrideProvider?: JsonRpcProvider) => {
-  const provider = overrideProvider ? overrideProvider : getProvider();
-  const signer = new Wallet(config.privateKey, provider);
+export const getSigner = () => {
+  const signer = new Wallet(config.privateKey, getProvider());
   return signer;
 };

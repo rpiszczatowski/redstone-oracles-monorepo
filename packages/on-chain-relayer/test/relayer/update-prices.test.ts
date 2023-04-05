@@ -16,6 +16,7 @@ import * as sinon from "sinon";
 import * as getProviderOrSigner from "../../src/core/contract-interactions/get-provider-or-signer";
 import * as hardhat from "hardhat";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
+import { ProviderWithFallback } from "redstone-rpc-providers";
 
 chai.use(chaiAsPromised);
 
@@ -24,8 +25,8 @@ const mockToken2Address = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"; // cUSD 
 
 describe("#updatePrices", () => {
   let getProviderStub: sinon.SinonStub<
-    [providerIndex?: number | undefined],
-    StaticJsonRpcProvider
+    [],
+    ProviderWithFallback | StaticJsonRpcProvider
   >;
   before(() => {
     mockEnvVariables();
