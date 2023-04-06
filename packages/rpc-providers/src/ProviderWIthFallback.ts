@@ -31,9 +31,9 @@ export const FALLBACK_DEFAULT_CONFIG: ProviderWithFallbackConfig = {
 };
 
 export class ProviderWithFallback implements Provider {
-  private _currentProvider: Provider;
-  private readonly _providers: Provider[];
-  private _providerIndex = 0;
+  private currentProvider: Provider;
+  private readonly providers: Provider[];
+  private providerIndex = 0;
 
   private globalListeners: {
     eventType: EventType;
@@ -50,8 +50,8 @@ export class ProviderWithFallback implements Provider {
       throw new Error("Please provide at least two providers");
     }
 
-    this._currentProvider = mainProvider;
-    this._providers = [...providers];
+    this.currentProvider = mainProvider;
+    this.providers = [...providers];
   }
 
   private saveGlobalListener(
@@ -63,11 +63,11 @@ export class ProviderWithFallback implements Provider {
   }
 
   /**
-   * To avoid copying logic of removing events.
-   * We just remove listeners by reference which removed in underlying provider.
+   * To avoid copying logic of removing events from BaseProvider.
+   * Just remove listeners which were removed from _currentProvider
    */
   private updateGlobalListenerAfterRemoval() {
-    const allCurrentListeners = this._currentProvider.listeners();
+    const allCurrentListeners = this.currentProvider.listeners();
     for (let i = 0; i < this.globalListeners.length; i++) {
       if (!allCurrentListeners.includes(this.globalListeners[i].listener)) {
         this.globalListeners.splice(i, 1);
@@ -81,7 +81,7 @@ export class ProviderWithFallback implements Provider {
     ...args: any[]
   ): Promise<any> {
     try {
-      return await (this._currentProvider as any)[fnName](...[...args]);
+      return await (this.currentProvider as any)[fnName](...[...args]);
     } catch (error: any) {
       const newProviderIndex = this.electNewProviderOrFail(error, retryNumber);
       this.useProvider(newProviderIndex);
@@ -90,15 +90,15 @@ export class ProviderWithFallback implements Provider {
   }
 
   private useProvider(providerIndex: number) {
-    this._currentProvider.removeAllListeners();
-    this._providerIndex = providerIndex;
-    const newProvider = this._providers[this._providerIndex];
-    this._currentProvider = newProvider;
+    this.currentProvider.removeAllListeners();
+    this.providerIndex = providerIndex;
+    const newProvider = this.providers[this.providerIndex];
+    this.currentProvider = newProvider;
     for (const { listener, once, eventType } of this.globalListeners) {
       if (once) {
-        this._currentProvider.once(eventType, listener);
+        this.currentProvider.once(eventType, listener);
       } else {
-        this._currentProvider.on(eventType, listener);
+        this.currentProvider.on(eventType, listener);
       }
     }
   }
@@ -108,7 +108,7 @@ export class ProviderWithFallback implements Provider {
   }
 
   private electNewProviderOrFail(error: any, retryNumber: number): number {
-    const providerName = this.extractProviderName(this._providerIndex);
+    const providerName = this.extractProviderName(this.providerIndex);
 
     if (error?.code && this.config.unrecoverableErrors.includes(error.code)) {
       this.config.logger.warn(
@@ -121,7 +121,7 @@ export class ProviderWithFallback implements Provider {
       `Provider ${providerName} failed with error: ${error?.code} ${error.message}`
     );
 
-    if (retryNumber === this._providers.length - 1) {
+    if (retryNumber === this.providers.length - 1) {
       this.config.logger.warn(
         `All providers failed to execute action, rethrowing error`
       );
@@ -130,9 +130,9 @@ export class ProviderWithFallback implements Provider {
 
     // if we haven't tried provider for this request
     const nextProviderIndex =
-      this._providerIndex + 1 === this._providers.length
+      this.providerIndex + 1 === this.providers.length
         ? 0
-        : this._providerIndex + 1;
+        : this.providerIndex + 1;
 
     const nextProviderName = this.extractProviderName(nextProviderIndex);
 
@@ -148,7 +148,7 @@ export class ProviderWithFallback implements Provider {
   }
 
   getNetwork(): Promise<Network> {
-    return this._currentProvider.getNetwork();
+    return this.currentProvider.getNetwork();
   }
 
   getBlockNumber(): Promise<number> {
@@ -203,41 +203,41 @@ export class ProviderWithFallback implements Provider {
 
   on(eventName: EventType, listener: Listener): Provider {
     this.saveGlobalListener(eventName, listener);
-    return this._currentProvider.on(eventName, listener);
+    return this.currentProvider.on(eventName, listener);
   }
   once(eventName: EventType, listener: Listener): Provider {
     this.saveGlobalListener(eventName, listener);
-    return this._currentProvider.once(eventName, listener);
+    return this.currentProvider.once(eventName, listener);
   }
   emit(eventName: EventType, ...args: any[]): boolean {
-    return this._currentProvider.emit(eventName, ...args);
+    return this.currentProvider.emit(eventName, ...args);
   }
   listenerCount(eventName?: EventType | undefined): number {
-    return this._currentProvider.listenerCount(eventName);
+    return this.currentProvider.listenerCount(eventName);
   }
   listeners(eventName?: EventType | undefined): Listener[] {
-    return this._currentProvider.listeners(eventName);
+    return this.currentProvider.listeners(eventName);
   }
   addListener(eventName: EventType, listener: Listener): Provider {
-    return this._currentProvider.addListener(eventName, listener);
+    return this.currentProvider.addListener(eventName, listener);
   }
   off(eventName: EventType, listener?: Listener | undefined): Provider {
-    this._currentProvider.off(eventName, listener);
+    this.currentProvider.off(eventName, listener);
     this.updateGlobalListenerAfterRemoval();
-    return this._currentProvider;
+    return this.currentProvider;
   }
 
   removeAllListeners(eventName?: EventType | undefined): Provider {
-    this._currentProvider.removeAllListeners(eventName);
+    this.currentProvider.removeAllListeners(eventName);
     this.updateGlobalListenerAfterRemoval();
 
-    return this._currentProvider;
+    return this.currentProvider;
   }
 
   removeListener(eventName: EventType, listener: Listener): Provider {
-    this._currentProvider.removeListener(eventName, listener);
+    this.currentProvider.removeListener(eventName, listener);
     this.updateGlobalListenerAfterRemoval();
-    return this._currentProvider;
+    return this.currentProvider;
   }
 
   waitForTransaction(
@@ -245,7 +245,7 @@ export class ProviderWithFallback implements Provider {
     confirmations?: number | undefined,
     timeout?: number | undefined
   ): Promise<TransactionReceipt> {
-    return this._currentProvider.waitForTransaction(
+    return this.currentProvider.waitForTransaction(
       transactionHash,
       confirmations,
       timeout
