@@ -1,7 +1,7 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { ethers } from "hardhat";
-import { PriceFeed, PriceFeedsAdapterWithRounds } from "../../../typechain-types";
+import { PriceFeedWithRounds, PriceFeedsAdapterWithRounds } from "../../../typechain-types";
 import {
   dataFeedsIds,
   ethDataFeed,
@@ -12,7 +12,7 @@ import {
 chai.use(chaiAsPromised);
 
 describe("PriceFeed", () => {
-  let contract: PriceFeed;
+  let contract: PriceFeedWithRounds;
   let adapterContract: PriceFeedsAdapterWithRounds;
 
   before(() => {
@@ -26,7 +26,7 @@ describe("PriceFeed", () => {
     adapterContract = await AdapterContractFactory.deploy(dataFeedsIds);
     await adapterContract.deployed();
 
-    const ContractFactory = await ethers.getContractFactory("PriceFeed");
+    const ContractFactory = await ethers.getContractFactory("PriceFeedWithRounds");
     contract = await ContractFactory.deploy(
       adapterContract.address,
       ethDataFeed,
@@ -40,7 +40,7 @@ describe("PriceFeed", () => {
       adapterContract,
       timestamp
     );
-    await wrappedContract.updateDataFeedsValues(1, timestamp);
+    await wrappedContract.updateDataFeedsValues(timestamp);
   });
 
   it("should properly initialize", async () => {
@@ -68,16 +68,16 @@ describe("PriceFeed", () => {
 
     // We already have round 1, so we start from 2
     for (let roundId = 2; roundId <= roundsCount; roundId++) {
-      timestamp += 10;
+      timestamp += 20_000; // we need to increase it enough to reach the min interval between updates
       const wrappedContract = await getWrappedContractAndUpdateBlockTimestamp(
         adapterContract,
         timestamp
       );
-      await wrappedContract.updateDataFeedsValues(roundId, timestamp);
+      await wrappedContract.updateDataFeedsValues(timestamp);
     }
 
     for (let roundId = 1; roundId <= roundsCount; roundId++) {
-      const roundTimestampMilliseconds = timestamp - 10 * (roundsCount - roundId);
+      const roundTimestampMilliseconds = timestamp - 20_000 * (roundsCount - roundId);
       const expectedTimestamp = Math.floor(roundTimestampMilliseconds / 1000);
       const roundData = await contract.getRoundData(roundId);
       expect(roundData.answer).to.be.equal(167099000000);

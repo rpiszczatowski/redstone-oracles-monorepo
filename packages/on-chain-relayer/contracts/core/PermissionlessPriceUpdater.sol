@@ -23,6 +23,12 @@ contract PermissionlessPriceUpdater is IPermissionlessPriceUpdater {
     uint256 lastUpdateTimestampMilliseconds
   );
 
+  error MinIntervalBetweenUpdatesHasNotPassedYet(
+    uint256 minIntervalBetweenUpdates,
+    uint256 lastUpdateTimestampMilliseconds,
+    uint256 proposedTimestamp
+  );
+
   error DataPackageTimestampIsOlderThanProposedTimestamp(
     uint256 proposedTimestamp,
     uint256 receivedTimestampMilliseconds
@@ -70,12 +76,20 @@ contract PermissionlessPriceUpdater is IPermissionlessPriceUpdater {
     } else if (
       proposedTimestamp - lastUpdateTimestampMilliseconds < getMinIntervalBetweenUpdates()
     ) {
-      // TODO: think more, maybe we actually should revert here as well
+      // TODO: think about it more, choose the better way
 
+      // Option 1
       // Exit transaction without reverting, like process.exit() in Node.js
-      assembly {
-        return(0, 0x20)
-      }
+      // assembly {
+      //   return(0, 0x20)
+      // }
+
+      // Option 2 (IMHO it's better)
+      revert MinIntervalBetweenUpdatesHasNotPassedYet(
+        getMinIntervalBetweenUpdates(),
+        lastUpdateTimestampMilliseconds,
+        proposedTimestamp
+      );
     }
   }
 

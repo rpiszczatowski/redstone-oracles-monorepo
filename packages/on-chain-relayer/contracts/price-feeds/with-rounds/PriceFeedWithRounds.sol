@@ -5,7 +5,7 @@ pragma solidity ^0.8.4;
 import "./PriceFeedsAdapterWithRounds.sol";
 import "../PriceFeedBase.sol";
 
-contract PriceFeed is PriceFeedBase {
+contract PriceFeedWithRounds is PriceFeedBase {
   PriceFeedsAdapterWithRounds public priceFeedsAdapter;
 
   constructor(
@@ -18,6 +18,10 @@ contract PriceFeed is PriceFeedBase {
 
   function getPriceFeedAdapter() public view override returns (IPriceFeedAdapter) {
     return priceFeedsAdapter;
+  }
+
+  function latestRound() public view override returns (uint80) {
+    return uint80(priceFeedsAdapter.getLatestRoundId());
   }
 
   function getRoundData(uint80 requestedRoundId)
@@ -38,7 +42,7 @@ contract PriceFeed is PriceFeedBase {
     );
     roundId = requestedRoundId;
     answer = int256(dataFeedValue);
-    startedAt = roundTimestampInMilliseconds / 1000;
+    startedAt = roundTimestampInMilliseconds;
     updatedAt = startedAt;
     answeredInRound = requestedRoundId;
   }

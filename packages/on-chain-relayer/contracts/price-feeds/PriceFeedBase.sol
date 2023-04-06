@@ -53,7 +53,7 @@ abstract contract PriceFeedBase is IPriceFeed {
     return int256(getPriceFeedAdapter().getValueForDataFeed(dataFeedId));
   }
 
-  function latestRound() public pure virtual returns (uint80) {
+  function latestRound() public view virtual returns (uint80) {
     return 0;
   }
 }
