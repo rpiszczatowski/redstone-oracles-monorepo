@@ -1,5 +1,5 @@
-use array::array_snapshot_pop_back;
 use array::ArrayTrait;
+use array::SpanTrait;
 use integer::u8_to_felt252;
 use integer::u32_to_felt252;
 use integer::u256_from_felt252;
@@ -78,14 +78,14 @@ fn array_to_u256(arr: @Array<u8>, len: usize, mlt: u256, acc: u256) -> u256 {
 }
 
 fn array_trunc(arr: @Array<u8>) -> @Array<u8> {
-    let mut res: @Array<u8> = arr;
+    let mut res: Span<u8> = arr.span();
 
     _array_trunc(ref res);
 
-    res
+    res.snapshot
 }
 
-fn _array_trunc(ref arr: @Array<u8>) {
+fn _array_trunc(ref arr: Span<u8>) {
     if (arr.len() == 0_usize) {
         return ();
     }
@@ -95,7 +95,7 @@ fn _array_trunc(ref arr: @Array<u8>) {
         return ();
     }
 
-    array_snapshot_pop_back(ref arr);
+    arr.pop_back();
 
     _array_trunc(ref arr)
 }
