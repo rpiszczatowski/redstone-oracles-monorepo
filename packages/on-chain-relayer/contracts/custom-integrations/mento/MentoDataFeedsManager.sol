@@ -62,9 +62,11 @@ contract MentoDataFeedsManager is Ownable {
     return dataFeeds;
   }
 
-  function getTokenDetailsAtIndex(
-    uint256 tokenIndex
-  ) public view returns (bytes32 dataFeedId, address tokenAddress) {
+  function getTokenDetailsAtIndex(uint256 tokenIndex)
+    public
+    view
+    returns (bytes32 dataFeedId, address tokenAddress)
+  {
     (uint256 dataFeedIdNumber, address tokenAddress_) = dataFeedIdToTokenAddressMap.at(tokenIndex);
     dataFeedId = bytes32(dataFeedIdNumber);
     tokenAddress = tokenAddress_;

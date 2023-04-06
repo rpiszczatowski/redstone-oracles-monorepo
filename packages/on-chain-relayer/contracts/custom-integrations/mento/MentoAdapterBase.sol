@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.4;
 
-import "@redstone-finance/evm-connector/contracts/data-services/MainDemoConsumerBase.sol";
+import "@redstone-finance/evm-connector/contracts/core/RedstoneConsumerNumericBase.sol";
 import "./ISortedOracles.sol";
 import "./MentoDataFeedsManager.sol";
 import "../../core/PermissionlessPriceUpdater.sol";
@@ -17,7 +17,11 @@ import "../../core/PermissionlessPriceUpdater.sol";
  * addresses.
  *
  */
-contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, MentoDataFeedsManager {
+abstract contract MentoAdapterBase is
+  RedstoneConsumerNumericBase,
+  PermissionlessPriceUpdater,
+  MentoDataFeedsManager
+{
   // RedStone provides values with 8 decimals
   // Mento sorted oracles expect 24 decimals (24 - 8 = 16)
   uint256 private constant PRICE_MULTIPLIER = 1e16;
@@ -38,19 +42,18 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
   }
 
   function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
-    RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
     validateDataPackageTimestampAgainstProposedTimestamp(receivedTimestampMilliseconds);
+    RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
   }
 
   /**
    * @notice Helpful function to simplify the mento relayer implementation
    */
   function updatePriceValuesAndCleanOldReports(
-    uint256 proposedRound,
     uint256 proposedTimestamp,
     LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists
   ) external {
-    updatePriceValues(proposedRound, proposedTimestamp, locationsInSortedLinkedLists);
+    updatePriceValues(proposedTimestamp, locationsInSortedLinkedLists);
     removeAllExpiredReports();
   }
 
@@ -59,9 +62,11 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
    * @param dataFeedIds An array of data feed identifiers
    * @return values The normalized values for corresponding data feeds
    */
-  function getNormalizedOracleValuesFromTxCalldata(
-    bytes32[] calldata dataFeedIds
-  ) external view returns (uint256[] memory) {
+  function getNormalizedOracleValuesFromTxCalldata(bytes32[] calldata dataFeedIds)
+    external
+    view
+    returns (uint256[] memory)
+  {
     uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedIds);
     for (uint256 i = 0; i < values.length; i++) {
       values[i] = normalizeRedstoneValueForMento(values[i]);
@@ -80,26 +85,26 @@ contract MentoAdapter is MainDemoConsumerBase, PermissionlessPriceUpdater, Mento
     }
   }
 
-  function normalizeRedstoneValueForMento(
-    uint256 valueFromRedstone
-  ) public pure returns (uint256) {
+  function normalizeRedstoneValueForMento(uint256 valueFromRedstone)
+    public
+    pure
+    returns (uint256)
+  {
     return PRICE_MULTIPLIER * valueFromRedstone;
   }
 
   /**
    * @notice Extracts Redstone's oracle values from calldata, verifying signatures
    * and timestamps, and reports it to the SortedOracles contract
-   * @param proposedRound Proposed round (should be equal to latestRound + 1)
    * @param proposedTimestamp Timestamp that should be lesser or equal to each
    * timestamp from the signed data packages in calldata
    * @param locationsInSortedLinkedLists The array of locations in linked list for reported values
    */
   function updatePriceValues(
-    uint256 proposedRound,
     uint256 proposedTimestamp,
     LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists
   ) public {
-    validateAndUpdateProposedRoundAndTimestamp(proposedRound, proposedTimestamp);
+    validateAndUpdateProposedTimestamp(proposedTimestamp);
 
     uint256 dataFeedsCount = getDataFeedsCount();
     bytes32[] memory dataFeedIds = getDataFeedIds();

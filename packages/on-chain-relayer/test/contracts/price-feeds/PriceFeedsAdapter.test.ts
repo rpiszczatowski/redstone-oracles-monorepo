@@ -39,14 +39,14 @@ describe("PriceFeedsAdapter", () => {
   });
 
   it("should properly initialize", async () => {
-    const [round, lastUpdateTimestamp] = await contract.getLastRoundParams();
+    const [round, lastUpdateTimestamp] = await contract.getLatestRoundParams();
     expect(round).to.be.equal(1);
     expect(lastUpdateTimestamp).to.be.equal(timestamp);
   });
 
   it("should return if invalid proposed round", async () => {
     await wrappedContract.updateDataFeedsValues(0, timestamp);
-    const [round, lastUpdateTimestamp] = await contract.getLastRoundParams();
+    const [round, lastUpdateTimestamp] = await contract.getLatestRoundParams();
     expect(round).to.be.equal(1);
     expect(lastUpdateTimestamp).to.be.equal(timestamp);
   });
@@ -93,20 +93,20 @@ describe("PriceFeedsAdapter", () => {
       newTimestamp
     );
     await wrappedContract.updateDataFeedsValues(2, newTimestamp);
-    const [round, lastUpdateTimestamp] = await contract.getLastRoundParams();
+    const [round, lastUpdateTimestamp] = await contract.getLatestRoundParams();
     expect(round).to.be.equal(2);
     expect(lastUpdateTimestamp).to.be.equal(newTimestamp);
     const dataFeedsValues = await contract.getValuesForDataFeeds(dataFeedsIds);
     expect(dataFeedsValues[0]).to.be.equal(167099000000);
     expect(dataFeedsValues[1]).to.be.equal(2307768000000);
     const dataFeedValueAndRoundParams =
-      await contract.getValueForDataFeedAndLastRoundParams(btcDataFeed);
+      await contract.getRoundData(btcDataFeed, round);
     expect(dataFeedValueAndRoundParams.dataFeedValue).to.be.equal(
       2307768000000
     );
-    expect(dataFeedValueAndRoundParams.lastRoundNumber).to.be.equal(2);
+    expect(dataFeedValueAndRoundParams.latestRoundId).to.be.equal(2);
     expect(
-      dataFeedValueAndRoundParams.lastUpdateTimestampInMilliseconds
+      dataFeedValueAndRoundParams.latestRoundTimestamp
     ).to.be.equal(newTimestamp);
   });
 

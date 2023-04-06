@@ -1,7 +1,7 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { ethers } from "hardhat";
-import { PriceFeed, PriceFeedsAdapter } from "../../../typechain-types";
+import { PriceFeed, PriceFeedsAdapterWithRounds } from "../../../typechain-types";
 import {
   dataFeedsIds,
   ethDataFeed,
@@ -13,17 +13,17 @@ chai.use(chaiAsPromised);
 
 describe("PriceFeed", () => {
   let contract: PriceFeed;
-  let adapterContract: PriceFeedsAdapter;
+  let adapterContract: PriceFeedsAdapterWithRounds;
 
   before(() => {
     mockEnvVariables();
   });
 
   beforeEach(async () => {
-    const MangerContractFactory = await ethers.getContractFactory(
+    const AdapterContractFactory = await ethers.getContractFactory(
       "PriceFeedsAdapterMock"
     );
-    adapterContract = await MangerContractFactory.deploy(dataFeedsIds);
+    adapterContract = await AdapterContractFactory.deploy(dataFeedsIds);
     await adapterContract.deployed();
 
     const ContractFactory = await ethers.getContractFactory("PriceFeed");
