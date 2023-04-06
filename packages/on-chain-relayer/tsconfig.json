@@ -31,9 +31,6 @@
     },
     {
       "path": "../sdk"
-    },
-    {
-      "path": "../rpc-providers"
     }
   ]
 }
