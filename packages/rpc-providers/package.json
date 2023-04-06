@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "test": "NODE_ENV=test hardhat test",
-    "build": "rm -rf dist && tsc --build",
+    "build": "hardhat compile && rm -rf dist && tsc --build",
     "preversion": "yarn build",
     "postversion": "git commit -a -m \"build: $npm_package_name@$npm_package_version\" && git push"
   },

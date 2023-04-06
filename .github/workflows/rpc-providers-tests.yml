@@ -2,20 +2,17 @@ name: On-chain relayer CI
 on:
   push:
     paths:
-      - packages/on-chain-relayer/**
-      - .github/workflows/on-chain-relayer-tests.yaml
-      - .github/workflows/on-chain-relayer-deploy-to-ecr-public.yaml
+      - packages/rpc-providers/**
+      - .github/workflows/rpc-providers-tests.yml
 
 jobs:
   run-tests:
     runs-on: LargeRunner
     defaults:
       run:
-        working-directory: packages/on-chain-relayer
+        working-directory: packages/rpc-providers
     steps:
       - uses: actions/checkout@v3
-      - name: Build dependent packages
-        run: cd ../rpc-providers && yarn && yarn build && cd ../on-chain-relayer
       - name: Install modules
         run: yarn
       - name: Compile contracts
