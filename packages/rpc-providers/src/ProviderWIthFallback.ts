@@ -12,9 +12,7 @@ import {
   TransactionReceipt,
   TransactionResponse,
 } from "@ethersproject/providers";
-import { randomUUID } from "crypto";
 import { BigNumber } from "ethers";
-import { isDeepStrictEqual } from "util";
 
 export type ProviderWithFallbackConfig = {
   unrecoverableErrors: ErrorCode[];
@@ -43,22 +41,6 @@ export class ProviderWithFallback implements Provider {
     once: boolean;
   }[] = [];
 
-  private saveGlobalListener(
-    eventType: EventType,
-    listener: Listener,
-    once = false
-  ) {
-    this.globalListeners.push({ eventType, listener, once });
-  }
-
-  private removeGlobalListener(eventType: EventType) {
-    for (let i = this.globalListeners.length - 1; i >= 0; i--) {
-      if (isDeepStrictEqual(this.globalListeners[i].eventType, eventType)) {
-        this.globalListeners.splice(i, 1);
-      }
-    }
-  }
-
   constructor(
     providers: JsonRpcProvider[],
     private readonly config: ProviderWithFallbackConfig = FALLBACK_DEFAULT_CONFIG
@@ -70,6 +52,27 @@ export class ProviderWithFallback implements Provider {
 
     this._currentProvider = mainProvider;
     this._providers = [...providers];
+  }
+
+  private saveGlobalListener(
+    eventType: EventType,
+    listener: Listener,
+    once = false
+  ) {
+    this.globalListeners.push({ eventType, listener, once });
+  }
+
+  /**
+   * To avoid copying logic of removing events.
+   * We just remove listeners by reference which removed in underlying provider.
+   */
+  private updateGlobalListenerAfterRemoval() {
+    const allCurrentListeners = this._currentProvider.listeners();
+    for (let i = 0; i < this.globalListeners.length; i++) {
+      if (!allCurrentListeners.includes(this.globalListeners[i].listener)) {
+        this.globalListeners.splice(i, 1);
+      }
+    }
   }
 
   private async executeWithFallback(
@@ -215,23 +218,28 @@ export class ProviderWithFallback implements Provider {
   listeners(eventName?: EventType | undefined): Listener[] {
     return this._currentProvider.listeners(eventName);
   }
-  off(eventName: EventType, listener?: Listener | undefined): Provider {
-    // remove from global
-    this.removeGlobalListener(eventName);
-    return this._currentProvider.off(eventName, listener);
-  }
-
-  removeAllListeners(eventName?: EventType | undefined): Provider {
-    this.globalListeners = [];
-    return this._currentProvider.removeAllListeners(eventName);
-  }
   addListener(eventName: EventType, listener: Listener): Provider {
     return this._currentProvider.addListener(eventName, listener);
   }
-  removeListener(eventName: EventType, listener: Listener): Provider {
-    this.removeGlobalListener(eventName);
-    return this._currentProvider.removeListener(eventName, listener);
+  off(eventName: EventType, listener?: Listener | undefined): Provider {
+    this._currentProvider.off(eventName, listener);
+    this.updateGlobalListenerAfterRemoval();
+    return this._currentProvider;
   }
+
+  removeAllListeners(eventName?: EventType | undefined): Provider {
+    this._currentProvider.removeAllListeners(eventName);
+    this.updateGlobalListenerAfterRemoval();
+
+    return this._currentProvider;
+  }
+
+  removeListener(eventName: EventType, listener: Listener): Provider {
+    this._currentProvider.removeListener(eventName, listener);
+    this.updateGlobalListenerAfterRemoval();
+    return this._currentProvider;
+  }
+
   waitForTransaction(
     transactionHash: string,
     confirmations?: number | undefined,
