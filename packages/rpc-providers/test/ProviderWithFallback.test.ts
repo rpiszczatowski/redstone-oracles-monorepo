@@ -5,7 +5,6 @@ import chaiAsPromised from "chai-as-promised";
 import { providers, Signer, Wallet } from "ethers";
 import { ProviderWithFallback } from "../src/ProviderWithFallback";
 import { Counter } from "../typechain-types";
-import { ethers } from "hardhat";
 
 chai.use(chaiAsPromised);
 
@@ -23,7 +22,7 @@ describe("ProviderWithFallback", () => {
         "http://blabla.xd"
       );
       fallbackProvider = new ProviderWithFallback([
-        alwaysFailingProvider as any,
+        alwaysFailingProvider,
         hardhat.ethers.provider,
       ]);
 
@@ -102,31 +101,80 @@ describe("ProviderWithFallback", () => {
     await expect(fallbackProvider.getBlockNumber()).rejected;
   });
 
-  it("should propagate if both fails", async () => {
-    const stubProvider = new providers.StaticJsonRpcProvider();
-    const spy = sinon.stub(stubProvider, "getBlockNumber");
+  it("should react on events event if current provider is second one (and first doesn't work)", async () => {
+    const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
+    const contract = await ContractFactory.deploy();
+    await contract.deployed();
 
+    const alwaysFailingProvider = new providers.JsonRpcProvider(
+      "http://blabla.xd"
+    );
     const fallbackProvider = new ProviderWithFallback([
-      stubProvider,
-      stubProvider,
+      alwaysFailingProvider,
+      // hardhat.ethers.provider,
+      hardhat.ethers.provider,
     ]);
 
-    spy.onFirstCall().rejects().onSecondCall().rejects();
+    const onBlockSpy = sinon.spy();
+    fallbackProvider.on("block", onBlockSpy);
+    // first provider fails so fallback switch to another
+    await fallbackProvider.getBlockNumber();
 
-    await expect(fallbackProvider.getBlockNumber()).rejected;
+    const tx = await contract.connect(signer.connect(fallbackProvider)).inc();
+    await fallbackProvider.waitForTransaction(tx.hash);
+
+    await new Promise((r) => setTimeout(r, 100));
+    expect(onBlockSpy.callCount).to.eq(1);
   });
 
-  it("should propagate if both fails", async () => {
-    const stubProvider = new providers.StaticJsonRpcProvider();
-    const spy = sinon.stub(stubProvider, "getBlockNumber");
+  it("removing listener after swapping providers", async () => {
+    const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
+    const contract = await ContractFactory.deploy();
+    await contract.deployed();
 
+    const alwaysFailingProvider = new providers.JsonRpcProvider(
+      "http://blabla.xd"
+    );
     const fallbackProvider = new ProviderWithFallback([
-      stubProvider,
-      stubProvider,
+      alwaysFailingProvider,
+      // hardhat.ethers.provider,
+      hardhat.ethers.provider,
     ]);
 
-    spy.onFirstCall().rejects().onSecondCall().rejects();
+    const onBlockSpy = sinon.spy();
+    fallbackProvider.on("block", onBlockSpy);
+    // first provider fails so fallback switch to another
+    await fallbackProvider.getBlockNumber();
+    fallbackProvider.off("block");
 
-    await expect(fallbackProvider.getBlockNumber()).rejected;
+    const tx = await contract.connect(signer.connect(fallbackProvider)).inc();
+    await fallbackProvider.waitForTransaction(tx.hash);
+
+    await new Promise((r) => setTimeout(r, 100));
+    expect(onBlockSpy.callCount).to.eq(0);
+  });
+
+  it("event is triggered only once per all fallback providers", async () => {
+    const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
+    const contract = await ContractFactory.deploy();
+    await contract.deployed();
+
+    const alwaysFailingProvider = new providers.JsonRpcProvider(
+      "http://blabla.xd"
+    );
+
+    const fallbackProvider = new ProviderWithFallback([
+      alwaysFailingProvider,
+      hardhat.ethers.provider,
+    ]);
+
+    const onBlockSpy = sinon.spy();
+    fallbackProvider.on("block", onBlockSpy);
+    // first provider fails so fallback switch to another
+    await fallbackProvider.getBlockNumber();
+
+    expect(alwaysFailingProvider.listenerCount()).to.eq(0);
+    expect(fallbackProvider.listenerCount()).to.eq(1);
+    expect(hardhat.ethers.provider.listenerCount()).to.eq(1);
   });
 });

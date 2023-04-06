@@ -12,7 +12,9 @@ import {
   TransactionReceipt,
   TransactionResponse,
 } from "@ethersproject/providers";
+import { randomUUID } from "crypto";
 import { BigNumber } from "ethers";
+import { isDeepStrictEqual } from "util";
 
 export type ProviderWithFallbackConfig = {
   unrecoverableErrors: ErrorCode[];
@@ -32,9 +34,30 @@ export const FALLBACK_DEFAULT_CONFIG: ProviderWithFallbackConfig = {
 
 export class ProviderWithFallback implements Provider {
   private _currentProvider: Provider;
-  private _eventsProvider: Provider;
   private readonly _providers: Provider[];
   private _providerIndex = 0;
+
+  private globalListeners: {
+    eventType: EventType;
+    listener: Listener;
+    once: boolean;
+  }[] = [];
+
+  private saveGlobalListener(
+    eventType: EventType,
+    listener: Listener,
+    once = false
+  ) {
+    this.globalListeners.push({ eventType, listener, once });
+  }
+
+  private removeGlobalListener(eventType: EventType) {
+    for (let i = this.globalListeners.length - 1; i >= 0; i--) {
+      if (isDeepStrictEqual(this.globalListeners[i].eventType, eventType)) {
+        this.globalListeners.splice(i, 1);
+      }
+    }
+  }
 
   constructor(
     providers: JsonRpcProvider[],
@@ -46,7 +69,6 @@ export class ProviderWithFallback implements Provider {
     }
 
     this._currentProvider = mainProvider;
-    this._eventsProvider = mainProvider;
     this._providers = [...providers];
   }
 
@@ -65,9 +87,17 @@ export class ProviderWithFallback implements Provider {
   }
 
   private useProvider(providerIndex: number) {
+    this._currentProvider.removeAllListeners();
     this._providerIndex = providerIndex;
     const newProvider = this._providers[this._providerIndex];
     this._currentProvider = newProvider;
+    for (const { listener, once, eventType } of this.globalListeners) {
+      if (once) {
+        this._currentProvider.once(eventType, listener);
+      } else {
+        this._currentProvider.on(eventType, listener);
+      }
+    }
   }
 
   private extractProviderName(index: number): string {
@@ -169,38 +199,45 @@ export class ProviderWithFallback implements Provider {
   }
 
   on(eventName: EventType, listener: Listener): Provider {
-    return this._eventsProvider.on(eventName, listener);
+    this.saveGlobalListener(eventName, listener);
+    return this._currentProvider.on(eventName, listener);
   }
   once(eventName: EventType, listener: Listener): Provider {
-    return this._eventsProvider.once(eventName, listener);
+    this.saveGlobalListener(eventName, listener);
+    return this._currentProvider.once(eventName, listener);
   }
   emit(eventName: EventType, ...args: any[]): boolean {
-    return this._eventsProvider.emit(eventName, ...args);
+    return this._currentProvider.emit(eventName, ...args);
   }
   listenerCount(eventName?: EventType | undefined): number {
-    return this._eventsProvider.listenerCount(eventName);
+    return this._currentProvider.listenerCount(eventName);
   }
   listeners(eventName?: EventType | undefined): Listener[] {
-    return this._eventsProvider.listeners(eventName);
+    return this._currentProvider.listeners(eventName);
   }
   off(eventName: EventType, listener?: Listener | undefined): Provider {
-    return this._eventsProvider.off(eventName, listener);
+    // remove from global
+    this.removeGlobalListener(eventName);
+    return this._currentProvider.off(eventName, listener);
   }
+
   removeAllListeners(eventName?: EventType | undefined): Provider {
-    return this._eventsProvider.removeAllListeners(eventName);
+    this.globalListeners = [];
+    return this._currentProvider.removeAllListeners(eventName);
   }
   addListener(eventName: EventType, listener: Listener): Provider {
-    return this._eventsProvider.addListener(eventName, listener);
+    return this._currentProvider.addListener(eventName, listener);
   }
   removeListener(eventName: EventType, listener: Listener): Provider {
-    return this._eventsProvider.removeListener(eventName, listener);
+    this.removeGlobalListener(eventName);
+    return this._currentProvider.removeListener(eventName, listener);
   }
   waitForTransaction(
     transactionHash: string,
     confirmations?: number | undefined,
     timeout?: number | undefined
   ): Promise<TransactionReceipt> {
-    return this._eventsProvider.waitForTransaction(
+    return this._currentProvider.waitForTransaction(
       transactionHash,
       confirmations,
       timeout
