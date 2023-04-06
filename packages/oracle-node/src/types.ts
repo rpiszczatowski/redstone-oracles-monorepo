@@ -145,7 +145,7 @@ export interface NodeConfig {
   overridePriceCacheServiceUrls?: string[];
   coinbaseIndexerMongoDbUrl?: string;
   ethMainRpcUrl?: string;
-  levelDbLocation: string;
+  sqliteDbName: string;
   etherscanApiUrl?: string;
   etherscanApiKey?: string;
   ttlForPricesInLocalDBInMilliseconds: number;

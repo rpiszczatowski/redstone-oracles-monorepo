@@ -10,8 +10,8 @@ import {
   getSlicedResponseWithOuterTransaction,
 } from "./helpers";
 import {
-  clearPricesSublevel,
-  closeLocalLevelDB,
+  clearPricesTable,
+  closeLocalDB,
   setupLocalDb,
 } from "../../src/db/local-db";
 jest.mock("axios");
@@ -26,12 +26,12 @@ describe("Coinbase KYD", () => {
   });
 
   afterAll(async () => {
-    await closeLocalLevelDB();
+    await closeLocalDB();
   });
 
   describe("determineAddressLevelByCoinbaseData", () => {
     beforeEach(async () => {
-      await clearPricesSublevel();
+      await clearPricesTable();
     });
 
     test("should return level 3", async () => {

@@ -8,8 +8,8 @@ import { timeout } from "../../src/utils/promise-timeout";
 import { MOCK_NODE_CONFIG } from "../helpers";
 import { NodeConfig } from "../../src/types";
 import {
-  clearPricesSublevel,
-  closeLocalLevelDB,
+  clearPricesTable,
+  closeLocalDB,
   setupLocalDb,
   savePrices,
 } from "../../src/db/local-db";
@@ -90,7 +90,7 @@ describe("NodeRunner", () => {
   });
 
   beforeEach(async () => {
-    await clearPricesSublevel();
+    await clearPricesTable();
 
     jest.useFakeTimers();
     mockedAxios.post.mockClear();
@@ -129,7 +129,7 @@ describe("NodeRunner", () => {
   });
 
   afterAll(async () => {
-    await closeLocalLevelDB();
+    await closeLocalDB();
   });
 
   describe("node set up", () => {

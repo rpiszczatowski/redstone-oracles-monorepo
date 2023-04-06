@@ -1,6 +1,6 @@
 import {
-  clearPricesSublevel,
-  closeLocalLevelDB,
+  clearPricesTable,
+  closeLocalDB,
   setupLocalDb,
   savePrices,
 } from "../src/db/local-db";
@@ -37,11 +37,11 @@ describe("PricesService", () => {
   });
 
   beforeEach(async () => {
-    await clearPricesSublevel();
+    await clearPricesTable();
   });
 
   afterAll(async () => {
-    await closeLocalLevelDB();
+    await closeLocalDB();
   });
 
   describe("groupPricesByToken", () => {

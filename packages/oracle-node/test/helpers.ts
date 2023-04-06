@@ -41,7 +41,7 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
     ethereumPrivateKey: MOCK_ETH_PRIV_KEY,
   },
   ethereumAddress: new ethers.Wallet(MOCK_ETH_PRIV_KEY).address,
-  levelDbLocation: "oracle-node-level-db-tests",
+  sqliteDbName: "oracle-node-sqlite-tests.db",
   ttlForPricesInLocalDBInMilliseconds: 900000,
   avalancheRpcUrl: "",
   enableStreamrBroadcasting: false,

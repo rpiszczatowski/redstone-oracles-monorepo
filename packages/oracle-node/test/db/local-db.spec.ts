@@ -1,6 +1,6 @@
 import {
-  clearPricesSublevel,
-  closeLocalLevelDB,
+  clearPricesTable,
+  closeLocalDB,
   getPrices,
   setupLocalDb,
   PriceValuesInLocalDB,
@@ -46,11 +46,11 @@ describe("Local DB", () => {
   });
 
   beforeEach(async () => {
-    await clearPricesSublevel();
+    await clearPricesTable();
   });
 
   afterAll(async () => {
-    await closeLocalLevelDB();
+    await closeLocalDB();
   });
 
   it("should properly put and get data", async () => {

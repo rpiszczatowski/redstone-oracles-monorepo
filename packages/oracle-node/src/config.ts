@@ -10,7 +10,7 @@ const DEFAULT_ENABLE_STREAMR_BROADCASTING = "false";
 const DEFAULT_MANIFEST_REFRESH_INTERVAL = "120000";
 const DEFAULT_TWELVE_DATA_RAPID_API_KEY = "";
 const DEFAULT_ETH_MAIN_RPC_URL = "https://rpc.ankr.com/eth";
-const DEFAULT_LEVEL_DB_LOCATION = "oracle-node-level-db";
+const DEFAULT_SQLITE_DB_NAME = "oracle-node-sqlite.db";
 const DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS = "900000";
 const DEFAULT_ETHERSCAN_API_URL = "";
 const DEFAULT_ETHERSCAN_API_KEY = "";
@@ -138,7 +138,7 @@ export const config: NodeConfig = Object.freeze({
     DEFAULT_COINBASE_INDEXER_MONGODB_URL
   ),
   ethMainRpcUrl: getFromEnv("ETH_MAIN_RPC_URL", DEFAULT_ETH_MAIN_RPC_URL),
-  levelDbLocation: getFromEnv("LEVEL_DB_LOCATION", DEFAULT_LEVEL_DB_LOCATION),
+  sqliteDbName: getFromEnv("SQLITE_DB_NAME", DEFAULT_SQLITE_DB_NAME),
   etherscanApiUrl: getFromEnv("ETHERSCAN_API_URL", DEFAULT_ETHERSCAN_API_URL),
   etherscanApiKey: getFromEnv("ETHERSCAN_API_KEY", DEFAULT_ETHERSCAN_API_KEY),
   ttlForPricesInLocalDBInMilliseconds: parserFromString.number(

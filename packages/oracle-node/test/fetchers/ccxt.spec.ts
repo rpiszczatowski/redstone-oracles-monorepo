@@ -1,6 +1,6 @@
 import {
-  clearPricesSublevel,
-  closeLocalLevelDB,
+  clearPricesTable,
+  closeLocalDB,
   setupLocalDb,
 } from "../../src/db/local-db";
 import fetchers from "../../src/fetchers/index";
@@ -32,11 +32,11 @@ describe("ccxt fetcher", () => {
   });
 
   beforeEach(async () => {
-    await clearPricesSublevel();
+    await clearPricesTable();
   });
 
   afterAll(async () => {
-    await closeLocalLevelDB();
+    await closeLocalDB();
   });
 
   const sut = fetchers["binance"];

@@ -30,6 +30,7 @@ Dockerfile.redstone-dev
 
 tmp.patch
 
-oracle-node-level-db*
-level-db-for-tests
 deviation-test-response.json
+
+oracle-node-sqlite.db
+oracle-node-sqlite-tests.db

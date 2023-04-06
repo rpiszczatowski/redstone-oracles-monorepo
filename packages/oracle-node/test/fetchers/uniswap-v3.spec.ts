@@ -1,4 +1,4 @@
-import { closeLocalLevelDB, setupLocalDb } from "../../src/db/local-db";
+import { closeLocalDB, setupLocalDb } from "../../src/db/local-db";
 import fetchers from "../../src/fetchers/index";
 import {
   mockFetcherResponse,
@@ -30,7 +30,7 @@ describe("uniswap V3 fetcher", () => {
   });
 
   afterAll(async () => {
-    await closeLocalLevelDB();
+    await closeLocalDB();
   });
 
   test("should properly fetch data", async () => {

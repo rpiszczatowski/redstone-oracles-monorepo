@@ -4,8 +4,8 @@ import { UniswapV2LikeFetcher } from "../../src/fetchers/uniswap-v2-like/Uniswap
 import UniswapV2Mock from "./mocks/UniswapV2Mock.json";
 import { saveMockPriceInLocalDb } from "./_helpers";
 import {
-  clearPricesSublevel,
-  closeLocalLevelDB,
+  clearPricesTable,
+  closeLocalDB,
   setupLocalDb,
 } from "../../src/db/local-db";
 
@@ -24,11 +24,11 @@ describe("UniswapV2Like", () => {
   });
 
   beforeEach(async () => {
-    await clearPricesSublevel();
+    await clearPricesTable();
   });
 
   afterAll(async () => {
-    await closeLocalLevelDB();
+    await closeLocalDB();
   });
 
   test("Should properly fetch data", async () => {

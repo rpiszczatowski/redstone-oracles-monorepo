@@ -12,8 +12,8 @@ import OracleAdaptersMock from "./mocks/OracleAdaptersMock.json";
 import { saveMockPriceInLocalDb, saveMockPricesInLocalDb } from "./_helpers";
 import { oracleAdaptersContractsDetails } from "../../src/fetchers/evm-chain/avalanche/contracts-details/oracle-adapters";
 import {
-  clearPricesSublevel,
-  closeLocalLevelDB,
+  clearPricesTable,
+  closeLocalDB,
   setupLocalDb,
 } from "../../src/db/local-db";
 
@@ -28,11 +28,11 @@ describe("Avalanche EVM fetcher", () => {
   });
 
   beforeEach(async () => {
-    await clearPricesSublevel();
+    await clearPricesTable();
   });
 
   afterAll(async () => {
-    await closeLocalLevelDB();
+    await closeLocalDB();
   });
 
   describe("YY_AAVE_AVAX", () => {
