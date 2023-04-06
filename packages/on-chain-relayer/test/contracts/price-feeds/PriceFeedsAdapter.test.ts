@@ -104,10 +104,9 @@ describe("PriceFeedsAdapter", () => {
     expect(dataFeedValueAndRoundParams.dataFeedValue).to.be.equal(
       2307768000000
     );
-    expect(dataFeedValueAndRoundParams.latestRoundId).to.be.equal(2);
     expect(
-      dataFeedValueAndRoundParams.latestRoundTimestamp
-    ).to.be.equal(newTimestamp);
+      dataFeedValueAndRoundParams.roundTimestamp
+    ).to.be.equal(Math.floor(newTimestamp / 1000));
   });
 
   it("should add new data feed", async () => {

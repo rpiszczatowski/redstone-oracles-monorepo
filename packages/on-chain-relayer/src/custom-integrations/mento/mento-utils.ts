@@ -1,10 +1,10 @@
 import { BigNumber, Signer } from "ethers";
 import { ethers } from "hardhat";
-import { ISortedOracles, MentoAdapter } from "../../../typechain-types";
+import { ISortedOracles, MentoAdapterBase } from "../../../typechain-types";
 
 export interface MentoContracts {
-  mentoAdapter: MentoAdapter;
-  wrappedMentoAdapter: MentoAdapter;
+  mentoAdapter: MentoAdapterBase;
+  wrappedMentoAdapter: MentoAdapterBase;
   sortedOracles: ISortedOracles;
 }
 

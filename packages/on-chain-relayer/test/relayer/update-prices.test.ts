@@ -48,7 +48,7 @@ describe("#updatePrices", () => {
     );
 
     // Check updated values
-    const [round] = await priceFeedsAdapter.getLastRoundParams();
+    const [round] = await priceFeedsAdapter.getLatestRoundParams();
     expect(round).to.be.equal(1);
     const dataFeedsValues = await priceFeedsAdapter.getValuesForDataFeeds(
       dataFeedsIds

@@ -44,7 +44,7 @@ describe("PriceFeed", () => {
   });
 
   it("should properly initialize", async () => {
-    const dataFeedId = await contract.getDataFeedId();
+    const dataFeedId = await contract.dataFeedId();
     expect(dataFeedId).to.be.equal(ethDataFeed);
     const description = await contract.description();
     expect(description).to.be.equal("RedStone price feed for TestToken");

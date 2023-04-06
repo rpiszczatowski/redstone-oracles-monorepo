@@ -1,6 +1,6 @@
 import { Contract, Wallet } from "ethers";
-import { abi as priceFeedsAdapterABI } from "../../../artifacts/contracts/price-feeds/PriceFeedsAdapter.sol/PriceFeedsAdapter.json";
-import { abi as mentoAdapterABI } from "../../../artifacts/contracts/custom-integrations/mento/MentoAdapter.sol/MentoAdapter.json";
+import { abi as priceFeedsAdapterABI } from "../../../artifacts/contracts/price-feeds/interfaces/IPriceFeedAdapter.sol/IPriceFeedAdapter.json";
+import { abi as mentoAdapterABI } from "../../../artifacts/contracts/custom-integrations/mento/MentoAdapterBase.sol/MentoAdapterBase.json";
 import { abi as sortedOraclesABI } from "../../../artifacts/contracts/custom-integrations/mento/ISortedOracles.sol/ISortedOracles.json";
 import { config } from "../../config";
 import { getProvider } from "./get-provider-or-signer";

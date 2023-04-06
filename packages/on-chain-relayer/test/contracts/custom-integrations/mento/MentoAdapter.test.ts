@@ -10,13 +10,13 @@ import {
   deployMockSortedOracles,
   prepareLinkedListLocationsForMentoAdapterReport,
 } from "../../../../src/custom-integrations/mento/mento-utils";
-import { MentoAdapter, MockSortedOracles } from "../../../../typechain-types";
+import { MentoAdapterBase, MockSortedOracles } from "../../../../typechain-types";
 
 chai.use(chaiAsPromised);
 
 describe("MentoAdapter", () => {
   let sortedOracles: MockSortedOracles;
-  let mentoAdapter: MentoAdapter;
+  let mentoAdapter: MentoAdapterBase;
   let signers: SignerWithAddress[];
 
   const mockToken1Address = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9"; // CELO token address
@@ -68,18 +68,16 @@ describe("MentoAdapter", () => {
     });
 
     // Prepare arguments
-    const proposedRound = (await mentoAdapter.getLastRound()).add(1);
     const proposedTimestamp = timestampMilliseconds;
     const locationsInSortedLinkedLists =
       await prepareLinkedListLocationsForMentoAdapterReport({
         mentoAdapter,
-        wrappedMentoAdapter: wrappedMentoAdapter as MentoAdapter,
+        wrappedMentoAdapter: wrappedMentoAdapter as MentoAdapterBase,
         sortedOracles,
       });
 
     // Updating oracle values
     await wrappedMentoAdapter.updatePriceValues(
-      proposedRound,
       proposedTimestamp,
       locationsInSortedLinkedLists
     );
