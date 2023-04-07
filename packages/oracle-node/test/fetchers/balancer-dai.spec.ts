@@ -1,6 +1,6 @@
 import {
-  clearPricesSublevel,
-  closeLocalLevelDB,
+  clearLocalDb,
+  closeLocalDB,
   setupLocalDb,
 } from "../../src/db/local-db";
 
@@ -46,11 +46,11 @@ describe("balancer-dai fetcher", () => {
     setupLocalDb();
   });
   beforeEach(async () => {
-    await clearPricesSublevel();
+    clearLocalDb();
   });
 
   afterAll(async () => {
-    await closeLocalLevelDB();
+    await closeLocalDB();
   });
 
   const sut = fetchers["balancer-dai"];

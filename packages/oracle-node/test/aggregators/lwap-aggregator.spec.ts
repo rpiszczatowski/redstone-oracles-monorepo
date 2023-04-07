@@ -1,5 +1,5 @@
 import lwapAggregator from "../../src/aggregators/lwap-aggregator/lwap-aggregator";
-import { closeLocalLevelDB, setupLocalDb } from "../../src/db/local-db";
+import { closeLocalDB, setupLocalDb } from "../../src/db/local-db";
 import { PriceDataBeforeAggregation } from "../../src/types";
 
 describe("lwapAggregator", () => {
@@ -8,7 +8,7 @@ describe("lwapAggregator", () => {
   });
 
   afterAll(async () => {
-    await closeLocalLevelDB();
+    await closeLocalDB();
   });
 
   test("should throw error if liquidities missing", async () => {

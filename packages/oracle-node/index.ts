@@ -1,7 +1,7 @@
 import { Consola } from "consola";
 import { config } from "./src/config";
 import NodeRunner from "./src/NodeRunner";
-import { closeLocalLevelDB, setupLocalDb } from "./src/db/local-db";
+import { closeLocalDB, setupLocalDb } from "./src/db/local-db";
 
 const logger = require("./src/utils/logger")("index") as Consola;
 
@@ -27,5 +27,5 @@ start();
 export = {};
 
 process.on("beforeExit", () => {
-  closeLocalLevelDB();
+  closeLocalDB();
 });

@@ -1,14 +1,6 @@
-import { AbstractBatchPutOperation, AbstractSublevel } from "abstract-level";
-import { Level } from "level";
+import { open, Database } from "lmdb";
 import { config } from "../../config";
 import { PriceDataAfterAggregation } from "../../types";
-import { roundTimestamp } from "../../utils/timestamps";
-
-const PRICES_SUBLEVEL = "prices";
-const DEFAULT_LEVEL_OPTS = {
-  keyEncoding: "utf8",
-  valueEncoding: "json",
-};
 
 export interface PriceValueInLocalDB {
   timestamp: number;
@@ -23,40 +15,36 @@ interface LastPrices {
   [symbol: string]: PriceValueInLocalDB;
 }
 
-let db: Level<string, string>;
-let pricesSublevel: AbstractSublevel<
-  Level<string, string>,
-  string | Buffer | Uint8Array,
-  string,
-  PriceValueInLocalDB[]
->;
+interface PricesToPutInDb {
+  symbol: string;
+  prices: PriceValueInLocalDB[];
+}
+
+let db: Database<PriceValueInLocalDB[], string>;
 
 /* 
   In order to use any function from this module you need
   to run function setupLocalDb at least once before
 */
 export const setupLocalDb = () => {
-  db = new Level(config.levelDbLocation, DEFAULT_LEVEL_OPTS);
-  pricesSublevel = db.sublevel<string, PriceValueInLocalDB[]>(
-    PRICES_SUBLEVEL,
-    DEFAULT_LEVEL_OPTS
-  );
+  db = open({
+    path: config.levelDbLocation,
+  });
 };
 
-export const clearPricesSublevel = async () => {
-  await pricesSublevel.clear();
+export const clearLocalDb = () => {
+  db.clearSync();
 };
 
-export const closeLocalLevelDB = async () => {
-  await pricesSublevel.close();
+export const closeLocalDB = async () => {
   await db.close();
 };
 
 export const getPrices = async (
   symbols: string[]
 ): Promise<PriceValuesInLocalDB> => {
-  const valuesForSymbols = await pricesSublevel.getMany(symbols);
-
+  const valuesForSymbols = await db.getMany(symbols);
+  console.log({ valuesForSymbols });
   // Preparing a result object with values
   const resultValues: PriceValuesInLocalDB = {};
   for (let symbolIndex = 0; symbolIndex < symbols.length; symbolIndex++) {
@@ -70,15 +58,9 @@ export const getPrices = async (
 
 export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
   const pricesFromDB = await getPrices(prices.map((p) => p.symbol));
-  // Building opeartions array
-  const operations: AbstractBatchPutOperation<
-    typeof pricesSublevel,
-    string,
-    PriceValueInLocalDB[]
-  >[] = [];
-
   const currentTimestamp = Date.now();
 
+  const pricesToPutInDb: PricesToPutInDb[] = [];
   for (const price of prices) {
     const priceForSymbolToAdd: PriceValueInLocalDB = {
       value: price.value,
@@ -91,15 +73,17 @@ export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
         currentTimestamp - config.ttlForPricesInLocalDBInMilliseconds
     );
 
-    operations.push({
-      type: "put",
-      key: price.symbol,
-      value: [priceForSymbolToAdd, ...filteredPricesForSymbol],
+    pricesToPutInDb.push({
+      symbol: price.symbol,
+      prices: [priceForSymbolToAdd, ...filteredPricesForSymbol],
     });
   }
 
   // Executing batch action
-  await pricesSublevel.batch(operations);
+  db.transaction(() => {
+    // pricesToPutInDb.map((price) => db.put(price.symbol, price.prices));
+    db.put(pricesToPutInDb[0].symbol, pricesToPutInDb[0].prices);
+  });
 
   // Saving last prices to local cache
   setLastPrices(prices);
@@ -125,7 +109,7 @@ export const getLastPrice = (symbol: string): PriceValueInLocalDB | undefined =>
 export default {
   savePrices,
   getPrices,
-  clearPricesSublevel,
-  closeLocalLevelDB,
+  clearLocalDb,
+  closeLocalDB,
   getLastPrice,
 };
