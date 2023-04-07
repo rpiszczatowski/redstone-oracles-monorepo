@@ -61,10 +61,14 @@ const paramsProvider = new StarknetContractParamsProvider({
 ```
 The `account` param is needed to be passed for storage-write-methods. Otherwise, it can remain undefined.
 
-Now you can access any of the contract's methods in exactly the same way as interacting with the ethers-js code:
+Now you can access any of the contract's methods by invoking the code:
 
 ```ts
 (await prices.getAdapter()).getPricesFromPayload(paramsProvider);
+(await prices.getAdapter()).writePricesFromPayloadToContract(paramsProvider);
+(await prices.getAdapter()).readPricesFromContract(paramsProvider);
+(await prices.getAdapter()).readTimestampFromContract();
+
 ```
 
 
