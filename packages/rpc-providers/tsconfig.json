@@ -23,5 +23,9 @@
     "src/**/*.json",
     "./artifacts/**/*.json"
   ],
-  "files": ["./hardhat.config.ts"]
+  "files": [
+    "./hardhat.config.ts",
+    "./src/ProviderWithFallback.ts",
+    "./src/ProviderWithFallbackBase.ts"
+  ]
 }

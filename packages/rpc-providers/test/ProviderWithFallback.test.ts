@@ -111,7 +111,6 @@ describe("ProviderWithFallback", () => {
     );
     const fallbackProvider = new ProviderWithFallback([
       alwaysFailingProvider,
-      // hardhat.ethers.provider,
       hardhat.ethers.provider,
     ]);
 
@@ -137,7 +136,6 @@ describe("ProviderWithFallback", () => {
     );
     const fallbackProvider = new ProviderWithFallback([
       alwaysFailingProvider,
-      // hardhat.ethers.provider,
       hardhat.ethers.provider,
     ]);
 
