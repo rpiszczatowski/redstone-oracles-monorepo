@@ -12,7 +12,6 @@ impl ArraySliceCopy<T, impl TCopy: Copy<T>> of Copy<ArraySlice<T>>;
 impl ArraySliceDrop<T, impl TDrop: Drop<T>> of Drop<ArraySlice<T>>;
 impl ArrayCopy<T, impl TCopy: Copy<T>> of Copy<Array<T>>;
 
-/// TODO: rename to SliceableTrait & move to other file
 trait SliceableArrayTrait<T> {
     fn slice_tail_offset(self: @Array<T>, length: usize, offset: usize) -> ArraySlice<T>;
     fn slice_tail(self: @Array<T>, length: usize) -> ArraySlice<T>;

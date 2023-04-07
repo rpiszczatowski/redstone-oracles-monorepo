@@ -1,8 +1,8 @@
 use array::ArrayTrait;
 
-const BLOCK_TIMESTAMP: u64 = 1680785300_u64;
+const SAMPLE_BLOCK_TIMESTAMP: u64 = 1680785300_u64;
 
-fn make_payload() -> Array<u8> {
+fn sample_payload_bytes() -> Array<u8> {
     let mut arr: Array<u8> = ArrayTrait::new();
     arr.append(0x41_u8);
     arr.append(0x56_u8);

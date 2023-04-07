@@ -7,8 +7,8 @@ use redstone::processor::Config;
 use redstone::sort::SortableTrait;
 use redstone::numbers::Felt252PartialOrd;
 
-use demo::sample::make_payload;
-use demo::sample::BLOCK_TIMESTAMP;
+use demo::sample::sample_payload_bytes;
+use demo::sample::SAMPLE_BLOCK_TIMESTAMP;
 use demo::debug::ValuesPrint;
 use demo::debug::GenericArrayPrintImpl;
 
@@ -32,13 +32,13 @@ fn main() {
     // feed_ids.append('XXX');
 
     let config = Config {
-        block_timestamp: BLOCK_TIMESTAMP,
+        block_timestamp: SAMPLE_BLOCK_TIMESTAMP,
         feed_ids: @feed_ids,
         signers: @signers,
         signer_count_threshold: 1_usize
     };
 
-    let payload_bytes = make_payload();
+    let payload_bytes = sample_payload_bytes();
     let payload = process_payload(:payload_bytes, :config);
 
     payload.print();

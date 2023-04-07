@@ -4,7 +4,7 @@ use integer::u64_to_felt252;
 
 use redstone::numbers::Felt252PartialOrd;
 
-// 1310720000 + data_package_index + 1000/2000
+// 2621440000 + data_package_index + 1000/2000
 const TIMESTAMP_OUT_OF_RANGE: felt252 = 0x9C400000;
 
 const MAX_DATA_TIMESTAMP_DELAY_SECONDS: felt252 = 900; // 15 * 60

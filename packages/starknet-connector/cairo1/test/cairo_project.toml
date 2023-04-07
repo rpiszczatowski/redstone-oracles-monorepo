@@ -1,0 +1,3 @@
+[crate_roots]
+redstone = "../src/redstone"
+test = "."

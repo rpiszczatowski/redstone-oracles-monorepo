@@ -7,7 +7,7 @@ use redstone::validation::validate_timestamp;
 /// 655360000 + feed_index + 10000 * count
 const INSUFFICIENT_SIGNER_COUNT: felt252 = 0x27100000;
 
-/// 2621440000 + data_package_index
+/// 1310720000 + data_package_index
 const SIGNER_NOT_RECOGNIZED: felt252 = 0x4e200000;
 
 trait ValidableTrait<T> {
