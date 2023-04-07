@@ -15,7 +15,6 @@ impl ArrayCopy<T, impl TCopy: Copy<T>> of Copy<Array<T>>;
 trait SliceableArrayTrait<T> {
     fn slice_tail_offset(self: @Array<T>, length: usize, offset: usize) -> ArraySlice<T>;
     fn slice_tail(self: @Array<T>, length: usize) -> ArraySlice<T>;
-    fn copy(self: @Array<T>) -> Array<T>;
 }
 
 impl SliceableArray<T, impl TDrop: Drop<T>, impl TCopy: Copy<T>> of SliceableArrayTrait<T> {
@@ -38,29 +37,22 @@ impl SliceableArray<T, impl TDrop: Drop<T>, impl TCopy: Copy<T>> of SliceableArr
     fn slice_tail(self: @Array<T>, length: usize) -> ArraySlice<T> {
         self.slice_tail_offset(length, 0_usize)
     }
-
-
-    fn copy(self: @Array<T>) -> Array<T> {
-        let mut res: Array<T> = ArrayTrait::new();
-
-        array_copy(self, 0_usize, ref res);
-
-        res
-    }
 }
+// fn array_copy<T, impl TDrop: Drop<T>, impl TCopy: Copy<T>>(
+//     arr: @Array<T>, index: usize, ref res: Array<T>
+// ) {
+//         match gas::withdraw_gas_all(get_builtin_costs()) {
+//             Option::Some(_) => {},
+//             Option::None(_) => panic(out_of_gas_array()),
+//         };
 
+//     if (index == arr.len()) {
+//         return ();
+//     }
 
-fn array_copy<T, impl TDrop: Drop<T>, impl TCopy: Copy<T>>(
-    arr: @Array<T>, index: usize, ref res: Array<T>
-) {
-    if (index == arr.len()) {
-        return ();
-    }
-
-    res.append(*arr[index]);
-
-    array_copy(arr, index + 1_usize, ref res)
-}
+//     res.append(*arr[index]);
+//     array_copy(arr, index + 1_usize, ref res)
+// }
 // impl DropFeltSnapshot of Drop::<@felt252>;
 
 // impl ArrayDrop<T, impl TDrop: Drop<T>> of Drop<Array<T>>;

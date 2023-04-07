@@ -55,7 +55,7 @@ tests: format
 	$(BIN)cairo-test $(TEST)
 
 contract: format build_dir
-	$(BIN)starknet-compile --replace-ids $(CNT) $(CNC)
+	$(BIN)starknet-compile --replace-ids --allowed-libfuncs-list-name experimental_v0.1.0 $(CNT) $(CNC)
 
 contracts: format build_dir
 	protostar build  --cairo-path=$(SRC)

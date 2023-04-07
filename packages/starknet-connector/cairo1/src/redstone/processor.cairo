@@ -15,14 +15,15 @@ use redstone::config::ConfigurableTrait;
 use redstone::config_validation::ValidableTrait;
 use redstone::config::index_in_array;
 use redstone::aggregation::aggregate_values;
+use redstone::results::Results;
+use redstone::gas::out_of_gas_array;
 
-fn process_payload(payload_bytes: Array<u8>, config: Config) -> Array<felt252> {
+fn process_payload(payload_bytes: Array<u8>, config: Config) -> Results {
     let payload = get_payload_from_bytes(arr: payload_bytes, validator: config);
     let tmp_signer_count = payload.data_packages.len();
     let mut dict: Felt252Dict<felt252> = OptionalDictTrait::new_of_size(
         config.cap(tmp_signer_count)
     );
-
     make_values_dict(data_packages: payload.data_packages, :config, index: 0_usize, ref :dict);
 
     let mut tmp_arr: Array<felt252> = ArrayTrait::new();
@@ -31,12 +32,11 @@ fn process_payload(payload_bytes: Array<u8>, config: Config) -> Array<felt252> {
         ref :dict, :config, :tmp_signer_count, index: 0_usize, ref :tmp_arr, ref :matrix
     );
 
-    let mut result: Array<felt252> = ArrayTrait::new();
-    aggregate_values(values: matrix, index: 0_usize, ref res: result);
+    let mut aggregated_values: Array<felt252> = ArrayTrait::new();
+    aggregate_values(values: @matrix, index: 0_usize, ref res: aggregated_values);
 
-    result
+    Results { payload, aggregated_values: @aggregated_values, values: @matrix }
 }
-
 
 fn make_values_matrix(
     ref dict: Felt252Dict<felt252>,
@@ -46,6 +46,11 @@ fn make_values_matrix(
     ref tmp_arr: Array<felt252>,
     ref matrix: Array<@Array<felt252>>
 ) {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
     let (feed_index, signer_index) = u32_safe_divmod(index, u32_as_non_zero(tmp_signer_count));
 
     if (signer_index == 0_usize) {
@@ -68,7 +73,6 @@ fn make_values_matrix(
         Option::Some(x) => tmp_arr.append(x),
         Option::None(()) => (),
     }
-
     make_values_matrix(
         ref :dict, :config, :tmp_signer_count, index: index + 1_usize, ref :tmp_arr, ref :matrix
     );
@@ -77,6 +81,11 @@ fn make_values_matrix(
 fn make_values_dict(
     data_packages: @Array<DataPackage>, config: Config, index: usize, ref dict: Felt252Dict<felt252>
 ) {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
     if (index == data_packages.len()) {
         return ();
     }
@@ -95,7 +104,6 @@ fn make_values_dict(
         ),
         Option::None(()) => (),
     }
-
     make_values_dict(:data_packages, :config, index: index + 1_usize, ref :dict)
 }
 
@@ -107,6 +115,11 @@ fn insert_data_point_values(
     index: usize,
     ref dict: Felt252Dict<felt252>
 ) {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
     if (index == data_points.len()) {
         return ();
     }

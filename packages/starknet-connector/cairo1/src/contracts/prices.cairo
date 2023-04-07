@@ -1,7 +1,7 @@
 #[contract]
 mod HelloStarknet {
-    use core::array::array_new;
-    use core::array::ArrayTrait;
+    use array::array_new;
+    use array::ArrayTrait;
 
     use starknet::ContractAddress;
     use starknet::get_caller_address;
@@ -9,6 +9,7 @@ mod HelloStarknet {
 
     use redstone::processor::process_payload;
     use redstone::config::Config;
+    use redstone::sliceable_array::ArrayCopy;
 
     #[external]
     fn get_prices(feed_ids: Array<felt252>, payload_bytes: Array<u8>, ) -> Array<felt252> {
@@ -19,6 +20,7 @@ mod HelloStarknet {
             signers: @ArrayTrait::new()
         };
 
-        process_payload(:payload_bytes, :config)
+        let aggregated_values = process_payload(:payload_bytes, :config).aggregated_values;
+        *aggregated_values
     }
 }

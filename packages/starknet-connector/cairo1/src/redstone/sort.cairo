@@ -1,5 +1,6 @@
 use array::ArrayTrait;
 use redstone::sliceable_array::SliceableArrayTrait;
+use redstone::gas::out_of_gas_array;
 
 trait SortableTrait<T> {
     fn sorted(self: @T) -> @T;
@@ -17,6 +18,11 @@ impl UDrop: Drop<U>> of SortableTrait<Array<U>> {
 fn merge_sort<U, impl UPartialOrd: PartialOrd<U>, impl UCopy: Copy<U>, impl UDrop: Drop<U>>(
     arr: @Array<U>
 ) -> @Array<U> {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
     if (arr.len() == 1_usize) {
         return arr;
     }
@@ -46,6 +52,11 @@ fn _merge<U, impl UPartialOrd: PartialOrd<U>, impl UCopy: Copy<U>, impl UDrop: D
     second_index: usize,
     ref res: Array<U>
 ) {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
     if (first_index == first_arr.len()) {
         if (second_index == second_arr.len()) {
             return ();
@@ -71,3 +82,15 @@ fn _merge<U, impl UPartialOrd: PartialOrd<U>, impl UCopy: Copy<U>, impl UDrop: D
 
     _merge(:first_arr, :second_arr, :first_index, :second_index, ref :res);
 }
+// let mut numbers = ArrayTrait::new();
+// numbers.append(13243);
+// numbers.append(23445);
+// numbers.append(123);
+// numbers.append(908);
+// numbers.append(90839);
+// numbers.append(123);
+
+// let sorted_numbers = numbers.sorted();
+// sorted_numbers.print();
+
+

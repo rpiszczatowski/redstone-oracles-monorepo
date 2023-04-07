@@ -14,6 +14,7 @@ use redstone::constants::DATA_POINT_VALUE_BYTE_SIZE_BS;
 use redstone::constants::TIMESTAMP_BS;
 use redstone::constants::DATA_FEED_ID_BS;
 
+use redstone::gas::out_of_gas_array;
 use redstone::config::Config;
 use redstone::config_validation::ValidableTrait;
 use redstone::numbers::Felt252Div;
@@ -22,7 +23,7 @@ use redstone::number_convertible_array::NumberConvertibleArrayTrait;
 use redstone::signature::Signature;
 use redstone::signature::get_signature_from_bytes;
 
-#[derive(Drop)]
+#[derive(Copy, Drop)]
 struct Payload {
     data_packages: @Array<DataPackage>
 }
@@ -65,6 +66,11 @@ fn get_payload_from_bytes(arr: Array<u8>, validator: Config) -> Payload {
 fn slice_data_packages(
     arr: @Array<u8>, validator: Config, count: felt252, ref acc: Array<DataPackage>
 ) {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
     if (count == 0) {
         return ();
     }
@@ -102,6 +108,11 @@ fn slice_data_packages(
 }
 
 fn slice_data_points(arr: @Array<u8>, value_size: usize, count: usize, ref acc: Array<DataPoint>) {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
     if (count == 0_usize) {
         return ();
     }

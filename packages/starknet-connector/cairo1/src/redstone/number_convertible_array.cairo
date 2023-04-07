@@ -6,6 +6,7 @@ use integer::u256_from_felt252;
 use integer::u256_checked_add;
 use integer::u256_checked_mul;
 
+use redstone::gas::out_of_gas_array;
 use redstone::sliceable_array::SliceableArrayTrait;
 
 #[derive(Copy, Drop)]
@@ -52,6 +53,11 @@ impl NumberConvertibleArray of NumberConvertibleArrayTrait {
 
 
 fn array_to_felt252(arr: @Array<u8>, len: usize, mlt: felt252, acc: felt252) -> felt252 {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
     if (len == 0_u32) {
         return acc;
     }
@@ -63,6 +69,11 @@ fn array_to_felt252(arr: @Array<u8>, len: usize, mlt: felt252, acc: felt252) -> 
 
 
 fn array_to_u256(arr: @Array<u8>, len: usize, mlt: u256, acc: u256) -> u256 {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
     if (len == 0_u32) {
         return acc;
     }
@@ -86,6 +97,11 @@ fn array_trunc(arr: @Array<u8>) -> @Array<u8> {
 }
 
 fn _array_trunc(ref arr: Span<u8>) {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
     if (arr.len() == 0_usize) {
         return ();
     }
