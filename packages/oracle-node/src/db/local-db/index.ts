@@ -46,6 +46,7 @@ let db: DatabaseType;
 */
 export const setupLocalDb = () => {
   db = new Database(config.sqliteDbName);
+  db.pragma("journal_mode = WAL");
   const createTableStatement = db.prepare(CREATE_TABLE_STATEMENT);
   createTableStatement.run();
   const createIndexStatement = db.prepare(CREATE_INDEX_STATEMENT);
