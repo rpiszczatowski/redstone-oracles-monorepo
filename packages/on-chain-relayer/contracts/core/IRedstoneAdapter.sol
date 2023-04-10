@@ -3,14 +3,11 @@
 pragma solidity ^0.8.4;
 
 interface IRedstoneAdapter {
-  // Requires attached redstone payload in calldata
-  function updateDataFeedsValues(uint256 proposedTimestamp) external;
+  function updateDataFeedValues(uint256 proposedTimestamp) external;
 
-  // Reads current value from on-chain storage
   function getValueForDataFeed(bytes32 dataFeedId) external view returns (uint256);
 
-  // Reads current values from on-chain storage
-  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedsIds)
+  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedIds)
     external
     view
     returns (uint256[] memory);

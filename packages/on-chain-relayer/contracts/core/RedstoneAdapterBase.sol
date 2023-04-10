@@ -8,25 +8,23 @@ import "./IRedstoneAdapter.sol";
 /**
  * @title Core logic of RedStone Adapter Contract
  * @author The Redstone Oracles team
- * @dev This contract is used to save RedStone data in blockchain
- * storage in a secure yet permissionless way. It allows anyone to
- * update prices in the contract storage
- *
- * TODO: describe core principals of the contract
- * - min interval between updates in seconds (why and how it works)
- * - mechanism of proposed timestamps and requirement of the same timestamp in all data packages (why and how it works)
- * - mehcanism of whitelisted updaters (why and how it works)
- * - requirement of all data feeds updating in the same transaction (why and how it works)
+ * @dev This contract is used to repeatedly push RedStone data to blockchain storage
+ * More details here: https://docs.redstone.finance/docs/smart-contract-devs/get-started/redstone-classic
+ * 
+ * Key ideas of the contract:
+ * - Data feed values can be updated using the `updateDataFeedValues` function
+ * - All data feeds must be updated within a single call, partial updates are not allowed
+ * - There is a configurable minimum interval between updates
+ * - Updaters can be restricted by overriding `requireAuthorisedUpdater` function
+ * - All data packages in redstone payload must have the same timestamp,
+ *    equal to `dataPackagesTimestamp` argument of the `updateDataFeedValues` function
  */
 abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneAdapter {
   // We don't use storage variables to avoid potential problems with upgradable contracts
-  bytes32 constant private LATEST_UPDATE_TIMESTAMPS_STORAGE_LOCATION =
+  bytes32 constant internal LATEST_UPDATE_TIMESTAMPS_STORAGE_LOCATION =
     0x3d01e4d77237ea0f771f1786da4d4ff757fcba6a92933aa53b1dcef2d6bd6fe2; // keccak256("RedStone.lastUpdateTimestamp");
-  uint256 constant private MIN_INTERVAL_BETWEEN_UPDATES = 10 seconds;
-  uint256 constant private BITS_COUNT_IN_16_BYTES = 128;
-
-
-  error NotImplemented();
+  uint256 constant internal MIN_INTERVAL_BETWEEN_UPDATES = 10 seconds;
+  uint256 constant internal BITS_COUNT_IN_16_BYTES = 128;
 
   error DataTimestampCanNotBeOlderThanBefore(
     uint256 receivedDataTimestampMilliseconds,
@@ -43,12 +41,31 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
 
   error DataFeedValueCannotBeZero(bytes32 dataFeedId);
 
-  // Anyone can update prices by default
-  function requireAuthorisedUpdater(address updater) public view {}
+  // This function should throw if msg.sender is not allowed to update data feed values
+  // By default, anyone can update data feed values, but it can be overridden
+  function requireAuthorisedUpdater(address updater) public view virtual {}
 
   function getDataFeedIds() public view virtual returns (bytes32[] memory);
 
-  // Important! Do not override this function in derived contrats
+  // This function requires redstone payload attached to the tx calldata
+  function updateDataFeedValues(uint256 dataPackagesTimestamp) public {
+    requireAuthorisedUpdater(msg.sender);
+    validateCurrentBlockTimestamp();
+    validateProposedDataPackagesTimestamp(dataPackagesTimestamp);
+    _saveTimestampsOfCurrentUpdate(dataPackagesTimestamp);
+
+    bytes32[] memory dataFeedsIdsArray = getDataFeedIds();
+
+    // It will trigger timestamp validation for each data package
+    uint256[] memory oracleValues = getOracleNumericValuesFromTxMsg(dataFeedsIdsArray);
+
+    validateAndUpdateDataFeedValues(dataFeedsIdsArray, oracleValues);
+  }
+
+  // Important! You should not override this function in derived contracts
+  // Timestamp validation is done once in the `updateDataFeedValues` function
+  // But this function is called for each data package in redstone payload and just
+  // Verifies if each data package has the same timestamp as saved in storage
   function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
     uint256 expectedDataPackageTimestamp = getDataTimestampFromLatestUpdate();
     if (receivedTimestampMilliseconds != expectedDataPackageTimestamp) {
@@ -57,21 +74,6 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
         receivedTimestampMilliseconds
       );
     }
-  }
-
-  // This function required redstone payload attached to the tx calldata
-  function updateDataFeedsValues(uint256 dataPackagesTimestamp) public {
-    requireAuthorisedUpdater(msg.sender);
-    validateCurrentBlockTimestamp();
-    validateProposedDataPackagesTimestamp(dataPackagesTimestamp);
-    saveTimestampsOfCurrentUpdate(dataPackagesTimestamp);
-
-    bytes32[] memory dataFeedsIdsArray = getDataFeedIds();
-
-    // It will trigger timestamp validation for each data package
-    uint256[] memory oracleValues = getOracleNumericValuesFromTxMsg(dataFeedsIdsArray);
-
-    validateAndUpdateDataFeedValues(dataFeedsIdsArray, oracleValues);
   }
 
   function validateAndUpdateDataFeedValues(
@@ -93,22 +95,21 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
   }
 
   // You can override this function to change the required interval between udpates
-  // We strongly revcommend to not set it to 0, as it will open may attack vectors
+  // Avoid setting it to 0, as it may open many attack vectors
   function getMinIntervalBetweenUpdates() public view virtual returns (uint256) {
     return MIN_INTERVAL_BETWEEN_UPDATES;
   }
 
-  // Important! Be very careful with overriding this function
   function validateProposedDataPackagesTimestamp(uint256 dataPackagesTimestamp)
     public
     view
     virtual
   {
-    requireFreshDataPackagesTimestamp(dataPackagesTimestamp);
+    preventUpdateWithOlderDataPackages(dataPackagesTimestamp);
     RedstoneDefaultsLib.validateTimestamp(dataPackagesTimestamp);
   }
 
-  function requireFreshDataPackagesTimestamp(uint256 dataPackagesTimestamp) internal view {
+  function preventUpdateWithOlderDataPackages(uint256 dataPackagesTimestamp) internal view {
     uint256 dataTimestampFromLatestUpdate = getDataTimestampFromLatestUpdate();
 
     // We intentionally allow to update data with the same timestamp
@@ -148,7 +149,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     blockTimestamp = uint128(packedTimestamps); // last 128 bits
   }
 
-  function saveTimestampsOfCurrentUpdate(uint256 dataPackagesTimestamp) private {
+  function _saveTimestampsOfCurrentUpdate(uint256 dataPackagesTimestamp) private {
     uint256 blockTimestamp = block.timestamp;
     assembly {
       let timestamps := packTwoNumbers(dataPackagesTimestamp, blockTimestamp)
@@ -166,13 +167,13 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     return valueForDataFeed;
   }
 
-  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedsIds)
+  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedIds)
     public
     view
     returns (uint256[] memory) {
-      uint256[] memory values = getValuesForDataFeedUnsafe(requestedDataFeedsIds);
-      for (uint256 i = 0; i < requestedDataFeedsIds.length; i++) {
-        validateDataFeedValue(requestedDataFeedsIds[i], values[i]);
+      uint256[] memory values = getValuesForDataFeedUnsafe(requestedDataFeedIds);
+      for (uint256 i = 0; i < requestedDataFeedIds.length; i++) {
+        validateDataFeedValue(requestedDataFeedIds[i], values[i]);
       }
       return values;
     }
@@ -185,10 +186,10 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
 
   function getValueForDataFeedUnsafe(bytes32 dataFeedId) public view virtual returns (uint256);
 
-  function getValuesForDataFeedUnsafe(bytes32[] memory requestedDataFeedsIds) public view virtual returns (uint256[] memory values) {
-    values = new uint256[](requestedDataFeedsIds.length);
-    for (uint256 i = 0; i < requestedDataFeedsIds.length; i++) {
-      values[i] = getValueForDataFeedUnsafe(requestedDataFeedsIds[i]);
+  function getValuesForDataFeedUnsafe(bytes32[] memory requestedDataFeedIds) public view virtual returns (uint256[] memory values) {
+    values = new uint256[](requestedDataFeedIds.length);
+    for (uint256 i = 0; i < requestedDataFeedIds.length; i++) {
+      values[i] = getValueForDataFeedUnsafe(requestedDataFeedIds[i]);
     }
     return values;
   }
