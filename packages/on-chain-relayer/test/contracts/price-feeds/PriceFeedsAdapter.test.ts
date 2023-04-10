@@ -128,7 +128,7 @@ describe("PriceFeedsAdapter", () => {
       newDataFeedId,
       newTimestamp
     );
-    const dataFeeds = await contract.getDataFeedsIds();
+    const dataFeeds = await contract.getDataFeedIds();
     expect(dataFeeds.length).to.be.equal(3);
     expect(dataFeeds[2]).to.be.equal(newDataFeedId);
   });
@@ -143,7 +143,7 @@ describe("PriceFeedsAdapter", () => {
       ethDataFeed,
       newTimestamp
     );
-    const dataFeeds = await contract.getDataFeedsIds();
+    const dataFeeds = await contract.getDataFeedIds();
     expect(dataFeeds.length).to.be.equal(2);
   });
 });

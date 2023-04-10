@@ -2,7 +2,8 @@
 
 pragma solidity ^0.8.4;
 
-import "./IPermissionlessPriceUpdater.sol";
+import "@redstone-finance/evm-connector/contracts/core/RedstoneConsumerNumericBase.sol";
+import "./IRedstoneAdapter.sol";
 
 /**
  * @title Core logic of RedStone price updater contract
@@ -11,16 +12,22 @@ import "./IPermissionlessPriceUpdater.sol";
  * storage in a secure yet permissionless way. It allows anyone to
  * update prices in the contract storage in a round-based model
  */
-contract PermissionlessPriceUpdater is IPermissionlessPriceUpdater {
+abstract contract RedstoneAdapterBase is IRedstoneAdapter, RedstoneConsumerNumericBase {
   // We don't use storage variables to avoid potential problems with upgradable contracts
   bytes32 constant LAST_UPDATED_TIMESTAMP_STORAGE_LOCATION =
     0x3d01e4d77237ea0f771f1786da4d4ff757fcba6a92933aa53b1dcef2d6bd6fe2; // keccak256("RedStone.lastUpdateTimestamp");
 
   uint256 constant MIN_MILLISECONDS_INTERVAL_BETWEEN_UPDATES = 10_000;
+  uint256 constant MAX_PROPOSED_TIMESTAMP_DELAY_WITH_BLOCK_MILLISECONDS = 180_000; // 3 minutes
 
   error ProposedTimestampMustBeNewerThanLastTimestamp(
-    uint256 proposedTimestamp,
+    uint256 proposedTimestampMilliseconds,
     uint256 lastUpdateTimestampMilliseconds
+  );
+
+  error ProposedTimestampTooOld(
+    uint256 proposedTimestampMilliseconds,
+    uint256 blockTimestampMilliseconds
   );
 
   error MinIntervalBetweenUpdatesHasNotPassedYet(
@@ -36,6 +43,38 @@ contract PermissionlessPriceUpdater is IPermissionlessPriceUpdater {
 
   error DataFeedValueCannotBeZero(bytes32 dataFeedId);
 
+  function requireAuthorisedUpdater(address updater) public view override {
+    // Anyone can update prices by default
+  }
+
+  function getDataFeedIds() public view virtual returns (bytes32[] memory);
+
+  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view virtual override {
+    RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
+    validateDataPackageTimestampAgainstProposedTimestamp(receivedTimestampMilliseconds);
+  }
+
+  // This function required redstone payload attached to the tx calldata
+  function updateDataFeedsValues(uint256 proposedTimestamp) public {
+    requireAuthorisedUpdater(msg.sender);
+    validateAndUpdateProposedTimestamp(proposedTimestamp);
+
+    bytes32[] memory dataFeedsIdsArray = getDataFeedIds();
+
+    /* 
+      getOracleNumericValuesFromTxMsg will call validateTimestamp
+      for each data package from the redstone payload 
+    */
+    uint256[] memory oracleValues = getOracleNumericValuesFromTxMsg(dataFeedsIdsArray);
+
+    validateAndUpdateDataFeedValues(dataFeedsIdsArray, oracleValues);
+  }
+
+  function validateAndUpdateDataFeedValues(
+    bytes32[] memory dataFeedIdsArray,
+    uint256[] memory values
+  ) internal virtual;
+
   // Note! This function must be called in a function for price updates
   // in a derived contract, before extracting oracles values
   function validateAndUpdateProposedTimestamp(uint256 proposedTimestamp) internal {
@@ -43,6 +82,8 @@ contract PermissionlessPriceUpdater is IPermissionlessPriceUpdater {
     setLastUpdateTimestamp(proposedTimestamp);
   }
 
+  // TODO: think deeper about potential arbtrage attacks if we allow receivedTimestampMilliseconds != proposedTimestamp
+  // An attacker could group different packages (with different timetamps) and update prices gaining advantages
   // Note! This function must be called in the overriden `validateTimestamp` function
   function validateDataPackageTimestampAgainstProposedTimestamp(
     uint256 receivedTimestampMilliseconds
@@ -65,6 +106,10 @@ contract PermissionlessPriceUpdater is IPermissionlessPriceUpdater {
     return MIN_MILLISECONDS_INTERVAL_BETWEEN_UPDATES;
   }
 
+  function getMaxProposedTimestampDelayWithBlock() public view virtual returns (uint256) {
+    return MAX_PROPOSED_TIMESTAMP_DELAY_WITH_BLOCK_MILLISECONDS;
+  }
+
   function validateProposedTimestampDefault(uint256 proposedTimestamp) internal view {
     uint256 lastUpdateTimestampMilliseconds = getLastUpdateTimestamp();
 
@@ -73,23 +118,22 @@ contract PermissionlessPriceUpdater is IPermissionlessPriceUpdater {
         proposedTimestamp,
         getLastUpdateTimestamp()
       );
-    } else if (
-      proposedTimestamp - lastUpdateTimestampMilliseconds < getMinIntervalBetweenUpdates()
-    ) {
-      // TODO: think about it more, choose the better way
+    }
 
-      // Option 1
-      // Exit transaction without reverting, like process.exit() in Node.js
-      // assembly {
-      //   return(0, 0x20)
-      // }
-
-      // Option 2 (IMHO it's better)
+    if (proposedTimestamp - lastUpdateTimestampMilliseconds < getMinIntervalBetweenUpdates()) {
       revert MinIntervalBetweenUpdatesHasNotPassedYet(
         getMinIntervalBetweenUpdates(),
         lastUpdateTimestampMilliseconds,
         proposedTimestamp
       );
+    }
+
+    uint256 blockTimestampMilliseconds = block.timestamp * 1000;
+    if (proposedTimestamp < blockTimestampMilliseconds) {
+      uint256 timeDiffMilliseconds = blockTimestampMilliseconds - proposedTimestamp;
+      if (timeDiffMilliseconds > getMaxProposedTimestampDelayWithBlock()) {
+        revert ProposedTimestampTooOld(proposedTimestamp, blockTimestampMilliseconds);
+      }
     }
   }
 

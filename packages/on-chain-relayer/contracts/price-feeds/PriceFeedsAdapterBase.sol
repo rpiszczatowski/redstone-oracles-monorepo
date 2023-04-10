@@ -4,14 +4,12 @@ pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-import "@redstone-finance/evm-connector/contracts/core/RedstoneConsumerNumericBase.sol";
 import "./interfaces/IPriceFeedAdapter.sol";
-import "../core/PermissionlessPriceUpdater.sol";
+import "../core/RedstoneAdapterBase.sol";
 
 abstract contract PriceFeedsAdapterBase is
-  RedstoneConsumerNumericBase,
   Ownable,
-  PermissionlessPriceUpdater,
+  RedstoneAdapterBase,
   IPriceFeedAdapter
 {
   using EnumerableSet for EnumerableSet.Bytes32Set;
@@ -22,11 +20,6 @@ abstract contract PriceFeedsAdapterBase is
     for (uint256 i = 0; i < dataFeedsIds_.length; i++) {
       EnumerableSet.add(dataFeedsIds, dataFeedsIds_[i]);
     }
-  }
-
-  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view virtual override {
-    RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
-    validateDataPackageTimestampAgainstProposedTimestamp(receivedTimestampMilliseconds);
   }
 
   /*
@@ -46,22 +39,8 @@ abstract contract PriceFeedsAdapterBase is
     EnumerableSet.remove(dataFeedsIds, dataFeedId);
   }
 
-  function getDataFeedsIds() public view returns (bytes32[] memory) {
+  function getDataFeedIds() public view override(RedstoneAdapterBase, IRedstoneAdapter) returns (bytes32[] memory) {
     return dataFeedsIds._inner._values;
-  }
-
-  function updateDataFeedsValues(uint256 proposedTimestamp) public {
-    validateAndUpdateProposedTimestamp(proposedTimestamp);
-
-    bytes32[] memory dataFeedsIdsArray = getDataFeedsIds();
-
-    /* 
-      getOracleNumericValuesFromTxMsg will call validateTimestamp
-      for each data package from the redstone payload 
-    */
-    uint256[] memory oracleValues = getOracleNumericValuesFromTxMsg(dataFeedsIdsArray);
-
-    validateAndUpdateDataFeedValues(dataFeedsIdsArray, oracleValues);
   }
 
   // Note! This function is virtual and may contain additional logic in the derived contract
@@ -70,7 +49,7 @@ abstract contract PriceFeedsAdapterBase is
   function validateAndUpdateDataFeedValues(
     bytes32[] memory dataFeedsIdsArray,
     uint256[] memory values
-  ) internal virtual {
+  ) internal virtual override {
     for (uint256 i = 0; i < dataFeedsIdsArray.length; i++) {
       bytes32 dataFeedId = dataFeedsIdsArray[i];
       updateDataFeedValue(dataFeedId, values[i]);

@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.4;
 
-import "@redstone-finance/evm-connector/contracts/core/RedstoneConsumerNumericBase.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableMap.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "./ISortedOracles.sol";
-import "./MentoDataFeedsManager.sol";
-import "../../core/PermissionlessPriceUpdater.sol";
+import "../../core/RedstoneAdapterBase.sol";
 
 /**
  * @title Redstone oracles adapter for the Mento SortedOracles contract
@@ -17,16 +17,24 @@ import "../../core/PermissionlessPriceUpdater.sol";
  * addresses.
  *
  */
-abstract contract MentoAdapterBase is
-  RedstoneConsumerNumericBase,
-  PermissionlessPriceUpdater,
-  MentoDataFeedsManager
-{
+abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
+  using EnumerableMap for EnumerableMap.UintToAddressMap;
+
+  error NotImplemented();
+
+  struct DataFeedDetails {
+    bytes32 dataFeedId;
+    address tokenAddress;
+  }
+
   // RedStone provides values with 8 decimals
   // Mento sorted oracles expect 24 decimals (24 - 8 = 16)
   uint256 private constant PRICE_MULTIPLIER = 1e16;
 
+  uint256 private constant LOCATIONS_ARG_CALLDATA_OFFSET = 36; // 4 bytes for function selector + 32 bytes for proposedTimestamp
+
   ISortedOracles public sortedOracles;
+  EnumerableMap.UintToAddressMap private dataFeedIdToTokenAddressMap;
 
   struct LocationInSortedLinkedList {
     address lesserKey;
@@ -39,11 +47,6 @@ abstract contract MentoAdapterBase is
 
   function updateSortedOraclesAddress(ISortedOracles sortedOracles_) external onlyOwner {
     sortedOracles = sortedOracles_;
-  }
-
-  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
-    validateDataPackageTimestampAgainstProposedTimestamp(receivedTimestampMilliseconds);
-    RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
   }
 
   /**
@@ -104,19 +107,124 @@ abstract contract MentoAdapterBase is
     uint256 proposedTimestamp,
     LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists
   ) public {
-    validateAndUpdateProposedTimestamp(proposedTimestamp);
+    locationsInSortedLinkedLists; // This function is used later
+    updateDataFeedsValues(proposedTimestamp);
+  }
 
-    uint256 dataFeedsCount = getDataFeedsCount();
-    bytes32[] memory dataFeedIds = getDataFeedIds();
-    uint256[] memory values = getOracleNumericValuesFromTxMsg(dataFeedIds);
-
-    for (uint256 dataFeedIndex = 0; dataFeedIndex < dataFeedsCount; dataFeedIndex++) {
+  function validateAndUpdateDataFeedValues(bytes32[] memory dataFeedIds, uint256[] memory values)
+    internal
+    override
+  {
+    (, , LocationInSortedLinkedList[] memory locationsInSortedList, ) = parseTxCalldata();
+    for (uint256 dataFeedIndex = 0; dataFeedIndex < dataFeedIds.length; dataFeedIndex++) {
       bytes32 dataFeedId = dataFeedIds[dataFeedIndex];
       address tokenAddress = getTokenAddressByDataFeedId(dataFeedId);
       uint256 priceValue = normalizeRedstoneValueForMento(values[dataFeedIndex]);
-      LocationInSortedLinkedList memory location = locationsInSortedLinkedLists[dataFeedIndex];
+      LocationInSortedLinkedList memory location = locationsInSortedList[dataFeedIndex];
 
       sortedOracles.report(tokenAddress, priceValue, location.lesserKey, location.greaterKey);
     }
+  }
+
+  // TODO: refactor this function
+  // But it works for now
+  function parseTxCalldata()
+    private
+    pure
+    returns (
+      bytes4 funSignature,
+      uint256 proposedTimestamp,
+      LocationInSortedLinkedList[] memory locationsInSortedList,
+      bytes memory redstonePayload
+    )
+  {
+    // 68 = 4 (fun selector) + 32 (proposedTimestamp) + 32 (size of one LocationInSortedLinkedList)
+    uint256 locationsLength = abi.decode(msg.data[68:100], (uint256));
+
+    locationsInSortedList = new LocationInSortedLinkedList[](locationsLength);
+    for (uint256 i = 0; i < locationsLength; i++) {
+      LocationInSortedLinkedList memory location;
+      location.lesserKey = abi.decode(msg.data[100 + i * 64:132 + i * 64], (address));
+      location.greaterKey = abi.decode(msg.data[132 + i * 64:164 + i * 64], (address));
+      locationsInSortedList[i] = location;
+    }
+
+    funSignature = 0;
+    proposedTimestamp = 42;
+    redstonePayload;
+
+    // TODO: unduserstand why this doesn't work
+    // (funSignature, proposedTimestamp, locationsInSortedList, redstonePayload) = abi.decode(
+    //   msg.data,
+    //   (bytes4, uint256, LocationInSortedLinkedList[], bytes)
+    // );
+  }
+
+  // Adds or updates token address for a given data feed id
+  function setDataFeed(bytes32 dataFeedId, address tokenAddress) external onlyOwner {
+    dataFeedIdToTokenAddressMap.set(uint256(dataFeedId), tokenAddress);
+  }
+
+  function removeDataFeed(bytes32 dataFeedId) external onlyOwner {
+    dataFeedIdToTokenAddressMap.remove(uint256(dataFeedId));
+  }
+
+  function getDataFeedsCount() public view returns (uint256) {
+    return dataFeedIdToTokenAddressMap.length();
+  }
+
+  function getTokenAddressByDataFeedId(bytes32 dataFeedId) public view returns (address) {
+    return dataFeedIdToTokenAddressMap.get(uint256(dataFeedId));
+  }
+
+  function getDataFeedIds() public view override returns (bytes32[] memory) {
+    uint256 dataFeedsCount = getDataFeedsCount();
+    bytes32[] memory dataFeedIds = new bytes32[](dataFeedsCount);
+    for (uint256 dataFeedIndex = 0; dataFeedIndex < dataFeedsCount; dataFeedIndex++) {
+      (dataFeedIds[dataFeedIndex], ) = getTokenDetailsAtIndex(dataFeedIndex);
+    }
+
+    return dataFeedIds;
+  }
+
+  function getDataFeeds() public view returns (DataFeedDetails[] memory) {
+    uint256 dataFeedsCount = getDataFeedsCount();
+    DataFeedDetails[] memory dataFeeds = new DataFeedDetails[](dataFeedsCount);
+    for (uint256 dataFeedIndex = 0; dataFeedIndex < dataFeedsCount; dataFeedIndex++) {
+      (bytes32 dataFeedId, address tokenAddress) = getTokenDetailsAtIndex(dataFeedIndex);
+      dataFeeds[dataFeedIndex] = DataFeedDetails({
+        dataFeedId: dataFeedId,
+        tokenAddress: tokenAddress
+      });
+    }
+    return dataFeeds;
+  }
+
+  function getTokenDetailsAtIndex(uint256 tokenIndex)
+    public
+    view
+    returns (bytes32 dataFeedId, address tokenAddress)
+  {
+    (uint256 dataFeedIdNumber, address tokenAddress_) = dataFeedIdToTokenAddressMap.at(tokenIndex);
+    dataFeedId = bytes32(dataFeedIdNumber);
+    tokenAddress = tokenAddress_;
+  }
+
+  //// TODO: reading may be later implemented using sorted oracle contract ////
+
+  // Reads from on-chain storage
+  function getValueForDataFeed(bytes32 dataFeedId) external pure returns (uint256) {
+    dataFeedId;
+    revert NotImplemented();
+  }
+
+  // Reads from on-chain storage
+  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedsIds)
+    external
+    pure
+    returns (uint256[] memory)
+  {
+    requestedDataFeedsIds;
+    revert NotImplemented();
   }
 }
