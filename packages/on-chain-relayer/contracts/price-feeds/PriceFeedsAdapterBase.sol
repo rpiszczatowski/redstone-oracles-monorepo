@@ -9,8 +9,8 @@ import "../core/RedstoneAdapterBase.sol";
 
 abstract contract PriceFeedsAdapterBase is
   Ownable,
-  RedstoneAdapterBase,
-  IPriceFeedAdapter
+  IPriceFeedAdapter,
+  RedstoneAdapterBase
 {
   using EnumerableSet for EnumerableSet.Bytes32Set;
 
@@ -39,7 +39,7 @@ abstract contract PriceFeedsAdapterBase is
     EnumerableSet.remove(dataFeedsIds, dataFeedId);
   }
 
-  function getDataFeedIds() public view override(RedstoneAdapterBase, IRedstoneAdapter) returns (bytes32[] memory) {
+  function getDataFeedIds() public view override(IRedstoneAdapter, RedstoneAdapterBase) returns (bytes32[] memory) {
     return dataFeedsIds._inner._values;
   }
 
@@ -57,19 +57,4 @@ abstract contract PriceFeedsAdapterBase is
   }
 
   function updateDataFeedValue(bytes32 dataFeedId, uint256 value) internal virtual {}
-
-  // Note! this function should be implemented in the derived contract
-  function getValueForDataFeed(bytes32 dataFeedId) public view virtual returns (uint256);
-
-  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedsIds)
-    public
-    view
-    returns (uint256[] memory)
-  {
-    uint256[] memory values = new uint256[](requestedDataFeedsIds.length);
-    for (uint256 i = 0; i < requestedDataFeedsIds.length; i++) {
-      values[i] = getValueForDataFeed(requestedDataFeedsIds[i]);
-    }
-    return (values);
-  }
 }

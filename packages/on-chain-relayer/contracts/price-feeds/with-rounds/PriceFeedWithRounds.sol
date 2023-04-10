@@ -36,14 +36,14 @@ contract PriceFeedWithRounds is PriceFeedBase {
       uint80 answeredInRound
     )
   {
-    (uint256 dataFeedValue, uint256 roundTimestampInMilliseconds) = priceFeedsAdapter.getRoundData(
+    (uint256 dataFeedValue, uint128 roundDataTimestamp, uint128 roundBlockTimestamp) = priceFeedsAdapter.getRoundData(
       dataFeedId,
       requestedRoundId
     );
     roundId = requestedRoundId;
     answer = int256(dataFeedValue);
-    startedAt = roundTimestampInMilliseconds;
-    updatedAt = startedAt;
+    startedAt = roundDataTimestamp / 1000; // convert to seconds
+    updatedAt = roundBlockTimestamp;
     answeredInRound = requestedRoundId;
   }
 }

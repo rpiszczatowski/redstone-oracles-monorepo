@@ -20,8 +20,6 @@ import "../../core/RedstoneAdapterBase.sol";
 abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
   using EnumerableMap for EnumerableMap.UintToAddressMap;
 
-  error NotImplemented();
-
   struct DataFeedDetails {
     bytes32 dataFeedId;
     address tokenAddress;
@@ -45,7 +43,7 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
     sortedOracles = sortedOracles_;
   }
 
-  function updateSortedOraclesAddress(ISortedOracles sortedOracles_) external onlyOwner {
+  function updateSortedOraclesAddress(ISortedOracles sortedOracles_) public onlyOwner {
     sortedOracles = sortedOracles_;
   }
 
@@ -210,21 +208,10 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
     tokenAddress = tokenAddress_;
   }
 
-  //// TODO: reading may be later implemented using sorted oracle contract ////
-
   // Reads from on-chain storage
-  function getValueForDataFeed(bytes32 dataFeedId) external pure returns (uint256) {
+  function getValueForDataFeedUnsafe(bytes32 dataFeedId) public pure override returns (uint256) {
     dataFeedId;
-    revert NotImplemented();
-  }
-
-  // Reads from on-chain storage
-  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedsIds)
-    external
-    pure
-    returns (uint256[] memory)
-  {
-    requestedDataFeedsIds;
-    revert NotImplemented();
+    // TODO: implement reading from sorted oracles
+    return 42;
   }
 }

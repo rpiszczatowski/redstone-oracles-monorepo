@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.4;
 
-import "../interfaces/IPriceFeedAdapter.sol";
 import "../PriceFeedBase.sol";
 
 contract PriceFeedWithoutRounds is PriceFeedBase {

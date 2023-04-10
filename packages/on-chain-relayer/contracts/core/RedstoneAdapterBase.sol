@@ -6,65 +6,69 @@ import "@redstone-finance/evm-connector/contracts/core/RedstoneConsumerNumericBa
 import "./IRedstoneAdapter.sol";
 
 /**
- * @title Core logic of RedStone price updater contract
+ * @title Core logic of RedStone Adapter Contract
  * @author The Redstone Oracles team
  * @dev This contract is used to save RedStone data in blockchain
  * storage in a secure yet permissionless way. It allows anyone to
- * update prices in the contract storage in a round-based model
+ * update prices in the contract storage
+ *
+ * TODO: describe core principals of the contract
+ * - min interval between updates in seconds (why and how it works)
+ * - mechanism of proposed timestamps and requirement of the same timestamp in all data packages (why and how it works)
+ * - mehcanism of whitelisted updaters (why and how it works)
+ * - requirement of all data feeds updating in the same transaction (why and how it works)
  */
-abstract contract RedstoneAdapterBase is IRedstoneAdapter, RedstoneConsumerNumericBase {
+abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneAdapter {
   // We don't use storage variables to avoid potential problems with upgradable contracts
-  bytes32 constant LAST_UPDATED_TIMESTAMP_STORAGE_LOCATION =
+  bytes32 constant private LATEST_UPDATE_TIMESTAMPS_STORAGE_LOCATION =
     0x3d01e4d77237ea0f771f1786da4d4ff757fcba6a92933aa53b1dcef2d6bd6fe2; // keccak256("RedStone.lastUpdateTimestamp");
+  uint256 constant private MIN_INTERVAL_BETWEEN_UPDATES = 10 seconds;
+  uint256 constant private BITS_COUNT_IN_16_BYTES = 128;
 
-  uint256 constant MIN_MILLISECONDS_INTERVAL_BETWEEN_UPDATES = 10_000;
-  uint256 constant MAX_PROPOSED_TIMESTAMP_DELAY_WITH_BLOCK_MILLISECONDS = 180_000; // 3 minutes
 
-  error ProposedTimestampMustBeNewerThanLastTimestamp(
-    uint256 proposedTimestampMilliseconds,
-    uint256 lastUpdateTimestampMilliseconds
-  );
+  error NotImplemented();
 
-  error ProposedTimestampTooOld(
-    uint256 proposedTimestampMilliseconds,
-    uint256 blockTimestampMilliseconds
+  error DataTimestampCanNotBeOlderThanBefore(
+    uint256 receivedDataTimestampMilliseconds,
+    uint256 lastDataTimestampMilliseconds
   );
 
   error MinIntervalBetweenUpdatesHasNotPassedYet(
-    uint256 minIntervalBetweenUpdates,
-    uint256 lastUpdateTimestampMilliseconds,
-    uint256 proposedTimestamp
+    uint256 currentBlockTimestamp,
+    uint256 lastUpdateTimestamp,
+    uint256 minIntervalBetweenUpdates
   );
 
-  error DataPackageTimestampIsOlderThanProposedTimestamp(
-    uint256 proposedTimestamp,
-    uint256 receivedTimestampMilliseconds
-  );
+  error DataPackageTimestampMismatch(uint256 expectedDataTimestamp, uint256 dataPackageTimestamp);
 
   error DataFeedValueCannotBeZero(bytes32 dataFeedId);
 
-  function requireAuthorisedUpdater(address updater) public view override {
-    // Anyone can update prices by default
-  }
+  // Anyone can update prices by default
+  function requireAuthorisedUpdater(address updater) public view {}
 
   function getDataFeedIds() public view virtual returns (bytes32[] memory);
 
-  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view virtual override {
-    RedstoneDefaultsLib.validateTimestamp(receivedTimestampMilliseconds);
-    validateDataPackageTimestampAgainstProposedTimestamp(receivedTimestampMilliseconds);
+  // Important! Do not override this function in derived contrats
+  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
+    uint256 expectedDataPackageTimestamp = getDataTimestampFromLatestUpdate();
+    if (receivedTimestampMilliseconds != expectedDataPackageTimestamp) {
+      revert DataPackageTimestampMismatch(
+        expectedDataPackageTimestamp,
+        receivedTimestampMilliseconds
+      );
+    }
   }
 
   // This function required redstone payload attached to the tx calldata
-  function updateDataFeedsValues(uint256 proposedTimestamp) public {
+  function updateDataFeedsValues(uint256 dataPackagesTimestamp) public {
     requireAuthorisedUpdater(msg.sender);
-    validateAndUpdateProposedTimestamp(proposedTimestamp);
+    validateCurrentBlockTimestamp();
+    validateProposedDataPackagesTimestamp(dataPackagesTimestamp);
+    saveTimestampsOfCurrentUpdate(dataPackagesTimestamp);
 
     bytes32[] memory dataFeedsIdsArray = getDataFeedIds();
 
-    /* 
-      getOracleNumericValuesFromTxMsg will call validateTimestamp
-      for each data package from the redstone payload 
-    */
+    // It will trigger timestamp validation for each data package
     uint256[] memory oracleValues = getOracleNumericValuesFromTxMsg(dataFeedsIdsArray);
 
     validateAndUpdateDataFeedValues(dataFeedsIdsArray, oracleValues);
@@ -75,90 +79,117 @@ abstract contract RedstoneAdapterBase is IRedstoneAdapter, RedstoneConsumerNumer
     uint256[] memory values
   ) internal virtual;
 
-  // Note! This function must be called in a function for price updates
-  // in a derived contract, before extracting oracles values
-  function validateAndUpdateProposedTimestamp(uint256 proposedTimestamp) internal {
-    validateProposedTimestamp(proposedTimestamp);
-    setLastUpdateTimestamp(proposedTimestamp);
-  }
-
-  // TODO: think deeper about potential arbtrage attacks if we allow receivedTimestampMilliseconds != proposedTimestamp
-  // An attacker could group different packages (with different timetamps) and update prices gaining advantages
-  // Note! This function must be called in the overriden `validateTimestamp` function
-  function validateDataPackageTimestampAgainstProposedTimestamp(
-    uint256 receivedTimestampMilliseconds
-  ) internal view virtual {
-    /* 
-      Here lastUpdateTimestampMilliseconds is already updated by the
-      validateAndUpdateProposedRoundAndTimestamp function and equals
-      to the proposed timestamp
-    */
-    uint256 lastUpdateTimestampMilliseconds = getLastUpdateTimestamp();
-    if (receivedTimestampMilliseconds < lastUpdateTimestampMilliseconds) {
-      revert DataPackageTimestampIsOlderThanProposedTimestamp(
-        lastUpdateTimestampMilliseconds,
-        receivedTimestampMilliseconds
-      );
-    }
-  }
-
-  function getMinIntervalBetweenUpdates() public view virtual returns (uint256) {
-    return MIN_MILLISECONDS_INTERVAL_BETWEEN_UPDATES;
-  }
-
-  function getMaxProposedTimestampDelayWithBlock() public view virtual returns (uint256) {
-    return MAX_PROPOSED_TIMESTAMP_DELAY_WITH_BLOCK_MILLISECONDS;
-  }
-
-  function validateProposedTimestampDefault(uint256 proposedTimestamp) internal view {
-    uint256 lastUpdateTimestampMilliseconds = getLastUpdateTimestamp();
-
-    if (proposedTimestamp <= lastUpdateTimestampMilliseconds) {
-      revert ProposedTimestampMustBeNewerThanLastTimestamp(
-        proposedTimestamp,
-        getLastUpdateTimestamp()
-      );
-    }
-
-    if (proposedTimestamp - lastUpdateTimestampMilliseconds < getMinIntervalBetweenUpdates()) {
+  function validateCurrentBlockTimestamp() private view {
+    uint256 currentBlockTimestamp = block.timestamp;
+    uint256 blockTimestampFromLatestUpdate = getBlockTimestampFromLatestUpdate();
+    uint256 minIntervalBetweenUpdates = getMinIntervalBetweenUpdates();
+    if (currentBlockTimestamp < blockTimestampFromLatestUpdate + minIntervalBetweenUpdates) {
       revert MinIntervalBetweenUpdatesHasNotPassedYet(
-        getMinIntervalBetweenUpdates(),
-        lastUpdateTimestampMilliseconds,
-        proposedTimestamp
+        currentBlockTimestamp,
+        blockTimestampFromLatestUpdate,
+        minIntervalBetweenUpdates
       );
     }
+  }
 
-    uint256 blockTimestampMilliseconds = block.timestamp * 1000;
-    if (proposedTimestamp < blockTimestampMilliseconds) {
-      uint256 timeDiffMilliseconds = blockTimestampMilliseconds - proposedTimestamp;
-      if (timeDiffMilliseconds > getMaxProposedTimestampDelayWithBlock()) {
-        revert ProposedTimestampTooOld(proposedTimestamp, blockTimestampMilliseconds);
+  // You can override this function to change the required interval between udpates
+  // We strongly revcommend to not set it to 0, as it will open may attack vectors
+  function getMinIntervalBetweenUpdates() public view virtual returns (uint256) {
+    return MIN_INTERVAL_BETWEEN_UPDATES;
+  }
+
+  // Important! Be very careful with overriding this function
+  function validateProposedDataPackagesTimestamp(uint256 dataPackagesTimestamp)
+    public
+    view
+    virtual
+  {
+    requireFreshDataPackagesTimestamp(dataPackagesTimestamp);
+    RedstoneDefaultsLib.validateTimestamp(dataPackagesTimestamp);
+  }
+
+  function requireFreshDataPackagesTimestamp(uint256 dataPackagesTimestamp) internal view {
+    uint256 dataTimestampFromLatestUpdate = getDataTimestampFromLatestUpdate();
+
+    // We intentionally allow to update data with the same timestamp
+    if (dataPackagesTimestamp < dataTimestampFromLatestUpdate) {
+      revert DataTimestampCanNotBeOlderThanBefore(
+        dataPackagesTimestamp,
+        dataTimestampFromLatestUpdate
+      );
+    }
+  }
+
+  function getDataTimestampFromLatestUpdate() public view returns (uint256 lastDataTimestamp) {
+    (lastDataTimestamp, ) = getTimestampsFromLatestUpdate();
+  }
+
+  function getBlockTimestampFromLatestUpdate() public view returns (uint256 blockTimestamp) {
+    (, blockTimestamp) = getTimestampsFromLatestUpdate();
+  }
+
+  function getPackedTimestampsFromLatestUpdate() public view returns (uint256 packedTimestamps) {
+    assembly {
+      packedTimestamps := sload(LATEST_UPDATE_TIMESTAMPS_STORAGE_LOCATION)
+    }
+  }
+
+  function getTimestampsFromLatestUpdate()
+    public
+    view
+    returns (uint128 dataTimestamp, uint128 blockTimestamp)
+  {
+    uint256 packedTimestamps = getPackedTimestampsFromLatestUpdate();
+    return _unpackTimestamps(packedTimestamps);
+  }
+
+  function _unpackTimestamps(uint256 packedTimestamps) internal pure returns (uint128 dataTimestamp, uint128 blockTimestamp) {
+    dataTimestamp = uint128(packedTimestamps >> 128); // first 128 bits
+    blockTimestamp = uint128(packedTimestamps); // last 128 bits
+  }
+
+  function saveTimestampsOfCurrentUpdate(uint256 dataPackagesTimestamp) private {
+    uint256 blockTimestamp = block.timestamp;
+    assembly {
+      let timestamps := packTwoNumbers(dataPackagesTimestamp, blockTimestamp)
+      sstore(LATEST_UPDATE_TIMESTAMPS_STORAGE_LOCATION, timestamps)
+
+      function packTwoNumbers(num1, num2) -> resultNumber {
+        resultNumber := or(shl(BITS_COUNT_IN_16_BYTES, num1), num2)
       }
     }
   }
 
-  // Note! This function can be overriden for adding additional validation logic
-  // e.g. for comparing proposed timestamp with the current block timestamp
-  function validateProposedTimestamp(uint256 proposedTimestamp) public view virtual {
-    validateProposedTimestampDefault(proposedTimestamp);
+  function getValueForDataFeed(bytes32 dataFeedId) public view returns (uint256) {
+    uint256 valueForDataFeed = getValueForDataFeedUnsafe(dataFeedId);
+    validateDataFeedValue(dataFeedId, valueForDataFeed);
+    return valueForDataFeed;
   }
 
-  function getLastUpdateTimestamp() public view returns (uint256 lastUpdateTimestamp) {
-    assembly {
-      lastUpdateTimestamp := sload(LAST_UPDATED_TIMESTAMP_STORAGE_LOCATION)
+  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedsIds)
+    public
+    view
+    returns (uint256[] memory) {
+      uint256[] memory values = getValuesForDataFeedUnsafe(requestedDataFeedsIds);
+      for (uint256 i = 0; i < requestedDataFeedsIds.length; i++) {
+        validateDataFeedValue(requestedDataFeedsIds[i], values[i]);
+      }
+      return values;
     }
-  }
 
-  function setLastUpdateTimestamp(uint256 lastUpdateTimestampMilliseconds) private {
-    assembly {
-      sstore(LAST_UPDATED_TIMESTAMP_STORAGE_LOCATION, lastUpdateTimestampMilliseconds)
-    }
-  }
-
-  // Helpful function, may be used in derived contracts
-  function assertNonZero(bytes32 dataFeedId, uint256 receivedDataFeedValue) internal pure {
-    if (receivedDataFeedValue == 0) {
+  function validateDataFeedValue(bytes32 dataFeedId, uint256 valueForDataFeed) public pure virtual {
+    if (valueForDataFeed == 0) {
       revert DataFeedValueCannotBeZero(dataFeedId);
     }
+  }
+
+  function getValueForDataFeedUnsafe(bytes32 dataFeedId) public view virtual returns (uint256);
+
+  function getValuesForDataFeedUnsafe(bytes32[] memory requestedDataFeedsIds) public view virtual returns (uint256[] memory values) {
+    values = new uint256[](requestedDataFeedsIds.length);
+    for (uint256 i = 0; i < requestedDataFeedsIds.length; i++) {
+      values[i] = getValueForDataFeedUnsafe(requestedDataFeedsIds[i]);
+    }
+    return values;
   }
 }

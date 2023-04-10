@@ -60,7 +60,7 @@ describe("PriceFeedsAdapter", () => {
     await expect(
       wrappedContract.updateDataFeedsValues(smallerTimestamp)
     ).to.be.rejectedWith(
-      `ProposedTimestampMustBeNewerThanLastTimestamp(${smallerTimestamp}, ${timestamp})`
+      `DataTimestampMustBeNewerThanLastDataTimestamp(${smallerTimestamp}, ${timestamp})`
     );
   });
 

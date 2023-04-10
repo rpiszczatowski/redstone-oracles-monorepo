@@ -9,14 +9,14 @@ abstract contract PriceFeedsAdapterWithoutRounds is PriceFeedsAdapterBase {
     0x4dd0c77efa6f6d590c97573d8c70b714546e7311202ff7c11c484cc841d91bfc; // keccak256("RedStone.oracleValuesMapping");
 
   function updateDataFeedValue(bytes32 dataFeedId, uint256 dataFeedValue) internal override {
-    assertNonZero(dataFeedId, dataFeedValue);
+    validateDataFeedValue(dataFeedId, dataFeedValue);
     bytes32 locationInStorage = getValueLocationInStorage(dataFeedId);
     assembly {
       sstore(locationInStorage, dataFeedValue)
     }
   }
 
-  function getValueForDataFeed(bytes32 dataFeedId)
+  function getValueForDataFeedUnsafe(bytes32 dataFeedId)
     public
     view
     override

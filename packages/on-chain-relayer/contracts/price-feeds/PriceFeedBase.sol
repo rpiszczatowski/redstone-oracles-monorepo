@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.4;
 
-import "./interfaces/IPriceFeedAdapter.sol";
+import "../core/IRedstoneAdapter.sol";
 import "./interfaces/IPriceFeed.sol";
+import "./interfaces/IPriceFeedAdapter.sol";
 
 abstract contract PriceFeedBase is IPriceFeed {
   bytes32 public dataFeedId;
@@ -15,15 +16,15 @@ abstract contract PriceFeedBase is IPriceFeed {
 
   function getPriceFeedAdapter() public view virtual returns (IPriceFeedAdapter);
 
-  function decimals() external pure override returns (uint8) {
+  function decimals() public pure override returns (uint8) {
     return 8;
   }
 
-  function description() external view override returns (string memory) {
+  function description() public view override returns (string memory) {
     return descriptionText;
   }
 
-  function version() external pure override returns (uint256) {
+  function version() public pure override returns (uint256) {
     return 1;
   }
 
@@ -41,8 +42,12 @@ abstract contract PriceFeedBase is IPriceFeed {
   {
     roundId = latestRound();
     answer = latestAnswer();
-    startedAt = getPriceFeedAdapter().getLastUpdateTimestamp();
-    updatedAt = startedAt;
+
+    (uint128 dataTimestamp, uint128 blockTimestamp) = getPriceFeedAdapter()
+      .getTimestampsFromLatestUpdate();
+
+    startedAt = dataTimestamp / 1000; // convert to seconds
+    updatedAt = blockTimestamp;
     answeredInRound = roundId;
   }
 
