@@ -4,16 +4,7 @@ pragma solidity ^0.8.4;
 
 import "../core/RedstoneAdapterBase.sol";
 
-abstract contract PriceFeedsAdapterBase is IRedstoneAdapter, RedstoneAdapterBase {
-  function getDataFeedIds()
-    public
-    pure
-    override(IRedstoneAdapter, RedstoneAdapterBase)
-    returns (bytes32[] memory)
-  {
-    return new bytes32[](0);
-  }
-
+abstract contract PriceFeedsAdapterBase is RedstoneAdapterBase {
   // Note! This function is virtual and may contain additional logic in the derived contract
   // For example it can check if the updating conditions are met (e.g. at least one value is deviated enough)
   function validateAndUpdateDataFeedValues(

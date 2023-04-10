@@ -27,9 +27,11 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
 
   // RedStone provides values with 8 decimals
   // Mento sorted oracles expect 24 decimals (24 - 8 = 16)
-  uint256 private constant PRICE_MULTIPLIER = 1e16;
+  uint256 internal constant PRICE_MULTIPLIER = 1e16;
 
-  uint256 private constant LOCATIONS_ARG_CALLDATA_OFFSET = 36; // 4 bytes for function selector + 32 bytes for proposedTimestamp
+  // 68 = 4 (fun selector) + 32 (proposedTimestamp) + 32 (size of one array element)
+  uint256 internal INITIAL_CALLDATA_OFFSET = 68;
+  uint256 internal constant LOCATION_IN_SORTED_LIST_BYTE_SIZE = 64;
 
   ISortedOracles public sortedOracles;
   EnumerableMap.UintToAddressMap private dataFeedIdToTokenAddressMap;
@@ -94,6 +96,10 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
     return PRICE_MULTIPLIER * valueFromRedstone;
   }
 
+  function convertMentoValueToRedstoneValue(uint256 mentoValue) public pure returns(uint256) {
+    return mentoValue / PRICE_MULTIPLIER;
+  }
+
   /**
    * @notice Extracts Redstone's oracle values from calldata, verifying signatures
    * and timestamps, and reports it to the SortedOracles contract
@@ -113,7 +119,8 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
     internal
     override
   {
-    (, , LocationInSortedLinkedList[] memory locationsInSortedList, ) = parseTxCalldata();
+    LocationInSortedLinkedList[]
+      memory locationsInSortedList = extractLinkedListLocationsFromCalldata();
     for (uint256 dataFeedIndex = 0; dataFeedIndex < dataFeedIds.length; dataFeedIndex++) {
       bytes32 dataFeedId = dataFeedIds[dataFeedIndex];
       address tokenAddress = getTokenAddressByDataFeedId(dataFeedId);
@@ -124,38 +131,25 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
     }
   }
 
-  // TODO: refactor this function
-  // But it works for now
-  function parseTxCalldata()
+  function extractLinkedListLocationsFromCalldata()
     private
-    pure
-    returns (
-      bytes4 funSignature,
-      uint256 proposedTimestamp,
-      LocationInSortedLinkedList[] memory locationsInSortedList,
-      bytes memory redstonePayload
-    )
+    view
+    returns (LocationInSortedLinkedList[] memory locationsInSortedList)
   {
-    // 68 = 4 (fun selector) + 32 (proposedTimestamp) + 32 (size of one LocationInSortedLinkedList)
-    uint256 locationsLength = abi.decode(msg.data[68:100], (uint256));
+    uint256 calldataOffset = INITIAL_CALLDATA_OFFSET;
+    uint256 arrayLength = abi.decode(
+      msg.data[calldataOffset:calldataOffset + STANDARD_SLOT_BS],
+      (uint256)
+    );
 
-    locationsInSortedList = new LocationInSortedLinkedList[](locationsLength);
-    for (uint256 i = 0; i < locationsLength; i++) {
-      LocationInSortedLinkedList memory location;
-      location.lesserKey = abi.decode(msg.data[100 + i * 64:132 + i * 64], (address));
-      location.greaterKey = abi.decode(msg.data[132 + i * 64:164 + i * 64], (address));
-      locationsInSortedList[i] = location;
+    locationsInSortedList = new LocationInSortedLinkedList[](arrayLength);
+    for (uint256 i = 0; i < arrayLength; i++) {
+      locationsInSortedList[i] = abi.decode(
+        msg.data[calldataOffset:calldataOffset + LOCATION_IN_SORTED_LIST_BYTE_SIZE],
+        (LocationInSortedLinkedList)
+      );
+      calldataOffset += LOCATION_IN_SORTED_LIST_BYTE_SIZE;
     }
-
-    funSignature = 0;
-    proposedTimestamp = 42;
-    redstonePayload;
-
-    // TODO: unduserstand why this doesn't work
-    // (funSignature, proposedTimestamp, locationsInSortedList, redstonePayload) = abi.decode(
-    //   msg.data,
-    //   (bytes4, uint256, LocationInSortedLinkedList[], bytes)
-    // );
   }
 
   // Adds or updates token address for a given data feed id
@@ -208,10 +202,9 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
     tokenAddress = tokenAddress_;
   }
 
-  // Reads from on-chain storage
-  function getValueForDataFeedUnsafe(bytes32 dataFeedId) public pure override returns (uint256) {
-    dataFeedId;
-    // TODO: implement reading from sorted oracles
-    return 42;
+  function getValueForDataFeedUnsafe(bytes32 dataFeedId) public view override returns (uint256) {
+    address tokenAddress = getTokenAddressByDataFeedId(dataFeedId);
+    (uint256 medianRate, ) = sortedOracles.medianRate(tokenAddress);
+    return convertMentoValueToRedstoneValue(medianRate);
   }
 }

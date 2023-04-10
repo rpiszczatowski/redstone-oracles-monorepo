@@ -10,7 +10,7 @@ import "./IRedstoneAdapter.sol";
  * @author The Redstone Oracles team
  * @dev This contract is used to repeatedly push RedStone data to blockchain storage
  * More details here: https://docs.redstone.finance/docs/smart-contract-devs/get-started/redstone-classic
- * 
+ *
  * Key ideas of the contract:
  * - Data feed values can be updated using the `updateDataFeedValues` function
  * - All data feeds must be updated within a single call, partial updates are not allowed
@@ -22,10 +22,10 @@ import "./IRedstoneAdapter.sol";
  */
 abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneAdapter {
   // We don't use storage variables to avoid potential problems with upgradable contracts
-  bytes32 constant internal LATEST_UPDATE_TIMESTAMPS_STORAGE_LOCATION =
+  bytes32 internal constant LATEST_UPDATE_TIMESTAMPS_STORAGE_LOCATION =
     0x3d01e4d77237ea0f771f1786da4d4ff757fcba6a92933aa53b1dcef2d6bd6fe2; // keccak256("RedStone.lastUpdateTimestamp");
-  uint256 constant internal MIN_INTERVAL_BETWEEN_UPDATES = 10 seconds;
-  uint256 constant internal BITS_COUNT_IN_16_BYTES = 128;
+  uint256 internal constant MIN_INTERVAL_BETWEEN_UPDATES = 10 seconds;
+  uint256 internal constant BITS_COUNT_IN_16_BYTES = 128;
 
   error DataTimestampCanNotBeOlderThanBefore(
     uint256 receivedDataTimestampMilliseconds,
@@ -46,7 +46,9 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
   // By default, anyone can update data feed values, but it can be overridden
   function requireAuthorisedUpdater(address updater) public view virtual {}
 
-  function getDataFeedIds() public view virtual returns (bytes32[] memory);
+  function getDataFeedIds() public view virtual returns (bytes32[] memory) {
+    return new bytes32[](0);
+  }
 
   // This function requires redstone payload attached to the tx calldata
   function updateDataFeedValues(uint256 dataPackagesTimestamp) public {
@@ -145,7 +147,11 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     return _unpackTimestamps(packedTimestamps);
   }
 
-  function _unpackTimestamps(uint256 packedTimestamps) internal pure returns (uint128 dataTimestamp, uint128 blockTimestamp) {
+  function _unpackTimestamps(uint256 packedTimestamps)
+    internal
+    pure
+    returns (uint128 dataTimestamp, uint128 blockTimestamp)
+  {
     dataTimestamp = uint128(packedTimestamps >> 128); // first 128 bits
     blockTimestamp = uint128(packedTimestamps); // last 128 bits
   }
@@ -171,15 +177,20 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
   function getValuesForDataFeeds(bytes32[] memory requestedDataFeedIds)
     public
     view
-    returns (uint256[] memory) {
-      uint256[] memory values = getValuesForDataFeedUnsafe(requestedDataFeedIds);
-      for (uint256 i = 0; i < requestedDataFeedIds.length; i++) {
-        validateDataFeedValue(requestedDataFeedIds[i], values[i]);
-      }
-      return values;
+    returns (uint256[] memory)
+  {
+    uint256[] memory values = getValuesForDataFeedUnsafe(requestedDataFeedIds);
+    for (uint256 i = 0; i < requestedDataFeedIds.length; i++) {
+      validateDataFeedValue(requestedDataFeedIds[i], values[i]);
     }
+    return values;
+  }
 
-  function validateDataFeedValue(bytes32 dataFeedId, uint256 valueForDataFeed) public pure virtual {
+  function validateDataFeedValue(bytes32 dataFeedId, uint256 valueForDataFeed)
+    public
+    pure
+    virtual
+  {
     if (valueForDataFeed == 0) {
       revert DataFeedValueCannotBeZero(dataFeedId);
     }
@@ -187,7 +198,12 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
 
   function getValueForDataFeedUnsafe(bytes32 dataFeedId) public view virtual returns (uint256);
 
-  function getValuesForDataFeedUnsafe(bytes32[] memory requestedDataFeedIds) public view virtual returns (uint256[] memory values) {
+  function getValuesForDataFeedUnsafe(bytes32[] memory requestedDataFeedIds)
+    public
+    view
+    virtual
+    returns (uint256[] memory values)
+  {
     values = new uint256[](requestedDataFeedIds.length);
     for (uint256 i = 0; i < requestedDataFeedIds.length; i++) {
       values[i] = getValueForDataFeedUnsafe(requestedDataFeedIds[i]);
