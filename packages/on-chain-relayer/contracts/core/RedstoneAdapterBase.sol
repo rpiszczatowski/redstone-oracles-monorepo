@@ -16,6 +16,7 @@ import "./IRedstoneAdapter.sol";
  * - All data feeds must be updated within a single call, partial updates are not allowed
  * - There is a configurable minimum interval between updates
  * - Updaters can be restricted by overriding `requireAuthorisedUpdater` function
+ * - The contract is designed to force values validation, be default it prevents zero values
  * - All data packages in redstone payload must have the same timestamp,
  *    equal to `dataPackagesTimestamp` argument of the `updateDataFeedValues` function
  */

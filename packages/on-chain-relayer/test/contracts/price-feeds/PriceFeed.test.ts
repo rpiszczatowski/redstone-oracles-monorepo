@@ -40,7 +40,7 @@ describe("PriceFeed", () => {
       adapterContract,
       timestamp
     );
-    await wrappedContract.updateDataFeedsValues(timestamp);
+    await wrappedContract.updateDataFeedValues(timestamp);
   });
 
   it("should properly initialize", async () => {
@@ -73,7 +73,7 @@ describe("PriceFeed", () => {
         adapterContract,
         timestamp
       );
-      await wrappedContract.updateDataFeedsValues(timestamp);
+      await wrappedContract.updateDataFeedValues(timestamp);
     }
 
     for (let roundId = 1; roundId <= roundsCount; roundId++) {

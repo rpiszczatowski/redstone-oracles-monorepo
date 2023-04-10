@@ -4,19 +4,19 @@ pragma solidity ^0.8.4;
 import "../PriceFeedBase.sol";
 
 contract PriceFeedWithoutRounds is PriceFeedBase {
-  IPriceFeedAdapter public priceFeedsAdapter;
+  IRedstoneAdapter public priceFeedsAdapter;
 
-  error UnsupportedRoundId();
+  error UnsupportedRoundId(uint80 requestedRoundId);
 
   constructor(
-    IPriceFeedAdapter priceFeedsAdapter_,
+    IRedstoneAdapter priceFeedsAdapter_,
     bytes32 dataFeedId_,
     string memory description_
   ) PriceFeedBase(dataFeedId_, description_) {
     priceFeedsAdapter = priceFeedsAdapter_;
   }
 
-  function getPriceFeedAdapter() public view override returns (IPriceFeedAdapter) {
+  function getPriceFeedAdapter() public view override returns (IRedstoneAdapter) {
     return priceFeedsAdapter;
   }
 
@@ -34,8 +34,8 @@ contract PriceFeedWithoutRounds is PriceFeedBase {
       uint80 answeredInRound
     )
   {
-    if (requestedRoundId > 0) {
-      revert UnsupportedRoundId();
+    if (requestedRoundId != latestRound()) {
+      revert UnsupportedRoundId(requestedRoundId);
     }
     return latestRoundData();
   }

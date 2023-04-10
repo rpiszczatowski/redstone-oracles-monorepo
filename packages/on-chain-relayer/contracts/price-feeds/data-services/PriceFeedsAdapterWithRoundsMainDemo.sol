@@ -5,8 +5,6 @@ pragma solidity ^0.8.4;
 import "../with-rounds/PriceFeedsAdapterWithRounds.sol";
 
 contract PriceFeedsAdapterWithRoundsMainDemo is PriceFeedsAdapterWithRounds {
-  constructor(bytes32[] memory dataFeedsIds) PriceFeedsAdapterBase(dataFeedsIds) {}
-
   function getUniqueSignersThreshold() public view virtual override returns (uint8) {
     return 1;
   }

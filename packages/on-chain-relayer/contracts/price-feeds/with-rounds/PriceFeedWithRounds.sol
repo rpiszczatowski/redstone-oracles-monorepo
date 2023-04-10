@@ -16,7 +16,7 @@ contract PriceFeedWithRounds is PriceFeedBase {
     priceFeedsAdapter = priceFeedsAdapter_;
   }
 
-  function getPriceFeedAdapter() public view override returns (IPriceFeedAdapter) {
+  function getPriceFeedAdapter() public view override returns (IRedstoneAdapter) {
     return priceFeedsAdapter;
   }
 

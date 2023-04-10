@@ -3,7 +3,6 @@ pragma solidity ^0.8.4;
 
 import "../core/IRedstoneAdapter.sol";
 import "./interfaces/IPriceFeed.sol";
-import "./interfaces/IPriceFeedAdapter.sol";
 
 abstract contract PriceFeedBase is IPriceFeed {
   bytes32 public dataFeedId;
@@ -14,7 +13,7 @@ abstract contract PriceFeedBase is IPriceFeed {
     descriptionText = description_;
   }
 
-  function getPriceFeedAdapter() public view virtual returns (IPriceFeedAdapter);
+  function getPriceFeedAdapter() public view virtual returns (IRedstoneAdapter);
 
   function decimals() public pure override returns (uint8) {
     return 8;
@@ -50,9 +49,6 @@ abstract contract PriceFeedBase is IPriceFeed {
     updatedAt = blockTimestamp;
     answeredInRound = roundId;
   }
-
-  // Below are methods that are not part of the AggregatorV3Interface,
-  // but are still used by some projects integrated with Chainlink (e.g. GMX)
 
   function latestAnswer() public view returns (int256) {
     return int256(getPriceFeedAdapter().getValueForDataFeed(dataFeedId));
