@@ -10,7 +10,10 @@ import {
   deployMockSortedOracles,
   prepareLinkedListLocationsForMentoAdapterReport,
 } from "../../../../src/custom-integrations/mento/mento-utils";
-import { MentoAdapterBase, MockSortedOracles } from "../../../../typechain-types";
+import {
+  MentoAdapterBase,
+  MockSortedOracles,
+} from "../../../../typechain-types";
 
 chai.use(chaiAsPromised);
 
@@ -59,25 +62,24 @@ describe("MentoAdapter", () => {
     const blockTimestamp = await time.latest();
     const timestampMilliseconds = blockTimestamp * 1000;
     await time.setNextBlockTimestamp(blockTimestamp + 10);
-    const wrappedMentoAdapter = WrapperBuilder.wrap(
-      mentoAdapter
-    ).usingSimpleNumericMock({
-      mockSignersCount: 10,
-      dataPoints,
-      timestampMilliseconds,
-    });
+    const wrapContract = (contract: MentoAdapterBase) =>
+      WrapperBuilder.wrap(contract).usingSimpleNumericMock({
+        mockSignersCount: 10,
+        dataPoints,
+        timestampMilliseconds,
+      }) as MentoAdapterBase;
 
     // Prepare arguments
     const proposedTimestamp = timestampMilliseconds;
     const locationsInSortedLinkedLists =
       await prepareLinkedListLocationsForMentoAdapterReport({
         mentoAdapter,
-        wrappedMentoAdapter: wrappedMentoAdapter as MentoAdapterBase,
+        wrapContract,
         sortedOracles,
       });
 
     // Updating oracle values
-    await wrappedMentoAdapter.updatePriceValues(
+    await wrapContract(mentoAdapter).updatePriceValues(
       proposedTimestamp,
       locationsInSortedLinkedLists
     );

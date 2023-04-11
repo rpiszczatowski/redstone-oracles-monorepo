@@ -4,9 +4,11 @@ import { ISortedOracles, MentoAdapterBase } from "../../../typechain-types";
 
 export interface MentoContracts {
   mentoAdapter: MentoAdapterBase;
-  wrappedMentoAdapter: MentoAdapterBase;
+  wrapContract(mentoAdapter: MentoAdapterBase): MentoAdapterBase;
   sortedOracles: ISortedOracles;
 }
+
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 const addressesAreEqual = (addr1: string, addr2: string) => {
   return addr1.toLowerCase() === addr2.toLowerCase();
@@ -16,9 +18,8 @@ const safelyGetAddressOrZero = (
   oracleAddresses: string[],
   uncheckedIndex: number
 ) => {
-  const zeroAddress = "0x0000000000000000000000000000000000000000";
   return uncheckedIndex < 0 || uncheckedIndex > oracleAddresses.length - 1
-    ? zeroAddress
+    ? ZERO_ADDRESS
     : oracleAddresses[uncheckedIndex];
 };
 
@@ -61,7 +62,7 @@ export const calculateLinkedListPosition = (
 
 export const prepareLinkedListLocationsForMentoAdapterReport = async ({
   mentoAdapter,
-  wrappedMentoAdapter,
+  wrapContract,
   sortedOracles,
 }: MentoContracts) => {
   const dataFeeds = await mentoAdapter.getDataFeeds();
@@ -69,9 +70,10 @@ export const prepareLinkedListLocationsForMentoAdapterReport = async ({
   const locationsInSortedLinkedLists = [];
 
   // Calculating proposed oracle values
+  const wrappedContract = wrapContract(mentoAdapter.connect(ZERO_ADDRESS));
   const proposedValuesNormalized =
-    await wrappedMentoAdapter.getNormalizedOracleValuesFromTxCalldata(
-      dataFeedIds
+    await wrappedContract.getNormalizedOracleValuesFromTxCalldata(
+      dataFeedIds,
     );
 
   // Fetching current values and oracle addresses

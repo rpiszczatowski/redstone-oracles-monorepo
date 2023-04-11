@@ -12,7 +12,7 @@ import { getSortedOraclesContractAtAddress } from "./get-contract";
 
 interface UpdatePricesArgs {
   adapterContract: Contract;
-  wrappedAdapterContract: Contract;
+  wrapContract(adapterContract: Contract): Contract;
   proposedRound: number;
   proposedTimestamp: number;
 }
@@ -36,11 +36,10 @@ export const updatePrices = async (
   if (lastUpdateTimestamp >= minimalTimestamp) {
     console.log("Cannot update prices, proposed prices are not newer");
   } else {
-    const wrappedAdapterContract =
-      WrapperBuilder.wrap(adapterContract).usingDataPackages(dataPackages);
+    const wrapContract = (adapterContract: Contract) => WrapperBuilder.wrap(adapterContract).usingDataPackages(dataPackages);
     const updateTx = await updatePriceInAdapterContract({
       adapterContract,
-      wrappedAdapterContract,
+      wrapContract,
       proposedTimestamp: minimalTimestamp,
       proposedRound: lastRound + 1,
     });
@@ -66,11 +65,12 @@ const updatePriceInAdapterContract = async (
 };
 
 const updatePricesInPriceFeedsAdapter = async ({
-  wrappedAdapterContract,
+  adapterContract,
+  wrapContract,
   proposedRound,
   proposedTimestamp,
 }: UpdatePricesArgs): Promise<TransactionResponse> => {
-  return await wrappedAdapterContract.updateDataFeedValues(
+  return await wrapContract(adapterContract).updateDataFeedValues(
     proposedRound,
     proposedTimestamp,
     TX_CONFIG
@@ -79,7 +79,7 @@ const updatePricesInPriceFeedsAdapter = async ({
 
 const updatePricesInMentoAdapter = async ({
   adapterContract,
-  wrappedAdapterContract,
+  wrapContract,
   proposedRound,
   proposedTimestamp,
 }: UpdatePricesArgs): Promise<TransactionResponse> => {
@@ -88,10 +88,10 @@ const updatePricesInMentoAdapter = async ({
   const linkedListPositions =
     await prepareLinkedListLocationsForMentoAdapterReport({
       mentoAdapter: adapterContract,
-      wrappedMentoAdapter: wrappedAdapterContract,
+      wrapContract,
       sortedOracles,
     } as MentoContracts);
-  return await wrappedAdapterContract.updatePriceValuesAndCleanOldReports(
+  return await wrapContract(adapterContract).updatePriceValuesAndCleanOldReports(
     proposedRound,
     proposedTimestamp,
     linkedListPositions

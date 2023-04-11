@@ -69,7 +69,14 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
   // Timestamp validation is done once in the `updateDataFeedValues` function
   // But this function is called for each data package in redstone payload and just
   // Verifies if each data package has the same timestamp as saved in storage
-  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view virtual override {
+  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
+    // It means that we are in the special view context and we can skip validation of the
+    // timestamp. It can be useful for calling view functions, as they can not modify the contract
+    // state to pass the timestamp validation below
+    if (msg.sender == address(0)) {
+      return;
+    }
+
     uint256 expectedDataPackageTimestamp = getDataTimestampFromLatestUpdate();
     if (receivedTimestampMilliseconds != expectedDataPackageTimestamp) {
       revert DataPackageTimestampMismatch(

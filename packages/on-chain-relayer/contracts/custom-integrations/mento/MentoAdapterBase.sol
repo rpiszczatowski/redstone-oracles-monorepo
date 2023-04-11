@@ -66,22 +66,6 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
     return values;
   }
 
-  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
-    // We disable timestamp validation for the getNormalizedOracleValuesFromTxCalldata function
-    // Because it doesn't set the proposed data packages timestamp in the storage
-    if (bytes4(msg.data[0:4]) == this.getNormalizedOracleValuesFromTxCalldata.selector) {
-      return;
-    }
-
-    uint256 expectedDataPackageTimestamp = getDataTimestampFromLatestUpdate();
-    if (receivedTimestampMilliseconds != expectedDataPackageTimestamp) {
-      revert DataPackageTimestampMismatch(
-        expectedDataPackageTimestamp,
-        receivedTimestampMilliseconds
-      );
-    }
-  }
-
   /**
    * @notice Helpful function to simplify the mento relayer implementation
    */
