@@ -50,23 +50,12 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
   }
 
   /**
-   * @notice Helpful function to simplify the mento relayer implementation
-   */
-  function updatePriceValuesAndCleanOldReports(
-    uint256 proposedTimestamp,
-    LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists
-  ) external {
-    updatePriceValues(proposedTimestamp, locationsInSortedLinkedLists);
-    removeAllExpiredReports();
-  }
-
-  /**
    * @notice Used for getting proposed values from RedStone's data packages
    * @param dataFeedIds An array of data feed identifiers
    * @return values The normalized values for corresponding data feeds
    */
   function getNormalizedOracleValuesFromTxCalldata(bytes32[] calldata dataFeedIds)
-    external
+    public
     view
     returns (uint256[] memory)
   {
@@ -75,6 +64,33 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
       values[i] = normalizeRedstoneValueForMento(values[i]);
     }
     return values;
+  }
+
+  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
+    // We disable timestamp validation for the getNormalizedOracleValuesFromTxCalldata function
+    // Because it doesn't set the proposed data packages timestamp in the storage
+    if (bytes4(msg.data[0:4]) == this.getNormalizedOracleValuesFromTxCalldata.selector) {
+      return;
+    }
+
+    uint256 expectedDataPackageTimestamp = getDataTimestampFromLatestUpdate();
+    if (receivedTimestampMilliseconds != expectedDataPackageTimestamp) {
+      revert DataPackageTimestampMismatch(
+        expectedDataPackageTimestamp,
+        receivedTimestampMilliseconds
+      );
+    }
+  }
+
+  /**
+   * @notice Helpful function to simplify the mento relayer implementation
+   */
+  function updatePriceValuesAndCleanOldReports(
+    uint256 proposedTimestamp,
+    LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists
+  ) external {
+    updatePriceValues(proposedTimestamp, locationsInSortedLinkedLists);
+    removeAllExpiredReports();
   }
 
   function removeAllExpiredReports() public {
@@ -111,7 +127,7 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
     uint256 proposedTimestamp,
     LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists
   ) public {
-    locationsInSortedLinkedLists; // This function is used later
+    locationsInSortedLinkedLists; // This argument is used later (extracted from calldata)
     updateDataFeedValues(proposedTimestamp);
   }
 
@@ -141,6 +157,8 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
       msg.data[calldataOffset:calldataOffset + STANDARD_SLOT_BS],
       (uint256)
     );
+
+    calldataOffset += STANDARD_SLOT_BS;
 
     locationsInSortedList = new LocationInSortedLinkedList[](arrayLength);
     for (uint256 i = 0; i < arrayLength; i++) {

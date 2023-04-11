@@ -11,12 +11,12 @@ import "./IRedstoneAdapter.sol";
  * @dev This contract is used to repeatedly push RedStone data to blockchain storage
  * More details here: https://docs.redstone.finance/docs/smart-contract-devs/get-started/redstone-classic
  *
- * Key ideas of the contract:
+ * Key details about the contract:
  * - Data feed values can be updated using the `updateDataFeedValues` function
  * - All data feeds must be updated within a single call, partial updates are not allowed
  * - There is a configurable minimum interval between updates
  * - Updaters can be restricted by overriding `requireAuthorisedUpdater` function
- * - The contract is designed to force values validation, be default it prevents zero values
+ * - The contract is designed to force values validation, be default it prevents returning zero values
  * - All data packages in redstone payload must have the same timestamp,
  *    equal to `dataPackagesTimestamp` argument of the `updateDataFeedValues` function
  */
@@ -69,7 +69,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
   // Timestamp validation is done once in the `updateDataFeedValues` function
   // But this function is called for each data package in redstone payload and just
   // Verifies if each data package has the same timestamp as saved in storage
-  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
+  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view virtual override {
     uint256 expectedDataPackageTimestamp = getDataTimestampFromLatestUpdate();
     if (receivedTimestampMilliseconds != expectedDataPackageTimestamp) {
       revert DataPackageTimestampMismatch(
