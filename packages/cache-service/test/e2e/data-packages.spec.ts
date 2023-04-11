@@ -20,6 +20,7 @@ import { RedstonePayloadParser } from "redstone-protocol/dist/src/redstone-paylo
 import { ethers } from "ethers";
 import { ResponseFormat } from "../../src/data-packages/data-packages.controller";
 import { base64 } from "ethers/lib/utils";
+import { SignedDataPackage } from "redstone-protocol/dist/src/data-package/SignedDataPackage";
 
 jest.mock("redstone-sdk", () => ({
   __esModule: true,
@@ -259,8 +260,9 @@ describe("Data packages (e2e)", () => {
     const payload = new RedstonePayloadParser(payloadBytes).parse();
     expect(payload.signedDataPackages.length).toBe(expectedDataPackagesLength);
 
-    const signedDataPackage = payload.signedDataPackages[0];
+    const signedDataPackage: SignedDataPackage = payload.signedDataPackages[0] as SignedDataPackage;
     const mockDataPackage = mockDataPackages[0];
+    
     expect(base64.encode(signedDataPackage.serializeSignatureToHex())).toBe(
       mockDataPackage.signature
     );

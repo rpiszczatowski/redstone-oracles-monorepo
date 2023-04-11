@@ -6,6 +6,5 @@ export function makePayload(
   unsignedMetadataMsg?: string
 ): RedstonePayload {
   const cachedDataPackages = Object.values(cachedDataPackagesResponse).flat();
-
-  return new RedstonePayload(cachedDataPackages, unsignedMetadataMsg || "");
+  return RedstonePayload.preparePayload(cachedDataPackages, unsignedMetadataMsg || "");
 }

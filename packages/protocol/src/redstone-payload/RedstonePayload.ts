@@ -27,24 +27,23 @@ export class RedstonePayload extends Serializable {
     super();
   }
 
+  public static preparePayload(
+    signedDataPackages: SignedDataPackage[] | MultiSignDataPackage[],
+    unsignedMetadata: string
+  ): RedstonePayload {
+    const version = this.getVersion(signedDataPackages);
+    return new RedstonePayload(signedDataPackages, unsignedMetadata, version);
+  }
+
   // Bit hacky, improve later
   public static prepare(
     signedDataPackages: SignedDataPackage[] | MultiSignDataPackage[],
     unsignedMetadata: string
   ): string {
-    if (Array.isArray(signedDataPackages) && signedDataPackages.length > 0) {
-      const firstElement = signedDataPackages[0];
-  
-      if (firstElement instanceof SignedDataPackage) {
-        return this.prepareSingleSign(signedDataPackages as SignedDataPackage[], unsignedMetadata);
-      } else if (firstElement instanceof MultiSignDataPackage) {
-        return this.prepareMultiSign(signedDataPackages as MultiSignDataPackage[], unsignedMetadata);
-      } else {
-        throw new Error('Invalid data package type');
-      }
-    } else {
-      throw new Error('Empty data packages array');
+    if (this.getVersion(signedDataPackages) === SINGLESIGN_REDSTONE_PAYLOAD_VERSION) {
+      return this.prepareSingleSign(signedDataPackages as SignedDataPackage[], unsignedMetadata);
     }
+    return this.prepareMultiSign(signedDataPackages as MultiSignDataPackage[], unsignedMetadata);
   }
 
   private static prepareMultiSign(
@@ -67,6 +66,23 @@ export class RedstonePayload extends Serializable {
       unsignedMetadata,
       SINGLESIGN_REDSTONE_PAYLOAD_VERSION
     ).toBytesHexWithout0xPrefix();
+  }
+
+  private static getVersion(signedDataPackages: SignedDataPackage[] | MultiSignDataPackage[])
+    : number {
+    if (Array.isArray(signedDataPackages) && signedDataPackages.length > 0) {
+      const firstElement = signedDataPackages[0];
+  
+      if (firstElement instanceof SignedDataPackage) {
+        return SINGLESIGN_REDSTONE_PAYLOAD_VERSION;
+      } else if (firstElement instanceof MultiSignDataPackage) {
+        return MULTISIGN_REDSTONE_PAYLOAD_VERSION;
+      } else {
+        throw new Error('Invalid data package type');
+      }
+    } else {
+      throw new Error('Empty data packages array');
+    }
   }
 
 
