@@ -12,9 +12,9 @@ use validation::*;
 use numbers::*;
 
 /// 655360000 + feed_index
-pub const INSUFFICIENT_SIGNER_COUNT_FOR = 0x2710_0000;
+pub const INSUFFICIENT_SIGNER_COUNT = 0x2710_0000;
 
-/// 2621440000 + data_package_index
+/// 1310720000 + data_package_index
 pub const SIGNER_NOT_RECOGNIZED = 0x4e20_0000;
 
 trait Validation {
@@ -42,7 +42,7 @@ impl Validation for Config {
             let values = results.get(i).unwrap();
             if (values.len < self.signer_count_threshold) {
                 log(values.len);
-                revert(INSUFFICIENT_SIGNER_COUNT_FOR + i);
+                revert(INSUFFICIENT_SIGNER_COUNT + i);
             }
 
             i += 1;

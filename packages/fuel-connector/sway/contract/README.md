@@ -111,7 +111,9 @@ must be greater or equal that the ```signer_count_threshold``` in the constructo
   * Otherwise, it panics then with the `0x2710_0000 = 655360000` error, increased by the first index of the passed feed which has broken the validation.
   * The number of signers for that data feed is presented in logs.
 * The timestamp of data-packages must be not older than 15 minutes in relation to the ```block_timestamp```.
-  * Otherwise, it panics then with the `0x9C40_0000 = 1310720000` error, increased by the first index of the payload's data package which has broken the validation, increased additionally by `1000` if the package is older than expected and `2000` if its timestamp is too future. 
+  * Otherwise, it panics then with the `0x9C40_0000 = 2621440000` error, increased by the first index of the payload's
+    data package which has broken the validation, increased additionally by `1000` if the package is older than expected
+    and `2000` if its timestamp is too future.
   * The timestamp of that data package and `block_timestamp` are presented in logs.
 * The `init` & `write_prices` functions consume gas and must be paid by ETHers. The data are available on the contract just after the transaction successes.
 

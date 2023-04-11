@@ -1,6 +1,6 @@
 library validation;
 
-// 1310720000 + data_package_index
+// 2621440000 + data_package_index
 pub const TIMESTAMP_OUT_OF_RANGE = 0x9C40_0000;
 
 const MAX_DATA_TIMESTAMP_DELAY_SECONDS = 900; // 15 * 60
