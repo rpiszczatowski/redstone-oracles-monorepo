@@ -1,11 +1,12 @@
 import { config } from "./config";
-import { StarknetPriceManagerContractConnector } from "./starknet/StarknetPriceManagerContractConnector";
+import { ContractConnectorFactory } from "./starknet/ContractConnectorFactory";
 
 (async () => {
   const relayerIterationInterval = Number(config.relayerIterationInterval);
   const updatePriceInterval = Number(config.updatePriceInterval);
-  const starknet = new StarknetPriceManagerContractConnector(config);
-  const adapter = await starknet.getAdapter();
+  const connector =
+    ContractConnectorFactory.makePriceManagerContractConnector();
+  const adapter = await connector.getAdapter();
 
   let pendingTransactionHash: string | undefined;
 
@@ -35,20 +36,27 @@ import { StarknetPriceManagerContractConnector } from "./starknet/StarknetPriceM
         return console.log(
           `Skipping, because not enough time has passed to update prices (${
             timestampDelta / 1000
-          } s.)`
+          } s. of ${updatePriceInterval / 1000} s.)`
         );
       }
 
       pendingTransactionHash = "...";
       txHash = await adapter.writePrices(timestampAndRound.round + 1);
-      console.log(`Started updating prices with transaction: ${txHash}`);
+      console.log(
+        `Started updating prices (round: ${
+          timestampAndRound.round + 1
+        }) with transaction: ${txHash}`
+      );
       pendingTransactionHash = txHash;
       console.log(`Waiting for the transaction's status changes...`);
-      await starknet.waitForTransaction(txHash!);
+      await connector.waitForTransaction(txHash!);
     } catch (error: any) {
-      console.log(error.stack || error);
+      console.error(error.stack || error);
     } finally {
-      if (pendingTransactionHash === txHash) {
+      if (
+        pendingTransactionHash === txHash ||
+        pendingTransactionHash === "..."
+      ) {
         pendingTransactionHash = undefined;
       }
     }

@@ -26,7 +26,7 @@ export class StarknetPricesContractAdapter implements IPricesContractAdapter {
           paramsProvider.getHexlifiedFeedIds(),
           await paramsProvider.getPayloadData(),
         ],
-        { maxFee: 0.004 * FEE_MULTIPLIER }
+        { maxFee: 0.004 * FEE_MULTIPLIER, parseRequest: true }
       )
     ).transaction_hash;
   }

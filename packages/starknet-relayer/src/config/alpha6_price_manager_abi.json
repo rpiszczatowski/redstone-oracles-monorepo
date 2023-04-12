@@ -1,0 +1,95 @@
+[
+  {
+    "type": "function",
+    "name": "constructor",
+    "inputs": [
+      {
+        "name": "owner_address",
+        "type": "felt"
+      }
+    ],
+    "outputs": [],
+    "state_mutability": "external"
+  },
+  {
+    "type": "function",
+    "name": "write_prices",
+    "inputs": [
+      {
+        "name": "rnd_number",
+        "type": "felt"
+      },
+      {
+        "name": "feed_ids_arr_len",
+        "type": "felt"
+      },
+      {
+        "name": "feed_ids_arr",
+        "type": "felt*"
+      },
+      {
+        "name": "prices_arr_len",
+        "type": "felt"
+      },
+      {
+        "name": "prices_arr",
+        "type": "felt*"
+      },
+      {
+        "name": "timestamp",
+        "type": "felt"
+      }
+    ],
+    "outputs": [],
+    "state_mutability": "external"
+  },
+  {
+    "type": "function",
+    "name": "read_price",
+    "inputs": [
+      {
+        "name": "feed_id",
+        "type": "felt"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "felt"
+      }
+    ],
+    "state_mutability": "view"
+  },
+  {
+    "type": "struct",
+    "name": "alpha6::round_data::RoundData",
+    "members": [
+      {
+        "name": "payload_timestamp",
+        "type": "felt"
+      },
+      {
+        "name": "round",
+        "type": "felt"
+      },
+      {
+        "name": "block_number",
+        "type": "felt"
+      },
+      {
+        "name": "block_timestamp",
+        "type": "felt"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "read_round_data",
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "alpha6::round_data::RoundData"
+      }
+    ],
+    "state_mutability": "view"
+  }
+]

@@ -15,7 +15,8 @@ export const config = Object.freeze({
   updatePriceInterval: getFromEnv("UPDATE_PRICE_INTERVAL"),
   network: getFromEnv("NETWORK"),
   privateKey: getFromEnv("PRIVATE_KEY"),
-  managerAddress: getFromEnv("MANAGER_ADDRESS"),
+  priceManagerAddress: getFromEnv("PRICE_MANAGER_ADDRESS"),
+  priceManagerVersion: getFromEnv("PRICE_MANAGER_VERSION"),
   ownerAddress: getFromEnv("OWNER_ADDRESS"),
   maxEthFee: getFromEnv("MAX_ETH_FEE"),
 });

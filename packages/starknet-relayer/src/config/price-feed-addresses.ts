@@ -1,4 +1,4 @@
 export const priceFeedAddresses = {
-  BTC: "0x0712a25055cf4fcd1616f79540aa82c5d947f55e06ea2c6ca8fe9fcf97eb5c8b",
-  ETH: "0x03a51e049f6f51382d6bef8f77179f8d1b907818e8c485905e1a90f7eac0754c",
+  BTC: "0x0728b92eee877a0cd61ea65dc98061ffc42d31368e6ec1da4aa2fe245fd4083a",
+  ETH: "0x009850754ffba8a9f2629a96674ee9a88472fcea9bcf46601fde9eaa0c943a3c",
 };
