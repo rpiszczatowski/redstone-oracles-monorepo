@@ -54,4 +54,5 @@ contract RedstoneConstants {
   error InvalidCalldataPointer();
   error CalldataMustHaveValidPayload();
   error SignerNotAuthorised(address receivedSigner);
+  error UnsupportedVersion(uint256 version);
 }

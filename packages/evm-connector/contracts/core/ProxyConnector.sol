@@ -10,6 +10,7 @@ import "./CalldataExtractor.sol";
  * @author The Redstone Oracles team
  */
 contract ProxyConnector is RedstoneConstants, CalldataExtractor {
+  using SafeMath for uint256;
   error ProxyCalldataFailedWithoutErrMsg();
   error ProxyCalldataFailedWithStringMessage(string message);
   error ProxyCalldataFailedWithCustomError(bytes result);
@@ -98,8 +99,15 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
 
   function _getRedstonePayloadByteSize() private pure returns (uint256) {
     uint256 calldataNegativeOffset = _extractByteSizeOfUnsignedMetadata();
-    uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(calldataNegativeOffset);
+    uint256 version = _extractVersionFromUnsignedMetadata(calldataNegativeOffset);
+
+    uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(calldataNegativeOffset); // w zaleznosci od wersji inaczej
     calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;
+
+    if (version == MULTISIGN_PAYLOAD_VERSION) {
+      return calldataNegativeOffset + _getDataPackageByteSizeMultiSign(calldataNegativeOffset);
+    }
+
     for (uint256 dataPackageIndex = 0; dataPackageIndex < dataPackagesCount; dataPackageIndex++) {
       uint256 dataPackageByteSize = _getDataPackageByteSize(calldataNegativeOffset);
       calldataNegativeOffset += dataPackageByteSize;
@@ -118,6 +126,22 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
       dataPointsCount *
       (DATA_POINT_SYMBOL_BS + eachDataPointValueByteSize) +
       DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
+  }
+
+  function _getDataPackageByteSizeMultiSign(uint256 calldataNegativeOffset) private pure returns (uint256) {
+    uint256 signersCount = _extractDataPackageSignersCountFromCalldata(calldataNegativeOffset);
+    uint256 signaturesByteSize = signersCount.mul(SIG_BS);
+    uint256 dataPackageNegativeOffset = calldataNegativeOffset + SIGNERS_COUNT_BS + signaturesByteSize;
+ 
+    (
+      uint256 dataPointsCount,
+      uint256 eachDataPointValueByteSize
+    ) = _extractDataPointsDetailsForDataPackageMultiSign(dataPackageNegativeOffset);
+
+    return
+      dataPointsCount *
+      (DATA_POINT_SYMBOL_BS + eachDataPointValueByteSize) +
+      DATA_PACKAGE_WITHOUT_SIG_BS + SIGNERS_COUNT_BS + signaturesByteSize;
   }
 
 
