@@ -14,8 +14,6 @@ jobs:
         working-directory: packages/on-chain-relayer
     steps:
       - uses: actions/checkout@v3
-      - name: Build dependent packages
-        run: cd ../rpc-providers && yarn && yarn build && cd ../on-chain-relayer
       - name: Install modules
         run: yarn
       - name: Compile contracts
