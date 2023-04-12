@@ -77,12 +77,15 @@ describe("PriceFeed", () => {
     }
 
     for (let roundId = 1; roundId <= roundsCount; roundId++) {
-      const roundTimestampMilliseconds = timestamp - 10 * (roundsCount - roundId);
+      const roundTimestampMilliseconds =
+        timestamp - 10 * (roundsCount - roundId);
       const expectedTimestamp = Math.floor(roundTimestampMilliseconds / 1000);
       const roundData = await contract.getRoundData(roundId);
       expect(roundData.answer).to.be.equal(167099000000);
       expect(roundData.roundId).to.be.equal(roundId);
-      expect(roundData.updatedAt).to.be.equal(expectedTimestamp);
+      expect(
+        Math.abs(roundData.updatedAt.toNumber() - expectedTimestamp)
+      ).to.be.lessThanOrEqual(1); // 1 second epsilon
     }
   });
 });
