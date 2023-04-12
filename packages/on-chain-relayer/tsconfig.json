@@ -33,7 +33,7 @@
       "path": "../sdk"
     },
     {
-      "path": "../rpc-providers"
+      "path": "../rpc-providers/tsconfig.build.json"
     }
   ]
 }
