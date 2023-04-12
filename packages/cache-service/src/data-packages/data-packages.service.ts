@@ -1,9 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Cache } from "cache-manager";
 import {
+  recoverDeserializedSignerAddress,
   RedstonePayload,
   UniversalSigner,
-  recoverDeserializedSignerAddress,
 } from "redstone-protocol";
 import {
   DataPackagesRequestParams,
@@ -28,7 +28,9 @@ import { runPromiseWithLogging } from "../utils/utils";
 // update frequency in nodes, 5s cache TTL on the app level, and 5s cache TTL
 // on the CDN level - then the max data delay is ~20s, which is still good enough :)
 const CACHE_TTL = 5000;
-const MAX_ALLOWED_TIMESTAMP_DELAY = 180 * 1000; // 3 minutes in milliseconds
+
+// TODO: restore it!
+const MAX_ALLOWED_TIMESTAMP_DELAY = 1600 * 60 * 1000; // 3 minutes in milliseconds
 export const ALL_FEEDS_KEY = "___ALL_FEEDS___";
 
 export interface StatsRequestParams {
@@ -252,30 +254,26 @@ export class DataPackagesService {
       signerAddress
     );
 
-    const dataPackagesForSaving = receivedDataPackages.map(
-      (receivedDataPackage) => {
-        const isSignatureValid = this.isSignatureValid(
-          receivedDataPackage,
-          signerAddress
-        );
+    return receivedDataPackages.map((receivedDataPackage) => {
+      const isSignatureValid = this.isSignatureValid(
+        receivedDataPackage,
+        signerAddress
+      );
 
-        const cachedDataPackage: CachedDataPackage = {
-          ...receivedDataPackage,
-          dataServiceId,
-          signerAddress,
-          isSignatureValid: isSignatureValid,
-        };
-        if (receivedDataPackage.dataPoints.length === 1) {
-          cachedDataPackage.dataFeedId =
-            receivedDataPackage.dataPoints[0].dataFeedId;
-        } else {
-          cachedDataPackage.dataFeedId = ALL_FEEDS_KEY;
-        }
-        return cachedDataPackage;
+      const cachedDataPackage: CachedDataPackage = {
+        ...receivedDataPackage,
+        dataServiceId,
+        signerAddress,
+        isSignatureValid: isSignatureValid,
+      };
+      if (receivedDataPackage.dataPoints.length === 1) {
+        cachedDataPackage.dataFeedId =
+          receivedDataPackage.dataPoints[0].dataFeedId;
+      } else {
+        cachedDataPackage.dataFeedId = ALL_FEEDS_KEY;
       }
-    );
-
-    return dataPackagesForSaving;
+      return cachedDataPackage;
+    });
   }
 
   private isSignatureValid(

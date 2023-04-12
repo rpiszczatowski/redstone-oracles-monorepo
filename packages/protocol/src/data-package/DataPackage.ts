@@ -1,5 +1,6 @@
 import {
   arrayify,
+  BytesLike,
   concat,
   hexlify,
   keccak256,
@@ -15,6 +16,7 @@ import { assert, convertIntegerNumberToBytes } from "../common/utils";
 import { deserializeDataPointFromObj } from "../data-point/data-point-deserializer";
 import { DataPoint, DataPointPlainObj } from "../data-point/DataPoint";
 import { SignedDataPackage } from "./SignedDataPackage";
+import { Signature } from "ethers";
 
 export interface DataPackagePlainObj {
   dataPoints: DataPointPlainObj[];
@@ -22,11 +24,17 @@ export interface DataPackagePlainObj {
 }
 
 export class DataPackage extends Serializable {
+  public hasher: (bytes: BytesLike) => BytesLike;
+  public signer: (hash: BytesLike, privateKey: BytesLike) => Signature | string;
+
   constructor(
     public readonly dataPoints: DataPoint[],
     public readonly timestampMilliseconds: number
   ) {
     super();
+
+    this.hasher = (bytes) => arrayify(keccak256(bytes));
+    this.signer = DataPackage.sign;
 
     if (dataPoints.length === 0) {
       throw new Error("Can not create a data package with no data points");
@@ -68,10 +76,10 @@ export class DataPackage extends Serializable {
     return new DataPackage(dataPoints, plainObject.timestampMilliseconds);
   }
 
-  getSignableHash(): Uint8Array {
+  getSignableHash(): BytesLike {
     const serializedDataPackage = this.toBytes();
-    const signableHashHex = keccak256(serializedDataPackage);
-    return arrayify(signableHashHex);
+
+    return this.hasher(serializedDataPackage);
   }
 
   sign(privateKey: string): SignedDataPackage {
@@ -79,10 +87,15 @@ export class DataPackage extends Serializable {
     const signableHashBytes = this.getSignableHash();
 
     // Generating a signature
-    const signingKey = new SigningKey(privateKey);
-    const fullSignature = signingKey.signDigest(signableHashBytes);
+    const fullSignature = this.signer(signableHashBytes, privateKey);
+
     // Return a signed data package
     return new SignedDataPackage(this, fullSignature);
+  }
+
+  static sign(bytes: BytesLike, privateKey: BytesLike): Signature {
+    const signingKey = new SigningKey(privateKey);
+    return signingKey.signDigest(bytes);
   }
 
   protected serializeDataPoints(): Uint8Array {

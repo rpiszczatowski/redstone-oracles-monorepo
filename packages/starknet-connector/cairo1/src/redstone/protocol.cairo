@@ -4,6 +4,10 @@ use integer::u32_try_from_felt252;
 use array::ArrayTrait;
 use option::OptionTrait;
 
+use ecdsa::check_ecdsa_signature;
+use hash::LegacyHash;
+use array::SpanTrait;
+
 use redstone::constants::REDSTONE_MARKER;
 use redstone::constants::REDSTONE_MARKER_BS;
 use redstone::constants::UNSIGNED_METADATA_BYTE_SIZE_BS;
@@ -89,17 +93,24 @@ fn slice_data_packages(
     validator.validate_timestamp(index: acc.len(), timestamp: timestamp / 1000);
     let data_points_slice = timestamp_slice.head.slice_tail(data_points_array_size);
 
-    // let signable_bytes = signature_slice.head.slice_tail(data_points_array_size + DATA_POINTS_COUNT_BS + DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS).tail;
+    let signature = get_signature_from_bytes(signature_slice.tail);
+    let mut signable_bytes_span = signature_slice.head.slice_tail(
+        data_points_array_size + DATA_POINTS_COUNT_BS + DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS
+    ).tail.span();
+
+    let hash = hash_span(0, signable_bytes_span);
+    let value = check_ecdsa_signature(
+        hash,
+        0x18f349a975878208678624cc989a5613c76980dc0fd995f5f31498dca168f9d,
+        signature.r_bytes.to_felt252(),
+        signature.s_bytes.to_felt252()
+    );
 
     let mut data_points: Array<DataPoint> = ArrayTrait::new();
     slice_data_points(timestamp_slice.head, value_size, data_point_count, ref data_points);
 
     let data_package = DataPackage {
-        timestamp,
-        index: acc.len(),
-        signature: get_signature_from_bytes(signature_slice.tail),
-        data_points: @data_points,
-        signer_address: 0
+        timestamp, index: acc.len(), signature, data_points: @data_points, signer_address: 0
     };
 
     acc.append(data_package);
@@ -128,4 +139,23 @@ fn slice_data_points(arr: @Array<u8>, value_size: usize, count: usize, ref acc: 
 
     slice_data_points(feed_id_slice.head, value_size, count - 1_usize, ref acc)
 }
+
+
+fn hash_span(state: felt252, mut value: Span<u8>) -> felt252 {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
+    let item = value.pop_front();
+    match item {
+        Option::Some(x) => {
+            let s = LegacyHash::hash(u8_to_felt252(*x), state);
+            hash_span(s, value)
+        },
+        Option::None(_) => state,
+    }
+}
+
+
 

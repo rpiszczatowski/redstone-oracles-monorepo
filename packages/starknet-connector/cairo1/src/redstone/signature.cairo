@@ -1,4 +1,3 @@
-use integer::u256_from_felt252;
 use array::ArrayTrait;
 
 use redstone::constants::SIGNATURE_BS;
