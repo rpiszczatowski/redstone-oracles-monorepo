@@ -27,18 +27,7 @@ abstract contract PriceFeedBase is IPriceFeed {
     return 1;
   }
 
-  function latestRoundData()
-    public
-    view
-    override
-    returns (
-      uint80 roundId,
-      int256 answer,
-      uint256 startedAt,
-      uint256 updatedAt,
-      uint80 answeredInRound
-    )
-  {
+  function latestRoundData() public view override returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound) {
     roundId = latestRound();
     answer = latestAnswer();
 

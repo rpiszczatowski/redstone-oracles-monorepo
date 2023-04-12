@@ -27,7 +27,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
   uint256 internal constant MIN_INTERVAL_BETWEEN_UPDATES = 10 seconds;
   uint256 internal constant BITS_COUNT_IN_16_BYTES = 128;
 
-  error DataTimestampCanNotBeOlderThanBefore(
+  error DataTimestampShouldBeNewerThanBefore(
     uint256 receivedDataTimestampMilliseconds,
     uint256 lastDataTimestampMilliseconds
   );
@@ -86,10 +86,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     }
   }
 
-  function validateAndUpdateDataFeedValues(
-    bytes32[] memory dataFeedIdsArray,
-    uint256[] memory values
-  ) internal virtual;
+  function validateAndUpdateDataFeedValues(bytes32[] memory dataFeedIdsArray, uint256[] memory values) internal virtual;
 
   function validateCurrentBlockTimestamp() private view {
     uint256 currentBlockTimestamp = block.timestamp;
@@ -110,11 +107,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     return MIN_INTERVAL_BETWEEN_UPDATES;
   }
 
-  function validateProposedDataPackagesTimestamp(uint256 dataPackagesTimestamp)
-    public
-    view
-    virtual
-  {
+  function validateProposedDataPackagesTimestamp(uint256 dataPackagesTimestamp) public view virtual {
     preventUpdateWithOlderDataPackages(dataPackagesTimestamp);
     RedstoneDefaultsLib.validateTimestamp(dataPackagesTimestamp);
   }
@@ -122,9 +115,8 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
   function preventUpdateWithOlderDataPackages(uint256 dataPackagesTimestamp) internal view {
     uint256 dataTimestampFromLatestUpdate = getDataTimestampFromLatestUpdate();
 
-    // We intentionally allow to update data with the same timestamp
-    if (dataPackagesTimestamp < dataTimestampFromLatestUpdate) {
-      revert DataTimestampCanNotBeOlderThanBefore(
+    if (dataPackagesTimestamp <= dataTimestampFromLatestUpdate) {
+      revert DataTimestampShouldBeNewerThanBefore(
         dataPackagesTimestamp,
         dataTimestampFromLatestUpdate
       );
@@ -145,20 +137,11 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     }
   }
 
-  function getTimestampsFromLatestUpdate()
-    public
-    view
-    returns (uint128 dataTimestamp, uint128 blockTimestamp)
-  {
-    uint256 packedTimestamps = getPackedTimestampsFromLatestUpdate();
-    return _unpackTimestamps(packedTimestamps);
+  function getTimestampsFromLatestUpdate() public view returns (uint128 dataTimestamp, uint128 blockTimestamp) {
+    return _unpackTimestamps(getPackedTimestampsFromLatestUpdate());
   }
 
-  function _unpackTimestamps(uint256 packedTimestamps)
-    internal
-    pure
-    returns (uint128 dataTimestamp, uint128 blockTimestamp)
-  {
+  function _unpackTimestamps(uint256 packedTimestamps) internal pure returns (uint128 dataTimestamp, uint128 blockTimestamp) {
     dataTimestamp = uint128(packedTimestamps >> 128); // first 128 bits
     blockTimestamp = uint128(packedTimestamps); // last 128 bits
   }
@@ -181,11 +164,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     return valueForDataFeed;
   }
 
-  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedIds)
-    public
-    view
-    returns (uint256[] memory)
-  {
+  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedIds) public view returns (uint256[] memory) {
     uint256[] memory values = getValuesForDataFeedUnsafe(requestedDataFeedIds);
     for (uint256 i = 0; i < requestedDataFeedIds.length; i++) {
       validateDataFeedValue(requestedDataFeedIds[i], values[i]);
@@ -193,11 +172,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     return values;
   }
 
-  function validateDataFeedValue(bytes32 dataFeedId, uint256 valueForDataFeed)
-    public
-    pure
-    virtual
-  {
+  function validateDataFeedValue(bytes32 dataFeedId, uint256 valueForDataFeed) public pure virtual {
     if (valueForDataFeed == 0) {
       revert DataFeedValueCannotBeZero(dataFeedId);
     }
@@ -205,12 +180,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
 
   function getValueForDataFeedUnsafe(bytes32 dataFeedId) public view virtual returns (uint256);
 
-  function getValuesForDataFeedUnsafe(bytes32[] memory requestedDataFeedIds)
-    public
-    view
-    virtual
-    returns (uint256[] memory values)
-  {
+  function getValuesForDataFeedUnsafe(bytes32[] memory requestedDataFeedIds) public view virtual returns (uint256[] memory values) {
     values = new uint256[](requestedDataFeedIds.length);
     for (uint256 i = 0; i < requestedDataFeedIds.length; i++) {
       values[i] = getValueForDataFeedUnsafe(requestedDataFeedIds[i]);

@@ -7,15 +7,9 @@ interface IRedstoneAdapter {
 
   function getValueForDataFeed(bytes32 dataFeedId) external view returns (uint256);
 
-  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedIds)
-    external
-    view
-    returns (uint256[] memory);
+  function getValuesForDataFeeds(bytes32[] memory requestedDataFeedIds) external view returns (uint256[] memory);
 
-  function getTimestampsFromLatestUpdate()
-    external
-    view
-    returns (uint128 dataTimestamp, uint128 blockTimestamp);
+  function getTimestampsFromLatestUpdate() external view returns (uint128 dataTimestamp, uint128 blockTimestamp);
 
   function getDataFeedIds() external view returns (bytes32[] memory);
 

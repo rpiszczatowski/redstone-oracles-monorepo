@@ -29,7 +29,7 @@ describe("PriceFeedsAdapter", () => {
     const MangerContractFactory = await ethers.getContractFactory(
       "PriceFeedsAdapterMock"
     );
-    contract = await MangerContractFactory.deploy(dataFeedsIds);
+    contract = await MangerContractFactory.deploy();
     await contract.deployed();
     timestamp = Date.now();
     timestampSeconds = Math.floor(timestamp / 1000);
@@ -109,7 +109,7 @@ describe("PriceFeedsAdapter", () => {
       2307768000000
     );
     expect(
-      dataFeedValueAndRoundParams.roundTimestamp
+      dataFeedValueAndRoundParams.roundDataTimestamp
     ).to.be.equal(Math.floor(newTimestamp / 1000));
   });
 

@@ -16,12 +16,7 @@ abstract contract PriceFeedsAdapterWithoutRounds is PriceFeedsAdapterBase {
     }
   }
 
-  function getValueForDataFeedUnsafe(bytes32 dataFeedId)
-    public
-    view
-    override
-    returns (uint256 dataFeedValue)
-  {
+  function getValueForDataFeedUnsafe(bytes32 dataFeedId) public view override returns (uint256 dataFeedValue) {
     bytes32 locationInStorage = getValueLocationInStorage(dataFeedId);
     assembly {
       dataFeedValue := sload(locationInStorage)
