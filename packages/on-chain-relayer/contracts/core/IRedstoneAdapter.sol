@@ -13,6 +13,8 @@ interface IRedstoneAdapter {
 
   function getDataFeedIds() external view returns (bytes32[] memory);
 
+  function getDataFeedIndex(bytes32 dataFeedId) external view returns (uint256);
+
   function getMinIntervalBetweenUpdates() external view returns (uint256);
 
   function validateProposedDataPackagesTimestamp(uint256 proposedDataTimestamp) external view;

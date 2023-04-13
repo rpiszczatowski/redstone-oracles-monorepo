@@ -3,14 +3,14 @@ import chaiAsPromised from "chai-as-promised";
 import { Contract } from "ethers";
 import { formatBytes32String } from "ethers/lib/utils";
 import { ethers, network } from "hardhat";
-import { PriceFeedsAdapterMock } from "../../../typechain-types";
+import { PriceFeedsAdapterMock } from "../../../../typechain-types";
 import {
   dataFeedsIds,
   getWrappedContractAndUpdateBlockTimestamp,
   btcDataFeed,
   ethDataFeed,
   mockEnvVariables,
-} from "../../helpers";
+} from "../../../helpers";
 
 chai.use(chaiAsPromised);
 

@@ -1,13 +1,13 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { ethers } from "hardhat";
-import { PriceFeedWithRounds, PriceFeedsAdapterWithRounds } from "../../../typechain-types";
+import { PriceFeedWithRounds, PriceFeedsAdapterWithRounds } from "../../../../typechain-types";
 import {
   dataFeedsIds,
   ethDataFeed,
   getWrappedContractAndUpdateBlockTimestamp,
   mockEnvVariables,
-} from "../../helpers";
+} from "../../../helpers";
 
 chai.use(chaiAsPromised);
 

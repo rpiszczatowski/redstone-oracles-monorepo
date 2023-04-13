@@ -12,7 +12,7 @@ import "./IRedstoneAdapter.sol";
  * More details here: https://docs.redstone.finance/docs/smart-contract-devs/get-started/redstone-classic
  *
  * Key details about the contract:
- * - Data feed values can be updated using the `updateDataFeedsValues` function
+ * - Values for data feeds can be updated using the `updateDataFeedsValues` function
  * - All data feeds must be updated within a single call, partial updates are not allowed
  * - There is a configurable minimum interval between updates
  * - Updaters can be restricted by overriding `requireAuthorisedUpdater` function
@@ -180,7 +180,9 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
   function getValuesForDataFeeds(bytes32[] memory requestedDataFeedIds) public view returns (uint256[] memory) {
     uint256[] memory values = getValuesForDataFeedUnsafe(requestedDataFeedIds);
     for (uint256 i = 0; i < requestedDataFeedIds.length; i++) {
-      validateDataFeedValue(requestedDataFeedIds[i], values[i]);
+      bytes32 dataFeedId = requestedDataFeedIds[i];
+      getDataFeedIndex(dataFeedId); // will revert if data feed id is not supported
+      validateDataFeedValue(dataFeedId, values[i]);
     }
     return values;
   }
