@@ -3,12 +3,12 @@ import { Fragment } from "ethers/lib/utils";
 import {
   FunctionNamesWithValues,
   buildMulticallRequests,
-} from "../shared/build-multicall-request";
+} from "../../shared/build-multicall-request";
 import {
   glpManagerContractsDetails,
   GlpManagerDetailsKeys,
   glpToken,
-} from "../shared/contracts-details/glp-manager";
+} from "../../shared/contracts-details/glp-manager";
 import { glpManagerAddress } from "./contracts-details/glp-manger-address";
 
 export const prepareMulticallRequests = (id: string) => {
