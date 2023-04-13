@@ -9,6 +9,7 @@ import { convertStringToBytes32 } from "redstone-protocol/src/common/utils";
 import {
   expectedNumericValues,
   mockNumericPackages,
+  mockNumericPackageMultiSign,
   NUMBER_OF_MOCK_NUMERIC_SIGNERS,
 } from "../tests-common";
 import {
@@ -69,6 +70,18 @@ describe("SampleChainableStorageProxy", function () {
     const fetchedValue = await consumerContract.getComputationResult();
     expect(fetchedValue).to.eq(expectedNumericValues.ETH * 42);
   });
+
+  it("Should process oracle value for one asset with multi sign package", async () => {
+    const wrappedContract =
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+        mockNumericPackageMultiSign
+      );
+
+    await wrappedContract.processOracleValue(ethDataFeedId);
+
+    const fetchedValue = await consumerContract.getComputationResult();
+    expect(fetchedValue).to.eq(expectedNumericValues.ETH * 42);
+  }); 
 
   it("Should process oracle values for 10 assets", async () => {
     const mockNumericPackages = getRange({

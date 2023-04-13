@@ -9,9 +9,11 @@ import { convertStringToBytes32 } from "redstone-protocol/src/common/utils";
 import {
   expectedNumericValues,
   mockNumericPackages,
+  mockNumericPackageMultiSign,
   NUMBER_OF_MOCK_NUMERIC_SIGNERS,
 } from "../tests-common";
 import {
+  getMockNumericMultiSignPackage,
   getMockNumericPackage,
   getRange,
   MockSignerIndex,
@@ -48,6 +50,18 @@ const prepareMockPackagesForManyAssets = () => {
   return mockNumericPackages;
 };
 
+const prepareMockPackagesForManyAssetsMultiSign = () => {
+  const mockNumericPackageMultiSign = getMockNumericMultiSignPackage({
+    dataPoints: dataPoints,
+    mockSignerIndices: getRange({
+      start: 0,
+      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
+    }).map((i: number) => i as MockSignerIndex),
+  });
+
+  return mockNumericPackageMultiSign;
+};
+
 describe("SampleStorageProxy", function () {
   let contract: SampleStorageProxy;
   let consumerContract: SampleStorageProxyConsumer;
@@ -75,6 +89,19 @@ describe("SampleStorageProxy", function () {
   it("Should return correct oracle value for one asset using dry run", async () => {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
+
+    const fetchedValue = await wrappedContract.fetchValueUsingProxyDryRun(
+      ethDataFeedId
+    );
+
+    expect(fetchedValue).to.eq(expectedNumericValues.ETH);
+  });
+
+  it("Should return correct oracle value for one asset using dry run with multi sign package", async () => {
+    const wrappedContract =
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+        mockNumericPackageMultiSign
+      );
 
     const fetchedValue = await wrappedContract.fetchValueUsingProxyDryRun(
       ethDataFeedId
@@ -166,12 +193,45 @@ describe("SampleStorageProxy", function () {
     expect(fetchedValue).to.eq(expectedNumericValues.ETH);
   });
 
+  it("Should return correct oracle value for one asset with multi sign package", async () => {
+    const wrappedContract =
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+        mockNumericPackageMultiSign
+      );
+
+    await wrappedContract.saveOracleValueInContractStorage(ethDataFeedId);
+
+    const fetchedValue = await consumerContract.getOracleValue(ethDataFeedId);
+    expect(fetchedValue).to.eq(expectedNumericValues.ETH);
+  });
+
   it("Should return correct oracle values for 10 assets", async () => {
     const mockNumericPackages = prepareMockPackagesForManyAssets();
 
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
 
+    for (const dataPoint of dataPoints) {
+      await wrappedContract.saveOracleValueInContractStorage(
+        convertStringToBytes32(dataPoint.dataFeedId)
+      );
+      await expect(
+        consumerContract.checkOracleValue(
+          convertStringToBytes32(dataPoint.dataFeedId),
+          Math.round(dataPoint.value * 10 ** 8)
+        )
+      ).not.to.be.reverted;
+    }
+  });
+
+  it("Should return correct oracle values for 10 assets with multi sign package", async () => {
+    const mockNumericPackage = prepareMockPackagesForManyAssetsMultiSign();
+
+    const wrappedContract =
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+        mockNumericPackage
+      );
+      
     for (const dataPoint of dataPoints) {
       await wrappedContract.saveOracleValueInContractStorage(
         convertStringToBytes32(dataPoint.dataFeedId)

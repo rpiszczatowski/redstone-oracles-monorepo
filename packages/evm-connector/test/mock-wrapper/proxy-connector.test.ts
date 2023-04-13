@@ -66,7 +66,7 @@ describe("SampleProxyConnector", function () {
     expect(fetchedValue).to.eq(expectedNumericValues.ETH);
   });
 
-  it("Should return correct oracle value for one asset with multi sign", async () => {
+  it("Should return correct oracle value for one asset with multi sign package", async () => {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
         mockNumericPackageMultiSign
@@ -115,7 +115,7 @@ describe("SampleProxyConnector", function () {
     }
   });
 
-  it("Should return correct oracle values for 10 assets with multi sign", async () => {
+  it("Should return correct oracle values for 10 assets with multi sign package", async () => {
     const dataPoints = [
       { dataFeedId: "ETH", value: 4000 },
       { dataFeedId: "AVAX", value: 5 },
@@ -162,7 +162,7 @@ describe("SampleProxyConnector", function () {
     ).not.to.be.reverted;
   });
 
-  it("Should forward msg.value with multi sign", async () => {
+  it("Should forward msg.value with multi sign package", async () => {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
         mockNumericPackageMultiSign
@@ -188,7 +188,7 @@ describe("SampleProxyConnector", function () {
     ).to.be.revertedWith("WrongValue()");
   });
 
-  it("Should work properly with long encoded functions with multi sign", async () => {
+  it("Should work properly with long encoded functions with multi sign package", async () => {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
         mockNumericPackageMultiSign
@@ -216,7 +216,7 @@ describe("SampleProxyConnector", function () {
     );
   });
 
-  it("Should fail with correct message (timestamp invalid with multi sign)", async () => {
+  it("Should fail with correct message (timestamp invalid with multi sign package)", async () => {
     const newMockPackage = getMockNumericMultiSignPackage({
       ...mockNumericPackageMultiSignConfig,
       timestampMilliseconds: DEFAULT_TIMESTAMP_FOR_TESTS - 1,
@@ -238,7 +238,7 @@ describe("SampleProxyConnector", function () {
     );
   });
 
-  it("Should fail with correct message (insufficient number of unique signers with multi sign)", async () => {
+  it("Should fail with correct message (insufficient number of unique signers with multi sign package)", async () => {
     const newMockPackage = getMockNumericMultiSignPackage({
       ...mockNumericPackageMultiSignConfig,
       mockSignerIndices: mockNumericPackageMultiSignConfig.mockSignerIndices.slice(
@@ -264,7 +264,7 @@ describe("SampleProxyConnector", function () {
     );
   });
 
-  it("Should fail with correct message (signer is not authorised with multi sign)", async () => {
+  it("Should fail with correct message (signer is not authorised with multi sign package)", async () => {
     const newMockPackage = getMockNumericMultiSignPackage({
       ...mockNumericPackageMultiSignConfig,
       mockSignerIndices: mockNumericPackageMultiSignConfig.mockSignerIndices.map(
