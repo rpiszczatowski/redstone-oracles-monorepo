@@ -3,7 +3,7 @@
 pragma solidity ^0.8.4;
 
 interface IRedstoneAdapter {
-  function updateDataFeedValues(uint256 proposedTimestamp) external;
+  function updateDataFeedsValues(uint256 proposedTimestamp) external;
 
   function getValueForDataFeed(bytes32 dataFeedId) external view returns (uint256);
 

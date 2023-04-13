@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 
 import "../without-rounds/PriceFeedsAdapterWithoutRounds.sol";
 
-contract PriceFeedsAdapterLiteMainDemo is PriceFeedsAdapterWithoutRounds {
+contract PriceFeedsAdapterWithoutRoundsMainDemo is PriceFeedsAdapterWithoutRounds {
   function getUniqueSignersThreshold() public view virtual override returns (uint8) {
     return 1;
   }

@@ -14,12 +14,12 @@ abstract contract PriceFeedsAdapterWithRounds is PriceFeedsAdapterBase {
 
   error RoundNotFound(uint256 roundId);
 
-  function validateAndUpdateDataFeedValues(
+  function validateAndUpdateDataFeedsValues(
     bytes32[] memory dataFeedsIdsArray,
     uint256[] memory values
   ) internal virtual override {
-    incrementLatestRoundId();
-    updatePackedTimestampsForLatestRound();
+    _incrementLatestRoundId();
+    _updatePackedTimestampsForLatestRound();
 
     for (uint256 i = 0; i < dataFeedsIdsArray.length; i++) {
       bytes32 dataFeedId = dataFeedsIdsArray[i];
@@ -29,7 +29,7 @@ abstract contract PriceFeedsAdapterWithRounds is PriceFeedsAdapterBase {
 
   function updateDataFeedValue(bytes32 dataFeedId, uint256 dataFeedValue) internal virtual override {
     validateDataFeedValue(dataFeedId, dataFeedValue);
-    bytes32 locationInStorage = getValueLocationInStorage(dataFeedId, getLatestRoundId());
+    bytes32 locationInStorage = _getValueLocationInStorage(dataFeedId, getLatestRoundId());
     assembly {
       sstore(locationInStorage, dataFeedValue)
     }
@@ -40,7 +40,7 @@ abstract contract PriceFeedsAdapterWithRounds is PriceFeedsAdapterBase {
   }
 
   function getValueForDataFeedAndRound(bytes32 dataFeedId, uint256 roundId) public view returns (uint256 dataFeedValue) {
-    bytes32 locationInStorage = getValueLocationInStorage(dataFeedId, roundId);
+    bytes32 locationInStorage = _getValueLocationInStorage(dataFeedId, roundId);
     assembly {
       dataFeedValue := sload(locationInStorage)
     }
@@ -64,11 +64,11 @@ abstract contract PriceFeedsAdapterWithRounds is PriceFeedsAdapterBase {
     (roundDataTimestamp, roundBlockTimestamp) = _unpackTimestamps(packedRoundTimestamps);
   }
 
-  function getValueLocationInStorage(bytes32 dataFeedId, uint256 roundId) private pure returns (bytes32) {
+  function _getValueLocationInStorage(bytes32 dataFeedId, uint256 roundId) private pure returns (bytes32) {
     return keccak256(abi.encode(dataFeedId, roundId, VALUES_MAPPING_STORAGE_LOCATION));
   }
 
-  function getRoundTimestampsLocationInStorage(uint256 roundId) private pure returns (bytes32) {
+  function _getRoundTimestampsLocationInStorage(uint256 roundId) private pure returns (bytes32) {
     return keccak256(abi.encode(roundId, ROUND_TIMESTAMPS_MAPPING_STORAGE_LOCATION));
   }
 
@@ -78,7 +78,7 @@ abstract contract PriceFeedsAdapterWithRounds is PriceFeedsAdapterBase {
     }
   }
 
-  function incrementLatestRoundId() private {
+  function _incrementLatestRoundId() private {
     uint256 latestRoundId = getLatestRoundId();
     assembly {
       sstore(LATEST_ROUND_ID_STORAGE_LOCATION, add(latestRoundId, 1))
@@ -86,16 +86,16 @@ abstract contract PriceFeedsAdapterWithRounds is PriceFeedsAdapterBase {
   }
 
   function getPackedTimestampsForRound(uint256 roundId) public view returns (uint256 roundTimestamp) {
-    bytes32 locationInStorage = getRoundTimestampsLocationInStorage(roundId);
+    bytes32 locationInStorage = _getRoundTimestampsLocationInStorage(roundId);
     assembly {
       roundTimestamp := sload(locationInStorage)
     }
   }
 
-  function updatePackedTimestampsForLatestRound() private {
+  function _updatePackedTimestampsForLatestRound() private {
     uint256 packedTimestamps = getPackedTimestampsFromLatestUpdate();
     uint256 latestRoundId = getLatestRoundId();
-    bytes32 locationInStorage = getRoundTimestampsLocationInStorage(latestRoundId);
+    bytes32 locationInStorage = _getRoundTimestampsLocationInStorage(latestRoundId);
     assembly {
       sstore(locationInStorage, packedTimestamps)
     }

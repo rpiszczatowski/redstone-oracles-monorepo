@@ -58,7 +58,7 @@ import { config } from "../../config";
       dataPackages[dataFeeds[0]][0].dataPackage.timestampMilliseconds;
 
     const firstRound = 1;
-    const updateTransaction = await wrappedContract.updateDataFeedValues(
+    const updateTransaction = await wrappedContract.updateDataFeedsValues(
       firstRound,
       dataPackageTimestamp,
       { gasLimit }

@@ -10,20 +10,20 @@ abstract contract PriceFeedsAdapterWithoutRounds is PriceFeedsAdapterBase {
 
   function updateDataFeedValue(bytes32 dataFeedId, uint256 dataFeedValue) internal override {
     validateDataFeedValue(dataFeedId, dataFeedValue);
-    bytes32 locationInStorage = getValueLocationInStorage(dataFeedId);
+    bytes32 locationInStorage = _getValueLocationInStorage(dataFeedId);
     assembly {
       sstore(locationInStorage, dataFeedValue)
     }
   }
 
   function getValueForDataFeedUnsafe(bytes32 dataFeedId) public view override returns (uint256 dataFeedValue) {
-    bytes32 locationInStorage = getValueLocationInStorage(dataFeedId);
+    bytes32 locationInStorage = _getValueLocationInStorage(dataFeedId);
     assembly {
       dataFeedValue := sload(locationInStorage)
     }
   }
 
-  function getValueLocationInStorage(bytes32 dataFeedId) private pure returns (bytes32) {
+  function _getValueLocationInStorage(bytes32 dataFeedId) private pure returns (bytes32) {
     return keccak256(abi.encode(dataFeedId, VALUES_MAPPING_STORAGE_LOCATION));
   }
 }

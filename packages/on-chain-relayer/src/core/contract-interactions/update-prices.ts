@@ -70,7 +70,7 @@ const updatePricesInPriceFeedsAdapter = async ({
   proposedRound,
   proposedTimestamp,
 }: UpdatePricesArgs): Promise<TransactionResponse> => {
-  return await wrapContract(adapterContract).updateDataFeedValues(
+  return await wrapContract(adapterContract).updateDataFeedsValues(
     proposedRound,
     proposedTimestamp,
     TX_CONFIG

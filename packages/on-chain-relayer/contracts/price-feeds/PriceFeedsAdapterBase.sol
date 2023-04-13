@@ -7,7 +7,7 @@ import "../core/RedstoneAdapterBase.sol";
 abstract contract PriceFeedsAdapterBase is RedstoneAdapterBase {
   // Note! This function is virtual and may contain additional logic in the derived contract
   // For example it can check if the updating conditions are met (e.g. at least one value is deviated enough)
-  function validateAndUpdateDataFeedValues(
+  function validateAndUpdateDataFeedsValues(
     bytes32[] memory dataFeedsIdsArray,
     uint256[] memory values
   ) internal virtual override {

@@ -112,10 +112,10 @@ abstract contract MentoAdapterBase is RedstoneAdapterBase, Ownable {
     LocationInSortedLinkedList[] calldata locationsInSortedLinkedLists
   ) public {
     locationsInSortedLinkedLists; // This argument is used later (extracted from calldata)
-    updateDataFeedValues(proposedTimestamp);
+    updateDataFeedsValues(proposedTimestamp);
   }
 
-  function validateAndUpdateDataFeedValues(bytes32[] memory dataFeedIds, uint256[] memory values)
+  function validateAndUpdateDataFeedsValues(bytes32[] memory dataFeedIds, uint256[] memory values)
     internal
     override
   {

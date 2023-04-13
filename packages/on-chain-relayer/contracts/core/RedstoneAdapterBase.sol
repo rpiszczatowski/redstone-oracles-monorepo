@@ -12,13 +12,13 @@ import "./IRedstoneAdapter.sol";
  * More details here: https://docs.redstone.finance/docs/smart-contract-devs/get-started/redstone-classic
  *
  * Key details about the contract:
- * - Data feed values can be updated using the `updateDataFeedValues` function
+ * - Data feed values can be updated using the `updateDataFeedsValues` function
  * - All data feeds must be updated within a single call, partial updates are not allowed
  * - There is a configurable minimum interval between updates
  * - Updaters can be restricted by overriding `requireAuthorisedUpdater` function
- * - The contract is designed to force values validation, be default it prevents returning zero values
+ * - The contract is designed to force values validation, by default it prevents returning zero values
  * - All data packages in redstone payload must have the same timestamp,
- *    equal to `dataPackagesTimestamp` argument of the `updateDataFeedValues` function
+ *    equal to `dataPackagesTimestamp` argument of the `updateDataFeedsValues` function
  */
 abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneAdapter {
   // We don't use storage variables to avoid potential problems with upgradable contracts
@@ -42,6 +42,8 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
 
   error DataFeedValueCannotBeZero(bytes32 dataFeedId);
 
+  error DataFeedIdNotFound(bytes32 dataFeedId);
+
   // This function should throw if msg.sender is not allowed to update data feed values
   // By default, anyone can update data feed values, but it can be overridden
   function requireAuthorisedUpdater(address updater) public view virtual {}
@@ -50,10 +52,21 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     return new bytes32[](0);
   }
 
+  // This function can be overriden to reduce gas costs
+  function getDataFeedIndex(bytes32 dataFeedId) public view virtual returns (uint256) {
+    bytes32[] memory dataFeedIds = getDataFeedIds();
+    for (uint256 i = 0; i < dataFeedIds.length; i++) {
+      if (dataFeedIds[i] == dataFeedId) {
+        return i;
+      }
+    }
+    revert DataFeedIdNotFound(dataFeedId);
+  }
+
   // This function requires redstone payload attached to the tx calldata
-  function updateDataFeedValues(uint256 dataPackagesTimestamp) public {
+  function updateDataFeedsValues(uint256 dataPackagesTimestamp) public {
     requireAuthorisedUpdater(msg.sender);
-    validateCurrentBlockTimestamp();
+    _assertMinIntervalBetweenUpdatesPassed();
     validateProposedDataPackagesTimestamp(dataPackagesTimestamp);
     _saveTimestampsOfCurrentUpdate(dataPackagesTimestamp);
 
@@ -62,14 +75,13 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     // It will trigger timestamp validation for each data package
     uint256[] memory oracleValues = getOracleNumericValuesFromTxMsg(dataFeedsIdsArray);
 
-    validateAndUpdateDataFeedValues(dataFeedsIdsArray, oracleValues);
+    validateAndUpdateDataFeedsValues(dataFeedsIdsArray, oracleValues);
   }
 
-  // Important! You should not override this function in derived contracts
-  // Timestamp validation is done once in the `updateDataFeedValues` function
-  // But this function is called for each data package in redstone payload and just
-  // Verifies if each data package has the same timestamp as saved in storage
-  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view override {
+  // Note! This function is not called directly, it's called for each data package
+  // in redstone payload and just verifies if each data package has the same timestamp
+  // as the one that was saved in storage
+  function validateTimestamp(uint256 receivedTimestampMilliseconds) public view virtual override {
     // It means that we are in the special view context and we can skip validation of the
     // timestamp. It can be useful for calling view functions, as they can not modify the contract
     // state to pass the timestamp validation below
@@ -86,9 +98,9 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     }
   }
 
-  function validateAndUpdateDataFeedValues(bytes32[] memory dataFeedIdsArray, uint256[] memory values) internal virtual;
+  function validateAndUpdateDataFeedsValues(bytes32[] memory dataFeedIdsArray, uint256[] memory values) internal virtual;
 
-  function validateCurrentBlockTimestamp() private view {
+  function _assertMinIntervalBetweenUpdatesPassed() private view {
     uint256 currentBlockTimestamp = block.timestamp;
     uint256 blockTimestampFromLatestUpdate = getBlockTimestampFromLatestUpdate();
     uint256 minIntervalBetweenUpdates = getMinIntervalBetweenUpdates();
@@ -159,6 +171,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
   }
 
   function getValueForDataFeed(bytes32 dataFeedId) public view returns (uint256) {
+    getDataFeedIndex(dataFeedId); // will revert if data feed id is not supported
     uint256 valueForDataFeed = getValueForDataFeedUnsafe(dataFeedId);
     validateDataFeedValue(dataFeedId, valueForDataFeed);
     return valueForDataFeed;
