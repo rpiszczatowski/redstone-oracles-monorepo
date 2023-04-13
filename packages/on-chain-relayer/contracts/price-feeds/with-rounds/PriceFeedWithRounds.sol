@@ -8,14 +8,6 @@ import "../PriceFeedBase.sol";
 contract PriceFeedWithRounds is PriceFeedBase {
   PriceFeedsAdapterWithRounds public priceFeedsAdapter;
 
-  constructor(
-    PriceFeedsAdapterWithRounds priceFeedsAdapter_,
-    bytes32 dataFeedId_,
-    string memory description_
-  ) PriceFeedBase(dataFeedId_, description_) {
-    priceFeedsAdapter = priceFeedsAdapter_;
-  }
-
   function getPriceFeedAdapter() public view override returns (IRedstoneAdapter) {
     return priceFeedsAdapter;
   }
@@ -26,7 +18,7 @@ contract PriceFeedWithRounds is PriceFeedBase {
 
   function getRoundData(uint80 requestedRoundId) public view override returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound) {
     (uint256 dataFeedValue, uint128 roundDataTimestamp, uint128 roundBlockTimestamp) = priceFeedsAdapter.getRoundData(
-      dataFeedId,
+      getDataFeedId(),
       requestedRoundId
     );
     roundId = requestedRoundId;

@@ -1,16 +1,15 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.4;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../core/IRedstoneAdapter.sol";
 import "./interfaces/IPriceFeed.sol";
 
-abstract contract PriceFeedBase is IPriceFeed {
-  bytes32 public dataFeedId;
-  string public descriptionText;
+abstract contract PriceFeedBase is IPriceFeed, Initializable {
+  function initialize() public initializer {}
 
-  constructor(bytes32 dataFeedId_, string memory description_) {
-    dataFeedId = dataFeedId_;
-    descriptionText = description_;
+  function getDataFeedId() public view virtual returns (bytes32) {
+    return bytes32(0);
   }
 
   function getPriceFeedAdapter() public view virtual returns (IRedstoneAdapter);
@@ -19,8 +18,8 @@ abstract contract PriceFeedBase is IPriceFeed {
     return 8;
   }
 
-  function description() public view override returns (string memory) {
-    return descriptionText;
+  function description() public view virtual override returns (string memory) {
+    return "Redstone Price Feed";
   }
 
   function version() public pure override returns (uint256) {
@@ -40,6 +39,7 @@ abstract contract PriceFeedBase is IPriceFeed {
   }
 
   function latestAnswer() public view returns (int256) {
+    bytes32 dataFeedId = getDataFeedId();
     return int256(getPriceFeedAdapter().getValueForDataFeed(dataFeedId));
   }
 

@@ -2,9 +2,12 @@
 
 pragma solidity ^0.8.4;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../core/RedstoneAdapterBase.sol";
 
-abstract contract PriceFeedsAdapterBase is RedstoneAdapterBase {
+abstract contract PriceFeedsAdapterBase is RedstoneAdapterBase, Initializable {
+  function initialize() public initializer {}
+  
   // Note! This function is virtual and may contain additional logic in the derived contract
   // For example it can check if the updating conditions are met (e.g. at least one value is deviated enough)
   function validateAndUpdateDataFeedsValues(
