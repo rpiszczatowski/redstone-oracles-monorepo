@@ -1,8 +1,8 @@
 import { providers } from "ethers";
-import { BaseFetcher } from "../../BaseFetcher";
-import { EvmMulticallService } from "../EvmMulticallService";
+import { BaseFetcher } from "../../../BaseFetcher";
+import { EvmMulticallService } from "../../EvmMulticallService";
 import { prepareMulticallRequests } from "./prepare-multicall-request";
-import { MulticallParsedResponses, PricesObj } from "../../../types";
+import { MulticallParsedResponses, PricesObj } from "../../../../types";
 import { extractPrice } from "./extract-price";
 
 const MUTLICALL_CONTRACT_ADDRESS = "0x842eC2c7D803033Edf55E478F461FC547Bc54EB2";

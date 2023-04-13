@@ -1,0 +1,22 @@
+{
+  "camelot-weth": {
+    "JUSDC": {
+      "address": "0x2bcd0aac7D98697D8760fB291625829113E354e7",
+      "symbol0": "WETH",
+      "symbol0Decimals": 18,
+      "symbol1": "JUSDC",
+      "symbol1Decimals": 18,
+      "pairedToken": "ETH"
+    }
+  },
+  "camelot-usdc": {
+    "JGLP": {
+      "address": "0x616279fF3dBf57A55e3d1F2E309e5D704E4e58Ae",
+      "symbol0": "JGLP",
+      "symbol0Decimals": 18,
+      "symbol1": "USDC",
+      "symbol1Decimals": 6,
+      "pairedToken": "USDC"
+    }
+  }
+}

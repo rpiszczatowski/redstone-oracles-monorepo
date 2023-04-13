@@ -25,7 +25,7 @@ import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
 import balancerFetchers from "./balancer/all-balancer-fetchers";
-import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/ArbitrumEvmFetcher";
+import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/evm-fetcher/ArbitrumEvmFetcher";
 import {
   arbitrumProvider,
   avalancheProvider,
@@ -37,6 +37,7 @@ import { DeribitFetcher } from "./deribit/DeribitFetcher";
 import { StlouisfedFetcher } from "./stlouisfed/StlouisfedFetcher";
 import { NewyorkfedFetcher } from "./newyorkfed/NewyorkfedFetcher";
 import uniswapV2OnChainFetchers from "./evm-chain/ethereum/uniswap-v2-on-chain/all-uniswap-v2-on-chain-fetchers";
+import camelotFetchers from "./evm-chain/arbitrum/camelot/all-camelot-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -75,4 +76,5 @@ export default {
   ...sushiswapEthereumOnChainFetchers,
   ...curveFetchers,
   ...uniswapV2OnChainFetchers,
+  ...camelotFetchers,
 } as { [name: string]: Fetcher };
