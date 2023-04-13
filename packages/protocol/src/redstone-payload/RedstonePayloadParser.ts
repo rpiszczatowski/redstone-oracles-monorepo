@@ -66,31 +66,12 @@ export class RedstonePayloadParser {
 
     negativeOffset += DATA_PACKAGES_COUNT_BS;
 
-    // TODO: refactor this to be more readable
-    const sigleSignedDataPackages: SignedDataPackage[] = [];
-    const multiSignedDataPackages: MultiSignDataPackage[] = [];
-
-    if (version === SINGLESIGN_REDSTONE_PAYLOAD_VERSION) {
-      for (let i = 0; i < numberOfDataPackages; i++) {
-        const signedDataPackage = this.extractSignedDataPackage(negativeOffset);
-        sigleSignedDataPackages.push(signedDataPackage);
-        negativeOffset += signedDataPackage.toBytes().length;
-      }
-    } else if (version === MULTISIGN_REDSTONE_PAYLOAD_VERSION) {
-      for (let i = 0; i < numberOfDataPackages; i++) {
-        const signedDataPackage =
-          this.extractMultiSignDataPackage(negativeOffset);
-        multiSignedDataPackages.push(signedDataPackage);
-        negativeOffset += signedDataPackage.toBytes().length;
-      }
-    } else {
-      throw new Error(`Unsupported redstone payload version: ${version}`);
-    }
-
-    const signedDataPackages =
-      version === SINGLESIGN_REDSTONE_PAYLOAD_VERSION
-        ? sigleSignedDataPackages
-        : multiSignedDataPackages;
+    const signedDataPackages = this.extractDataPackages(numberOfDataPackages, version, negativeOffset);
+    
+    // Hack to call the reduce function
+    negativeOffset += (signedDataPackages as Array<SignedDataPackage | MultiSignDataPackage>).reduce((acc, dataPackage) => {
+      return acc + dataPackage.toBytes().length;
+    }, 0);
 
     // Preparing remainder prefix bytes
     const remainderPrefix = this.slice({
@@ -99,7 +80,7 @@ export class RedstonePayloadParser {
     });
 
     return {
-      signedDataPackages: signedDataPackages.reverse(), // reversing, because we read from the end
+      signedDataPackages: signedDataPackages, // reversing, because we read from the end
       unsignedMetadata,
       remainderPrefix,
     };
@@ -163,6 +144,35 @@ export class RedstonePayloadParser {
     if (redstoneMarkerHex !== REDSTONE_MARKER_HEX) {
       throw new Error(`Received invalid redstone marker: ${redstoneMarkerHex}`);
     }
+  }
+
+  extractDataPackages(
+    numberOfDataPackages: number,
+    version: number,
+    negativeOffset: number
+  ): SignedDataPackage[] | MultiSignDataPackage[] {
+    const signedDataPackages: SignedDataPackage[] = [];
+    const multiSignDataPackages: MultiSignDataPackage[] = [];
+  
+    if (version === SINGLESIGN_REDSTONE_PAYLOAD_VERSION) {
+      for (let i = 0; i < numberOfDataPackages; i++) {
+        const signedDataPackage = this.extractSignedDataPackage(negativeOffset);
+        signedDataPackages.push(signedDataPackage);
+        negativeOffset += signedDataPackage.toBytes().length;
+      }
+    } else if (version === MULTISIGN_REDSTONE_PAYLOAD_VERSION) {
+      for (let i = 0; i < numberOfDataPackages; i++) {
+        const multiSignDataPackage = this.extractMultiSignDataPackage(negativeOffset);
+        multiSignDataPackages.push(multiSignDataPackage);
+        negativeOffset += multiSignDataPackage.toBytes().length;
+      }
+    } else {
+      throw new Error(`Unsupported redstone payload version: ${version}`);
+    }
+  
+    return version === SINGLESIGN_REDSTONE_PAYLOAD_VERSION
+      ? signedDataPackages.reverse()
+      : multiSignDataPackages.reverse();
   }
 
   extractMultiSignDataPackage(
