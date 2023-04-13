@@ -22,6 +22,7 @@ The goal of this document is to align best practices and coding style for Typesc
 ## Documentation
 - Add comments to each part of the code that is not obvious for future readers
 - Do not add stupid comments (e.g. `// This function adds 2 numbers` for the function called `add2Numbers`). Actually, always try to use good names for functions instead of commenting them
+- We decided to keep all the documentation in a single place (https://docs.redstone.finance/docs/introduction), so don't create new markdown files and keep READMEs short (name + short description + link to the docs). We are still in the process of moving to this approach
 
 ## Helpful links
 - https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/GUIDELINES.md
