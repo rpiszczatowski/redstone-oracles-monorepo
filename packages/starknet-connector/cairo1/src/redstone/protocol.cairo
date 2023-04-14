@@ -157,5 +157,3 @@ fn hash_span(state: felt252, mut value: Span<u8>) -> felt252 {
     }
 }
 
-
-
