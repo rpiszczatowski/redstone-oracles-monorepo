@@ -8,15 +8,14 @@ const CREATE_TABLE_STATEMENT = `CREATE TABLE IF NOT EXISTS ${PRICES_TABLE} (symb
 
 const CREATE_INDEX_STATEMENT = `CREATE UNIQUE INDEX IF NOT EXISTS idx_prices_symbol ON ${PRICES_TABLE} (symbol)`;
 
-const getSelectBySymbolStatement = (symbols: string[]) =>
-  `SELECT * FROM ${PRICES_TABLE} WHERE symbol in (${symbols
-    .map(() => "?")
-    .join(",")})`;
+const getSelectForSymbolsStatement = (symbols: string[]) =>
+  `SELECT * FROM ${PRICES_TABLE} WHERE symbol in (
+    ${symbols.map(() => "?").join(",")})`;
 
 // This statement will update by symbol thanks to index created in CREATE_INDEX_STATEMENT
 const UPDATE_PRICES_BY_SYMBOL = `REPLACE INTO ${PRICES_TABLE} VALUES ($symbol, $prices)`;
 
-const DELETE_TABLE_STATEMENT = `DELETE FROM ${PRICES_TABLE}`;
+const DELETE_FROM_TABLE_STATEMENT = `DELETE FROM ${PRICES_TABLE}`;
 
 interface RawPriceValueInLocalDB {
   symbol: string;
@@ -54,7 +53,7 @@ export const setupLocalDb = () => {
 };
 
 export const clearPricesTable = async () => {
-  const clearTableStatement = db.prepare(DELETE_TABLE_STATEMENT);
+  const clearTableStatement = db.prepare(DELETE_FROM_TABLE_STATEMENT);
   clearTableStatement.run();
 };
 
@@ -65,7 +64,7 @@ export const closeLocalDB = () => {
 export const getPrices = async (
   symbols: string[]
 ): Promise<PriceValuesInLocalDB> => {
-  const statement = db.prepare(getSelectBySymbolStatement(symbols));
+  const statement = db.prepare(getSelectForSymbolsStatement(symbols));
 
   const valuesForSymbols: ReturnPricesFromDb = statement.all(symbols);
   // Preparing a result object with values
