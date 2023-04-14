@@ -44,7 +44,7 @@ export const describeCommonPriceFeedsAdapterTests = (/* adapterContractFactory: 
     expect(1).to.be.equal(1);
   });
 
-  it("should revert if proposed data package timestamp is older as before", async () => {
+  it("should revert if proposed data package timestamp is older than before", async () => {
     expect(1).to.be.equal(1);
   });
 
@@ -69,6 +69,10 @@ export const describeCommonPriceFeedsAdapterTests = (/* adapterContractFactory: 
   });
 
   it("should properly update data feeds one time", async () => {
+    expect(1).to.be.equal(1);
+  });
+
+  it("should properly update data feeds with extra data feeds in payload", async () => {
     expect(1).to.be.equal(1);
   });
 
