@@ -494,7 +494,6 @@
   "PACT": "impactmarket",
   "GNT": "greentrust",
   "EVMOS": "evmos",
-  "STETH": "staked-ether",
   "CUSDC": "compound-usd-coin",
   "USDP": "paxos-standard",
   "CETH": "compound-ether",
@@ -930,7 +929,7 @@
   "YOOSHI": "yooshi",
   "ZBC": "zebec-protocol",
   "ZEON": "zeon",
-  "stETH": "staked-ether",
   "ANKRETH": "ankreth",
-  "WSTETH": "wrapped-steth"
+  "WSTETH": "wrapped-steth",
+  "STETH": "staked-ether"
 }
