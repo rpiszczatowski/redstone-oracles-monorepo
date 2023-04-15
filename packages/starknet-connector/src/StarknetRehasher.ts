@@ -17,7 +17,7 @@ export class StarknetRehasher {
       signedDataPackages = parsedPayload.signedDataPackages;
     }
 
-    let rehashedDataPackages = signedDataPackages.map((signedDataPackage) => {
+    const rehashedDataPackages = signedDataPackages.map((signedDataPackage) => {
       let dataPackage = signedDataPackage.dataPackage;
       dataPackage.hasher = StarknetRehasher.pedersen;
       dataPackage.signer = StarknetRehasher.sign;
@@ -63,9 +63,7 @@ export class StarknetRehasher {
     const signatureString = joinSignature({
       r: hexlify("0x" + msgSignature.r.toString("hex"), { hexPad: "left" }),
       s: hexlify("0x" + msgSignature.s.toString("hex"), { hexPad: "left" }),
-      v: msgSignature.recoveryParam ? 28 : 27,
       recoveryParam: msgSignature.recoveryParam,
-      _vs: hexlify("0x" + msgSignature.s.toString("hex"), { hexPad: "left" }),
     });
 
     console.log("SIG: " + signatureString);

@@ -3,14 +3,14 @@ use array::ArrayTrait;
 use redstone::processor::process_payload;
 use redstone::config::Config;
 
-
-use test::sample_7x1::sample_payload_bytes;
-use test::sample_7x1::SAMPLE_BLOCK_TIMESTAMP;
+use test::sample_stark::sample_payload_bytes;
+use test::sample_stark::SAMPLE_BLOCK_TIMESTAMP;
 
 #[test]
 #[available_gas(2000000000)]
 fn test_simple_payload() {
     let mut signers: Array<felt252> = ArrayTrait::new();
+    signers.append(0x18f349a975878208678624cc989a5613c76980dc0fd995f5f31498dca168f9d);
 
     let mut feed_ids = ArrayTrait::new();
     feed_ids.append('ETH');
@@ -25,6 +25,6 @@ fn test_simple_payload() {
     };
 
     let results = process_payload(sample_payload_bytes(), :config);
-    assert(*results.aggregated_values[0_usize] == 185522320246, 'Wrong ETH value');
-    assert(*results.aggregated_values[1_usize] == 2791053026156, 'Wrong BTC value');
+    assert(*results.aggregated_values[0_usize] == 186824070220, 'Wrong ETH value');
+    assert(*results.aggregated_values[1_usize] == 2996858130915, 'Wrong BTC value');
 }

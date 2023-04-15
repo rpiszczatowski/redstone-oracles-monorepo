@@ -40,7 +40,7 @@ SHELL := /bin/bash
 BIN=/Users/lukaszkalbarczyk/Devel/cairo/target/release/
 
 format:
-	$(BIN)cairo-format -p -r $(SRC)/contracts
+	$(BIN)cairo-format -p -r .
 
 build_dir:
 	mkdir -p build

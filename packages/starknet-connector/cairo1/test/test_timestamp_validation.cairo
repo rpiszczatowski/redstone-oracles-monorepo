@@ -1,6 +1,6 @@
-use redstone::validation::validate_timestamp;
-use redstone::validation::MAX_DATA_TIMESTAMP_DELAY_SECONDS;
-use redstone::validation::MAX_DATA_TIMESTAMP_AHEAD_SECONDS;
+use redstone::timestamp_validation::validate_timestamp;
+use redstone::timestamp_validation::MAX_DATA_TIMESTAMP_DELAY_SECONDS;
+use redstone::timestamp_validation::MAX_DATA_TIMESTAMP_AHEAD_SECONDS;
 use integer::TryInto;
 use option::OptionTrait;
 

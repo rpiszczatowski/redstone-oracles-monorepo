@@ -13,6 +13,7 @@ use demo::debug::GenericArrayPrintImpl;
 #[available_gas(2000000)]
 fn main() {
     let mut signers: Array<felt252> = ArrayTrait::new();
+    signers.append(0x18f349a975878208678624cc989a5613c76980dc0fd995f5f31498dca168f9d);
 
     let mut feed_ids = ArrayTrait::new();
     feed_ids.append('ETH');

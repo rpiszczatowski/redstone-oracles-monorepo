@@ -125,11 +125,11 @@ fn insert_data_point_values(
     }
 
     let data_point = *data_points[index];
-    let feed_index = config.feed_index(
+    let index_in_array = config.index_in_array(
         feed_id: data_point.feed_id, :signer_index, :tmp_signer_count
     );
 
-    match feed_index {
+    match index_in_array {
         Option::Some(x) => dict.insert(u32_to_felt252(x), data_point.value),
         Option::None(()) => (),
     }

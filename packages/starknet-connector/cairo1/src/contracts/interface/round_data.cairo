@@ -9,7 +9,7 @@ struct RoundData {
     block_timestamp: felt252
 }
 
-impl RoundDataSerde of Serde::<RoundData> {
+impl RoundDataSerde of Serde<RoundData> {
     fn serialize(ref serialized: Array<felt252>, input: RoundData) {
         serialized.append(input.payload_timestamp);
         serialized.append(input.round);

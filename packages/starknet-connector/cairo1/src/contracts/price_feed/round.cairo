@@ -11,7 +11,7 @@ struct Round {
     updated_at: felt252,
 }
 
-impl RoundSerde of Serde::<Round> {
+impl RoundSerde of Serde<Round> {
     fn serialize(ref serialized: Array<felt252>, input: Round) {
         serialized.append(input.round_id);
         serialized.append(input.answer);

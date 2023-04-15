@@ -30,7 +30,7 @@ import { runPromiseWithLogging } from "../utils/utils";
 const CACHE_TTL = 5000;
 
 // TODO: restore it!
-const MAX_ALLOWED_TIMESTAMP_DELAY = 1600 * 60 * 1000; // 3 minutes in milliseconds
+const MAX_ALLOWED_TIMESTAMP_DELAY = 3 * 60 * 1000; // 3 minutes in milliseconds
 export const ALL_FEEDS_KEY = "___ALL_FEEDS___";
 
 export interface StatsRequestParams {
