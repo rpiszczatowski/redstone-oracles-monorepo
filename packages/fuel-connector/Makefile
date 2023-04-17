@@ -19,7 +19,7 @@ CONTRACT=sway/contract
 INVOKER=sway/contract_invoker
 INITIALIZER=sway/contract_initializer
 LIBRARY=sway/redstone
-DATA_GENERATOR=../data-generator
+DATA_GENERATOR=../../packages/protocol/scripts/payload-generator
 DATA_DIR=$(DATA_GENERATOR)/data
 
 format:
