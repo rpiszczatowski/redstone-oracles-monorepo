@@ -37,7 +37,7 @@ abstract contract SinglePriceFeedAdapter is PriceFeedsAdapterBase {
   }
 
   function getValueForDataFeedUnsafe(bytes32) public view override returns (uint256 dataFeedValue) {
-    uint192 dataFeedValueCompressed;
+    uint160 dataFeedValueCompressed;
     assembly {
       dataFeedValueCompressed := sload(DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION)
     }
