@@ -1,5 +1,6 @@
 import { Provider } from "fuels";
 import { ContractParamsProvider } from "redstone-sdk";
+import redstone from "redstone-api";
 import { connectPricesContract } from "./prices-contract-test-utils";
 
 jest.setTimeout(10 * 60000);
@@ -30,13 +31,14 @@ describe("Integrated and initialized prices contract", () => {
     expect(timestamp).toBeLessThan(localTimestamp + TEN_MINUTES);
     expect(timestamp).toBeGreaterThan(localTimestamp - TEN_MINUTES);
 
-    const CHANGE_FACTOR = 0.5;
-    const BASE_ETH_PRICE = 160000000000;
-    const BASE_BTC_PRICE = 2250000000000;
+    const CHANGE_FACTOR = 0.1;
 
-    expect(prices[0]).toBeLessThan(BASE_ETH_PRICE * (1 + CHANGE_FACTOR));
-    expect(prices[0]).toBeGreaterThan(BASE_ETH_PRICE * (1 - CHANGE_FACTOR));
-    expect(prices[1]).toBeLessThan(BASE_BTC_PRICE * (1 + CHANGE_FACTOR));
-    expect(prices[1]).toBeGreaterThan(BASE_BTC_PRICE * (1 - CHANGE_FACTOR));
+    const baseEthPrice = (await redstone.getPrice("ETH")).value * 10 ** 8;
+    const baseBtcPrice = (await redstone.getPrice("BTC")).value * 10 ** 8;
+
+    expect(prices[0]).toBeLessThan(baseEthPrice * (1 + CHANGE_FACTOR));
+    expect(prices[0]).toBeGreaterThan(baseEthPrice * (1 - CHANGE_FACTOR));
+    expect(prices[1]).toBeLessThan(baseBtcPrice * (1 + CHANGE_FACTOR));
+    expect(prices[1]).toBeGreaterThan(baseBtcPrice * (1 - CHANGE_FACTOR));
   });
 });
