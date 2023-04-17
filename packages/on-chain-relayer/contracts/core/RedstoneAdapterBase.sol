@@ -22,8 +22,7 @@ import "./IRedstoneAdapter.sol";
  */
 abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneAdapter {
   // We don't use storage variables to avoid potential problems with upgradable contracts
-  bytes32 internal constant LATEST_UPDATE_TIMESTAMPS_STORAGE_LOCATION =
-    0x3d01e4d77237ea0f771f1786da4d4ff757fcba6a92933aa53b1dcef2d6bd6fe2; // keccak256("RedStone.lastUpdateTimestamp");
+  bytes32 internal constant LATEST_UPDATE_TIMESTAMPS_STORAGE_LOCATION = 0x3d01e4d77237ea0f771f1786da4d4ff757fcba6a92933aa53b1dcef2d6bd6fe2; // keccak256("RedStone.lastUpdateTimestamp");
   uint256 internal constant MIN_INTERVAL_BETWEEN_UPDATES = 10 seconds;
   uint256 internal constant BITS_COUNT_IN_16_BYTES = 128;
 
@@ -135,7 +134,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     }
   }
 
-  function getDataTimestampFromLatestUpdate() public view returns (uint256 lastDataTimestamp) {
+  function getDataTimestampFromLatestUpdate() public view virtual returns (uint256 lastDataTimestamp) {
     (lastDataTimestamp, ) = getTimestampsFromLatestUpdate();
   }
 

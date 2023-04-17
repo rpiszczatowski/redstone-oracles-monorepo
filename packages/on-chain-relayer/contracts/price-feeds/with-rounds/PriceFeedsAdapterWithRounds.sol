@@ -5,12 +5,9 @@ pragma solidity ^0.8.4;
 import "../PriceFeedsAdapterBase.sol";
 
 abstract contract PriceFeedsAdapterWithRounds is PriceFeedsAdapterBase {
-  bytes32 constant VALUES_MAPPING_STORAGE_LOCATION =
-    0x4dd0c77efa6f6d590c97573d8c70b714546e7311202ff7c11c484cc841d91bfc; // keccak256("RedStone.oracleValuesMapping");
-  bytes32 constant ROUND_TIMESTAMPS_MAPPING_STORAGE_LOCATION =
-    0x207e00944d909d1224f0c253d58489121d736649f8393199f55eecf4f0cf3eb0; // keccak256("RedStone.roundTimestampMapping");
-  bytes32 constant LATEST_ROUND_ID_STORAGE_LOCATION =
-    0xc68d7f1ee07d8668991a8951e720010c9d44c2f11c06b5cac61fbc4083263938; // keccak256("RedStone.latestRoundId");
+  bytes32 constant VALUES_MAPPING_STORAGE_LOCATION = 0x4dd0c77efa6f6d590c97573d8c70b714546e7311202ff7c11c484cc841d91bfc; // keccak256("RedStone.oracleValuesMapping");
+  bytes32 constant ROUND_TIMESTAMPS_MAPPING_STORAGE_LOCATION = 0x207e00944d909d1224f0c253d58489121d736649f8393199f55eecf4f0cf3eb0; // keccak256("RedStone.roundTimestampMapping");
+  bytes32 constant LATEST_ROUND_ID_STORAGE_LOCATION = 0xc68d7f1ee07d8668991a8951e720010c9d44c2f11c06b5cac61fbc4083263938; // keccak256("RedStone.latestRoundId");
 
   error RoundNotFound(uint256 roundId);
 

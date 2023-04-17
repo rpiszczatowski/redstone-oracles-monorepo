@@ -2,13 +2,10 @@
 
 pragma solidity ^0.8.4;
 
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../PriceFeedsAdapterBase.sol";
 
 abstract contract SinglePriceFeedAdapter is PriceFeedsAdapterBase {
-  bytes32 internal constant DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION =
-    0x632f4a585e47073d66129e9ebce395c9b39d8a1fc5b15d4d7df2e462fb1fccfa; // keccak256("RedStone.singlePriceFeedAdapter");
-
+  bytes32 internal constant DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION = 0x632f4a585e47073d66129e9ebce395c9b39d8a1fc5b15d4d7df2e462fb1fccfa; // keccak256("RedStone.singlePriceFeedAdapter");
   uint256 internal constant MAX_VALUE_WITH_20_BYTES = 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff;
   uint256 internal constant BIT_MASK_TO_CLEAR_LAST_20_BYTES = 0xffffffffffffffffffffffff0000000000000000000000000000000000000000;
 
@@ -48,7 +45,7 @@ abstract contract SinglePriceFeedAdapter is PriceFeedsAdapterBase {
   function getTimestampsFromLatestUpdate() public view override returns (uint128 dataTimestamp, uint128 blockTimestamp) {
     uint256 latestUpdateDetails;
     assembly {
-      latestUpdateDetails := sload(LATEST_UPDATE_TIMESTAMPS_STORAGE_LOCATION)
+      latestUpdateDetails := sload(DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION)
     }
     dataTimestamp = uint128(latestUpdateDetails >> 208); // first 48 bits
     blockTimestamp = uint128((latestUpdateDetails << 48) >> 208); // next 48 bits
