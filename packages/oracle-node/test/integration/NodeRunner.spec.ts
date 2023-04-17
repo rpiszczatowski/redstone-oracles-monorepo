@@ -1,5 +1,4 @@
 import NodeRunner from "../../src/NodeRunner";
-import { JWKInterface } from "arweave/node/lib/wallet";
 import fetchers from "../../src/fetchers";
 import axios from "axios";
 import ArweaveService from "../../src/arweave/ArweaveService";
@@ -84,12 +83,6 @@ jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 /****** MOCKS END ******/
 
 describe("NodeRunner", () => {
-  const jwk: JWKInterface = {
-    e: "e",
-    kty: "kty",
-    n: "n",
-  };
-
   const nodeConfig: NodeConfig = MOCK_NODE_CONFIG;
 
   const runTestNode = async () => {
