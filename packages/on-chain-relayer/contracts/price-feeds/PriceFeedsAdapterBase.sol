@@ -16,9 +16,9 @@ abstract contract PriceFeedsAdapterBase is RedstoneAdapterBase, Initializable {
   ) internal virtual override {
     for (uint256 i = 0; i < dataFeedsIdsArray.length; i++) {
       bytes32 dataFeedId = dataFeedsIdsArray[i];
-      updateDataFeedValue(dataFeedId, values[i]);
+      _updateDataFeedValue(dataFeedId, values[i]);
     }
   }
 
-  function updateDataFeedValue(bytes32 dataFeedId, uint256 value) internal virtual;
+  function _updateDataFeedValue(bytes32 dataFeedId, uint256 value) internal virtual;
 }

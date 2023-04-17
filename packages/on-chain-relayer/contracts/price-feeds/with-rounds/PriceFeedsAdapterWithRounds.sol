@@ -23,11 +23,11 @@ abstract contract PriceFeedsAdapterWithRounds is PriceFeedsAdapterBase {
 
     for (uint256 i = 0; i < dataFeedsIdsArray.length; i++) {
       bytes32 dataFeedId = dataFeedsIdsArray[i];
-      updateDataFeedValue(dataFeedId, values[i]);
+      _updateDataFeedValue(dataFeedId, values[i]);
     }
   }
 
-  function updateDataFeedValue(bytes32 dataFeedId, uint256 dataFeedValue) internal virtual override {
+  function _updateDataFeedValue(bytes32 dataFeedId, uint256 dataFeedValue) internal virtual override {
     validateDataFeedValue(dataFeedId, dataFeedValue);
     bytes32 locationInStorage = _getValueLocationInStorage(dataFeedId, getLatestRoundId());
     assembly {

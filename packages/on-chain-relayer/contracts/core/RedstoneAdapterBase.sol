@@ -149,7 +149,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     }
   }
 
-  function getTimestampsFromLatestUpdate() public view returns (uint128 dataTimestamp, uint128 blockTimestamp) {
+  function getTimestampsFromLatestUpdate() public view virtual returns (uint128 dataTimestamp, uint128 blockTimestamp) {
     return _unpackTimestamps(getPackedTimestampsFromLatestUpdate());
   }
 
@@ -158,7 +158,7 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     blockTimestamp = uint128(packedTimestamps); // last 128 bits
   }
 
-  function _saveTimestampsOfCurrentUpdate(uint256 dataPackagesTimestamp) private {
+  function _saveTimestampsOfCurrentUpdate(uint256 dataPackagesTimestamp) internal virtual {
     uint256 blockTimestamp = block.timestamp;
     assembly {
       let timestamps := packTwoNumbers(dataPackagesTimestamp, blockTimestamp)
