@@ -9,7 +9,8 @@ abstract contract SinglePriceFeedAdapter is PriceFeedsAdapterBase {
   bytes32 internal constant DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION =
     0x632f4a585e47073d66129e9ebce395c9b39d8a1fc5b15d4d7df2e462fb1fccfa; // keccak256("RedStone.singlePriceFeedAdapter");
 
-  uint256 internal constant MAX_VALUE_WITH_20_BYTES = 0x00000000000000000000000000000000ffffffffffffffffffffffffffffffffffffffff;
+  uint256 internal constant MAX_VALUE_WITH_20_BYTES = 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff;
+  uint256 internal constant BIT_MASK_TO_CLEAR_LAST_20_BYTES = 0xffffffffffffffffffffffff0000000000000000000000000000000000000000;
 
   error DataFeedValueTooBig(uint256 valueForDataFeed);
 
@@ -56,7 +57,10 @@ abstract contract SinglePriceFeedAdapter is PriceFeedsAdapterBase {
   function _updateDataFeedValue(bytes32 dataFeedId, uint256 dataFeedValue) internal override {
     validateDataFeedValue(dataFeedId, dataFeedValue);
     assembly {
-      sstore(DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION, dataFeedValue)
+      let curValueFromStorage := sload(DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION)
+      curValueFromStorage := and(curValueFromStorage, BIT_MASK_TO_CLEAR_LAST_20_BYTES) // clear dataFeedValue bits
+      curValueFromStorage := or(curValueFromStorage, dataFeedValue)
+      sstore(DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION, curValueFromStorage)
     }
   }
 
