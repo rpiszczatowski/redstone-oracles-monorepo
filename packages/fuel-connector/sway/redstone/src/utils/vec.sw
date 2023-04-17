@@ -1,4 +1,4 @@
-library vec;
+library;
 
 use std::{u256::U256, vec::*};
 

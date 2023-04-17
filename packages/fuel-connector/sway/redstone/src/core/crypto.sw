@@ -1,7 +1,4 @@
-library crypto;
-
-dep utils/bytes;
-dep sample;
+library;
 
 use std::{
     b256::*,
@@ -16,8 +13,9 @@ use std::{
     vm::evm::ecr::ec_recover_evm_address,
     vm::evm::evm_address::EvmAddress,
 };
-use bytes::*;
-use sample::{SAMPLE_ID_V27, SAMPLE_ID_V28, SampleDataPackage};
+use ::utils::bytes::*;
+
+use ::core::sample::{SAMPLE_ID_V27, SAMPLE_ID_V28, SampleDataPackage};
 
 pub fn recover_signer_address(signature_bytes: Bytes, signable_bytes: Bytes) -> EvmAddress {
     let (r_bytes, mut s_bytes) = signature_bytes.slice_tail_offset(32, 1);

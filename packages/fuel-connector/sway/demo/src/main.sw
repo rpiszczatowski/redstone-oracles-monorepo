@@ -11,7 +11,7 @@ use std::{
     u256::U256,
 };
 
-use redstone::{config::Config, processor::process_input};
+use redstone::core::{config::Config, processor::process_input};
 
 const AVAX = U256::from((0, 0, 0, 0x41564158));
 const BTC = U256::from((0, 0, 0, 0x425443));

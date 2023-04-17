@@ -1,4 +1,4 @@
-library config;
+library;
 
 use std::{
     b256::*,
@@ -12,7 +12,9 @@ use std::{
     u256::U256,
     vec::Vec,
 };
-use redstone::config::Config;
+use redstone::core::config::Config;
+
+const FAKE_TIMESTAMP_KEY = 0x00000000000000000000000000000000000066616b655f74696d657374616d70;
 
 impl Config {
     #[storage(read)]

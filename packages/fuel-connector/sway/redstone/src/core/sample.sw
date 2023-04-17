@@ -1,9 +1,7 @@
-library sample;
-
-dep utils/bytes;
+library;
 
 use std::{bytes::*};
-use bytes::*;
+use ::utils::bytes::*;
 
 pub const SAMPLE_SIGNER_ADDRESS_0 = 0x00000000000000000000000012470f7aBA85c8b81D63137DD5925D6EE114952b;
 pub const SAMPLE_SIGNER_ADDRESS_1 = 0x0000000000000000000000001ea62d73edf8ac05dfcea1a34b9796e937a29eff;
@@ -147,7 +145,7 @@ impl SamplePayload {
             bytes.push(0x00);
             i += 1;
         }
-        bytes.push(self.data_packages.len);  // number of data packages
+        bytes.push(self.data_packages.len); // number of data packages
         i = 0;
         while (i < UNSIGNED_METADATA_BYTE_SIZE_BS) {
             bytes.push(0x00);

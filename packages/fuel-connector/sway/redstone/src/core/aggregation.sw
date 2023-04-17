@@ -1,11 +1,8 @@
-library aggregation;
-
-dep utils/vec;
-dep utils/numbers;
+library;
 
 use std::{u256::U256, vec::*};
-use vec::sort;
-use numbers::*;
+use ::utils::vec::sort;
+use ::utils::numbers::*;
 
 pub fn aggregate_results(results: Vec<Vec<U256>>) -> Vec<U256> {
     let mut aggregated = Vec::new();

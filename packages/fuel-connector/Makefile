@@ -30,7 +30,7 @@ format:
 	cd $(LIBRARY) && forc-fmt
 
 run: format
-	cd $(DEMO) && forc run --unsigned -r \
+	cd $(DEMO) && forc run -r --unsigned \
 	--data $(shell cat $(DATA_DIR)/$(DATA_NAME).hex)
 
 # make SIGNING_KEY=5b4 invoke

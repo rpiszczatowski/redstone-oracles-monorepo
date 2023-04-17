@@ -10,3 +10,5 @@ artifacts
 # Typechain
 typechain
 typechain-types
+
+sway/**/out/**/*

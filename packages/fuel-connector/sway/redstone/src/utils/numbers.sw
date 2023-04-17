@@ -1,9 +1,7 @@
-library numbers;
-
-dep from_bytes;
+library;
 
 use std::{bytes::Bytes, u256::U256};
-use from_bytes::FromBytes;
+use ::utils::from_bytes::FromBytes;
 
 impl U256 {
     pub fn from_u64(number: u64) -> U256 {

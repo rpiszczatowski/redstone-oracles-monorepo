@@ -1,7 +1,7 @@
 contract;
 
-dep prices_abi;
-dep config;
+mod prices_abi;
+mod config;
 
 use std::{
     auth::msg_sender,
@@ -12,7 +12,7 @@ use std::{
     u256::U256,
     vec::Vec,
 };
-use redstone::{config::Config, processor::process_input};
+use redstone::core::{config::Config, processor::process_input};
 
 use prices_abi::{empty_result, Prices};
 use config::*;
@@ -24,6 +24,8 @@ storage {
     prices: StorageMap<U256, U256> = StorageMap {},
     timestamp: u64 = 0,
 }
+
+const SALT = 0x0000000000000000000000000000000000000000000000000000000000000001;
 
 impl Prices for Contract {
     #[storage(read, write)]

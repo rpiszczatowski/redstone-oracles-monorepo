@@ -1,4 +1,4 @@
-library prices_abi;
+library;
 
 use std::{bytes::Bytes, u256::U256, vec::Vec};
 

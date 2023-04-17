@@ -1,18 +1,13 @@
-library processor;
-
-dep protocol;
-dep config;
-dep config_validation;
-dep aggregation;
-dep sample;
+library;
 
 use std::{bytes::*, logging::log, option::*, u256::U256, vec::*};
 
-use protocol::Payload;
-use config::Config;
-use config_validation::*;
-use aggregation::aggregate_results;
-use sample::{SAMPLE_SIGNER_ADDRESS_0, SAMPLE_SIGNER_ADDRESS_1, SamplePayload};
+use ::core::protocol::Payload;
+use ::core::config::Config;
+use ::core::config_validation::*;
+use ::core::aggregation::aggregate_results;
+
+use ::core::sample::{SAMPLE_SIGNER_ADDRESS_0, SAMPLE_SIGNER_ADDRESS_1, SamplePayload};
 
 enum Entry {
     Value: U256,
