@@ -2,6 +2,8 @@ import { Consola } from "consola";
 import { v4 as uuidv4 } from "uuid";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import ManifestHelper, { TokensBySource } from "../manifest/ManifestHelper";
+import { RedstoneNumber } from "../numbers/RedstoneNumber";
+import { N } from "../numbers/RedstoneNumberFactory";
 import { IterationContext } from "../schedulers/IScheduler";
 import { terminateWithManifestConfigError } from "../Terminator";
 import {
@@ -11,12 +13,12 @@ import {
   PriceDataBeforeAggregation,
   PriceDataBeforeSigning,
   PriceDataFetched,
+  SanitizedPriceDataBeforeAggregation,
 } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 import {
   calculateAverageValue,
   calculateDeviationPercent,
-  tryToParseToSafeNumber,
 } from "../utils/numbers";
 import { trackEnd, trackStart } from "../utils/performance-tracker";
 import { promiseTimeout } from "../utils/promise-timeout";
@@ -32,15 +34,10 @@ export type PricesBeforeAggregation = {
 };
 
 export interface PriceValidationArgs {
-  value: number;
+  value: RedstoneNumber;
   timestamp: number;
   deviationConfig: DeviationCheckConfig;
   recentPrices: PriceValueInLocalDB[];
-}
-
-interface PriceValidationResult {
-  isValid: boolean;
-  reason: string;
 }
 
 export default class PricesService {
@@ -198,12 +195,14 @@ export default class PricesService {
           prices
         );
 
-        // Throwing an error if price is invalid or too deviated
-        this.assertValidPrice(
-          priceAfterAggregation,
-          pricesInLocalDBForSymbol,
-          deviationCheckConfig
-        );
+        // Throwing an error if price < 0 is invalid or too deviated
+        priceAfterAggregation.value.assertNonNegative();
+        this.assertStableDeviation({
+          value: priceAfterAggregation.value,
+          timestamp: priceAfterAggregation.timestamp,
+          deviationConfig: deviationCheckConfig,
+          recentPrices: pricesInLocalDBForSymbol,
+        });
 
         // Throwing an error if not enough sources for symbol
         this.assertSourcesNumber(priceAfterAggregation, this.manifest);
@@ -218,39 +217,34 @@ export default class PricesService {
   }
 
   /**
-   * This function converts all source values to numbers
+   * This function converts all source values to Redstone Numbers
    * and excludes sources with invalid values
    * */
   sanitizeSourceValues(
     price: PriceDataBeforeAggregation,
     recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
     deviationCheckConfig: DeviationCheckConfig
-  ): PriceDataBeforeAggregation {
-    const newSources: { [symbol: string]: number } = {};
+  ): SanitizedPriceDataBeforeAggregation {
+    const newSources: { [symbol: string]: RedstoneNumber } = {};
 
     for (const [sourceName, valueFromSource] of Object.entries(price.source)) {
-      const { number: valueFromSourceNum, isValid: isNumber } =
-        tryToParseToSafeNumber(valueFromSource);
+      try {
+        const valueFromSourceNum = N(valueFromSource);
 
-      if (!isNumber) {
-        logger.warn(
-          `Excluding ${price.symbol} value ${valueFromSourceNum} for source: ${sourceName}. Reason: value is not valid REDSTONE number`
-        );
-        continue;
-      }
+        valueFromSourceNum.assertNonNegative();
 
-      const { isValid, reason } = this.validatePrice({
-        value: valueFromSource,
-        timestamp: price.timestamp,
-        deviationConfig: deviationCheckConfig,
-        recentPrices: recentPricesInLocalDBForSymbol,
-      });
+        this.assertStableDeviation({
+          // clone value
+          value: N(valueFromSourceNum),
+          timestamp: price.timestamp,
+          deviationConfig: deviationCheckConfig,
+          recentPrices: recentPricesInLocalDBForSymbol,
+        });
 
-      if (isValid) {
         newSources[sourceName] = valueFromSourceNum;
-      } else {
+      } catch (e: any) {
         logger.warn(
-          `Excluding ${price.symbol} value ${valueFromSourceNum} for source: ${sourceName}. Reason: ${reason}`
+          `Excluding ${price.symbol} value ${valueFromSource} for source: ${sourceName}. Reason: ${e.message}`
         );
       }
     }
@@ -258,54 +252,21 @@ export default class PricesService {
     return { ...price, source: newSources };
   }
 
-  assertValidPrice(
-    price: PriceDataAfterAggregation,
-    recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
-    deviationCheckConfig: DeviationCheckConfig
-  ) {
-    const { isValid, reason } = this.validatePrice({
-      value: price.value,
-      timestamp: price.timestamp,
-      deviationConfig: deviationCheckConfig,
-      recentPrices: recentPricesInLocalDBForSymbol,
-    });
-
-    if (!isValid) {
-      throw new Error(
-        `Invalid price for symbol ${price.symbol}. Reason: ${reason}`
-      );
-    }
-  }
-
-  validatePrice(args: PriceValidationArgs): PriceValidationResult {
-    const { value, deviationConfig } = args;
+  assertStableDeviation(args: PriceValidationArgs) {
+    const { deviationConfig } = args;
     const { deviationWithRecentValues } = deviationConfig;
 
-    let isValid = false;
-    let reason = "";
+    const deviationPercent = this.getDeviationWithRecentValuesAverage(args);
 
-    if (isNaN(value)) {
-      reason = `Value is not a number. Received: ${value}`;
-    } else if (value < 0) {
-      reason = "Value is less than 0";
-    } else {
-      const deviationPercent = this.getDeviationWithRecentValuesAverage(args);
-
-      if (deviationPercent > deviationWithRecentValues.maxPercent) {
-        reason = `Value is too deviated (${deviationPercent}%)`;
-      } else {
-        isValid = true;
-      }
+    if (deviationPercent.gt(deviationWithRecentValues.maxPercent)) {
+      throw new Error(`Value is too deviated (${deviationPercent}%)`);
     }
-
-    return {
-      isValid,
-      reason,
-    };
   }
 
   // Calculates max deviation from average of recent values
-  getDeviationWithRecentValuesAverage(args: PriceValidationArgs): number {
+  getDeviationWithRecentValuesAverage(
+    args: PriceValidationArgs
+  ): RedstoneNumber {
     const { value, timestamp, deviationConfig, recentPrices } = args;
     const { deviationWithRecentValues } = deviationConfig;
 
@@ -315,10 +276,10 @@ export default class PricesService {
           timestamp - recentPrice.timestamp <=
           deviationWithRecentValues.maxDelayMilliseconds
       )
-      .map((recentPrice) => recentPrice.value);
+      .map((recentPrice) => N(recentPrice.value));
 
     if (priceValuesToCompareWith.length === 0) {
-      return 0;
+      return N(0);
     } else {
       const recentPricesAvg = calculateAverageValue(priceValuesToCompareWith);
       return calculateDeviationPercent({

@@ -1,12 +1,14 @@
+import { RedstoneNumber } from "../numbers/RedstoneNumber";
+import { N } from "../numbers/RedstoneNumberFactory";
 import {
   Aggregator,
   PriceDataAfterAggregation,
-  PriceDataBeforeAggregation,
+  SanitizedPriceDataBeforeAggregation,
 } from "../types";
 
 const medianAggregator: Aggregator = {
   getAggregatedValue(
-    price: PriceDataBeforeAggregation
+    price: SanitizedPriceDataBeforeAggregation
   ): PriceDataAfterAggregation {
     return {
       ...price,
@@ -15,22 +17,17 @@ const medianAggregator: Aggregator = {
   },
 };
 
-export function getMedianValue(arr: number[]): number {
+export function getMedianValue(arr: RedstoneNumber[]): RedstoneNumber {
   if (arr.length === 0) {
     throw new Error("Cannot get median value of an empty array");
   }
-  if (arr.some(isNaN)) {
-    throw new Error(
-      "Cannot get median value of an array that contains NaN value"
-    );
-  }
 
-  arr = arr.sort((a, b) => a - b);
+  arr = arr.sort((a, b) => N(a).sub(b).unsafeToNumber());
 
   const middle = Math.floor(arr.length / 2);
 
   if (arr.length % 2 === 0) {
-    return (arr[middle] + arr[middle - 1]) / 2;
+    return arr[middle].add(arr[middle - 1]).div(2);
   } else {
     return arr[middle];
   }

@@ -2,7 +2,6 @@ import { AbstractBatchPutOperation, AbstractSublevel } from "abstract-level";
 import { Level } from "level";
 import { config } from "../../config";
 import { PriceDataAfterAggregation } from "../../types";
-import { roundTimestamp } from "../../utils/timestamps";
 
 const PRICES_SUBLEVEL = "prices";
 const DEFAULT_LEVEL_OPTS = {
@@ -12,7 +11,7 @@ const DEFAULT_LEVEL_OPTS = {
 
 export interface PriceValueInLocalDB {
   timestamp: number;
-  value: number;
+  value: string;
 }
 
 export interface PriceValuesInLocalDB {
@@ -81,7 +80,7 @@ export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
 
   for (const price of prices) {
     const priceForSymbolToAdd: PriceValueInLocalDB = {
-      value: price.value,
+      value: price.value.toString(),
       timestamp: price.timestamp,
     };
 
@@ -115,12 +114,26 @@ const lastPrices: LastPrices = {};
 const setLastPrices = (prices: PriceDataAfterAggregation[]) => {
   for (const price of prices) {
     const { symbol, value, timestamp } = price;
-    lastPrices[symbol] = { value, timestamp };
+    lastPrices[symbol] = { value: value.toString(), timestamp };
   }
 };
 
-export const getLastPrice = (symbol: string): PriceValueInLocalDB | undefined =>
-  lastPrices[symbol];
+type PriceValueInLocalDBAsNumber =
+  | {
+      timestamp: number;
+      value: number;
+    }
+  | undefined;
+
+export const getLastPrice = (
+  symbol: string
+): PriceValueInLocalDBAsNumber | undefined =>
+  lastPrices[symbol]
+    ? {
+        value: Number(lastPrices[symbol].value),
+        timestamp: lastPrices[symbol].timestamp,
+      }
+    : undefined;
 
 export default {
   savePrices,

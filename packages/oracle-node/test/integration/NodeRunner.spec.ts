@@ -27,6 +27,9 @@ const terminateWithManifestConfigErrorSpy = jest.spyOn(
   Terminator,
   "terminateWithManifestConfigError"
 );
+
+const simulateSerialization = (obj: any) => JSON.parse(JSON.stringify(obj));
+
 terminateWithManifestConfigErrorSpy.mockImplementation((message: string) => {
   throw new Error(`Terminate mock manifest config error: ${message}`);
 });
@@ -49,7 +52,13 @@ jest.mock("../../src/fetchers/uniswap/UniswapFetcher");
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.post.mockImplementation((url) => {
-  if (["https://api.redstone.finance/metrics", broadcastingUrl].includes(url)) {
+  if (
+    [
+      "https://api.redstone.finance/metrics",
+      broadcastingUrl,
+      priceDataBroadcastingUrl,
+    ].includes(url)
+  ) {
     return Promise.resolve();
   }
   return Promise.reject(
@@ -190,78 +199,94 @@ describe("NodeRunner", () => {
     it("should broadcast fetched and signed prices", async () => {
       await runTestNode();
 
-      expect(axios.post).toHaveBeenCalledWith(broadcastingUrl, {
-        requestSignature:
-          "0x262eda99c935322d84d2431b5d81adfc9b7cc46169240c43ea8973cb3d6e48cd29fb2a4f2df58ba1b0ff785b94cdc700f1f8a2ba7a24394e212dffd0d8fa653f1c",
-        dataPackages: [
-          {
-            signature:
-              "sdW2jBaPdAExmaq00AIpqMZu2Dv4NqD0rSn1w9oJcsINKfpxHfS3f+PP1V/5ReBuBF7cxBlkK3ary1g3SPcRchs=",
-            timestampMilliseconds: 111111000,
-            dataPoints: [
-              {
-                dataFeedId: "BTC",
-                value: 444.5,
-              },
-            ],
-          },
-          {
-            signature:
-              "bC4RSM4PQ+GNydZEGANTeH+5ciIsgNKtV7oKud0Qks0bAvKCexTVZHpB15CIdH07EYpB1ZvmN6HEQVYA8ousvhw=",
-            timestampMilliseconds: 111111000,
-            dataPoints: [
-              {
-                dataFeedId: "ETH",
-                value: 42,
-              },
-            ],
-          },
-          {
-            signature:
-              "BUQ0bTRTcvwX0HZJRYtts9bXOvlSNCaObSYxHnpyTok6zWggZTDIwxThyd5rcsn5+9gDUNrSVT2ujhy5Ur+O0Rw=",
-            timestampMilliseconds: 111111000,
-            dataPoints: [
-              {
-                dataFeedId: "BTC",
-                value: 444.5,
-              },
-              {
-                dataFeedId: "ETH",
-                value: 42,
-              },
-            ],
-          },
-        ],
-      });
+      const firstCallArgs = (axios.post as any).mock.calls[0];
+
+      expect(firstCallArgs[0]).toEqual(broadcastingUrl);
+      expect(simulateSerialization(firstCallArgs[1])).toEqual(
+        simulateSerialization({
+          requestSignature:
+            "0x262eda99c935322d84d2431b5d81adfc9b7cc46169240c43ea8973cb3d6e48cd29fb2a4f2df58ba1b0ff785b94cdc700f1f8a2ba7a24394e212dffd0d8fa653f1c",
+          dataPackages: [
+            {
+              signature:
+                "sdW2jBaPdAExmaq00AIpqMZu2Dv4NqD0rSn1w9oJcsINKfpxHfS3f+PP1V/5ReBuBF7cxBlkK3ary1g3SPcRchs=",
+              timestampMilliseconds: 111111000,
+              dataPoints: [
+                {
+                  dataFeedId: "BTC",
+                  value: 444.5,
+                },
+              ],
+            },
+            {
+              signature:
+                "bC4RSM4PQ+GNydZEGANTeH+5ciIsgNKtV7oKud0Qks0bAvKCexTVZHpB15CIdH07EYpB1ZvmN6HEQVYA8ousvhw=",
+              timestampMilliseconds: 111111000,
+              dataPoints: [
+                {
+                  dataFeedId: "ETH",
+                  value: 42,
+                },
+              ],
+            },
+            {
+              signature:
+                "BUQ0bTRTcvwX0HZJRYtts9bXOvlSNCaObSYxHnpyTok6zWggZTDIwxThyd5rcsn5+9gDUNrSVT2ujhy5Ur+O0Rw=",
+              timestampMilliseconds: 111111000,
+              dataPoints: [
+                {
+                  dataFeedId: "BTC",
+                  value: 444.5,
+                },
+                {
+                  dataFeedId: "ETH",
+                  value: 42,
+                },
+              ],
+            },
+          ],
+        })
+      );
     });
 
     it("should broadcast fetched and signed price data", async () => {
       await runTestNode();
 
-      expect(axios.post).toHaveBeenCalledWith(priceDataBroadcastingUrl, [
-        {
-          liteEvmSignature: "mock_evm_signed_lite",
-          id: "00000000-0000-0000-0000-000000000000",
-          permawebTx: "mock-permaweb-tx",
-          provider: TEST_PROVIDER_EVM_ADDRESS,
-          source: { coingecko: 444, uniswap: 445 },
-          symbol: "BTC",
-          timestamp: 111111000,
-          value: 444.5,
-          version: "0.4",
-        },
-        {
-          liteEvmSignature: "mock_evm_signed_lite",
-          id: "00000000-0000-0000-0000-000000000000",
-          permawebTx: "mock-permaweb-tx",
-          provider: TEST_PROVIDER_EVM_ADDRESS,
-          source: { uniswap: 42 },
-          symbol: "ETH",
-          timestamp: 111111000,
-          value: 42,
-          version: "0.4",
-        },
-      ]);
+      // one for /bulk and the sconde one for prices
+      expect(axios.post).toHaveBeenCalledTimes(2);
+
+      const secondCallArgs = (axios.post as any).mock.calls[1];
+
+      // first arg
+      expect(secondCallArgs[0]).toBe(priceDataBroadcastingUrl);
+
+      // second arg (we actually care about serialized format)
+      expect(simulateSerialization(secondCallArgs[1])).toEqual(
+        simulateSerialization([
+          {
+            liteEvmSignature: "mock_evm_signed_lite",
+            id: "00000000-0000-0000-0000-000000000000",
+            permawebTx: "mock-permaweb-tx",
+            provider: TEST_PROVIDER_EVM_ADDRESS,
+            source: { coingecko: 444, uniswap: 445 },
+            symbol: "BTC",
+            timestamp: 111111000,
+            value: 444.5,
+            version: "0.4",
+          },
+          {
+            liteEvmSignature: "mock_evm_signed_lite",
+            id: "00000000-0000-0000-0000-000000000000",
+            permawebTx: "mock-permaweb-tx",
+            provider: TEST_PROVIDER_EVM_ADDRESS,
+            source: { uniswap: 42 },
+            symbol: "ETH",
+            timestamp: 111111000,
+            value: 42,
+            version: "0.4",
+          },
+        ])
+      );
     });
   });
 

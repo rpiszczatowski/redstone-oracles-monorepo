@@ -1,18 +1,21 @@
+import { RedstoneNumber } from "../../numbers/RedstoneNumber";
+import { N } from "../../numbers/RedstoneNumberFactory";
 import {
   Aggregator,
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
+  SanitizedPriceDataBeforeAggregation,
 } from "../../types";
 import { getTickLiquidities } from "./get-liquidities";
 
 export interface PricesWithLiquidity {
-  price: number;
-  liquidity: number;
+  price: RedstoneNumber;
+  liquidity: RedstoneNumber;
 }
 
 export const lwapAggregator: Aggregator = {
   getAggregatedValue(
-    price: PriceDataBeforeAggregation,
+    price: SanitizedPriceDataBeforeAggregation,
     allPrices?: PriceDataBeforeAggregation[]
   ): PriceDataAfterAggregation {
     return {
@@ -23,9 +26,9 @@ export const lwapAggregator: Aggregator = {
 };
 
 const getLwapValue = (
-  price: PriceDataBeforeAggregation,
+  price: SanitizedPriceDataBeforeAggregation,
   allPrices?: PriceDataBeforeAggregation[]
-): number => {
+): RedstoneNumber => {
   if (!allPrices) {
     throw new Error(
       `Cannot calculate LWAP, missing all prices for ${price.symbol}`
@@ -36,30 +39,23 @@ const getLwapValue = (
   return calculateLwap(valuesWithLiquidity);
 };
 
-const calculateLwap = (valuesWithLiquidity: PricesWithLiquidity[]) => {
+const calculateLwap = (
+  valuesWithLiquidity: PricesWithLiquidity[]
+): RedstoneNumber => {
   const liquiditySum = calculateLiquiditySum(valuesWithLiquidity);
-  let lwapValue = 0;
+  let lwapValue = N(0);
   for (const { price, liquidity } of valuesWithLiquidity) {
-    validatePricesAndLiquidities(price, liquidity);
-    const liquidityNormalized = liquidity / liquiditySum;
-    lwapValue += price * liquidityNormalized;
+    const liquidityNormalized = liquidity.div(liquiditySum);
+    const amount = price.mul(liquidityNormalized);
+    lwapValue = lwapValue.add(amount);
   }
   return lwapValue;
 };
 
-const validatePricesAndLiquidities = (price: number, liquidity: number) => {
-  if (isNaN(price)) {
-    throw new Error("Cannot get LWAP value if price is NaN value");
-  }
-  if (isNaN(liquidity)) {
-    throw new Error("Cannot get LWAP value if liquidity is NaN value");
-  }
-};
-
 const calculateLiquiditySum = (valuesWithLiquidity: PricesWithLiquidity[]) => {
   return valuesWithLiquidity.reduce(
-    (sum, { liquidity }) => (sum += liquidity),
-    0
+    (sum, { liquidity }) => sum.add(liquidity),
+    N(0)
   );
 };
 
