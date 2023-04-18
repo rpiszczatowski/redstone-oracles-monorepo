@@ -1,9 +1,14 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import { WrapperBuilder } from "@redstone-finance/evm-connector";
+import { IRedstoneAdapter } from "../../../../typechain-types";
+import { formatBytes32String } from "ethers/lib/utils";
+import { time } from "@nomicfoundation/hardhat-network-helpers";
+import { ethers } from "hardhat";
 
 chai.use(chaiAsPromised);
 
-export const describeCommonPriceFeedsAdapterTests = (/* adapterContractFactory: IRedstoneAdapter__factory */) => {
+export const describeCommonPriceFeedsAdapterTests = (adapterContractName: string) => {
   it("should properly initialize", async () => {
     expect(1).to.be.equal(1);
   });
@@ -77,7 +82,32 @@ export const describeCommonPriceFeedsAdapterTests = (/* adapterContractFactory: 
   });
 
   it("should properly update data feeds several times", async () => {
-    expect(1).to.be.equal(1);
+    // Deploy a new adapter contract
+    const adapterContractFactory = await ethers.getContractFactory(adapterContractName);
+    const contract = await adapterContractFactory.deploy();
+
+    // Update data feeds several times
+    for (let i = 1; i <= 3; i++) {
+      const btcMockValue = i * 100;
+      const mockBlockTimestamp = await time.latest() + i * 10;
+      const mockDataTimestamp = (mockBlockTimestamp - 1) * 1000;
+
+      // Wrap it with Redstone payload
+      const wrappedContract = await WrapperBuilder.wrap(contract).usingSimpleNumericMock({
+        mockSignersCount: 2,
+        timestampMilliseconds: mockDataTimestamp,
+        dataPoints: [{ dataFeedId: "BTC", value: btcMockValue }],
+      }) as IRedstoneAdapter;
+
+      // Update one data feed
+      await time.setNextBlockTimestamp(mockBlockTimestamp);
+      const tx = await wrappedContract.updateDataFeedsValues(mockDataTimestamp);
+      await tx.wait();
+
+      // Getting values
+      const value = await contract.getValueForDataFeed(formatBytes32String("BTC"));
+      expect(value.toNumber()).to.equal(btcMockValue * 10 ** 8);
+    }
   });
 
   it("should get a single data feed value", async () => {

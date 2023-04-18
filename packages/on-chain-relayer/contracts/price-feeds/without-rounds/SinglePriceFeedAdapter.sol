@@ -5,6 +5,7 @@ pragma solidity ^0.8.4;
 import "../PriceFeedsAdapterBase.sol";
 
 abstract contract SinglePriceFeedAdapter is PriceFeedsAdapterBase {
+
   bytes32 internal constant DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION = 0x632f4a585e47073d66129e9ebce395c9b39d8a1fc5b15d4d7df2e462fb1fccfa; // keccak256("RedStone.singlePriceFeedAdapter");
   uint256 internal constant MAX_VALUE_WITH_20_BYTES = 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff;
   uint256 internal constant BIT_MASK_TO_CLEAR_LAST_20_BYTES = 0xffffffffffffffffffffffff0000000000000000000000000000000000000000;
@@ -34,7 +35,7 @@ abstract contract SinglePriceFeedAdapter is PriceFeedsAdapterBase {
     }
   }
 
-  function getValueForDataFeedUnsafe(bytes32) public view override returns (uint256 dataFeedValue) {
+  function getValueForDataFeedUnsafe(bytes32) public view virtual override returns (uint256 dataFeedValue) {
     uint160 dataFeedValueCompressed;
     assembly {
       dataFeedValueCompressed := sload(DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION)
@@ -42,7 +43,7 @@ abstract contract SinglePriceFeedAdapter is PriceFeedsAdapterBase {
     return uint256(dataFeedValueCompressed);
   }
 
-  function getTimestampsFromLatestUpdate() public view override returns (uint128 dataTimestamp, uint128 blockTimestamp) {
+  function getTimestampsFromLatestUpdate() public view virtual override returns (uint128 dataTimestamp, uint128 blockTimestamp) {
     uint256 latestUpdateDetails;
     assembly {
       latestUpdateDetails := sload(DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION)
@@ -51,7 +52,7 @@ abstract contract SinglePriceFeedAdapter is PriceFeedsAdapterBase {
     blockTimestamp = uint128((latestUpdateDetails << 48) >> 208); // next 48 bits
   }
 
-  function _updateDataFeedValue(bytes32 dataFeedId, uint256 dataFeedValue) internal override {
+  function _updateDataFeedValue(bytes32 dataFeedId, uint256 dataFeedValue) internal virtual override {
     validateDataFeedValue(dataFeedId, dataFeedValue);
     assembly {
       let curValueFromStorage := sload(DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION)
@@ -61,7 +62,7 @@ abstract contract SinglePriceFeedAdapter is PriceFeedsAdapterBase {
     }
   }
 
-  function _saveTimestampsOfCurrentUpdate(uint256 dataPackagesTimestamp) internal override {
+  function _saveTimestampsOfCurrentUpdate(uint256 dataPackagesTimestamp) internal virtual override {
     uint256 timestampsPacked = dataPackagesTimestamp << 208; // 48 first bits for dataPackagesTimestamp
     timestampsPacked |= (block.timestamp << 160); // 48 next bits for block.timestamp
     assembly {

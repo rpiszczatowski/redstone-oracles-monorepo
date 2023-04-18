@@ -7,7 +7,7 @@ chai.use(chaiAsPromised);
 describe("PriceFeedsAdapterWithRounds", () => {
 
   describe("Common adapter tests", () => {
-    describeCommonPriceFeedsAdapterTests();
+    describeCommonPriceFeedsAdapterTests("PriceFeedsAdapterWithRoundsMock");
   });
 
   describe("Tests for adapter with rounds support", () => {
