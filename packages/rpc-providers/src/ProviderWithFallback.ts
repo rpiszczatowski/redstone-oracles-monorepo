@@ -54,6 +54,72 @@ export class ProviderWithFallback
     this.config = { ...FALLBACK_DEFAULT_CONFIG, ...config };
   }
 
+  override getNetwork(): Promise<Network> {
+    return this.currentProvider.getNetwork();
+  }
+
+  override on(eventName: EventType, listener: Listener): Provider {
+    this.saveGlobalListener(eventName, listener);
+    return this.currentProvider.on(eventName, listener);
+  }
+
+  override once(eventName: EventType, listener: Listener): Provider {
+    this.saveGlobalListener(eventName, listener);
+    return this.currentProvider.once(eventName, listener);
+  }
+
+  override emit(eventName: EventType, ...args: any[]): boolean {
+    return this.currentProvider.emit(eventName, ...args);
+  }
+
+  override listenerCount(eventName?: EventType | undefined): number {
+    return this.currentProvider.listenerCount(eventName);
+  }
+
+  override listeners(eventName?: EventType | undefined): Listener[] {
+    return this.currentProvider.listeners(eventName);
+  }
+
+  override addListener(eventName: EventType, listener: Listener): Provider {
+    return this.currentProvider.addListener(eventName, listener);
+  }
+
+  override off(
+    eventName: EventType,
+    listener?: Listener | undefined
+  ): Provider {
+    this.currentProvider.off(eventName, listener);
+    this.updateGlobalListenerAfterRemoval();
+
+    return this.currentProvider;
+  }
+
+  override removeAllListeners(eventName?: EventType | undefined): Provider {
+    this.currentProvider.removeAllListeners(eventName);
+    this.updateGlobalListenerAfterRemoval();
+
+    return this.currentProvider;
+  }
+
+  override removeListener(eventName: EventType, listener: Listener): Provider {
+    this.currentProvider.removeListener(eventName, listener);
+    this.updateGlobalListenerAfterRemoval();
+
+    return this.currentProvider;
+  }
+
+  override waitForTransaction(
+    transactionHash: string,
+    confirmations?: number | undefined,
+    timeout?: number | undefined
+  ): Promise<TransactionReceipt> {
+    return this.currentProvider.waitForTransaction(
+      transactionHash,
+      confirmations,
+      timeout
+    );
+  }
+
   private saveGlobalListener(
     eventType: EventType,
     listener: Listener,
@@ -85,6 +151,7 @@ export class ProviderWithFallback
     } catch (error: any) {
       const newProviderIndex = this.electNewProviderOrFail(error, retryNumber);
       this.useProvider(newProviderIndex);
+
       return await this.executeWithFallback(retryNumber + 1, fnName, ...args);
     }
   }
@@ -94,6 +161,7 @@ export class ProviderWithFallback
     this.providerIndex = providerIndex;
     const newProvider = this.providers[this.providerIndex];
     this.currentProvider = newProvider;
+
     for (const { listener, once, eventType } of this.globalListeners) {
       if (once) {
         this.currentProvider.once(eventType, listener);
@@ -118,7 +186,7 @@ export class ProviderWithFallback
     }
 
     this.config.logger.warn(
-      `Provider ${providerName} failed with error: ${error?.code} ${error.message}`
+      `Provider ${providerName} failed with error: ${error?.code} ${error?.message}`
     );
 
     if (retryNumber === this.providers.length - 1) {
@@ -129,10 +197,7 @@ export class ProviderWithFallback
     }
 
     // if we haven't tried provider for this request
-    const nextProviderIndex =
-      this.providerIndex + 1 === this.providers.length
-        ? 0
-        : this.providerIndex + 1;
+    const nextProviderIndex = (this.providerIndex + 1) % this.providers.length;
 
     const nextProviderName = this.extractProviderName(nextProviderIndex);
 
@@ -141,63 +206,5 @@ export class ProviderWithFallback
     );
 
     return nextProviderIndex;
-  }
-
-  override getNetwork(): Promise<Network> {
-    return this.currentProvider.getNetwork();
-  }
-
-  override on(eventName: EventType, listener: Listener): Provider {
-    this.saveGlobalListener(eventName, listener);
-    return this.currentProvider.on(eventName, listener);
-  }
-  override once(eventName: EventType, listener: Listener): Provider {
-    this.saveGlobalListener(eventName, listener);
-    return this.currentProvider.once(eventName, listener);
-  }
-  override emit(eventName: EventType, ...args: any[]): boolean {
-    return this.currentProvider.emit(eventName, ...args);
-  }
-  override listenerCount(eventName?: EventType | undefined): number {
-    return this.currentProvider.listenerCount(eventName);
-  }
-  override listeners(eventName?: EventType | undefined): Listener[] {
-    return this.currentProvider.listeners(eventName);
-  }
-  override addListener(eventName: EventType, listener: Listener): Provider {
-    return this.currentProvider.addListener(eventName, listener);
-  }
-  override off(
-    eventName: EventType,
-    listener?: Listener | undefined
-  ): Provider {
-    this.currentProvider.off(eventName, listener);
-    this.updateGlobalListenerAfterRemoval();
-    return this.currentProvider;
-  }
-
-  override removeAllListeners(eventName?: EventType | undefined): Provider {
-    this.currentProvider.removeAllListeners(eventName);
-    this.updateGlobalListenerAfterRemoval();
-
-    return this.currentProvider;
-  }
-
-  override removeListener(eventName: EventType, listener: Listener): Provider {
-    this.currentProvider.removeListener(eventName, listener);
-    this.updateGlobalListenerAfterRemoval();
-    return this.currentProvider;
-  }
-
-  override waitForTransaction(
-    transactionHash: string,
-    confirmations?: number | undefined,
-    timeout?: number | undefined
-  ): Promise<TransactionReceipt> {
-    return this.currentProvider.waitForTransaction(
-      transactionHash,
-      confirmations,
-      timeout
-    );
   }
 }
