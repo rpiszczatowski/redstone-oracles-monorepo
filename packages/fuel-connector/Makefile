@@ -3,6 +3,7 @@ DATA_NAME=fuel
 IS_LOCAL=1
 
 CONTRACT_ID=0x8fdae6cb766121b5382977e98dc948dbdc95812a3e60c2cf2c0dfff06e877989
+SALT=0x0000000000000000000000000000000000000000000000000000000000000001
 
 ifeq ($(IS_LOCAL), 0)
 #	SIGNING_KEY= # forc-wallet account 0
@@ -49,6 +50,7 @@ contract: format
 deploy: format
 	echo "For the beta-2 node the 'forc' version must not be greater than 0.34.0"
 	cd $(CONTRACT) && forc deploy --terse \
+	--salt $(SALT) \
 	--node-url $(NODE_URL) \
 	--gas-price $(GAS_PRICE) $(SIGNING_KEY)
 

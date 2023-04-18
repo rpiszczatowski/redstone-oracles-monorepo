@@ -25,8 +25,6 @@ storage {
     timestamp: u64 = 0,
 }
 
-const SALT = 0x0000000000000000000000000000000000000000000000000000000000000001;
-
 impl Prices for Contract {
     #[storage(read, write)]
     fn init(
@@ -34,7 +32,6 @@ impl Prices for Contract {
         signer_count_threshold: u64,
         skip_setting_owner: u64,
     ) {
-        log(SALT); // tech purposes
         assert(storage.owner.is_none() || storage.owner.unwrap() == msg_sender().unwrap());
         if (skip_setting_owner == 0) {
             storage.owner = Option::Some(msg_sender().unwrap());

@@ -11,6 +11,10 @@ use std::{
     u256::U256,
 };
 
+configurable {
+    CONTRACT_ID: b256 = 0x8fdae6cb766121b5382977e98dc948dbdc95812a3e60c2cf2c0dfff06e877989,
+}
+
 abi Prices {
     fn get_prices(feed_ids: Vec<U256>, payload: Vec<u64>) -> [U256; 50];
 

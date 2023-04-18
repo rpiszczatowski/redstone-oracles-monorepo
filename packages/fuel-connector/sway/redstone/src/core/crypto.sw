@@ -4,6 +4,7 @@ use std::{
     b256::*,
     b512::*,
     bytes::*,
+    constants::ZERO_B256,
     ecr::{
         ec_recover,
         EcRecoverError,
@@ -34,7 +35,7 @@ fn recover_public_address(
     v: u64,
     msg_hash: b256,
 ) -> Result<EvmAddress, EcRecoverError> {
-    let mut v_256: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
+    let mut v_256: b256 = ZERO_B256;
     if (v == 28) {
         v_256 = 0x0000000000000000000000000000000000000000000000000000000000000001;
     }

@@ -10,6 +10,10 @@ use std::{
     },
 };
 
+configurable {
+    CONTRACT_ID: b256 = 0x8fdae6cb766121b5382977e98dc948dbdc95812a3e60c2cf2c0dfff06e877989,
+}
+
 abi Prices {
     #[storage(read, write)]
     fn init(signers: Vec<b256>, signer_count_threshold: u64, skip_setting_owner: u64);
