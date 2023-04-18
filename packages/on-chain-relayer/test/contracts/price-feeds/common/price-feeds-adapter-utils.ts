@@ -9,6 +9,14 @@ import { ethers } from "hardhat";
 chai.use(chaiAsPromised);
 
 export const describeCommonPriceFeedsAdapterTests = (adapterContractName: string) => {
+  let adapterContract: IRedstoneAdapter;
+
+  beforeEach(async () => {
+    // Deploy a new adapter contract
+    const adapterContractFactory = await ethers.getContractFactory(adapterContractName);
+    adapterContract = await adapterContractFactory.deploy() as IRedstoneAdapter;
+  });
+
   it("should properly initialize", async () => {
     expect(1).to.be.equal(1);
   });
@@ -82,10 +90,6 @@ export const describeCommonPriceFeedsAdapterTests = (adapterContractName: string
   });
 
   it("should properly update data feeds several times", async () => {
-    // Deploy a new adapter contract
-    const adapterContractFactory = await ethers.getContractFactory(adapterContractName);
-    const contract = await adapterContractFactory.deploy();
-
     // Update data feeds several times
     for (let i = 1; i <= 5; i++) {
       const btcMockValue = i * 100;
@@ -93,7 +97,7 @@ export const describeCommonPriceFeedsAdapterTests = (adapterContractName: string
       const mockDataTimestamp = (mockBlockTimestamp - 1) * 1000;
 
       // Wrap it with Redstone payload
-      const wrappedContract = await WrapperBuilder.wrap(contract).usingSimpleNumericMock({
+      const wrappedContract = await WrapperBuilder.wrap(adapterContract).usingSimpleNumericMock({
         mockSignersCount: 2,
         timestampMilliseconds: mockDataTimestamp,
         dataPoints: [{ dataFeedId: "BTC", value: btcMockValue }],
@@ -105,11 +109,11 @@ export const describeCommonPriceFeedsAdapterTests = (adapterContractName: string
       await tx.wait();
 
       // Getting values
-      const value = await contract.getValueForDataFeed(formatBytes32String("BTC"));
+      const value = await adapterContract.getValueForDataFeed(formatBytes32String("BTC"));
       expect(value.toNumber()).to.equal(btcMockValue * 10 ** 8);
 
       // Getting timestamps
-      const timestamps = await contract.getTimestampsFromLatestUpdate();
+      const timestamps = await adapterContract.getTimestampsFromLatestUpdate();
       expect(timestamps.blockTimestamp.toNumber()).to.equal(mockBlockTimestamp);
     }
   });
