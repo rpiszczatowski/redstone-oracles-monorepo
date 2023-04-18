@@ -14,11 +14,22 @@ const config: HardhatUserConfig = {
   },
   networks: {
     "arbitrum-goerli": {
-      url: process.env.ARBITRUM_GOERLI_URL,
+      url: "https://arbitrum-goerli.public.blastapi.io",
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined,
     },
-  }
-
+    arbitrum: {
+      url: "https://arb1.croswap.com/rpc",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined,
+    },
+    ethereum: {
+      url: "https://eth-mainnet.public.blastapi.io",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined,
+    },
+    "ethereum-goerli": {
+      url: "https://eth-goerli.public.blastapi.io",
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined,
+    },
+  },
 };
 
 export default config;

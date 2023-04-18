@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 const SLEEP_TIME_MS = 3000;
 
 const contractNames = [
-  "PriceFeedsAdapterWithRoundsMock",
+  // "PriceFeedsAdapterWithRoundsMock",
   "PriceFeedsAdapterWithoutRoundsMock",
   "SinglePriceFeedAdapterMock",
   "SinglePriceFeedAdapterWithClearingMock",
@@ -27,18 +27,20 @@ async function benchmarkContract(contractName: string) {
     const mockDataTimestamp = Date.now();
 
     // Wrapping contract with Redstone payload
-    const wrappedContract = await WrapperBuilder.wrap(contract).usingSimpleNumericMock({
+    const wrappedContract = (await WrapperBuilder.wrap(
+      contract
+    ).usingSimpleNumericMock({
       mockSignersCount: 2,
       timestampMilliseconds: mockDataTimestamp,
       dataPoints: [{ dataFeedId: "BTC", value: btcMockValue }],
-    }) as IRedstoneAdapter;
+    })) as IRedstoneAdapter;
 
     // Evaluating gas costs
     console.log(`Running test iteration nr: ${i}...`);
     const tx = await wrappedContract.updateDataFeedsValues(mockDataTimestamp);
     console.log(`Transaction hash: ${tx.hash}`);
     const receipt = await tx.wait();
-    console.log(`Gas used: ${receipt.cumulativeGasUsed}`);
+    console.log(`Gas used: ${receipt.gasUsed}`);
 
     console.log(`Sleeping for ${SLEEP_TIME_MS} ms...`);
     await sleep(SLEEP_TIME_MS);
@@ -55,7 +57,7 @@ async function deployContract(contractName: string) {
   // Deploy the contract
   console.log("Deploying contract: " + contractName);
   const contract = await factory.deploy();
+  await contract.deployed();
   console.log("Contract deployed to: " + contract.address);
-
   return contract;
 }
