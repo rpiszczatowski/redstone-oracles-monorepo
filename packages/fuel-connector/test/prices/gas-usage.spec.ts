@@ -6,7 +6,6 @@ jest.setTimeout(10 * 60000);
 
 const IS_LOCAL = 1;
 
-// 	For the beta-2 node the 'fuels' version must not be greater than 0.32.0
 const provider = IS_LOCAL
   ? undefined
   : new Provider("https://beta-3.fuel.network/graphql");
