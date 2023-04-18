@@ -87,7 +87,7 @@ export const describeCommonPriceFeedsAdapterTests = (adapterContractName: string
     const contract = await adapterContractFactory.deploy();
 
     // Update data feeds several times
-    for (let i = 1; i <= 3; i++) {
+    for (let i = 1; i <= 5; i++) {
       const btcMockValue = i * 100;
       const mockBlockTimestamp = await time.latest() + i * 10;
       const mockDataTimestamp = (mockBlockTimestamp - 1) * 1000;
@@ -107,6 +107,10 @@ export const describeCommonPriceFeedsAdapterTests = (adapterContractName: string
       // Getting values
       const value = await contract.getValueForDataFeed(formatBytes32String("BTC"));
       expect(value.toNumber()).to.equal(btcMockValue * 10 ** 8);
+
+      // Getting timestamps
+      const timestamps = await contract.getTimestampsFromLatestUpdate();
+      expect(timestamps.blockTimestamp.toNumber()).to.equal(mockBlockTimestamp);
     }
   });
 

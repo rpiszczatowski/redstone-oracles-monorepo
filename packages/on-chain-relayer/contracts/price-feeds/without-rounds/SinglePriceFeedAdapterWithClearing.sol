@@ -30,7 +30,7 @@ abstract contract SinglePriceFeedAdapterWithClearing is SinglePriceFeedAdapter {
   function getTimestampsFromLatestUpdate() public view override returns (uint128 dataTimestamp, uint128 blockTimestamp) {
     uint256 latestUpdateDetails;
     assembly {
-      latestUpdateDetails := sload(LATEST_UPDATE_TIMESTAMPS_STORAGE_LOCATION)
+      latestUpdateDetails := sload(DATA_FROM_LATEST_UPDATE_STORAGE_LOCATION)
     }
     blockTimestamp = uint128(latestUpdateDetails >> 208); // first 48 bits
     dataTimestamp = blockTimestamp * 1000; // It's a hack, because we don't store dataTimestamp in storage in this version of adapter
