@@ -38,6 +38,7 @@ import { StlouisfedFetcher } from "./stlouisfed/StlouisfedFetcher";
 import { NewyorkfedFetcher } from "./newyorkfed/NewyorkfedFetcher";
 import uniswapV2OnChainFetchers from "./evm-chain/ethereum/uniswap-v2-on-chain/all-uniswap-v2-on-chain-fetchers";
 import camelotFetchers from "./evm-chain/arbitrum/camelot/all-camelot-fetchers";
+import { NonUsdBasedFetcher } from "./non-usd-based/NonUsdBasedFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -69,6 +70,7 @@ export default {
   stlouisfed: new StlouisfedFetcher(),
   newyorkfed: new NewyorkfedFetcher(),
   "arbitrum-evm-fetcher": new ArbitrumEvmFetcher(arbitrumProvider),
+  "non-usd-based": new NonUsdBasedFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...balancerFetchers,
