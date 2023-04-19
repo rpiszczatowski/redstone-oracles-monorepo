@@ -13,7 +13,6 @@ import { getSortedOraclesContractAtAddress } from "./get-contract";
 interface UpdatePricesArgs {
   adapterContract: Contract;
   wrapContract(adapterContract: Contract): Contract;
-  proposedRound: number;
   proposedTimestamp: number;
 }
 
@@ -22,8 +21,7 @@ const TX_CONFIG = { gasLimit: config.gasLimit };
 export const updatePrices = async (
   dataPackages: DataPackagesResponse,
   adapterContract: Contract,
-  lastUpdateTimestamp: number,
-  lastRound: number
+  lastUpdateTimestamp: number
 ): Promise<void> => {
   const dataPackagesTimestamps = Object.values(dataPackages).flatMap(
     (dataPackages) =>
@@ -41,7 +39,6 @@ export const updatePrices = async (
       adapterContract,
       wrapContract,
       proposedTimestamp: minimalTimestamp,
-      proposedRound: lastRound + 1,
     });
     console.log(`Update prices tx sent: ${updateTx.hash}`);
     await updateTx.wait();
@@ -67,20 +64,17 @@ const updatePriceInAdapterContract = async (
 const updatePricesInPriceFeedsAdapter = async ({
   adapterContract,
   wrapContract,
-  proposedRound,
   proposedTimestamp,
 }: UpdatePricesArgs): Promise<TransactionResponse> => {
   return await wrapContract(adapterContract).updateDataFeedsValues(
-    proposedRound,
     proposedTimestamp,
-    TX_CONFIG
+    // TX_CONFIG
   );
 };
 
 const updatePricesInMentoAdapter = async ({
   adapterContract,
   wrapContract,
-  proposedRound,
   proposedTimestamp,
 }: UpdatePricesArgs): Promise<TransactionResponse> => {
   const sortedOraclesAddress = await adapterContract.sortedOracles();
@@ -92,7 +86,6 @@ const updatePricesInMentoAdapter = async ({
       sortedOracles,
     } as MentoContracts);
   return await wrapContract(adapterContract).updatePriceValuesAndCleanOldReports(
-    proposedRound,
     proposedTimestamp,
     linkedListPositions
   );

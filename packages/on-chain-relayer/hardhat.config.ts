@@ -1,8 +1,10 @@
 import * as dotenv from "dotenv";
-import { HardhatUserConfig } from "hardhat/config";
 import "@openzeppelin/hardhat-upgrades";
 import "hardhat-gas-reporter";
 import "@nomicfoundation/hardhat-toolbox";
+import "@nomiclabs/hardhat-waffle";
+import "@nomiclabs/hardhat-ethers";
+import { HardhatUserConfig } from "hardhat/config";
 
 dotenv.config();
 

@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 const SLEEP_TIME_MS = 3000;
 
 const contractNames = [
-  // "PriceFeedsAdapterWithRoundsMock",
+  "PriceFeedsAdapterWithRoundsMock",
   "PriceFeedsAdapterWithoutRoundsMock",
   "SinglePriceFeedAdapterMock",
   "SinglePriceFeedAdapterWithClearingMock",
