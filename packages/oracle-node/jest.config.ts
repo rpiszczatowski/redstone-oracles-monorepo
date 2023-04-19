@@ -9,7 +9,7 @@ const config: Config.InitialOptions = {
   testEnvironment: "node",
   setupFiles: [
     "<rootDir>/.jest/set-env-vars.js",
-    "<rootDir>/.jest/set-redstone-number-config.js",
+    "<rootDir>/.jest/set-redstone-number-config.ts",
   ],
 };
 

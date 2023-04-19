@@ -5,7 +5,7 @@ import {
 import { NumberArg } from "../../src/numbers/RedstoneNumber";
 
 describe("JsNativePreciseNumber", () => {
-  describe("constructor", () => {
+  describe("from", () => {
     it.each([
       ["0", 0],
       ["1", 1],

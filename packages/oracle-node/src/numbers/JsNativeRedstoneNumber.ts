@@ -6,7 +6,7 @@ const logger = require("../utils/logger")(
   "numbers/JsNativeRedstoneNumber"
 ) as Consola;
 
-enum NumberValidationResult {
+export enum NumberValidationResult {
   isOk = 0,
   isNaN,
   isNotFinite,
@@ -71,7 +71,6 @@ export class JsNativeRedstoneNumber implements RedstoneNumber {
 
   private constructor(value: number) {
     this._value = value;
-    this.assertValidAndRound();
   }
 
   decimals(): number {
@@ -125,7 +124,7 @@ export class JsNativeRedstoneNumber implements RedstoneNumber {
     const number = JsNativeRedstoneNumber.from(numberArg);
 
     return (
-      Math.abs(number.unsafeToNumber() - this.unsafeToNumber()) <
+      Math.abs(number._value - this._value) <
       JsNativeRedstoneNumberConfig.EPSILON
     );
   }
@@ -165,7 +164,7 @@ export class JsNativeRedstoneNumber implements RedstoneNumber {
   }
 
   private assertValidAndRound() {
-    const [validationResult, message] = validateNumber(this._value);
+    const { result: validationResult, message } = validateNumber(this._value);
 
     if (validationResult !== NumberValidationResult.isOk) {
       JsNativeRedstoneNumberConfig.ON_NUMBER_VALIDATION_ERROR[validationResult](
@@ -179,36 +178,38 @@ export class JsNativeRedstoneNumber implements RedstoneNumber {
   }
 }
 
-const validateNumber = (number: number): [NumberValidationResult, string] => {
+const validateNumber = (
+  number: number
+): { result: NumberValidationResult; message: string } => {
   if (Number.isNaN(number)) {
-    return [
-      NumberValidationResult.isNaN,
-      "Invalid number format: number is NaN",
-    ];
+    return {
+      result: NumberValidationResult.isNaN,
+      message: "Invalid number format: number is NaN",
+    };
   } else if (!Number.isFinite(number)) {
-    return [
-      NumberValidationResult.isNotFinite,
-      "Invalid number format: number is not finite",
-    ];
+    return {
+      result: NumberValidationResult.isNotFinite,
+      message: "Invalid number format: number is not finite",
+    };
   }
 
   if (Math.abs(number) > JsNativeRedstoneNumberConfig.MAX_NUMBER) {
-    return [
-      NumberValidationResult.isOverflow,
-      `Invalid number format: Number is bigger then max number acceptable by REDSTONE ${number}`,
-    ];
+    return {
+      result: NumberValidationResult.isOverflow,
+      message: `Invalid number format: Number is bigger then max number acceptable by REDSTONE ${number}`,
+    };
   }
   if (
     Math.abs(number) < JsNativeRedstoneNumberConfig.MIN_NUMBER &&
     number !== 0
   ) {
-    return [
-      NumberValidationResult.isUnderflow,
-      `Invalid number format: Number is smaller then min number acceptable by REDSTONE ${number}`,
-    ];
+    return {
+      result: NumberValidationResult.isUnderflow,
+      message: `Invalid number format: Number is smaller then min number acceptable by REDSTONE ${number}`,
+    };
   }
 
-  return [NumberValidationResult.isOk, ""];
+  return { result: NumberValidationResult.isOk, message: "" };
 };
 
 const parseToSafeNumber = (value: NumberLike) => {
@@ -226,7 +227,7 @@ const parseToSafeNumber = (value: NumberLike) => {
     throw new Error(`Invalid number format, expected: string or number`);
   }
 
-  const [validationResult, message] = validateNumber(number);
+  const { result: validationResult, message } = validateNumber(number);
   if (validationResult !== NumberValidationResult.isOk) {
     JsNativeRedstoneNumberConfig.ON_NUMBER_VALIDATION_ERROR[validationResult](
       message
