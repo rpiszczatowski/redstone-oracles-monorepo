@@ -745,7 +745,6 @@
   "APY": "apy-finance",
   "IOTA": "iota",
   "XNO": "nano",
-
   "MAP": "marcopolo",
   "ACA": "acala",
   "AGLD": "adventure-gold",
@@ -931,5 +930,6 @@
   "ZEON": "zeon",
   "ANKRETH": "ankreth",
   "WSTETH": "wrapped-steth",
-  "STETH": "staked-ether"
+  "STETH": "staked-ether",
+  "CMP": "caduceus"
 }
