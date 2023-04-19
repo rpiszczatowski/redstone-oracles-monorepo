@@ -77,7 +77,7 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
       ? reserve1Normalized
       : reserve0Normalized;
 
-    return (bigNumberToFloat(reserve) * 2) / pairedTokenPrice;
+    return bigNumberToFloat(reserve) * 2 * pairedTokenPrice;
   }
 
   getParamsFromResponse(assetId: string, response: Reserves) {

@@ -105,7 +105,7 @@ const extractPriceForLpTokens = (
     [firstToken]: firstTokenReserve,
     [secondToken]: secondTokenReserve,
   };
-  //current
+
   const tokensReservesPrices = calculateReserveTokensPrices(tokenReserves);
   const reservesSerialized = serializeDecimals(tokenReserves);
 
