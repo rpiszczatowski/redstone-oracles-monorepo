@@ -184,6 +184,51 @@ describe("Data packages (e2e)", () => {
     );
   });
 
+  it("/data-packages/latest (GET) return same result as /data-packages/latest (GET), when same number of dataPackages", async () => {
+    const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
+    Date.now = jest.fn(() => dpTimestamp);
+    const responseLatest = await request(httpServer)
+      .get("/data-packages/latest/mock-data-service-1")
+      .expect(200);
+
+    const responseMostRecent = await request(httpServer)
+      .get("/data-packages/most-recent/mock-data-service-1")
+      .expect(200);
+
+    expect(
+      responseLatest.body[ALL_FEEDS_KEY].sort(
+        (a: any, b: any) => a.signerAddress - b.signerAddress
+      )
+    ).toEqual(
+      responseMostRecent.body[ALL_FEEDS_KEY].sort(
+        (a: any, b: any) => a.signerAddress - b.signerAddress
+      )
+    );
+  });
+
+  it("/data-packages/latest (GET) return package which contain more data-packages (in this case older one) ", async () => {
+    const mockDataPackage = mockDataPackages[0];
+    await DataPackage.insertMany([
+      {
+        ...mockDataPackage,
+        timestampMilliseconds: mockDataPackage.timestampMilliseconds - 1000,
+        isSignatureValid: true,
+        dataFeedId: "BTC",
+        dataServiceId: "mock-data-service-1",
+        signerAddress: "0x1",
+      },
+    ]);
+    const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
+    Date.now = jest.fn(() => dpTimestamp);
+    const responseLatest = await request(httpServer)
+      .get("/data-packages/latest/mock-data-service-1")
+      .expect(200);
+
+    expect(responseLatest.body[ALL_FEEDS_KEY][0].timestampMilliseconds).toBe(
+      dpTimestamp - 1000
+    );
+  });
+
   it("/data-packages/bulk (POST) - should fail for invalid signature", async () => {
     const initialDpCount = await DataPackage.countDocuments();
     const requestSignature = signByMockSigner(mockDataPackages);

@@ -71,7 +71,7 @@ export class DataPackagesService {
     await DataPackage.insertMany(dataPackages);
   }
 
-  async getAllLatestDataWithCache(
+  async getLatestDataPackagesWithCache(
     dataServiceId: string,
     cacheManager: Cache
   ): Promise<DataPackagesResponse> {
@@ -153,6 +153,7 @@ export class DataPackagesService {
           dataPoints: { $first: "$dataPoints" },
           dataServiceId: { $first: "$dataServiceId" },
           dataFeedId: { $first: "$dataFeedId" },
+          isSignatureValid: { $first: "$isSignatureValid" },
         },
       },
       {
@@ -213,7 +214,7 @@ export class DataPackagesService {
         },
       },
       {
-        $sort: { count: -1, timestamp: -1 },
+        $sort: { count: -1, "_id.timestampMilliseconds": -1 },
       },
       {
         $limit: 1,
@@ -250,12 +251,12 @@ export class DataPackagesService {
     return fetchedPackagesPerDataFeed;
   }
 
-  async getDataPackages(
+  async queryLatestDataPackages(
     requestParams: DataPackagesRequestParams,
     cacheManager: Cache
   ) {
     const cachedDataPackagesResponse =
-      await this.getMostRecentDataPackagesWithCache(
+      await this.getLatestDataPackagesWithCache(
         requestParams.dataServiceId,
         cacheManager
       );
@@ -267,10 +268,17 @@ export class DataPackagesService {
     requestParams: DataPackagesRequestParams,
     cacheManager: Cache
   ): Promise<RedstonePayload> {
-    const dataPackages = await this.getDataPackages(
-      requestParams,
-      cacheManager
+    const cachedDataPackagesResponse =
+      await this.getMostRecentDataPackagesWithCache(
+        requestParams.dataServiceId,
+        cacheManager
+      );
+
+    const dataPackages = parseDataPackagesResponse(
+      cachedDataPackagesResponse,
+      requestParams
     );
+
     return makePayload(dataPackages);
   }
 
