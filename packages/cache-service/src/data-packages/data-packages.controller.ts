@@ -110,6 +110,18 @@ export class DataPackagesController {
     );
   }
 
+  @Get("most-recent/:DATA_SERVICE_ID")
+  @Header("Cache-Control", "max-age=5")
+  async getMostRecent(
+    @Param("DATA_SERVICE_ID") dataServiceId: string
+  ): Promise<DataPackagesResponse> {
+    await this.validateDataServiceId(dataServiceId);
+    return this.dataPackagesService.getMostRecentDataPackagesWithCache(
+      dataServiceId,
+      this.cacheManager
+    );
+  }
+
   @Get("historical/:DATA_SERVICE_ID/:TIMESTAMP")
   @Header("Cache-Control", "max-age=5")
   async getByTimestamp(

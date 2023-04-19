@@ -75,15 +75,15 @@ export class DataPackagesService {
     dataServiceId: string,
     cacheManager: Cache
   ): Promise<DataPackagesResponse> {
-    // Checking if data packages for this data service are
-    // presented in the application memory cache
     const cacheKey = `data-packages/latest/${dataServiceId}`;
     const dataPackagesFromCache = await cacheManager.get<DataPackagesResponse>(
       cacheKey
     );
 
     if (!dataPackagesFromCache) {
-      const dataPackages = await this.getDataPackagesFromDB(dataServiceId);
+      const dataPackages = await this.getLatestDataPackagesFromDB(
+        dataServiceId
+      );
       await cacheManager.set(cacheKey, dataPackages, CACHE_TTL);
       return dataPackages;
     } else {
@@ -91,11 +91,30 @@ export class DataPackagesService {
     }
   }
 
+  async getMostRecentDataPackagesWithCache(
+    dataServiceId: string,
+    cacheManager: Cache
+  ): Promise<DataPackagesResponse> {
+    const cacheKey = `data-packages/most-recent/${dataServiceId}`;
+    const dataPackagesFromCache = await cacheManager.get<DataPackagesResponse>(
+      cacheKey
+    );
+
+    if (!dataPackagesFromCache) {
+      const dataPackages = await this.getMostRecentDataPackagesFromDB(
+        dataServiceId
+      );
+      await cacheManager.set(cacheKey, dataPackages, CACHE_TTL);
+      return dataPackages;
+    } else {
+      return dataPackagesFromCache;
+    }
+  }
   async getByTimestamp(
     dataServiceId: string,
     timestamp: number
   ): Promise<DataPackagesResponse> {
-    return await this.getDataPackagesFromDB(dataServiceId, timestamp);
+    return await this.getMostRecentDataPackagesFromDB(dataServiceId, timestamp);
   }
 
   async isDataServiceIdValid(dataServiceId: string): Promise<boolean> {
@@ -103,7 +122,10 @@ export class DataPackagesService {
     return !!oracleRegistryState.dataServices[dataServiceId];
   }
 
-  async getDataPackagesFromDB(
+  /**
+   * Packages might have different timestamps if timestamp not passed
+   * */
+  async getMostRecentDataPackagesFromDB(
     dataServiceId: string,
     timestamp?: number
   ): Promise<DataPackagesResponse> {
@@ -131,7 +153,6 @@ export class DataPackagesService {
           dataPoints: { $first: "$dataPoints" },
           dataServiceId: { $first: "$dataServiceId" },
           dataFeedId: { $first: "$dataFeedId" },
-          sources: { $first: "$sources" },
         },
       },
       {
@@ -158,14 +179,86 @@ export class DataPackagesService {
     return fetchedPackagesPerDataFeed;
   }
 
+  /**
+   * All packages will share common timestamp
+   *  */
+  async getLatestDataPackagesFromDB(
+    dataServiceId: string
+  ): Promise<DataPackagesResponse> {
+    const fetchedPackagesPerDataFeed: {
+      [dataFeedId: string]: CachedDataPackage[];
+    } = {};
+
+    const groupedDataPackages = await DataPackage.aggregate([
+      {
+        $match: {
+          dataServiceId,
+          timestampMilliseconds: {
+            $gte: Date.now() - MAX_ALLOWED_TIMESTAMP_DELAY,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            timestampMilliseconds: "$timestampMilliseconds",
+          },
+          count: { $count: {} },
+          dataServiceId: { $first: "$dataServiceId" },
+          signatures: { $push: "$signature" },
+          dataPoints: { $push: "$dataPoints" },
+          dataFeedIds: { $push: "$dataFeedId" },
+          signerAddress: { $push: "$signerAddress" },
+          isSignatureValid: { $push: "$isSignatureValid" },
+        },
+      },
+      {
+        $sort: { count: -1, timestamp: -1 },
+      },
+      {
+        $limit: 1,
+      },
+    ]);
+
+    // Parse DB response
+    const dataPackagesWithSameTimestamp = groupedDataPackages[0];
+    for (let i = 0; i < dataPackagesWithSameTimestamp.count; i++) {
+      const dataFeedId = dataPackagesWithSameTimestamp.dataFeedIds[i];
+      const dataPoints = dataPackagesWithSameTimestamp.dataPoints[i];
+      const signature = dataPackagesWithSameTimestamp.signatures[i];
+      const timestampMilliseconds =
+        dataPackagesWithSameTimestamp._id.timestampMilliseconds;
+      const signerAddress = dataPackagesWithSameTimestamp.signerAddress[i];
+      const isSignatureValid =
+        dataPackagesWithSameTimestamp.isSignatureValid[i];
+
+      if (!fetchedPackagesPerDataFeed[dataFeedId]) {
+        fetchedPackagesPerDataFeed[dataFeedId] = [];
+      }
+
+      fetchedPackagesPerDataFeed[dataFeedId].push({
+        timestampMilliseconds,
+        signature,
+        isSignatureValid,
+        dataPoints,
+        dataServiceId,
+        dataFeedId,
+        signerAddress,
+      });
+    }
+
+    return fetchedPackagesPerDataFeed;
+  }
+
   async getDataPackages(
     requestParams: DataPackagesRequestParams,
     cacheManager: Cache
   ) {
-    const cachedDataPackagesResponse = await this.getAllLatestDataWithCache(
-      requestParams.dataServiceId,
-      cacheManager
-    );
+    const cachedDataPackagesResponse =
+      await this.getMostRecentDataPackagesWithCache(
+        requestParams.dataServiceId,
+        cacheManager
+      );
 
     return parseDataPackagesResponse(cachedDataPackagesResponse, requestParams);
   }

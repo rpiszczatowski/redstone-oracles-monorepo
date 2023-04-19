@@ -40,6 +40,8 @@ const expectedDataPackages = mockDataPackages.map((dataPackage) => ({
   dataFeedId: ALL_FEEDS_KEY,
 }));
 
+const mockSigners = [MOCK_SIGNER_ADDRESS, "0x2", "0x3", "0x4", "0x5"];
+
 describe("Data packages (e2e)", () => {
   let app: INestApplication, httpServer: any;
   let bundlrSaveDataPackagesSpy: jest.SpyInstance<
@@ -74,17 +76,11 @@ describe("Data packages (e2e)", () => {
       "mock-data-service-1",
     ]) {
       for (const timestampMilliseconds of [
-        mockDataPackage.timestampMilliseconds - 1,
+        mockDataPackage.timestampMilliseconds - 1000,
         mockDataPackage.timestampMilliseconds,
       ]) {
         for (const dataFeedId of dataFeedIds) {
-          for (const signerAddress of [
-            MOCK_SIGNER_ADDRESS, // address of mock-signer
-            "0x2",
-            "0x3",
-            "0x4",
-            "0x5",
-          ]) {
+          for (const signerAddress of mockSigners) {
             dataPackagesToInsert.push({
               ...mockDataPackage,
               timestampMilliseconds,
@@ -240,6 +236,13 @@ describe("Data packages (e2e)", () => {
     const parsedDataPoints = JSON.parse(allFeedsDataPackages[0]).dataPoints;
     expect(allFeedsDataPackages.length).toBe(4);
     expect(parsedDataPoints.length).toBe(2);
+    for (const [_, dataPackages] of Object.entries<any>(testResponse2.body)) {
+      for (let i = 0; i++; i < dataPackages.length) {
+        const dataPackage = JSON.parse(dataPackages[i]);
+        expect(dataPackage).toMatchObject(mockDataPackages[0]);
+        expect(dataPackage.signerAddress).toEqual(mockSigners[i]);
+      }
+    }
   });
 
   it("/data-packages/latest/mock-data-service-1 (GET)", async () => {
@@ -254,7 +257,6 @@ describe("Data packages (e2e)", () => {
       const signers = [];
       for (const dataPackage of testResponse.body[dataFeedId]) {
         expect(dataPackage).toHaveProperty("dataFeedId", dataFeedId);
-        expect(dataPackage).toHaveProperty("sources", null);
         expect(dataPackage).toHaveProperty("signature", MOCK_SIGNATURE);
         signers.push(dataPackage.signerAddress);
       }
@@ -264,7 +266,8 @@ describe("Data packages (e2e)", () => {
   });
 
   it("/data-packages/historical/mock-data-service-1 (GET)", async () => {
-    const historicalTimestamp = mockDataPackages[0].timestampMilliseconds - 1;
+    const historicalTimestamp =
+      mockDataPackages[0].timestampMilliseconds - 1000;
     const testResponse = await request(httpServer)
       .get(
         `/data-packages/historical/mock-data-service-1/${historicalTimestamp}`
