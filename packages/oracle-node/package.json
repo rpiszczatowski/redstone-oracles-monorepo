@@ -69,7 +69,7 @@
     "dateformat": "^4.5.1",
     "deep-sort-object": "^1.0.2",
     "download": "^8.0.0",
-    "ethereum-waffle": "^3.4.4",
+    "ethereum-waffle": "^4.0.10",
     "jest": "^27.0.4",
     "jest-mock-extended": "^1.0.16",
     "msw": "^0.42.1",
