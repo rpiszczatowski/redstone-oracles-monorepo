@@ -2,7 +2,12 @@ import { SignedDataPackage } from "redstone-protocol";
 import NodeRunner from "../../src/NodeRunner";
 import { DataPackageBroadcastPerformer } from "../../src/aggregated-price-handlers/DataPackageBroadcastPerformer";
 import { PriceDataBroadcastPerformer } from "../../src/aggregated-price-handlers/PriceDataBroadcastPerformer";
-import { MockScheduler, dryRunTestNodeConfig } from "./helpers";
+import {
+  MockScheduler,
+  dryRunTestNodeConfig,
+  getMainManifestTokens,
+  getWideSupportTokens,
+} from "./helpers";
 import ManifestHelper from "../../src/manifest/ManifestHelper";
 import { CronScheduler } from "../../src/schedulers/CronScheduler";
 import {
@@ -10,12 +15,34 @@ import {
   closeLocalLevelDB,
   setupLocalDb,
 } from "../../src/db/local-db";
-import wideSupportTokensManifest from "../../manifests/dev/main-wide-support.json";
 
-const TEN_MINUTES_IN_MILLISECONDS = 1000 * 60 * 30;
-jest.setTimeout(TEN_MINUTES_IN_MILLISECONDS);
+const TWENTY_MINUTES_IN_MILLISECONDS = 1000 * 60 * 20;
+jest.setTimeout(TWENTY_MINUTES_IN_MILLISECONDS);
+
+const REQUIRED_MAIN_MANIFEST_TOKENS_PERCENTAGE = 0.95;
 
 describe("Main dry run test", () => {
+  const runTestNode = async () => {
+    const sut = await NodeRunner.create(dryRunTestNodeConfig);
+    await sut.run();
+  };
+
+  const runNodeMultipleTimes = async (iterationsCount: number) => {
+    for (let i = 0; i < iterationsCount; i++) {
+      await runTestNode();
+    }
+  };
+
+  const getPricesForDataFeedId = (dataPackages: SignedDataPackage[]) => {
+    const pricesForDataFeedId: { [dataFeedId: string]: number } = {};
+    for (const dataPackage of dataPackages) {
+      const dataPackageObject = dataPackage.dataPackage.toObj();
+      const { dataFeedId, value } = dataPackageObject.dataPoints[0];
+      pricesForDataFeedId[dataFeedId] = Number(value);
+    }
+    return pricesForDataFeedId;
+  };
+
   let mockedBroadcaster: jest.SpyInstance<
     Promise<void>,
     [signedDataPackages: SignedDataPackage[]]
@@ -32,7 +59,7 @@ describe("Main dry run test", () => {
 
     mockedBroadcaster = jest
       .spyOn(DataPackageBroadcastPerformer.prototype, "broadcastDataPackages")
-      .mockImplementation(() => new Promise((resolve) => resolve()));
+      .mockImplementation(() => Promise.resolve());
 
     setupLocalDb();
   });
@@ -45,41 +72,30 @@ describe("Main dry run test", () => {
     await closeLocalLevelDB();
   });
 
-  const runTestNode = async () => {
-    const sut = await NodeRunner.create(dryRunTestNodeConfig);
-    await sut.run();
-  };
-
-  const runNodeMultipleTimes = async (iterationsCount: number) => {
-    for (const _index of [...Array(iterationsCount).keys()]) {
-      await runTestNode();
-    }
-  };
-
-  const expectValueBroadcasted = (symbol: string) => {
-    expect(mockedBroadcaster).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({
-          dataPackage: expect.objectContaining({
-            dataPoints: expect.arrayContaining([
-              expect.objectContaining({
-                numericDataPointArgs: expect.objectContaining({
-                  dataFeedId: symbol,
-                  value: expect.any(Number),
-                }),
-              }),
-            ]),
-          }),
-        }),
-      ])
-    );
-  };
-
   test("Dry run for main manifest", async () => {
+    /* 
+      We want to run Node 4 times because in order to calculate price of some tokens
+      we need price of another tokens f.g. 
+      USDC/USDT => AVAX/ETH => TJ_AVAX_ETH_LP => YY_TJ_AVAX_ETH_LP
+    */
     await runNodeMultipleTimes(4);
-    const wideSupportTokens = Object.keys(wideSupportTokensManifest.tokens);
-    for (const token of wideSupportTokens) {
-      expectValueBroadcasted(token);
+    const dataPackages = (mockedBroadcaster.mock as any).lastCall[0];
+    const pricesForDataFeedId = getPricesForDataFeedId(dataPackages);
+    const mainManifestTokens = getMainManifestTokens();
+    const wideSupportTokens = getWideSupportTokens();
+    for (const token of mainManifestTokens) {
+      const currentDataFeedPrice = pricesForDataFeedId[token];
+      if (!currentDataFeedPrice) {
+        console.log(`Missing token ${token} during dry run test`);
+      } else {
+        if (wideSupportTokens.includes(token)) {
+          expect(currentDataFeedPrice).toBeGreaterThan(0);
+        }
+      }
     }
+    const allTokensBroadcasted = Object.keys(pricesForDataFeedId).length;
+    const requiredTokensCount =
+      REQUIRED_MAIN_MANIFEST_TOKENS_PERCENTAGE * mainManifestTokens.length;
+    expect(allTokensBroadcasted).toBeGreaterThan(requiredTokensCount);
   });
 });

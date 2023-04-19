@@ -1,7 +1,8 @@
 import { ethers } from "ethers";
-import mainManifest from "../../manifests/data-services/main.json";
 import { IterationContext } from "../../src/schedulers/IScheduler";
 import { roundTimestamp } from "../../src/utils/timestamps";
+import mainManifest from "../../manifests/data-services/main.json";
+import wideSupportTokensManifest from "../../manifests/dev/main-wide-support.json";
 
 export const HARDHAT_MOCK_PRIVATE_KEY =
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
@@ -11,7 +12,7 @@ export const dryRunTestNodeConfig = {
   enablePerformanceTracking: false,
   printDiagnosticInfo: false,
   manifestRefreshInterval: 120000,
-  overrideManifestUsingFile: mainManifest,
+  overrideManifestUsingFile: { ...mainManifest, sourceTimeout: 10000 },
   privateKeys: {
     ethereumPrivateKey: HARDHAT_MOCK_PRIVATE_KEY,
   },
@@ -37,3 +38,8 @@ export const MockScheduler = {
     });
   },
 };
+
+export const getMainManifestTokens = () => Object.keys(mainManifest.tokens);
+
+export const getWideSupportTokens = () =>
+  Object.keys(wideSupportTokensManifest.tokens);
