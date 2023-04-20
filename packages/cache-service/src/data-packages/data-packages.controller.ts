@@ -103,13 +103,13 @@ export class DataPackagesController {
     @Param("DATA_SERVICE_ID") dataServiceId: string
   ): Promise<DataPackagesResponse> {
     await this.validateDataServiceId(dataServiceId);
-    return this.dataPackagesService.getLatestDataPackagesWithCache(
+    return this.dataPackagesService.getLatestDataPackagesWithSameTimestampWithCache(
       dataServiceId,
       this.cacheManager
     );
   }
 
-  @Get("most-recent/:DATA_SERVICE_ID")
+  @Get("latest-not-aligned-by-time/:DATA_SERVICE_ID")
   @Header("Cache-Control", "max-age=5")
   async getMostRecent(
     @Param("DATA_SERVICE_ID") dataServiceId: string

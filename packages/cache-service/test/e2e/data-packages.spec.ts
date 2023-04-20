@@ -192,7 +192,7 @@ describe("Data packages (e2e)", () => {
       .expect(200);
 
     const responseMostRecent = await request(httpServer)
-      .get("/data-packages/most-recent/mock-data-service-1")
+      .get("/data-packages/latest-not-aligned-by-time/mock-data-service-1")
       .expect(200);
 
     expect(

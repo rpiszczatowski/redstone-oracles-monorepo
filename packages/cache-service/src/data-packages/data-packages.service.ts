@@ -71,7 +71,7 @@ export class DataPackagesService {
     await DataPackage.insertMany(dataPackages);
   }
 
-  async getLatestDataPackagesWithCache(
+  async getLatestDataPackagesWithSameTimestampWithCache(
     dataServiceId: string,
     cacheManager: Cache
   ): Promise<DataPackagesResponse> {
@@ -81,7 +81,7 @@ export class DataPackagesService {
     );
 
     if (!dataPackagesFromCache) {
-      const dataPackages = await this.getLatestDataPackagesFromDB(
+      const dataPackages = await this.getLatestDataPackagesWithSameTimestamp(
         dataServiceId
       );
       await cacheManager.set(cacheKey, dataPackages, CACHE_TTL);
@@ -95,7 +95,7 @@ export class DataPackagesService {
     dataServiceId: string,
     cacheManager: Cache
   ): Promise<DataPackagesResponse> {
-    const cacheKey = `data-packages/most-recent/${dataServiceId}`;
+    const cacheKey = `data-packages/latest-not-aligned-by-time/${dataServiceId}`;
     const dataPackagesFromCache = await cacheManager.get<DataPackagesResponse>(
       cacheKey
     );
@@ -183,7 +183,7 @@ export class DataPackagesService {
   /**
    * All packages will share common timestamp
    *  */
-  async getLatestDataPackagesFromDB(
+  async getLatestDataPackagesWithSameTimestamp(
     dataServiceId: string
   ): Promise<DataPackagesResponse> {
     const fetchedPackagesPerDataFeed: {
@@ -205,7 +205,6 @@ export class DataPackagesService {
             timestampMilliseconds: "$timestampMilliseconds",
           },
           count: { $count: {} },
-          dataServiceId: { $first: "$dataServiceId" },
           signatures: { $push: "$signature" },
           dataPoints: { $push: "$dataPoints" },
           dataFeedIds: { $push: "$dataFeedId" },
@@ -256,7 +255,7 @@ export class DataPackagesService {
     cacheManager: Cache
   ) {
     const cachedDataPackagesResponse =
-      await this.getLatestDataPackagesWithCache(
+      await this.getLatestDataPackagesWithSameTimestampWithCache(
         requestParams.dataServiceId,
         cacheManager
       );
