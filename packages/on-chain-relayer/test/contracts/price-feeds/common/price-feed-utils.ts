@@ -107,18 +107,18 @@ export const describeCommonPriceFeedTests = ({
       await updatePrices();
     });
 
-    // it("should properly get latest round data", async () => {
-    //   const latestRoundData = await contracts.priceFeed.latestRoundData();
-    //   expect(latestRoundData.roundId.toNumber()).to.eq(expectedRoundIdAfterOneUpdate);
-    //   expect(latestRoundData.startedAt.toNumber()).to.eq(prevBlockTime);
-    //   expect(latestRoundData.updatedAt.toNumber()).to.eq(curBlockTime);
-    //   expect(latestRoundData.answer.toNumber()).to.eq(42 * 10 ** 8);
-    // });
+    it("should properly get latest round data", async () => {
+      const latestRoundData = await contracts.priceFeed.latestRoundData();
+      expect(latestRoundData.roundId.toNumber()).to.eq(expectedRoundIdAfterOneUpdate);
+      expect(latestRoundData.startedAt.toNumber()).to.eq(prevBlockTime);
+      expect(latestRoundData.updatedAt.toNumber()).to.eq(curBlockTime);
+      expect(latestRoundData.answer.toNumber()).to.eq(42 * 10 ** 8);
+    });
 
-    // it("should properly get latest answer", async () => {
-    //   const latestAnswer = await contracts.priceFeed.latestAnswer();
-    //   expect(latestAnswer.toNumber()).to.eq(42 * 10 ** 8);
-    // });
+    it("should properly get latest answer", async () => {
+      const latestAnswer = await contracts.priceFeed.latestAnswer();
+      expect(latestAnswer.toNumber()).to.eq(42 * 10 ** 8);
+    });
 
     it("should properly get latest round id", async () => {
       const latestRoundId = await contracts.priceFeed.latestRound();

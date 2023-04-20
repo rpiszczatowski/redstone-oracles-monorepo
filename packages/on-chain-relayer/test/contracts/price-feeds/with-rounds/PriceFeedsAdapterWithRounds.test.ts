@@ -9,6 +9,7 @@ describe("PriceFeedsAdapterWithRounds", () => {
     describeCommonPriceFeedsAdapterTests({
       adapterContractName: "PriceFeedsAdapterWithRoundsMock",
       hasOnlyOneDataFeed: false,
+      skipTestsForPrevDataTimestamp: false,
     });
   });
 

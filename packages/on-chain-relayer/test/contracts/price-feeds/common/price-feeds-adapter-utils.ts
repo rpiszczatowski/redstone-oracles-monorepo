@@ -51,8 +51,8 @@ export const describeCommonPriceFeedsAdapterTests = ({
     const wrappedContract = WrapperBuilder.wrap(
       adapterContract
     ).usingSimpleNumericMock({
-      ...(args.mockWrapperConfig || defaultMockWrapperConfig),
       timestampMilliseconds: mockDataTimestamp,
+      ...(args.mockWrapperConfig || defaultMockWrapperConfig),
     }) as IRedstoneAdapter;
 
     // Update one data feed
@@ -200,23 +200,80 @@ export const describeCommonPriceFeedsAdapterTests = ({
   });
 
   it("should revert if at least one timestamp isn't equal to proposed timestamp", async () => {
-    expect(1).to.be.equal(1);
+    const latestBlockTimestamp = await time.latest();
+    await expect(
+      updateValues({
+        increaseBlockTimeBySeconds: 1,
+        mockWrapperConfig: {
+          dataPoints: [{ dataFeedId: "NON-BTC", value: 42 }],
+          mockSignersCount: 2,
+          timestampMilliseconds: latestBlockTimestamp * 1000,
+        },
+      })
+    ).to.be.revertedWith("DataPackageTimestampMismatch");
   });
 
   it("should revert if redstone payload is not attached", async () => {
-    expect(1).to.be.equal(1);
+    const mockBlockTimestamp = (await time.latest()) + 1;
+    await expect(
+      adapterContract.updateDataFeedsValues(mockBlockTimestamp * 1000)
+    ).to.be.revertedWith("CalldataMustHaveValidPayload");
   });
 
   it("should revert if a data feed is missed in redstone payload", async () => {
-    expect(1).to.be.equal(1);
+    await expect(
+      updateValues({
+        increaseBlockTimeBySeconds: 1,
+        mockWrapperConfig: {
+          dataPoints: [{ dataFeedId: "NON-BTC", value: 42 }],
+          mockSignersCount: 2,
+        },
+      })
+    ).to.be.revertedWith("InsufficientNumberOfUniqueSigners(0, 2)");
+  });
+
+  it("should revert for too few signers", async () => {
+    await expect(
+      updateValues({
+        increaseBlockTimeBySeconds: 1,
+        mockWrapperConfig: {
+          dataPoints: [{ dataFeedId: "BTC", value: 42 }],
+          mockSignersCount: 1,
+        },
+      })
+    ).to.be.revertedWith("InsufficientNumberOfUniqueSigners(1, 2)");
   });
 
   it("should properly update data feeds one time", async () => {
-    expect(1).to.be.equal(1);
+    const { mockBlockTimestamp, mockDataTimestamp } = await updateValues({
+      increaseBlockTimeBySeconds: 1,
+    });
+
+    await validateValuesAndTimestamps({
+      expectedLatestBlockTimestamp: mockBlockTimestamp,
+      expectedLatestDataTimestamp: mockDataTimestamp,
+      expectedValues: { BTC: 42 },
+    });
   });
 
   it("should properly update data feeds with extra data feeds in payload", async () => {
-    expect(1).to.be.equal(1);
+    const { mockBlockTimestamp, mockDataTimestamp } = await updateValues({
+      increaseBlockTimeBySeconds: 1,
+      mockWrapperConfig: {
+        dataPoints: [
+          { dataFeedId: "NON-BTC", value: 422 },
+          { dataFeedId: "BTC", value: 42 },
+          { dataFeedId: "NON-BTC-2", value: 123 },
+        ],
+        mockSignersCount: 2,
+      },
+    });
+
+    await validateValuesAndTimestamps({
+      expectedLatestBlockTimestamp: mockBlockTimestamp,
+      expectedLatestDataTimestamp: mockDataTimestamp,
+      expectedValues: { BTC: 42 },
+    });
   });
 
   it("should properly update data feeds several times", async () => {
@@ -244,26 +301,57 @@ export const describeCommonPriceFeedsAdapterTests = ({
   });
 
   it("should get a single data feed value", async () => {
-    expect(1).to.be.equal(1);
+    await updateValues({
+      increaseBlockTimeBySeconds: 1,
+    });
+    const value = await adapterContract.getValueForDataFeed(
+      convertStringToBytes32("BTC")
+    );
+    expect(value.toNumber()).to.be.equal(42 * 10 ** 8);
   });
 
-  it("should get several data feed values", async () => {
-    expect(1).to.be.equal(1);
-  });
+  (hasOnlyOneDataFeed ? it.skip : it)(
+    "should get several data feed values",
+    async () => {
+      await updateValues({
+        increaseBlockTimeBySeconds: 1,
+      });
+
+      const values = await adapterContract.getValuesForDataFeeds([
+        convertStringToBytes32("BTC"),
+      ]);
+      expect(values.length).to.equal(1);
+      expect(values[0].toNumber()).to.equal(42 * 10 ** 8);
+    }
+  );
 
   it("should revert trying to get invalid (zero) data feed value", async () => {
-    expect(1).to.be.equal(1);
+    await expect(
+      adapterContract.getValueForDataFeed(convertStringToBytes32("BTC"))
+    ).to.be.revertedWith("DataFeedValueCannotBeZero");
   });
 
   it("should revert trying to get a value for an unsupported data feed", async () => {
-    expect(1).to.be.equal(1);
+    await expect(
+      adapterContract.getValueForDataFeed(convertStringToBytes32("SMTH-ELSE"))
+    ).to.be.revertedWith("DataFeedIdNotFound");
   });
 
   it("should revert trying to get several values, if one data feed is not supported", async () => {
-    expect(1).to.be.equal(1);
+    await updateValues({
+      increaseBlockTimeBySeconds: 1,
+    });
+
+    await expect(
+      adapterContract.getValuesForDataFeeds(
+        ["BTC", "SMTH-ELSE"].map(convertStringToBytes32)
+      )
+    ).to.be.revertedWith("DataFeedIdNotFound");
   });
 
   it("should revert trying to get several values, if one data feed has invalid (zero) value", async () => {
-    expect(1).to.be.equal(1);
+    await expect(
+      adapterContract.getValuesForDataFeeds(["BTC"].map(convertStringToBytes32))
+    ).to.be.revertedWith("DataFeedValueCannotBeZero");
   });
 };
