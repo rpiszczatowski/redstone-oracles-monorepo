@@ -4,6 +4,10 @@ pragma solidity ^0.8.4;
 
 import "./SinglePriceFeedAdapter.sol";
 
+// IMPORTANT!!! This contract has a significant security risk, as it allows to 
+// update oracle data with older timestamps then the previous one. It can
+// open many opportunities for attackers to manipulate the values and use it
+// for arbitrage. Use it only if you know what you are doing very well.
 abstract contract SinglePriceFeedAdapterWithClearing is SinglePriceFeedAdapter {
 
   bytes32 internal constant TEMP_DATA_TIMESTAMP_STORAGE_LOCATION = 0x9ba2e81f7980c774323961547312ae2319fc1970bb8ec60c86c869e9a1c1c0d2; // keccak256("RedStone.tempDataTimestampStorageLocation");

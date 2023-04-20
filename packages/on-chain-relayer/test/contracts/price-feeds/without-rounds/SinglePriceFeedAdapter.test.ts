@@ -1,5 +1,9 @@
 import { describeCommonPriceFeedsAdapterTests } from "../common/price-feeds-adapter-utils";
 
 describe("SinglePriceFeedAdapter", () => {
-  describeCommonPriceFeedsAdapterTests("SinglePriceFeedAdapterMock");
+  describeCommonPriceFeedsAdapterTests({
+    adapterContractName: "SinglePriceFeedAdapterMock",
+    hasOnlyOneDataFeed: true,
+    skipTestsForPrevDataTimestamp: false,
+  });
 });
