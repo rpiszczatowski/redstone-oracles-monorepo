@@ -14,7 +14,7 @@ use starknet::storage_address_from_base_and_offset;
 use alpha6::gas::out_of_gas_array;
 use alpha6::core::find_price;
 
-impl StorageAccessArrayFelt252 of StorageAccess<Array<felt252>> {
+impl StorageAccessArrayFelt252 of StorageAccess::<Array::<felt252>> {
     #[inline(always)]
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Array<felt252>> {
         let mut result = ArrayTrait::new();

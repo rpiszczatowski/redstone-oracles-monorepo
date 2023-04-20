@@ -5,8 +5,8 @@ use redstone::processor::process_payload;
 use redstone::processor::Config;
 use redstone::numbers::Felt252PartialOrd;
 
-use demo::stark::sample_payload_bytes;
-use demo::stark::SAMPLE_BLOCK_TIMESTAMP;
+use demo::test::sample_payload_bytes;
+use demo::test::SAMPLE_BLOCK_TIMESTAMP;
 use demo::debug::ValuesPrint;
 use demo::debug::GenericArrayPrintImpl;
 

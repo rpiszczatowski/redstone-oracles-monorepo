@@ -53,24 +53,5 @@ impl SliceableArray<T, impl TDrop: Drop<T>, impl TCopy: Copy<T>> of SliceableArr
 //     res.append(*arr[index]);
 //     array_copy(arr, index + 1_usize, ref res)
 // }
-// impl DropFeltSnapshot of Drop::<@felt252>;
-
-// impl ArrayDrop<T, impl TDrop: Drop<T>> of Drop<Array<T>>;
-
-// let mut arr = array_new();
-// arr.append(0x00_u8);
-// arr.append(0x01_u8);
-// arr.append(0x02_u8);
-// arr.append(0x03_u8);
-// arr.append(0x04_u8);
-// arr.append(0x05_u8);
-// arr.append(0x06_u8);
-// arr.append(0x07_u8);
-// arr.append(0x08_u8);
-// arr.append(0x09_u8);
-
-// let x = arr.slice_tail(5_usize);
-// u32_to_felt252(x.head.len()).print();
-// u32_to_felt252(x.tail.len()).print();
 
 

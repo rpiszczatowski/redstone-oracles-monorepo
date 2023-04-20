@@ -7,7 +7,7 @@ clean:
 	rm -rf $(DATA_DIR)
 
 fetch_time:
-		curl -L -H "Accept: application/json" unixtimesta.mp > $(DATA_DIR)/${DATA_NAME}.time 
+		curl -L -H "Accept: application/json" unixtimesta.mp > $(DATA_DIR)/${DATA_NAME}.time
 
 prepare_data: BLOCK_TIMESTAMP=$(shell cat $(DATA_DIR)/${DATA_NAME}.time  | grep -o '"timestamp":\d*' | cut -d':' -f2)
 	
