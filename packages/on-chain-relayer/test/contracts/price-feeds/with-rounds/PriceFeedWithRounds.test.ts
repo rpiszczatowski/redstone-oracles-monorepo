@@ -8,6 +8,7 @@ describe("PriceFeedWithRounds", () => {
   describeCommonPriceFeedTests({
     priceFeedContractName: "PriceFeedWithRoundsMock",
     adapterContractName: "PriceFeedsAdapterWithRoundsMock",
+    expectedRoundIdAfterOneUpdate: 1,
   });
 
   describe("Tests for getting historical price feed values", () => {
