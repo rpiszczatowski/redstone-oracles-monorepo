@@ -3,11 +3,12 @@ import { IterationContext } from "../../src/schedulers/IScheduler";
 import { roundTimestamp } from "../../src/utils/timestamps";
 import mainManifest from "../../manifests/data-services/main.json";
 import wideSupportTokensManifest from "../../manifests/dev/main-wide-support.json";
+import { NodeConfig } from "../../src/types";
 
 export const HARDHAT_MOCK_PRIVATE_KEY =
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 
-export const dryRunTestNodeConfig = {
+export const dryRunTestNodeConfig: NodeConfig = {
   enableJsonLogs: false,
   enablePerformanceTracking: false,
   printDiagnosticInfo: false,
@@ -27,6 +28,7 @@ export const dryRunTestNodeConfig = {
   coingeckoApiUrl: "",
   enableHttpServer: false,
   stlouisfedApiKey: process.env.STLOUISFED_API_KEY,
+  pricesHardLimitsUrl: "",
 };
 
 export const MockScheduler = {

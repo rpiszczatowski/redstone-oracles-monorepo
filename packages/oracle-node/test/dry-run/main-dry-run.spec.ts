@@ -24,6 +24,10 @@ const REQUIRED_MAIN_MANIFEST_TOKENS_PERCENTAGE = 0.95;
 const mainManifestTokens = getMainManifestTokens();
 const wideSupportTokens = getWideSupportTokens();
 
+interface PricesForDataFeedId {
+  [dataFeedId: string]: number;
+}
+
 describe("Main dry run test", () => {
   const runTestNode = async () => {
     const sut = await NodeRunner.create(dryRunTestNodeConfig);
@@ -37,7 +41,7 @@ describe("Main dry run test", () => {
   };
 
   const getPricesForDataFeedId = (dataPackages: SignedDataPackage[]) => {
-    const pricesForDataFeedId: { [dataFeedId: string]: number } = {};
+    const pricesForDataFeedId: PricesForDataFeedId = {};
     for (const dataPackage of dataPackages) {
       const dataPackageObject = dataPackage.dataPackage.toObj();
       const { dataFeedId, value } = dataPackageObject.dataPoints[0];
@@ -82,12 +86,7 @@ describe("Main dry run test", () => {
       USDC/USDT -> AVAX/ETH -> TJ_AVAX_ETH_LP -> YY_TJ_AVAX_ETH_LP
     */
     await runNodeMultipleTimes(4);
-    const dataPackages = (
-      mockedBroadcaster.mock as jest.MockContext<
-        Promise<void>,
-        [signedDataPackages: SignedDataPackage[]]
-      >
-    ).lastCall[0];
+    const dataPackages = mockedBroadcaster.mock?.lastCall?.[0] ?? [];
     const pricesForDataFeedId = getPricesForDataFeedId(dataPackages);
     for (const token of mainManifestTokens) {
       const currentDataFeedPrice = pricesForDataFeedId[token];
