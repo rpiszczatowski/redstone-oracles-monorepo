@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
@@ -21,6 +22,10 @@ jest.mock("../src/Terminator", () => ({
     throw new Error(`Mock manifest config termination: ${details}`);
   },
 }));
+
+jest.mock("axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+mockedAxios.get.mockImplementation(() => Promise.resolve({ data: {} }));
 
 // Having hard time to mock uuid..so far only this solution is working: https://stackoverflow.com/a/61150430
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
@@ -337,7 +342,8 @@ describe("PricesService", () => {
       pricesService.assertValidPrice(
         preparePrice({ value: 42 }),
         [],
-        emptyManifest.deviationCheck
+        emptyManifest.deviationCheck,
+        {}
       );
     });
 
@@ -346,7 +352,8 @@ describe("PricesService", () => {
         pricesService.assertValidPrice(
           preparePrice({ value: -1 }),
           [],
-          emptyManifest.deviationCheck
+          emptyManifest.deviationCheck,
+          {}
         )
       ).toThrow(
         "Invalid price for symbol mock-symbol. Reason: Value is less than 0"
@@ -358,7 +365,8 @@ describe("PricesService", () => {
         pricesService.assertValidPrice(
           preparePrice({ value: "Hello" } as any),
           [],
-          emptyManifest.deviationCheck
+          emptyManifest.deviationCheck,
+          {}
         )
       ).toThrow(
         "Invalid price for symbol mock-symbol. Reason: Value is not a number"
@@ -372,10 +380,41 @@ describe("PricesService", () => {
         pricesService.assertValidPrice(
           price,
           recentPrices,
-          emptyManifest.deviationCheck
+          emptyManifest.deviationCheck,
+          {}
         )
       ).toThrow(
         "Invalid price for symbol ETH. Reason: Value is too deviated (114.28571428571428%)"
+      );
+    });
+
+    it("should throw when price out of lower limit", async () => {
+      const price = preparePrice({ value: 45, symbol: "ETH" });
+      const recentPrices = [{ value: 42, timestamp: price.timestamp }];
+      expect(() =>
+        pricesService.assertValidPrice(
+          price,
+          recentPrices,
+          emptyManifest.deviationCheck,
+          { ETH: { upper: 44, lower: 40 } }
+        )
+      ).toThrow(
+        "Invalid price for symbol ETH. Reason: Value is out of hard limits (value: 45, limits: 40-44)"
+      );
+    });
+
+    it("should throw when price out of upper limit", async () => {
+      const price = preparePrice({ value: 39, symbol: "ETH" });
+      const recentPrices = [{ value: 42, timestamp: price.timestamp }];
+      expect(() =>
+        pricesService.assertValidPrice(
+          price,
+          recentPrices,
+          emptyManifest.deviationCheck,
+          { ETH: { upper: 44, lower: 40 } }
+        )
+      ).toThrow(
+        "Invalid price for symbol ETH. Reason: Value is out of hard limits (value: 39, limits: 40-44)"
       );
     });
   });

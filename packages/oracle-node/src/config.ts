@@ -28,6 +28,7 @@ const DEFAULT_COINGECKO_API_URL =
   "https://api.coingecko.com/api/v3/simple/price";
 const DEFAULT_COINGECKO_API_KEY = "";
 const DEFAULT_ENABLE_HTTP_SERVER = "false";
+const DEFAULT_PRICES_HARD_LIMITS_URL = "";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -177,5 +178,9 @@ export const config: NodeConfig = Object.freeze({
   coingeckoApiKey: getFromEnv("COINGECKO_API_KEY", DEFAULT_COINGECKO_API_KEY),
   enableHttpServer: parserFromString.boolean(
     getFromEnv("ENABLE_HTTP_SERVER", DEFAULT_ENABLE_HTTP_SERVER)
+  ),
+  pricesHardLimitsUrl: getFromEnv(
+    "PRICES_HARD_LIMITS_URL",
+    DEFAULT_PRICES_HARD_LIMITS_URL
   ),
 });
