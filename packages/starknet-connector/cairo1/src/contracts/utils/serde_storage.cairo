@@ -2,21 +2,28 @@ use array::ArrayTrait;
 use array::Array;
 use option::OptionTrait;
 use result::ResultTrait;
+use serde::Serde;
+use traits::Into;
+use traits::TryInto;
+
 use starknet::syscalls::storage_read_syscall;
 use starknet::syscalls::storage_write_syscall;
 use starknet::syscalls::SyscallResult;
 use starknet::StorageBaseAddress;
 use starknet::StorageAccess;
-use traits::Into;
-use traits::TryInto;
 use starknet::storage_address_from_base_and_offset;
 
-use alpha6::gas::out_of_gas_array;
-use alpha6::core::find_price;
+use utils::gas::out_of_gas_array;
 
-impl StorageAccessArrayFelt252 of StorageAccess::<Array::<felt252>> {
+trait WrappedSerde<T> {} // to avoid multiple implementations of Serde for primitive types
+impl ArrayWrappedSerde<U> of WrappedSerde<Array<U>> {}
+
+impl StorageAccessSerde<T,
+impl TSerde: Serde<T>,
+impl TDrop: Drop<T>,
+impl TWrappedSerde: WrappedSerde<T>> of StorageAccess<T> {
     #[inline(always)]
-    fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<Array<felt252>> {
+    fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<T> {
         let mut result = ArrayTrait::new();
 
         let size: usize = StorageAccess::<felt252>::read(
@@ -24,17 +31,19 @@ impl StorageAccessArrayFelt252 of StorageAccess::<Array::<felt252>> {
         )?.try_into().expect('StorageAccessArray - non usize');
 
         _read(:address_domain, :base, :size, index: 0_u8, ref acc: result);
+        let mut span = result.span();
 
-        Result::Ok(result)
+        Result::Ok(Serde::<T>::deserialize(ref span).expect('Wrong structure'))
     }
 
     #[inline(always)]
-    fn write(
-        address_domain: u32, base: StorageBaseAddress, value: Array<felt252>
-    ) -> SyscallResult<()> {
-        StorageAccess::<felt252>::write(address_domain, base, value.len().into());
+    fn write(address_domain: u32, base: StorageBaseAddress, value: T) -> SyscallResult<()> {
+        let mut arr: Array<felt252> = ArrayTrait::new();
+        Serde::<T>::serialize(ref arr, value);
 
-        _write(:address_domain, :base, :value, index: 0_u8)
+        StorageAccess::<felt252>::write(address_domain, base, arr.len().into());
+
+        _write(:address_domain, :base, value: arr, index: 0_u8)
     }
 }
 

@@ -29,8 +29,7 @@ mod PriceFeed {
             contract_address: manager_contract_address::read()
         };
 
-        let round_data = manager.read_round_data();
-        let price = manager.read_price(feed_identifier::read());
+        let (round_data, price) = manager.read_round_data_and_price(feed_identifier::read());
 
         Round {
             round_id: round_data.round,

@@ -16,6 +16,7 @@ use redstone::config_validation::ValidableTrait;
 use redstone::config::index_in_array;
 use redstone::aggregation::aggregate_values;
 use redstone::results::Results;
+use redstone::numbers::Felt252PartialOrd;
 use redstone::gas::out_of_gas_array;
 
 fn process_payload(payload_bytes: Array<u8>, config: Config) -> Results {
@@ -35,7 +36,11 @@ fn process_payload(payload_bytes: Array<u8>, config: Config) -> Results {
     let mut aggregated_values: Array<felt252> = ArrayTrait::new();
     aggregate_values(values: @matrix, index: 0_usize, ref res: aggregated_values);
 
-    Results { payload, aggregated_values: @aggregated_values, values: @matrix }
+    let min_timestamp = get_min_timestamp(
+        data_packages: payload.data_packages, index: 0, acc: 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+    );
+
+    Results { min_timestamp, aggregated_values: @aggregated_values, values: @matrix }
 }
 
 fn make_values_matrix(
@@ -137,4 +142,23 @@ fn insert_data_point_values(
     insert_data_point_values(
         :data_points, :config, :signer_index, :tmp_signer_count, index: index + 1_usize, ref :dict
     )
+}
+
+fn get_min_timestamp(data_packages: @Array<DataPackage>, index: usize, acc: felt252) -> felt252 {
+    match gas::withdraw_gas_all(get_builtin_costs()) {
+        Option::Some(_) => {},
+        Option::None(_) => panic(out_of_gas_array()),
+    };
+
+    if (index == data_packages.len()) {
+        return acc;
+    }
+
+    let value = if (*data_packages[index].timestamp < acc) {
+        *data_packages[index].timestamp
+    } else {
+        acc
+    };
+
+    get_min_timestamp(:data_packages, index: index + 1, acc: value)
 }

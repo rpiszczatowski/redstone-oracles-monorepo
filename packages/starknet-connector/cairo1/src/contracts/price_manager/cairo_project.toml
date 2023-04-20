@@ -1,4 +1,5 @@
 [crate_roots]
 price_manager = "."
-alpha6 = "./alpha6"
+utils = "../utils"
 interface = "../interface"
+redstone = "../../redstone"

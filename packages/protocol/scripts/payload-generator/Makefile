@@ -1,5 +1,4 @@
-PAYLOAD_URL=https://d33trozg86ya9x.cloudfront.net/data-packages/payload?unique-signers-count=1&data-service-id=redstone-rapid-demo&data-feeds=BTC,ETH,BNB,AR,AVAX,CELO&format=
-
+PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=2&data-service-id=redstone-avalanche-prod&data-feeds=BTC,ETH,AVAX&format=
 DATA_DIR=./data
 SHELL := /bin/bash
 
@@ -7,7 +6,7 @@ clean:
 	rm -rf $(DATA_DIR)
 
 fetch_time:
-		curl -L -H "Accept: application/json" unixtimesta.mp > $(DATA_DIR)/${DATA_NAME}.time
+		curl -L -H "Accept: application/json" www.unixtimesta.mp > $(DATA_DIR)/${DATA_NAME}.time
 
 prepare_data: BLOCK_TIMESTAMP=$(shell cat $(DATA_DIR)/${DATA_NAME}.time  | grep -o '"timestamp":\d*' | cut -d':' -f2)
 	
@@ -15,9 +14,9 @@ prepare_data: BLOCK_TIMESTAMP=$(shell cat $(DATA_DIR)/${DATA_NAME}.time  | grep 
 prepare_data: fetch_time
 	mkdir -p $(DATA_DIR)
 	
-	curl "$(PAYLOAD_URL)hex" > $(DATA_DIR)/${DATA_NAME}.hex &
-	curl "$(PAYLOAD_URL)json" | cut -c 2- | sed 's/\\"/"/g' | sed 's/.$$//g' > $(DATA_DIR)/${DATA_NAME}.json &
-	curl "$(PAYLOAD_URL)bytes" > $(DATA_DIR)/${DATA_NAME}.tmp
+	curl --connect-timeout 15 "$(PAYLOAD_URL)hex" > $(DATA_DIR)/${DATA_NAME}.hex &
+	curl --connect-timeout 15 "$(PAYLOAD_URL)json" | cut -c 2- | sed 's/\\"/"/g' | sed 's/.$$//g' > $(DATA_DIR)/${DATA_NAME}.json &
+	curl --connect-timeout 15 "$(PAYLOAD_URL)bytes" > $(DATA_DIR)/${DATA_NAME}.tmp
 	
 	printf '{"bytes":' > $(DATA_DIR)/${DATA_NAME}.input 
 	cat $(DATA_DIR)/${DATA_NAME}.tmp >> $(DATA_DIR)/${DATA_NAME}.input 
