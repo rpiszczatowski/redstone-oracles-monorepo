@@ -14,6 +14,7 @@ import {
 } from "../../src/db/local-db";
 import emptyManifest from "../../manifests/dev/empty.json";
 import * as Terminator from "../../src/Terminator";
+import PricesService from "../../src/fetchers/PricesService";
 
 const TEST_PROVIDER_EVM_ADDRESS = "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A";
 
@@ -62,15 +63,6 @@ mockedAxios.post.mockImplementation((url) => {
   );
 });
 
-mockedAxios.get.mockImplementation((url) => {
-  if (url === "mock-hard-prices-limits-url") {
-    return Promise.resolve(mockHardLimits);
-  }
-  return Promise.reject(
-    `mock for ${url} not available and should not be called`
-  );
-});
-
 let manifest: any = null;
 
 jest.mock("../../src/utils/objects", () => ({
@@ -80,6 +72,10 @@ jest.mock("../../src/utils/objects", () => ({
 }));
 
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
+
+jest
+  .spyOn(PricesService.prototype, "fetchPricesLimits")
+  .mockImplementation(() => Promise.resolve(mockHardLimits));
 /****** MOCKS END ******/
 
 describe("NodeRunner", () => {

@@ -824,7 +824,7 @@
       "source": ["coingecko", "coinmarketcap", "curve-eth", "curve-weth"]
     },
     "PLS": {
-      "source": ["bitget", "bkex", "coingecko", "coinmarketcap", "curve-weth"]
+      "source": ["bitget", "bkex", "coingecko", "coinmarketcap", "camelot-weth"]
     },
     "CMP": {
       "source": ["bybit", "coingecko", "xt"]

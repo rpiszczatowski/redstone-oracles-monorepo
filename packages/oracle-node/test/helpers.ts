@@ -54,14 +54,12 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
 };
 
 export const mockHardLimits = {
-  data: {
-    BTC: {
-      lower: 440,
-      upper: 450,
-    },
-    ETH: {
-      lower: 40,
-      upper: 45,
-    },
+  BTC: {
+    lower: 440,
+    upper: 450,
+  },
+  ETH: {
+    lower: 40,
+    upper: 45,
   },
 };

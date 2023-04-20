@@ -27,7 +27,6 @@ export const dryRunTestNodeConfig: NodeConfig = {
   arbitrumRpcUrl: "",
   coingeckoApiUrl: "",
   enableHttpServer: false,
-  stlouisfedApiKey: process.env.STLOUISFED_API_KEY,
   pricesHardLimitsUrl: "",
 };
 

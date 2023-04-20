@@ -23,10 +23,6 @@ jest.mock("../src/Terminator", () => ({
   },
 }));
 
-jest.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
-mockedAxios.get.mockImplementation(() => Promise.resolve({ data: {} }));
-
 // Having hard time to mock uuid..so far only this solution is working: https://stackoverflow.com/a/61150430
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 const testTimestamp = Date.now();
