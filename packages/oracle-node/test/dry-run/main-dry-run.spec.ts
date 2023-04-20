@@ -21,6 +21,9 @@ jest.setTimeout(TWENTY_MINUTES_IN_MILLISECONDS);
 
 const REQUIRED_MAIN_MANIFEST_TOKENS_PERCENTAGE = 0.95;
 
+const mainManifestTokens = getMainManifestTokens();
+const wideSupportTokens = getWideSupportTokens();
+
 describe("Main dry run test", () => {
   const runTestNode = async () => {
     const sut = await NodeRunner.create(dryRunTestNodeConfig);
@@ -76,21 +79,23 @@ describe("Main dry run test", () => {
     /* 
       We want to run Node 4 times because in order to calculate price of some tokens
       we need price of another tokens f.g. 
-      USDC/USDT => AVAX/ETH => TJ_AVAX_ETH_LP => YY_TJ_AVAX_ETH_LP
+      USDC/USDT -> AVAX/ETH -> TJ_AVAX_ETH_LP -> YY_TJ_AVAX_ETH_LP
     */
     await runNodeMultipleTimes(4);
-    const dataPackages = (mockedBroadcaster.mock as any).lastCall[0];
+    const dataPackages = (
+      mockedBroadcaster.mock as jest.MockContext<
+        Promise<void>,
+        [signedDataPackages: SignedDataPackage[]]
+      >
+    ).lastCall[0];
     const pricesForDataFeedId = getPricesForDataFeedId(dataPackages);
-    const mainManifestTokens = getMainManifestTokens();
-    const wideSupportTokens = getWideSupportTokens();
     for (const token of mainManifestTokens) {
       const currentDataFeedPrice = pricesForDataFeedId[token];
       if (!currentDataFeedPrice) {
         console.log(`Missing token ${token} during dry run test`);
-      } else {
-        if (wideSupportTokens.includes(token)) {
-          expect(currentDataFeedPrice).toBeGreaterThan(0);
-        }
+      }
+      if (wideSupportTokens.includes(token)) {
+        expect(currentDataFeedPrice).toBeGreaterThan(0);
       }
     }
     const allTokensBroadcasted = Object.keys(pricesForDataFeedId).length;
