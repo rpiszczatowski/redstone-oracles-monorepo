@@ -3,14 +3,10 @@ pragma solidity ^0.8.4;
 
 import "../PriceFeedBase.sol";
 
-contract PriceFeedWithoutRounds is PriceFeedBase {
-  IRedstoneAdapter public priceFeedsAdapter;
-
+abstract contract PriceFeedWithoutRounds is PriceFeedBase {
   error UnsupportedRoundId(uint80 requestedRoundId);
 
-  function getPriceFeedAdapter() public view override returns (IRedstoneAdapter) {
-    return priceFeedsAdapter;
-  }
+  function getPriceFeedAdapter() public view virtual override returns (IRedstoneAdapter);
 
   // There are possible use cases that some contracts don't need values from old rounds
   // but still rely on `getRoundData` or `latestRounud` functions

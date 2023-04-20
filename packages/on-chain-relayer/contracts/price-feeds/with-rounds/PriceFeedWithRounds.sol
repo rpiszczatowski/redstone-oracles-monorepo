@@ -5,12 +5,10 @@ pragma solidity ^0.8.4;
 import "./PriceFeedsAdapterWithRounds.sol";
 import "../PriceFeedBase.sol";
 
-contract PriceFeedWithRounds is PriceFeedBase {
+abstract contract PriceFeedWithRounds is PriceFeedBase {
   PriceFeedsAdapterWithRounds public priceFeedsAdapter;
 
-  function getPriceFeedAdapter() public view override returns (IRedstoneAdapter) {
-    return priceFeedsAdapter;
-  }
+  function getPriceFeedAdapter() public view virtual override returns (IRedstoneAdapter);
 
   function latestRound() public view override returns (uint80) {
     return uint80(priceFeedsAdapter.getLatestRoundId());

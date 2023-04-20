@@ -5,7 +5,10 @@ import { describeCommonPriceFeedTests } from "../common/price-feed-utils";
 chai.use(chaiAsPromised);
 
 describe("PriceFeedWithoutRounds", () => {
-  describeCommonPriceFeedTests();
+  describeCommonPriceFeedTests({
+    priceFeedContractName: "PriceFeedWithoutRoundsMock",
+    adapterContractName: "PriceFeedsAdapterWithoutRoundsMock",
+  });
 
   describe("Tests for getting historical price feed values", () => {
     it("should revert trying to get round data for invalid rounds", async () => {

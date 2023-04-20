@@ -6,6 +6,11 @@ import { formatBytes32String } from "ethers/lib/utils";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { ethers } from "hardhat";
 
+interface AdapterTestsParams {
+  adapterContractName: string;
+  hasOnlyOneDataFeed: boolean;
+}
+
 chai.use(chaiAsPromised);
 
 export const describeCommonPriceFeedsAdapterTests = (adapterContractName: string) => {
