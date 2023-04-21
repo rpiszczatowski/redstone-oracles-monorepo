@@ -13,7 +13,7 @@ import {
 import {
   buildMulticallRequests,
   FunctionNamesWithValues,
-} from "../shared/build-multicall-request";
+} from "../../shared/build-multicall-request";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
@@ -23,7 +23,7 @@ import {
   glpToken,
   GlpManagerDetailsKeys,
   glpManagerContractsDetails,
-} from "../shared/contracts-details/glp-manager";
+} from "../../shared/contracts-details/glp-manager";
 
 export const prepareMulticallRequests = (id: string) => {
   let abi: string | readonly (string | Fragment | JsonFragment)[];
