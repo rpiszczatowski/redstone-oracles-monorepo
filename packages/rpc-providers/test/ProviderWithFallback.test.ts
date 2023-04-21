@@ -181,6 +181,6 @@ describe("ProviderWithFallback", () => {
     const contract = await ContractFactory.deploy();
     await contract.deployed();
 
-    await contract.fail();
+    await expect(contract.fail()).rejectedWith();
   });
 });
