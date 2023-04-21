@@ -5,7 +5,6 @@ import { getRequiredPropValue } from "../../utils/objects";
 import symbolToId from "./coingecko-symbol-to-id.json";
 import { config } from "../../config";
 import { PricesObj } from "../../types";
-import { stringifyError } from "../../utils/error-stringifier";
 
 const idToSymbol = _.invert(symbolToId);
 
