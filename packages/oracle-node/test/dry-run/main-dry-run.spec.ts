@@ -19,7 +19,7 @@ import {
 const TWENTY_MINUTES_IN_MILLISECONDS = 1000 * 60 * 20;
 jest.setTimeout(TWENTY_MINUTES_IN_MILLISECONDS);
 
-const REQUIRED_MAIN_MANIFEST_TOKENS_PERCENTAGE = 0.95;
+const MIN_REQUIRED_MAIN_MANIFEST_TOKENS_PERCENTAGE = 0.95;
 
 const mainManifestTokens = getMainManifestTokens();
 const wideSupportTokens = getWideSupportTokens();
@@ -82,7 +82,7 @@ describe("Main dry run test", () => {
   test("Dry run for main manifest", async () => {
     /* 
       We want to run Node 4 times because in order to calculate price of some tokens
-      we need price of another tokens f.g. 
+      we need price of another tokens e.g. 
       USDC/USDT -> AVAX/ETH -> TJ_AVAX_ETH_LP -> YY_TJ_AVAX_ETH_LP
     */
     await runNodeMultipleTimes(4);
@@ -99,7 +99,7 @@ describe("Main dry run test", () => {
     }
     const allTokensBroadcasted = Object.keys(pricesForDataFeedId).length;
     const requiredTokensCount =
-      REQUIRED_MAIN_MANIFEST_TOKENS_PERCENTAGE * mainManifestTokens.length;
+      MIN_REQUIRED_MAIN_MANIFEST_TOKENS_PERCENTAGE * mainManifestTokens.length;
     expect(allTokensBroadcasted).toBeGreaterThan(requiredTokensCount);
   });
 });
