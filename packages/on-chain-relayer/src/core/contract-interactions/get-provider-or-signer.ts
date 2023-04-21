@@ -2,7 +2,7 @@ import { ErrorCode } from "@ethersproject/logger";
 import { providers as Providers, Wallet } from "ethers";
 import {
   FALLBACK_DEFAULT_CONFIG,
-  ProviderWithFallback,
+  ProviderWithAgreement,
 } from "redstone-rpc-providers";
 import { config } from "../../config";
 
@@ -22,7 +22,7 @@ export const getProvider = () => {
   } else if (providers.length === 1) {
     return providers[0];
   } else {
-    return new ProviderWithFallback(providers, {
+    return new ProviderWithAgreement(providers, {
       unrecoverableErrors: [
         ...FALLBACK_DEFAULT_CONFIG.unrecoverableErrors,
         ErrorCode.NONCE_EXPIRED,

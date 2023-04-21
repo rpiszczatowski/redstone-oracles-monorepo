@@ -28,10 +28,14 @@ export class ProviderWithFallback
   extends ProviderWithFallbackBase
   implements Provider
 {
-  private readonly config: ProviderWithFallbackConfig;
+  protected readonly providerWithFallbackConfig: ProviderWithFallbackConfig;
+  protected readonly providers: Provider[];
   private currentProvider: Provider;
-  private readonly providers: Provider[];
   private providerIndex = 0;
+
+  getProviderWithFallbackConfig() {
+    return { ...this.providerWithFallbackConfig };
+  }
 
   private globalListeners: {
     eventType: EventType;
@@ -44,14 +48,14 @@ export class ProviderWithFallback
     config: Partial<ProviderWithFallbackConfig> = {}
   ) {
     super();
-    const mainProvider = providers[0];
     if (providers.length < 2) {
       throw new Error("Please provide at least two providers");
     }
 
+    const mainProvider = providers[0];
     this.currentProvider = mainProvider;
     this.providers = [...providers];
-    this.config = { ...FALLBACK_DEFAULT_CONFIG, ...config };
+    this.providerWithFallbackConfig = { ...FALLBACK_DEFAULT_CONFIG, ...config };
   }
 
   override getNetwork(): Promise<Network> {
@@ -172,25 +176,30 @@ export class ProviderWithFallback
   }
 
   private extractProviderName(index: number): string {
-    return this.config.providerNames?.[index] ?? index.toString();
+    return (
+      this.providerWithFallbackConfig.providerNames?.[index] ?? index.toString()
+    );
   }
 
   private electNewProviderOrFail(error: any, retryNumber: number): number {
     const providerName = this.extractProviderName(this.providerIndex);
 
-    if (error?.code && this.config.unrecoverableErrors.includes(error.code)) {
-      this.config.logger.warn(
+    if (
+      error?.code &&
+      this.providerWithFallbackConfig.unrecoverableErrors.includes(error.code)
+    ) {
+      this.providerWithFallbackConfig.logger.warn(
         `Unrecoverable error ${error.code}, rethrowing error`
       );
       throw error;
     }
 
-    this.config.logger.warn(
+    this.providerWithFallbackConfig.logger.warn(
       `Provider ${providerName} failed with error: ${error?.code} ${error?.message}`
     );
 
     if (retryNumber === this.providers.length - 1) {
-      this.config.logger.warn(
+      this.providerWithFallbackConfig.logger.warn(
         `All providers failed to execute action, rethrowing error`
       );
       throw error;
@@ -201,7 +210,7 @@ export class ProviderWithFallback
 
     const nextProviderName = this.extractProviderName(nextProviderIndex);
 
-    this.config.logger.info(
+    this.providerWithFallbackConfig.logger.info(
       `Fallback in to next provider ${nextProviderName}.`
     );
 

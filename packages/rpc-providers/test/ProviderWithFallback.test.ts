@@ -175,4 +175,12 @@ describe("ProviderWithFallback", () => {
     expect(fallbackProvider.listenerCount()).to.eq(1);
     expect(hardhat.ethers.provider.listenerCount()).to.eq(1);
   });
+
+  it("should revert", async () => {
+    const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
+    const contract = await ContractFactory.deploy();
+    await contract.deployed();
+
+    await contract.fail();
+  });
 });

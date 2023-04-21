@@ -16,7 +16,7 @@ contract Counter {
   }
 
   function fail() external pure {
-    revert();
+    revert("This functions always reverts.");
   }
 
   function getCount() public view returns (uint256) {
