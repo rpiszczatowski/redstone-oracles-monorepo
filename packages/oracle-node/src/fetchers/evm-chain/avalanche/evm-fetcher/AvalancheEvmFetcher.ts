@@ -1,6 +1,6 @@
 import { providers } from "ethers";
-import { BaseFetcher } from "../../BaseFetcher";
-import { EvmMulticallService } from "../EvmMulticallService";
+import { BaseFetcher } from "../../../BaseFetcher";
+import { EvmMulticallService } from "../../EvmMulticallService";
 import { prepareMulticallRequests } from "./prepare-multicall-request";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
@@ -9,10 +9,10 @@ import {
   MulticallParsedResponses,
   MulticallRequest,
   PricesObj,
-} from "../../../types";
+} from "../../../../types";
 import { extractPrice } from "./extract-price";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
-import { stringifyError } from "../../../utils/error-stringifier";
+import { stringifyError } from "../../../../utils/error-stringifier";
 
 interface Providers {
   avalancheProvider: providers.Provider;

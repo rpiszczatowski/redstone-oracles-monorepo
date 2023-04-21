@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from "ethers";
-import { MulticallParsedResponses } from "../../../types";
+import { MulticallParsedResponses } from "../../../../types";
 import {
   YieldYakDetailsKeys,
   LpTokensDetailsKeys,
@@ -15,12 +15,12 @@ import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
-import { sqrt } from "../../../utils/math";
+import { sqrt } from "../../../../utils/math";
 import {
   extractPriceForGlpToken,
   extractValueFromMulticallResponse,
-} from "../shared/extract-prices";
-import { glpToken } from "../shared/contracts-details/glp-manager";
+} from "../../shared/extract-prices";
+import { glpToken } from "../../shared/contracts-details/glp-manager";
 import { glpManagerAddress } from "./contracts-details/glp-manager";
 
 // Fair LP Token Pricing has been implemented with the help of: https://blog.alphaventuredao.io/fair-lp-token-pricing/

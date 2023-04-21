@@ -14,7 +14,7 @@ import { DrandFetcher } from "./drand/DrandFetcher";
 import { DiaFetcher } from "./dia/DiaFetcher";
 import twapFetchers from "./twap/all-twap-fetchers";
 import { TwelveDataFetcher } from "./twelve-data/TwelveDataFetcher";
-import { AvalancheEvmFetcher } from "./evm-chain/avalanche/AvalancheEvmFetcher";
+import { AvalancheEvmFetcher } from "./evm-chain/avalanche/evm-fetcher/AvalancheEvmFetcher";
 import { PlatypusFetcher } from "./platypus/PlatypusFetcher";
 import { LensFetcher } from "./lens/LensFetcher";
 import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
@@ -39,6 +39,8 @@ import { NewyorkfedFetcher } from "./newyorkfed/NewyorkfedFetcher";
 import uniswapV2OnChainFetchers from "./evm-chain/ethereum/uniswap-v2-on-chain/all-uniswap-v2-on-chain-fetchers";
 import camelotFetchers from "./evm-chain/arbitrum/camelot/all-camelot-fetchers";
 import { NonUsdBasedFetcher } from "./non-usd-based/NonUsdBasedFetcher";
+import pangolinOnChainFetchers from "./evm-chain/avalanche/pangolin-on-chain/pangolin-on-chain-fetchers";
+import traderJoeOnChainFetchers from "./evm-chain/avalanche/trader-joe-on-chain/trader-joe-on-chain-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -79,4 +81,6 @@ export default {
   ...curveFetchers,
   ...uniswapV2OnChainFetchers,
   ...camelotFetchers,
+  ...pangolinOnChainFetchers,
+  ...traderJoeOnChainFetchers,
 } as { [name: string]: Fetcher };

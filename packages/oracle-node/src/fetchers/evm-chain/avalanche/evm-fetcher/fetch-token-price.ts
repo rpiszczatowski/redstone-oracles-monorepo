@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from "ethers";
-import { getLastPrice } from "../../../db/local-db";
+import { getLastPrice } from "../../../../db/local-db";
 import {
   MooJoeTokensDetailsKeys,
   YieldYakDetailsKeys,
