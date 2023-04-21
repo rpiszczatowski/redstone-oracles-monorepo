@@ -1,13 +1,18 @@
 import _ from "lodash";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
 import { config } from "../../config";
 import symbolToId from "./twelve-data-symbol-to-id.json";
 import { getRequiredPropValue } from "../../utils/objects";
 
-const TWELVE_DATA_RATE_URL =
-  "https://twelve-data1.p.rapidapi.com/exchange_rate";
+interface TwelveDataResponse {
+  [symbol: string]: {
+    price: number;
+  };
+}
+
+const TWELVE_DATA_PRICE_URL = "https://twelve-data1.p.rapidapi.com/price";
 
 const idToSymbol = _.invert(symbolToId);
 
@@ -25,20 +30,22 @@ export class TwelveDataFetcher extends BaseFetcher {
   }
 
   async fetchData(ids: string[]): Promise<any> {
-    const symbolString = ids.join(",");
-    return await axios.get(`${TWELVE_DATA_RATE_URL}?symbol=${symbolString}`, {
+    return await axios.get(TWELVE_DATA_PRICE_URL, {
+      params: {
+        symbol: ids.join(","),
+      },
       headers: {
         "RapidAPI-Key": config.twelveDataRapidApiKey,
       },
     });
   }
 
-  extractPrices(result: any): PricesObj {
-    const rates = result.data;
+  extractPrices(response: AxiosResponse<TwelveDataResponse>): PricesObj {
+    const twelveDataResponse = response.data;
 
-    return this.extractPricesSafely(Object.keys(rates), (key) => ({
-      value: rates[key].rate,
-      id: rates[key].symbol,
+    return this.extractPricesSafely(Object.keys(twelveDataResponse), (id) => ({
+      value: twelveDataResponse[id].price,
+      id,
     }));
   }
 }
