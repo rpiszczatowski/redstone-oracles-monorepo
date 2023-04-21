@@ -269,6 +269,11 @@
     "url": "https://twelvedata.com",
     "color": "#2469f0"
   },
+  "twelve-data-etf-uk": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/twelve-data.png",
+    "url": "https://twelvedata.com",
+    "color": "#2469f0"
+  },
   "uniswap": {
     "logoURI": "https://cdn.redstone.finance/sources/uniswap.svg",
     "url": "https://uniswap.org/",
