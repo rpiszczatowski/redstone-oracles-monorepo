@@ -931,5 +931,6 @@
   "ANKRETH": "ankreth",
   "WSTETH": "wrapped-steth",
   "STETH": "staked-ether",
-  "CMP": "caduceus"
+  "CMP": "caduceus",
+  "PLS": "plutusdao"
 }

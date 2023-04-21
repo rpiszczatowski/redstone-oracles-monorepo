@@ -186,7 +186,7 @@ export default class PricesService {
     prices: PriceDataBeforeAggregation[]
   ): Promise<PriceDataAfterAggregation[]> {
     const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
-    const pricesLimits = await this.getPricesLimits();
+    const pricesLimits = await this.fetchPricesLimits();
 
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
     for (const price of prices) {
@@ -399,7 +399,7 @@ export default class PricesService {
     }
   }
 
-  async getPricesLimits(): Promise<PricesLimits> {
+  async fetchPricesLimits(): Promise<PricesLimits> {
     if (!config.pricesHardLimitsUrl) {
       return {};
     }
