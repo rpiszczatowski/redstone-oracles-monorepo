@@ -23,7 +23,7 @@ export let JsNativeSafeNumberConfig = {
   MAX_NUMBER: Number.MAX_SAFE_INTEGER,
   MIN_NUMBER: 1e-14,
   MAX_DECIMALS: 14,
-  DIGIT_REGEXP: /^[-+]?(\d+(\.\d{1,32})?)$/,
+  DIGIT_REGEXP: /^[-+]?(\d+(\.\d{14})?)$/,
   ON_NUMBER_VALIDATION_ERROR: {
     [NumberValidationResult.isNaN]: (msg) => {
       throw new Error(msg);
@@ -210,16 +210,8 @@ const parseToSafeNumber = (value: NumberLike) => {
   let number;
   if (typeof value === "string") {
     if (!JsNativeSafeNumberConfig.DIGIT_REGEXP.test(value)) {
-      throw new Error(
-        `Invalid number format, not matching regexp: ${JsNativeSafeNumberConfig.DIGIT_REGEXP}`
-      );
-    }
-    const [_, decimals] = value.split(".");
-    if (decimals && decimals.length > JsNativeSafeNumberConfig.MAX_DECIMALS) {
       logger.warn(
-        `Loosing precision on number ${value} - received ${
-          decimals.length
-        } decimals (${new Error().stack})`
+        `Invalid number format: ${number}, not matching regexp: ${JsNativeSafeNumberConfig.DIGIT_REGEXP}`
       );
     }
     number = Number(value);
