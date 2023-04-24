@@ -6,17 +6,54 @@ import { BaseWrapper, ParamsForDryRunVerification } from "./BaseWrapper";
 import { parseAggregatedErrors } from "../helpers/parse-aggregated-errors";
 import { runDryRun } from "../helpers/run-dry-run";
 import { version } from "../../package.json";
+import { resolveDataServiceUrls } from "redstone-protocol";
 
-interface DryRunParamsWithUnsignedMetadata extends ParamsForDryRunVerification {
+type Optional<T, K extends keyof T> = Omit<T, K> & {
+  [P in K]?: T[P];
+};
+
+const DEFAULT_UNIQUE_SIGNERS_COUNT = 2;
+
+export interface DryRunParamsWithUnsignedMetadata
+  extends ParamsForDryRunVerification {
   unsignedMetadataMsg: string;
 }
 
+export type DataPackagesRequestInput = Optional<
+  DataPackagesRequestParams,
+  "dataServiceId" | "uniqueSignersCount"
+>;
+
 export class DataServiceWrapper extends BaseWrapper {
+  private _urls?: string[];
+  private readonly dataPackagesRequestParams: Optional<
+    DataPackagesRequestParams,
+    "dataServiceId"
+  >;
+
   constructor(
-    private dataPackagesRequestParams: DataPackagesRequestParams,
-    private urls: string[]
+    dataPackagesRequestParams: Optional<
+      DataPackagesRequestParams,
+      "dataServiceId" | "uniqueSignersCount"
+    >,
+    urls?: string[]
   ) {
     super();
+    this._urls = urls;
+    this.dataPackagesRequestParams = {
+      uniqueSignersCount: DEFAULT_UNIQUE_SIGNERS_COUNT,
+      ...dataPackagesRequestParams,
+    };
+  }
+
+  private get urls(): string[] {
+    if (this._urls) {
+      return this._urls;
+    }
+    this._urls = resolveDataServiceUrls(
+      this.dataPackagesRequestParams.dataServiceId as string
+    );
+    return this._urls;
   }
 
   getUnsignedMetadata(): string {
@@ -31,6 +68,12 @@ export class DataServiceWrapper extends BaseWrapper {
     const disablePayloadsDryRun = Boolean(
       this.dataPackagesRequestParams.disablePayloadsDryRun
     );
+
+    if (!this.dataPackagesRequestParams.dataServiceId) {
+      this.dataPackagesRequestParams.dataServiceId =
+        await this.getDataServiceIdFromContract();
+    }
+
     if (disablePayloadsDryRun) {
       return this.requestPayloadWithoutDryRun(this.urls, unsignedMetadataMsg);
     }
@@ -67,9 +110,20 @@ export class DataServiceWrapper extends BaseWrapper {
     unsignedMetadataMsg: string
   ) {
     return requestRedstonePayload(
-      this.dataPackagesRequestParams,
+      this.dataPackagesRequestParams as DataPackagesRequestParams,
       urls,
       unsignedMetadataMsg
     );
+  }
+
+  private async getDataServiceIdFromContract(): Promise<string> {
+    try {
+      return await this.contract.getDataServiceId();
+    } catch (e: any) {
+      throw new Error(
+        `DataServiceId not provided and failed to get service id from underlying contract.` +
+          e?.message
+      );
+    }
   }
 }

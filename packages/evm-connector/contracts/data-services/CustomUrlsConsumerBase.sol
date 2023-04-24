@@ -2,9 +2,13 @@
 
 pragma solidity ^0.8.4;
 
-import "../core/RedstoneConsumerNumericBase.sol";
+import "./RedstoneDataServiceConsumer.sol";
 
-contract CustomUrlsConsumerBase is RedstoneConsumerNumericBase {
+contract CustomUrlsConsumerBase is RedstoneDataServiceConsumer {
+  function getDataServiceId() public view virtual override returns (string memory) {
+    return "redstone-custom-urls-demo";
+  }
+
   function getUniqueSignersThreshold() public view virtual override returns (uint8) {
     return 2;
   }

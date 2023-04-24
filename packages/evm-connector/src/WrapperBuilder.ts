@@ -1,14 +1,17 @@
 import { Contract } from "ethers";
-import { DataPackagesRequestParams, DataPackagesResponse } from "redstone-sdk";
 import { ScoreType } from "redstone-protocol";
+import { DataPackagesResponse } from "redstone-sdk";
+import { DataPackagesWrapper } from "./wrappers/DataPackagesWrapper";
+import {
+  DataPackagesRequestInput,
+  DataServiceWrapper,
+} from "./wrappers/DataServiceWrapper";
 import { MockDataPackageConfig, MockWrapper } from "./wrappers/MockWrapper";
-import { DataServiceWrapper } from "./wrappers/DataServiceWrapper";
+import { OnDemandRequestWrapper } from "./wrappers/OnDemandRequestWrapper";
 import {
   SimpleNumericMockConfig,
   SimpleNumericMockWrapper,
 } from "./wrappers/SimpleMockNumericWrapper";
-import { OnDemandRequestWrapper } from "./wrappers/OnDemandRequestWrapper";
-import { DataPackagesWrapper } from "./wrappers/DataPackagesWrapper";
 
 export class WrapperBuilder {
   constructor(private baseContract: Contract) {}
@@ -18,8 +21,8 @@ export class WrapperBuilder {
   }
 
   usingDataService(
-    dataPackagesRequestParams: DataPackagesRequestParams,
-    urls: string[]
+    dataPackagesRequestParams: DataPackagesRequestInput,
+    urls?: string[]
   ): Contract {
     return new DataServiceWrapper(
       dataPackagesRequestParams,
