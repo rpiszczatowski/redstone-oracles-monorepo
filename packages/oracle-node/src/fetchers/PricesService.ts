@@ -253,8 +253,7 @@ export default class PricesService {
         valueFromSourceNum.assertNonNegative();
 
         this.assertStableDeviation({
-          // clone value
-          value: SafeNumber(valueFromSourceNum),
+          value: valueFromSourceNum,
           timestamp: price.timestamp,
           deviationConfig: deviationCheckConfig,
           recentPrices: recentPricesInLocalDBForSymbol,

@@ -189,7 +189,7 @@ describe("Local DB", () => {
         ...defaultPriceProps,
         timestamp: defaultPriceProps.timestamp - FIVE_MINUTES_IN_MILLISECONDS,
         symbol: "AVAX",
-        value: 17,
+        value: SafeNumber("17"),
       },
     ]);
 
