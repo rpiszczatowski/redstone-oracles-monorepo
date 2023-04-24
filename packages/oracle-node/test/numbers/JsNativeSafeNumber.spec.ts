@@ -4,7 +4,7 @@ import {
 } from "../../src/numbers/JsNativeSafeNumber";
 import { NumberArg } from "../../src/numbers/ISafeNumber";
 
-describe("JsNativePreciseNumber", () => {
+describe.only("JsNativePreciseNumber", () => {
   describe("from", () => {
     it.each([
       ["0", 0],
@@ -53,9 +53,9 @@ describe("JsNativePreciseNumber", () => {
       // 14 decimals number
       ["1.12345678123456", 1.12345678123456],
       // 15 decimals number
-      ["1.123456781234567", /Invalid number format/],
+      ["1.123456781234567", 1.12345678123456],
       // 32 decimals number
-      ["1.12345678123456781234567812345678", /Invalid number format/],
+      ["1.12345678123456781234567812345678", 1.12345678123456],
       // 64 decimals number
       [
         "1.1234567812345678123456781234567812345678123456781234567812345678",

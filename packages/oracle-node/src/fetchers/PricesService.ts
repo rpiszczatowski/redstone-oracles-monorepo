@@ -43,11 +43,6 @@ export interface PriceValidationArgs {
   priceLimits?: PriceLimits;
 }
 
-interface PriceValidationResult {
-  isValid: boolean;
-  reason: string;
-}
-
 interface PriceLimits {
   lower: number;
   upper: number;
@@ -216,6 +211,10 @@ export default class PricesService {
 
         // Throwing an error if price < 0 is invalid or too deviated
         priceAfterAggregation.value.assertNonNegative();
+        this.assertInHardLimits(
+          priceAfterAggregation.value,
+          pricesLimits[price.symbol]
+        );
         this.assertStableDeviation({
           value: priceAfterAggregation.value,
           timestamp: priceAfterAggregation.timestamp,
@@ -268,6 +267,18 @@ export default class PricesService {
     }
 
     return { ...price, source: newSources };
+  }
+
+  assertInHardLimits(value: ISafeNumber, priceLimits?: PriceLimits) {
+    if (
+      priceLimits &&
+      (value.gt(priceLimits.upper) || value.lt(priceLimits.lower))
+    ) {
+      const { lower, upper } = priceLimits;
+      throw new Error(
+        `Value is out of hard limits (value: ${value}, limits: ${lower}-${upper})`
+      );
+    }
   }
 
   assertStableDeviation(args: PriceValidationArgs) {

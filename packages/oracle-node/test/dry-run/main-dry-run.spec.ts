@@ -91,7 +91,7 @@ describe("Main dry run test", () => {
     for (const token of mainManifestTokens) {
       const currentDataFeedPrice = pricesForDataFeedId[token];
       if (!currentDataFeedPrice) {
-        console.log(`Missing token ${token} during dry run test`);
+        throw Error(`Missing token ${token} during dry run test`);
       }
       if (wideSupportTokens.includes(token)) {
         expect(currentDataFeedPrice).toBeGreaterThan(0);
