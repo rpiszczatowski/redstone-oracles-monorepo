@@ -1,6 +1,6 @@
 import { Consola } from "consola";
-import { RedstoneNumber } from "../numbers/RedstoneNumber";
-import { N } from "../numbers/RedstoneNumberFactory";
+import { ISafeNumber } from "../numbers/ISafeNumber";
+import { SafeNumber } from "../numbers/SafeNumberFactory";
 
 const logger = require("./logger")("utils/numbers") as Consola;
 
@@ -15,12 +15,10 @@ export const safelyConvertAnyValueToNumber = (value: any): number => {
   }
 };
 
-export const calculateSum = (numbers: RedstoneNumber[]) =>
-  numbers.reduce((prev, curr) => prev.add(curr), N(0));
+export const calculateSum = (numbers: ISafeNumber[]) =>
+  numbers.reduce((prev, curr) => prev.add(curr), SafeNumber(0));
 
-export const calculateAverageValue = (
-  nums: RedstoneNumber[]
-): RedstoneNumber => {
+export const calculateAverageValue = (nums: ISafeNumber[]): ISafeNumber => {
   if (nums.length === 0) {
     throw new Error("Can not calculate an average value for an empty array");
   }
@@ -30,14 +28,14 @@ export const calculateAverageValue = (
 };
 
 export const calculateDeviationPercent = (args: {
-  measuredValue: RedstoneNumber;
-  trueValue: RedstoneNumber;
+  measuredValue: ISafeNumber;
+  trueValue: ISafeNumber;
 }) => {
   const { measuredValue, trueValue } = args;
 
   if (trueValue.eq(0)) {
     // TODO: make it more generic
-    return N(Number.MAX_SAFE_INTEGER);
+    return SafeNumber(Number.MAX_SAFE_INTEGER);
   }
 
   const result = measuredValue.sub(trueValue).div(trueValue).abs().mul(100);

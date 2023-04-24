@@ -4,7 +4,7 @@ import {
   setupLocalDb,
   savePrices,
 } from "../src/db/local-db";
-import { N } from "../src/numbers/RedstoneNumberFactory";
+import { SafeNumber } from "../src/numbers/SafeNumberFactory";
 import PricesService, {
   PricesBeforeAggregation,
   PricesDataFetched,
@@ -195,11 +195,11 @@ describe("PricesService", () => {
       const prices = preparePrices([
         {
           symbol: "ETH",
-          value: N(42),
+          value: SafeNumber(42),
         },
         {
           symbol: "BTC",
-          value: N(442),
+          value: SafeNumber(442),
         },
       ]);
 
@@ -218,8 +218,22 @@ describe("PricesService", () => {
 
     it("should properly calculate aggregated values (no deviations, no invalid)", async () => {
       const prices: PriceDataBeforeAggregation[] = preparePrices([
-        { symbol: "ETH", source: { src1: N(41), src2: N(43), src3: N(42) } },
-        { symbol: "BTC", source: { src1: N(442), src2: N(443), src3: N(442) } },
+        {
+          symbol: "ETH",
+          source: {
+            src1: SafeNumber(41),
+            src2: SafeNumber(43),
+            src3: SafeNumber(42),
+          },
+        },
+        {
+          symbol: "BTC",
+          source: {
+            src1: SafeNumber(442),
+            src2: SafeNumber(443),
+            src3: SafeNumber(442),
+          },
+        },
       ]);
 
       const pricesAfterAggregation =
@@ -232,11 +246,17 @@ describe("PricesService", () => {
     });
 
     it("should properly calculate aggregated values (some sources are too deviated)", async () => {
-      await savePrices(preparePrices([{ symbol: "ETH", value: N(41) }]));
+      await savePrices(
+        preparePrices([{ symbol: "ETH", value: SafeNumber(41) }])
+      );
       const prices: PriceDataBeforeAggregation[] = preparePrices([
         {
           symbol: "ETH",
-          source: { src1: N(40), src2: N(20), src3: N(44) }, // value from src2 should be exluded
+          source: {
+            src1: SafeNumber(40),
+            src2: SafeNumber(20),
+            src3: SafeNumber(44),
+          }, // value from src2 should be exluded
         },
       ]);
 
@@ -249,11 +269,17 @@ describe("PricesService", () => {
     });
 
     it("should exclude price if all sources values are deviated", async () => {
-      await savePrices(preparePrices([{ symbol: "ETH", value: N(42) }]));
+      await savePrices(
+        preparePrices([{ symbol: "ETH", value: SafeNumber(42) }])
+      );
       const prices: PriceDataBeforeAggregation[] = preparePrices([
         {
           symbol: "ETH",
-          source: { src1: N(60), src2: N(20), src3: N(100000) },
+          source: {
+            src1: SafeNumber(60),
+            src2: SafeNumber(20),
+            src3: SafeNumber(100000),
+          },
         },
       ]);
 
@@ -295,11 +321,11 @@ describe("PricesService", () => {
       const price = preparePrice({
         symbol: "ETH",
         source: {
-          src1: N(100),
-          src2: N(44),
-          src3: N(20),
-          src4: N(41),
-          src5: N(42),
+          src1: SafeNumber(100),
+          src2: SafeNumber(44),
+          src3: SafeNumber(20),
+          src4: SafeNumber(41),
+          src5: SafeNumber(42),
         },
       });
       const recentPrices = [{ value: "42", timestamp: price.timestamp }];
@@ -327,7 +353,7 @@ describe("PricesService", () => {
       partialPriceValidationArgs: Partial<PriceValidationArgs>
     ) => {
       const defaultPriceValidationArgs = {
-        value: N(42),
+        value: SafeNumber(42),
         timestamp: testTimestamp,
         deviationConfig: emptyManifest.deviationCheck,
         recentPrices: [],
@@ -343,42 +369,42 @@ describe("PricesService", () => {
     it("should properly calculate deviation with recent values", () => {
       expect(
         getDeviation({
-          value: N(42),
+          value: SafeNumber(42),
           recentPrices: [{ value: "42", timestamp: testTimestamp - 1 }],
         })
       ).toBe(0);
 
       expect(
         getDeviation({
-          value: N(84),
+          value: SafeNumber(84),
           recentPrices: [{ value: "42", timestamp: testTimestamp - 1 }],
         })
       ).toBe(100);
 
       expect(
         getDeviation({
-          value: N(63),
+          value: SafeNumber(63),
           recentPrices: [{ value: "42", timestamp: testTimestamp - 1 }],
         })
       ).toBe(50);
 
       expect(
         getDeviation({
-          value: N(168),
+          value: SafeNumber(168),
           recentPrices: [{ value: "42", timestamp: testTimestamp - 1 }],
         })
       ).toBe(300);
 
       expect(
         getDeviation({
-          value: N(11),
+          value: SafeNumber(11),
           recentPrices: [{ value: "10", timestamp: testTimestamp - 1 }],
         })
       ).toBe(10);
 
       expect(
         getDeviation({
-          value: N(11),
+          value: SafeNumber(11),
           recentPrices: [
             { value: "9.5", timestamp: testTimestamp - 1 },
             { value: "10.5", timestamp: testTimestamp - 2 },
@@ -388,7 +414,7 @@ describe("PricesService", () => {
 
       expect(
         getDeviation({
-          value: N(21),
+          value: SafeNumber(21),
           recentPrices: [{ value: "42", timestamp: testTimestamp - 1 }],
         })
       ).toBe(50);
@@ -397,7 +423,7 @@ describe("PricesService", () => {
     it("should properly calculate deviations for big recent prices arrays", () => {
       expect(
         getDeviation({
-          value: N(210000),
+          value: SafeNumber(210000),
           recentPrices: Array(30000).fill({
             value: "420000",
             timestamp: testTimestamp - 1,
@@ -409,7 +435,7 @@ describe("PricesService", () => {
     it("should exclude too old values from the deviation calculation", () => {
       expect(
         getDeviation({
-          value: N(21),
+          value: SafeNumber(21),
           recentPrices: [
             { value: "42", timestamp: testTimestamp - 2 * 60 * 1000 },
             { value: "41", timestamp: testTimestamp - 3 * 60 * 1000 },
@@ -423,7 +449,7 @@ describe("PricesService", () => {
     it("should return 0% deviation if there are no recent values", () => {
       expect(
         getDeviation({
-          value: N(42),
+          value: SafeNumber(42),
           recentPrices: [],
         })
       ).toBe(0);
@@ -444,7 +470,11 @@ describe("PricesService", () => {
     const priceObject = {
       value: 43,
       symbol: "TestToken",
-      source: { testSource1: N(42), testSource2: N(44), testSource4: N(43) },
+      source: {
+        testSource1: SafeNumber(42),
+        testSource2: SafeNumber(44),
+        testSource4: SafeNumber(43),
+      },
     } as unknown as PriceDataAfterAggregation;
 
     test("should pass assertion for enough sources", () => {
@@ -454,7 +484,7 @@ describe("PricesService", () => {
     test("should pass assertion for exactly minValidSourcesPercentage", () => {
       const newPriceObject = {
         ...priceObject,
-        source: { testSource1: N(42), testSource3: N(44) },
+        source: { testSource1: SafeNumber(42), testSource3: SafeNumber(44) },
       };
       pricesService.assertSourcesNumber(newPriceObject, manifest);
     });
@@ -462,7 +492,7 @@ describe("PricesService", () => {
     test("should not pass assertion for less than minValidSourcesPercentage", () => {
       const newPriceObject = {
         ...priceObject,
-        source: { testSource3: N(43) },
+        source: { testSource3: SafeNumber(43) },
       };
       expect(() =>
         pricesService.assertSourcesNumber(newPriceObject, manifest)

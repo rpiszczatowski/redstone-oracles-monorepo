@@ -1,5 +1,5 @@
 import { savePrices } from "../../src/db/local-db";
-import { N } from "../../src/numbers/RedstoneNumberFactory";
+import { SafeNumber } from "../../src/numbers/SafeNumberFactory";
 import axios from "axios";
 import {
   PriceDataAfterAggregation,
@@ -12,7 +12,7 @@ export const saveMockPriceInLocalDb = async (
 ) => {
   const priceToSave = preparePrice({
     symbol,
-    value: N(value),
+    value: SafeNumber(value),
   });
   await savePrices([priceToSave]);
 };
@@ -24,7 +24,7 @@ export const saveMockPricesInLocalDb = async (
   const pricesToPrepare = symbols.map((symbol, index) =>
     preparePrice({
       symbol,
-      value: N(values[index]),
+      value: SafeNumber(values[index]),
     })
   );
   const pricesToSave = preparePrices(pricesToPrepare);

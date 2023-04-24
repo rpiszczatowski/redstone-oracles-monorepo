@@ -1,5 +1,5 @@
-import { RedstoneNumber } from "../../numbers/RedstoneNumber";
-import { N } from "../../numbers/RedstoneNumberFactory";
+import { ISafeNumber } from "../../numbers/ISafeNumber";
+import { SafeNumber } from "../../numbers/SafeNumberFactory";
 import {
   Aggregator,
   PriceDataAfterAggregation,
@@ -9,8 +9,8 @@ import {
 import { getTickLiquidities } from "./get-liquidities";
 
 export interface PricesWithLiquidity {
-  price: RedstoneNumber;
-  liquidity: RedstoneNumber;
+  price: ISafeNumber;
+  liquidity: ISafeNumber;
 }
 
 export const lwapAggregator: Aggregator = {
@@ -28,7 +28,7 @@ export const lwapAggregator: Aggregator = {
 const getLwapValue = (
   price: SanitizedPriceDataBeforeAggregation,
   allPrices?: PriceDataBeforeAggregation[]
-): RedstoneNumber => {
+): ISafeNumber => {
   if (!allPrices) {
     throw new Error(
       `Cannot calculate LWAP, missing all prices for ${price.symbol}`
@@ -41,9 +41,9 @@ const getLwapValue = (
 
 const calculateLwap = (
   valuesWithLiquidity: PricesWithLiquidity[]
-): RedstoneNumber => {
+): ISafeNumber => {
   const liquiditySum = calculateLiquiditySum(valuesWithLiquidity);
-  let lwapValue = N(0);
+  let lwapValue = SafeNumber(0);
   for (const { price, liquidity } of valuesWithLiquidity) {
     const liquidityNormalized = liquidity.div(liquiditySum);
     const amount = price.mul(liquidityNormalized);
@@ -55,7 +55,7 @@ const calculateLwap = (
 const calculateLiquiditySum = (valuesWithLiquidity: PricesWithLiquidity[]) => {
   return valuesWithLiquidity.reduce(
     (sum, { liquidity }) => sum.add(liquidity),
-    N(0)
+    SafeNumber(0)
   );
 };
 

@@ -1,4 +1,4 @@
-import { RedstoneNumber } from "./numbers/RedstoneNumber";
+import { ISafeNumber } from "./numbers/ISafeNumber";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
@@ -55,7 +55,7 @@ export interface Fetcher {
 }
 
 export type SanitizedPriceDataBeforeAggregation =
-  PriceDataBeforeAggregation<RedstoneNumber>;
+  PriceDataBeforeAggregation<ISafeNumber>;
 
 export interface Aggregator {
   getAggregatedValue: (
@@ -96,7 +96,7 @@ export interface PriceSource<T> {
 
 export interface PriceDataAfterAggregation
   extends SanitizedPriceDataBeforeAggregation {
-  value: RedstoneNumber;
+  value: ISafeNumber;
 }
 
 export interface PriceDataBeforeSigning extends PriceDataAfterAggregation {

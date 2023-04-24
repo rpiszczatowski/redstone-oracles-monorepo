@@ -2,8 +2,8 @@ import { Consola } from "consola";
 import { v4 as uuidv4 } from "uuid";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import ManifestHelper, { TokensBySource } from "../manifest/ManifestHelper";
-import { RedstoneNumber } from "../numbers/RedstoneNumber";
-import { N } from "../numbers/RedstoneNumberFactory";
+import { ISafeNumber } from "../numbers/ISafeNumber";
+import { SafeNumber } from "../numbers/SafeNumberFactory";
 import { IterationContext } from "../schedulers/IScheduler";
 import { terminateWithManifestConfigError } from "../Terminator";
 import {
@@ -34,7 +34,7 @@ export type PricesBeforeAggregation = {
 };
 
 export interface PriceValidationArgs {
-  value: RedstoneNumber;
+  value: ISafeNumber;
   timestamp: number;
   deviationConfig: DeviationCheckConfig;
   recentPrices: PriceValueInLocalDB[];
@@ -225,17 +225,17 @@ export default class PricesService {
     recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
     deviationCheckConfig: DeviationCheckConfig
   ): SanitizedPriceDataBeforeAggregation {
-    const newSources: { [symbol: string]: RedstoneNumber } = {};
+    const newSources: { [symbol: string]: ISafeNumber } = {};
 
     for (const [sourceName, valueFromSource] of Object.entries(price.source)) {
       try {
-        const valueFromSourceNum = N(valueFromSource);
+        const valueFromSourceNum = SafeNumber(valueFromSource);
 
         valueFromSourceNum.assertNonNegative();
 
         this.assertStableDeviation({
           // clone value
-          value: N(valueFromSourceNum),
+          value: SafeNumber(valueFromSourceNum),
           timestamp: price.timestamp,
           deviationConfig: deviationCheckConfig,
           recentPrices: recentPricesInLocalDBForSymbol,
@@ -264,9 +264,7 @@ export default class PricesService {
   }
 
   // Calculates max deviation from average of recent values
-  getDeviationWithRecentValuesAverage(
-    args: PriceValidationArgs
-  ): RedstoneNumber {
+  getDeviationWithRecentValuesAverage(args: PriceValidationArgs): ISafeNumber {
     const { value, timestamp, deviationConfig, recentPrices } = args;
     const { deviationWithRecentValues } = deviationConfig;
 
@@ -276,10 +274,10 @@ export default class PricesService {
           timestamp - recentPrice.timestamp <=
           deviationWithRecentValues.maxDelayMilliseconds
       )
-      .map((recentPrice) => N(recentPrice.value));
+      .map((recentPrice) => SafeNumber(recentPrice.value));
 
     if (priceValuesToCompareWith.length === 0) {
-      return N(0);
+      return SafeNumber(0);
     } else {
       const recentPricesAvg = calculateAverageValue(priceValuesToCompareWith);
       return calculateDeviationPercent({

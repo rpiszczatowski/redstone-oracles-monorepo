@@ -6,7 +6,7 @@ import {
   PriceValuesInLocalDB,
   savePrices,
 } from "../../src/db/local-db";
-import { N } from "../../src/numbers/RedstoneNumberFactory";
+import { SafeNumber } from "../../src/numbers/SafeNumberFactory";
 import { PriceDataAfterAggregation } from "../../src/types";
 import { roundTimestamp } from "../../src/utils/timestamps";
 
@@ -26,12 +26,12 @@ const prices: PriceDataAfterAggregation[] = [
   {
     ...defaultPriceProps,
     symbol: "BTC",
-    value: N(4242),
+    value: SafeNumber(4242),
   },
   {
     ...defaultPriceProps,
     symbol: "ETH",
-    value: N(42),
+    value: SafeNumber(42),
   },
 ];
 
@@ -128,7 +128,7 @@ describe("Local DB", () => {
         prices.push({
           ...defaultPriceProps,
           symbol,
-          value: N(assetIndex),
+          value: SafeNumber(assetIndex),
           timestamp: roundedTimestamp,
         });
       }

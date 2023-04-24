@@ -4,7 +4,7 @@ import {
   calculateAverageValue,
   calculateDeviationPercent,
 } from "../../src/utils/numbers";
-import { N } from "../../src/numbers/RedstoneNumberFactory";
+import { SafeNumber } from "../../src/numbers/SafeNumberFactory";
 
 describe("utils/numbers", () => {
   describe("safelyConvertAnyValueToNumber", () => {
@@ -47,11 +47,13 @@ describe("utils/numbers", () => {
     });
 
     it("Should properly calculate sum for 1-elem array", () => {
-      expect(calculateSum([N(42)]).toString()).toBe("42");
+      expect(calculateSum([SafeNumber(42)]).toString()).toBe("42");
     });
 
     it("Should properly calculate sum for 3-elem array", () => {
-      expect(calculateSum([42, 100, 1000].map(N)).toString()).toBe("1142");
+      expect(calculateSum([42, 100, 1000].map(SafeNumber)).toString()).toBe(
+        "1142"
+      );
     });
 
     it("Should properly calculate sum for a big array", () => {
@@ -62,17 +64,19 @@ describe("utils/numbers", () => {
 
   describe("calculateAverageValue", () => {
     it("Should properly calculate an average value for 1-elem arrays", () => {
-      expect(calculateAverageValue([N(42)]).toString()).toBe("42");
-      expect(calculateAverageValue([N(142)]).toString()).toBe("142");
-      expect(calculateAverageValue([N(120)]).toString()).toBe("120");
+      expect(calculateAverageValue([SafeNumber(42)]).toString()).toBe("42");
+      expect(calculateAverageValue([SafeNumber(142)]).toString()).toBe("142");
+      expect(calculateAverageValue([SafeNumber(120)]).toString()).toBe("120");
     });
 
     it("Should properly calculate an average value for a 3-elem array", () => {
-      expect(calculateAverageValue([42, 44, 43].map(N)).toString()).toBe("43");
+      expect(
+        calculateAverageValue([42, 44, 43].map(SafeNumber)).toString()
+      ).toBe("43");
     });
 
     it("Should properly calculate an average value for a big array", () => {
-      const bigArr = Array(2000).fill(N(1121315));
+      const bigArr = Array(2000).fill(SafeNumber(1121315));
       expect(calculateAverageValue(bigArr).toString()).toBe("1121315");
     });
 
@@ -87,8 +91,8 @@ describe("utils/numbers", () => {
     it("Should properly calculate zero deviation", () => {
       expect(
         calculateDeviationPercent({
-          measuredValue: N(10.5),
-          trueValue: N(10.5),
+          measuredValue: SafeNumber(10.5),
+          trueValue: SafeNumber(10.5),
         }).toString()
       ).toBe("0");
     });
@@ -96,15 +100,15 @@ describe("utils/numbers", () => {
     it("Should properly calculate big deviations", () => {
       expect(
         calculateDeviationPercent({
-          measuredValue: N(1),
-          trueValue: N(10),
+          measuredValue: SafeNumber(1),
+          trueValue: SafeNumber(10),
         }).toString()
       ).toBe("90");
 
       expect(
         calculateDeviationPercent({
-          measuredValue: N(10),
-          trueValue: N(1),
+          measuredValue: SafeNumber(10),
+          trueValue: SafeNumber(1),
         }).toString()
       ).toBe("900");
     });
@@ -112,8 +116,8 @@ describe("utils/numbers", () => {
     it("Should properly calculate deviation with a negative value", () => {
       expect(
         calculateDeviationPercent({
-          measuredValue: N(-42),
-          trueValue: N(42),
+          measuredValue: SafeNumber(-42),
+          trueValue: SafeNumber(42),
         }).toString()
       ).toBe("200");
     });
@@ -121,8 +125,8 @@ describe("utils/numbers", () => {
     it("Should work with zero value", () => {
       expect(
         calculateDeviationPercent({
-          measuredValue: N(1),
-          trueValue: N(0),
+          measuredValue: SafeNumber(1),
+          trueValue: SafeNumber(0),
         }).unsafeToNumber()
       ).toBeGreaterThan(2 ** 40); // some big number depends on implementation of N
     });
@@ -130,8 +134,8 @@ describe("utils/numbers", () => {
     it("Should properly calculate deviation for zero measured value and non-zero true value", () => {
       expect(
         calculateDeviationPercent({
-          measuredValue: N(0),
-          trueValue: N(1),
+          measuredValue: SafeNumber(0),
+          trueValue: SafeNumber(1),
         }).toString()
       ).toBe("100");
     });

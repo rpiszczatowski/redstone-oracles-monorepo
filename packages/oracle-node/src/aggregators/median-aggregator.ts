@@ -1,5 +1,5 @@
-import { RedstoneNumber } from "../numbers/RedstoneNumber";
-import { N } from "../numbers/RedstoneNumberFactory";
+import { ISafeNumber } from "../numbers/ISafeNumber";
+import { SafeNumber } from "../numbers/SafeNumberFactory";
 import {
   Aggregator,
   PriceDataAfterAggregation,
@@ -17,12 +17,12 @@ const medianAggregator: Aggregator = {
   },
 };
 
-export function getMedianValue(arr: RedstoneNumber[]): RedstoneNumber {
+export function getMedianValue(arr: ISafeNumber[]): ISafeNumber {
   if (arr.length === 0) {
     throw new Error("Cannot get median value of an empty array");
   }
 
-  arr = arr.sort((a, b) => N(a).sub(b).unsafeToNumber());
+  arr = arr.sort((a, b) => SafeNumber(a).sub(b).unsafeToNumber());
 
   const middle = Math.floor(arr.length / 2);
 

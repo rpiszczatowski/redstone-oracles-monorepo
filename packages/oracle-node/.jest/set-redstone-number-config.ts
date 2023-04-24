@@ -1,13 +1,13 @@
 import {
   NumberValidationResult,
-  setJsNativeRedstoneNumberConfig,
-} from "../src/numbers/JsNativeRedstoneNumber";
+  setJsNativeSafeNumberConfig,
+} from "../src/numbers/JsNativeSafeNumber";
 
 const throwErr = (msg: string) => {
   throw new Error(msg);
 };
 
-setJsNativeRedstoneNumberConfig({
+setJsNativeSafeNumberConfig({
   ON_NUMBER_VALIDATION_ERROR: {
     [NumberValidationResult.isNaN]: throwErr,
     [NumberValidationResult.isNotFinite]: throwErr,

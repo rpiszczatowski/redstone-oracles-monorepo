@@ -1,12 +1,12 @@
 import { buildLiquidityDataFeedId } from "../../fetchers/liquidity/utils";
 import { PricesWithLiquidity } from "./lwap-aggregator";
 import { PriceDataBeforeAggregation, PriceSource } from "../../types";
-import { RedstoneNumber } from "../../numbers/RedstoneNumber";
-import { N } from "../../numbers/RedstoneNumberFactory";
+import { ISafeNumber } from "../../numbers/ISafeNumber";
+import { SafeNumber } from "../../numbers/SafeNumberFactory";
 
 export const getTickLiquidities = (
   symbol: string,
-  sourcesNames: PriceSource<RedstoneNumber>,
+  sourcesNames: PriceSource<ISafeNumber>,
   possiblyDeviatedPrices: PriceDataBeforeAggregation[]
 ) => {
   const pricesWithLiquidity: PricesWithLiquidity[] = [];
@@ -23,7 +23,7 @@ export const getTickLiquidities = (
     const theOnlySourceValue = Object.values(liquidity.source)[0];
     pricesWithLiquidity.push({
       price,
-      liquidity: N(theOnlySourceValue),
+      liquidity: SafeNumber(theOnlySourceValue),
     });
   }
   return pricesWithLiquidity;
