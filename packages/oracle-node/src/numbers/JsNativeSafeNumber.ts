@@ -214,6 +214,14 @@ const parseToSafeNumber = (value: NumberLike) => {
         `Invalid number format, not matching regexp: ${JsNativeSafeNumberConfig.DIGIT_REGEXP}`
       );
     }
+    const [_, decimals] = value.split(".");
+    if (decimals.length > JsNativeSafeNumberConfig.MAX_DECIMALS) {
+      logger.warn(
+        `Loosing precision on number ${value} - received ${
+          decimals.length
+        } decimals (${new Error().stack})`
+      );
+    }
     number = Number(value);
   } else if (typeof value === "number") {
     number = Number(value);
