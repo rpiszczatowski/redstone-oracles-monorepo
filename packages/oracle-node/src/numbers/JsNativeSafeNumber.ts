@@ -215,7 +215,7 @@ const parseToSafeNumber = (value: NumberLike) => {
       );
     }
     const [_, decimals] = value.split(".");
-    if (decimals.length > JsNativeSafeNumberConfig.MAX_DECIMALS) {
+    if (decimals && decimals.length > JsNativeSafeNumberConfig.MAX_DECIMALS) {
       logger.warn(
         `Loosing precision on number ${value} - received ${
           decimals.length
