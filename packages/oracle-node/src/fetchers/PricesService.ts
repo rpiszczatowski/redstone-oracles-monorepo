@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Consola } from "consola";
 import { v4 as uuidv4 } from "uuid";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
@@ -23,6 +24,7 @@ import {
 import { trackEnd, trackStart } from "../utils/performance-tracker";
 import { promiseTimeout } from "../utils/promise-timeout";
 import fetchers from "./index";
+import { config } from "../config";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -38,6 +40,21 @@ export interface PriceValidationArgs {
   timestamp: number;
   deviationConfig: DeviationCheckConfig;
   recentPrices: PriceValueInLocalDB[];
+  priceLimits?: PriceLimits;
+}
+
+interface PriceValidationResult {
+  isValid: boolean;
+  reason: string;
+}
+
+interface PriceLimits {
+  lower: number;
+  upper: number;
+}
+
+interface PricesLimits {
+  [symbol: string]: PriceLimits;
 }
 
 export default class PricesService {
@@ -165,11 +182,13 @@ export default class PricesService {
       - invalid values excluding
       - aggregation across different sources
       - valid sources number
+      - aggregated prices hard limits
   */
   async calculateAggregatedValues(
     prices: PriceDataBeforeAggregation[]
   ): Promise<PriceDataAfterAggregation[]> {
     const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
+    const pricesLimits = await this.fetchPricesLimits();
 
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
     for (const price of prices) {
@@ -344,5 +363,13 @@ export default class PricesService {
           `Valid sources: ${sources.join(",")}`
       );
     }
+  }
+
+  async fetchPricesLimits(): Promise<PricesLimits> {
+    if (!config.pricesHardLimitsUrl) {
+      return {};
+    }
+    const response = await axios.get<PricesLimits>(config.pricesHardLimitsUrl);
+    return response.data;
   }
 }

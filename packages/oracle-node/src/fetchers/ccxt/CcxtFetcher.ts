@@ -1,11 +1,12 @@
 import _ from "lodash";
-import ccxt, { Exchange, Ticker } from "ccxt";
+import ccxt, { Exchange, exchanges, Ticker } from "ccxt";
 import { BaseFetcher } from "../BaseFetcher";
 import { getLastPrice } from "../../db/local-db";
 import { getRequiredPropValue } from "../../utils/objects";
 import symbolToIdForExchanges from "./symbol-to-id/index";
 import { PricesObj } from "../../types";
-import { stringifyError } from "../../utils/error-stringifier";
+
+type Exchanges = keyof typeof exchanges;
 
 const CCXT_FETCHER_MAX_REQUEST_TIMEOUT_MS = 120000;
 
@@ -17,7 +18,7 @@ export class CcxtFetcher extends BaseFetcher {
   // CCXT-based fetchers must have names that are exactly equal to
   // the appropriate exchange id in CCXT
   // List of ccxt exchanges: https://github.com/ccxt/ccxt/wiki/Exchange-Markets
-  constructor(name: ccxt.ExchangeId) {
+  constructor(name: Exchanges) {
     super(name);
     const exchangeClass = ccxt[name];
     if (!exchangeClass) {
@@ -27,7 +28,7 @@ export class CcxtFetcher extends BaseFetcher {
       timeout: CCXT_FETCHER_MAX_REQUEST_TIMEOUT_MS,
       enableRateLimit: false, // This config option is required to avoid problems with requests timeout
     }) as Exchange;
-    this.symbolToId = symbolToIdForExchanges[this.name as ccxt.ExchangeId]!;
+    this.symbolToId = symbolToIdForExchanges[this.name as Exchanges]!;
     this.idToSymbol = _.invert(this.symbolToId);
   }
 
@@ -40,7 +41,7 @@ export class CcxtFetcher extends BaseFetcher {
   }
 
   async fetchData(ids: string[]): Promise<any> {
-    if (!this.exchange.has["fetchTickers"]) {
+    if (!this.exchange.fetchTickers) {
       throw new Error(
         `Exchange ${this.name} doesn't support fetchTickers method`
       );
@@ -58,7 +59,7 @@ export class CcxtFetcher extends BaseFetcher {
     );
   }
 
-  private extractPricePair(ticker: ccxt.Ticker) {
+  private extractPricePair(ticker: Ticker) {
     let pairSymbol = ticker.symbol;
     pairSymbol = this.serializePairSymbol(pairSymbol);
     const lastPrice = ticker.last as number;

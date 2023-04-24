@@ -1,10 +1,11 @@
-import { Contract } from "ethers";
+import { Contract, Signer } from "ethers";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { WrapperBuilder } from "@redstone-finance/evm-connector";
 import { NumericDataPoint, DataPackage } from "redstone-protocol";
 import { DataPackagesResponse } from "redstone-sdk";
 import { formatBytes32String } from "ethers/lib/utils";
 import { config } from "../src/config";
+import { ethers } from "hardhat";
 
 export const ethDataFeed = formatBytes32String("ETH");
 export const btcDataFeed = formatBytes32String("BTC");
@@ -37,14 +38,15 @@ export const getWrappedContractAndUpdateBlockTimestamp = async (
   });
 };
 
-export const mockEnvVariables = () => {
+export const mockEnvVariables = (overrideMockConfig: any = {}) => {
   (config as any) = {
     relayerIterationInterval: "10",
     updatePriceInterval: "1000",
     rpcUrl: "http://127.0.0.1:8545",
     chainName: "HardhatNetwork",
     chainId: "31337",
-    privateKey: "",
+    privateKey:
+      "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", // well-known private key for the first hardhat account
     adapterContractAddress: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
     dataServiceId: "redstone-main-demo",
     uniqueSignersCount: "2",
@@ -53,6 +55,8 @@ export const mockEnvVariables = () => {
     gasLimit: 1000000,
     updateConditions: ["time", "value-deviation"],
     minDeviationPercentage: 10,
+    adapterContractType: "price-feeds",
+    ...overrideMockConfig,
   };
 };
 
@@ -99,4 +103,30 @@ export const getDataPackagesResponse = () => {
     }
   }
   return signedDataPackages;
+};
+
+export const deployMockSortedOracles = async (signer?: Signer) => {
+  // Deploying AddressSortedLinkedListWithMedian library
+  const AddressSortedLinkedListWithMedianFactory =
+    await ethers.getContractFactory(
+      "AddressSortedLinkedListWithMedian",
+      signer
+    );
+  const sortedLinkedListContract =
+    await AddressSortedLinkedListWithMedianFactory.deploy();
+  await sortedLinkedListContract.deployed();
+
+  // Deploying MockSortedOracles contract
+  const MockSortedOraclesFactory = await ethers.getContractFactory(
+    "MockSortedOracles",
+    {
+      libraries: {
+        AddressSortedLinkedListWithMedian: sortedLinkedListContract.address,
+      },
+      signer,
+    }
+  );
+  const contract = await MockSortedOraclesFactory.deploy();
+  await contract.deployed();
+  return contract;
 };

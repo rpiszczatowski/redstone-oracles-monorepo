@@ -36,7 +36,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "liquid",
         "oceanex",
         "okx",
         "poloniex",
@@ -71,8 +70,8 @@
         "coingecko",
         "coinmarketcap",
         "gate",
-        "pangolin-wavax",
-        "trader-joe"
+        "pangolin-on-chain-wavax",
+        "trader-joe-on-chain-wavax"
       ]
     },
     "AVAX": {
@@ -122,8 +121,8 @@
         "okx",
         "poloniex",
         "probit",
-        "sushiswap",
-        "uniswap"
+        "sushiswap-on-chain-weth",
+        "uniswap-v2-on-chain-weth"
       ]
     },
     "BTC": {
@@ -151,7 +150,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "liquid",
         "oceanex",
         "okx",
         "poloniex",
@@ -165,8 +163,8 @@
         "coingecko",
         "coinmarketcap",
         "kucoin",
-        "pangolin-wavax",
-        "trader-joe",
+        "pangolin-on-chain-wavax",
+        "trader-joe-on-chain-wavax",
         "xt"
       ]
     },
@@ -185,8 +183,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "liquid",
-        "oceanex",
         "okx",
         "probit",
         "sushiswap",
@@ -207,8 +203,8 @@
         "coingecko",
         "coinmarketcap",
         "mexc",
-        "pangolin-wavax",
-        "trader-joe"
+        "pangolin-on-chain-wavax",
+        "trader-joe-on-chain-wavax"
       ]
     },
     "YY_AAVE_AVAX": {
@@ -267,17 +263,8 @@
         "kucoin",
         "latoken",
         "mexc",
-        "pangolin-wavax",
-        "trader-joe"
-      ]
-    },
-    "YAK": {
-      "source": [
-        "coingecko",
-        "coinmarketcap",
-        "pangolin-usdc",
-        "pangolin-wavax",
-        "trader-joe"
+        "pangolin-on-chain-wavax",
+        "trader-joe-on-chain-wavax"
       ]
     },
     "YYAV3SA1": {
@@ -295,7 +282,7 @@
         "huobipro",
         "kucoin",
         "mexc",
-        "trader-joe"
+        "trader-joe-on-chain-wavax"
       ]
     },
     "GLP": {
@@ -311,7 +298,7 @@
         "coinmarketcap",
         "gate",
         "mexc",
-        "trader-joe"
+        "trader-joe-on-chain-wavax"
       ]
     },
     "BUSD": {
@@ -319,9 +306,6 @@
         "binance",
         "binanceus",
         "bitcoincom",
-        "cex",
-        "coinbaseprime",
-        "coinbasepro",
         "coingecko",
         "hitbtc",
         "lbank",
@@ -335,7 +319,6 @@
     "DAI": {
       "source": [
         "binanceus",
-        "bkex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",

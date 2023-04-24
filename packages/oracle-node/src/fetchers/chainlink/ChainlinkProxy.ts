@@ -1,7 +1,7 @@
 import { Contract, ethers } from "ethers";
-import { config } from "../../config";
 import { getRequiredPropValue } from "../../utils/objects";
 import { contracts, abi } from "./constants";
+import { ethereumProvider } from "../../utils/blockchain-providers";
 
 interface contractAddressesInterface {
   [priceFeedId: string]: string;
@@ -35,12 +35,11 @@ export default class ChainlinkProxy {
   initPriceFeedContracts() {
     this.priceFeeds = {};
 
-    const provider = new ethers.providers.JsonRpcProvider(config.ethMainRpcUrl);
     for (const id of Object.keys(this.addresses)) {
       this.priceFeeds[id] = new ethers.Contract(
         this.addresses[id],
         abi,
-        provider
+        ethereumProvider
       );
     }
   }

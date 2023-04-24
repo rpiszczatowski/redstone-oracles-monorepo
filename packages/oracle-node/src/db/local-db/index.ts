@@ -9,6 +9,9 @@ const DEFAULT_LEVEL_OPTS = {
   valueEncoding: "json",
 };
 
+// 3 minutes
+const MAX_PRICE_IN_DB_TIME_DIFF = 1000 * 60 * 3;
+
 export interface PriceValueInLocalDB {
   timestamp: number;
   value: string;
@@ -127,13 +130,31 @@ type PriceValueInLocalDBAsNumber =
 
 export const getLastPrice = (
   symbol: string
-): PriceValueInLocalDBAsNumber | undefined =>
-  lastPrices[symbol]
-    ? {
-        value: Number(lastPrices[symbol].value),
-        timestamp: lastPrices[symbol].timestamp,
-      }
-    : undefined;
+): PriceValueInLocalDBAsNumber | undefined => {
+  const price = getRawPrice(symbol);
+  if (!price) {
+    return undefined;
+  }
+  return {
+    value: Number(lastPrices[symbol].value),
+    timestamp: lastPrices[symbol].timestamp,
+  };
+};
+
+const getRawPrice = (symbol: string): PriceValueInLocalDB | undefined => {
+  const currentTimestamp = Date.now();
+  const lastPrice = lastPrices[symbol];
+
+  if (lastPrice) {
+    const timeDiff = currentTimestamp - lastPrice.timestamp;
+    if (timeDiff >= MAX_PRICE_IN_DB_TIME_DIFF) {
+      throw new Error(
+        `Last price in local DB for ${symbol} is obsolete, time diff ${timeDiff}`
+      );
+    }
+    return lastPrice;
+  }
+};
 
 export default {
   savePrices,

@@ -14,7 +14,7 @@ import { DrandFetcher } from "./drand/DrandFetcher";
 import { DiaFetcher } from "./dia/DiaFetcher";
 import twapFetchers from "./twap/all-twap-fetchers";
 import { TwelveDataFetcher } from "./twelve-data/TwelveDataFetcher";
-import { AvalancheEvmFetcher } from "./evm-chain/avalanche/AvalancheEvmFetcher";
+import { AvalancheEvmFetcher } from "./evm-chain/avalanche/evm-fetcher/AvalancheEvmFetcher";
 import { PlatypusFetcher } from "./platypus/PlatypusFetcher";
 import { LensFetcher } from "./lens/LensFetcher";
 import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
@@ -25,7 +25,7 @@ import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
 import balancerFetchers from "./balancer/all-balancer-fetchers";
-import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/ArbitrumEvmFetcher";
+import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/evm-fetcher/ArbitrumEvmFetcher";
 import {
   arbitrumProvider,
   avalancheProvider,
@@ -37,12 +37,16 @@ import { DeribitFetcher } from "./deribit/DeribitFetcher";
 import { StlouisfedFetcher } from "./stlouisfed/StlouisfedFetcher";
 import { NewyorkfedFetcher } from "./newyorkfed/NewyorkfedFetcher";
 import uniswapV2OnChainFetchers from "./evm-chain/ethereum/uniswap-v2-on-chain/all-uniswap-v2-on-chain-fetchers";
+import camelotFetchers from "./evm-chain/arbitrum/camelot/all-camelot-fetchers";
+import { NonUsdBasedFetcher } from "./non-usd-based/NonUsdBasedFetcher";
+import pangolinOnChainFetchers from "./evm-chain/avalanche/pangolin-on-chain/pangolin-on-chain-fetchers";
+import traderJoeOnChainFetchers from "./evm-chain/avalanche/trader-joe-on-chain/trader-joe-on-chain-fetchers";
+import twelveDataFetchers from "./twelve-data/all-twelve-data-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
   "custom-urls": new CustomUrlsFetcher(),
   "trader-joe": new TraderJoeFetcher(),
-  "twelve-data": new TwelveDataFetcher(),
   mock: new MockFetcher(),
   coingecko: new CoingeckoFetcher(),
   sushiswap: new SushiswapFetcher(),
@@ -68,6 +72,7 @@ export default {
   stlouisfed: new StlouisfedFetcher(),
   newyorkfed: new NewyorkfedFetcher(),
   "arbitrum-evm-fetcher": new ArbitrumEvmFetcher(arbitrumProvider),
+  "non-usd-based": new NonUsdBasedFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...balancerFetchers,
@@ -75,4 +80,8 @@ export default {
   ...sushiswapEthereumOnChainFetchers,
   ...curveFetchers,
   ...uniswapV2OnChainFetchers,
+  ...camelotFetchers,
+  ...pangolinOnChainFetchers,
+  ...traderJoeOnChainFetchers,
+  ...twelveDataFetchers,
 } as { [name: string]: Fetcher };

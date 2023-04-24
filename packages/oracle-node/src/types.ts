@@ -169,6 +169,7 @@ export interface NodeConfig {
   coingeckoApiUrl: string;
   coingeckoApiKey?: string;
   enableHttpServer: boolean;
+  pricesHardLimitsUrl: string;
 }
 
 export interface MulticallRequest {

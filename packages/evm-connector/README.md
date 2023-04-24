@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
 [![Discord](https://img.shields.io/discord/786251205008949258?logo=discord)](https://discord.gg/2CT6hN6C)
 [![NPM](https://img.shields.io/npm/v/@redstone-finance/evm-connector)](https://www.npmjs.com/package/@redstone-finance/evm-connector)
-[![Twitter](https://img.shields.io/twitter/follow/redstone_defi?style=flat&logo=twitter)](https://twitter.com/intent/follow?screen_name=limestone_defi)
+[![Twitter](https://img.shields.io/twitter/follow/redstone_defi?style=flat&logo=twitter)](https://twitter.com/intent/follow?screen_name=redstone_defi)
 
 The @redstone-finance/evm-connector module implements an alternative design of providing oracle data to smart contracts. Instead of constantly persisting data on EVM storage (by data providers), the information is brought on-chain only when needed (by end users). Until that moment data remains in the decentralised cache layer, which is powered by RedStone light cache gateways and streamr data broadcasting protocol. Data is transferred to the EVM by end users, who should attach signed data packages to their transaction calldata. The information integrity is verified on-chain through signature checking.
 
@@ -44,6 +44,31 @@ yarn add @redstone-finance/evm-connector
 
 # Using NPM
 npm install @redstone-finance/evm-connector
+```
+
+### Foundry
+
+Foundry installs dependencies using git submodules. Thus additional steps are needed to [install dependencies](https://book.getfoundry.sh/projects/dependencies).
+
+In foundry project:
+
+1. Install `@redstone-finance/evm-connector` - it will install current code from main branch
+
+```bash
+forge install redstone-finance/redstone-oracles-monorepo
+```
+
+2. Install `@OpenZeppelin` contracts (dependency of `@redstone-finance/evm-connector`) - it will install current code from main branch
+
+```bash
+forge install OpenZeppelin/openzeppelin-contracts
+```
+
+3. Add libraries to `remappings.txt`
+
+```bash
+echo "@redstone-finance/evm-connector/dist/contracts/=lib/redstone-oracles-monorepo/packages/evm-connector/contracts/
+@openzeppelin/contracts=lib/openzeppelin-contracts/contracts/" >> remappings.txt
 ```
 
 ## 🔥 Getting started

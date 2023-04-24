@@ -127,7 +127,7 @@ export class DataPackageBroadcastPerformer
     return signedDataPackages;
   }
 
-  private async broadcastDataPackages(signedDataPackages: SignedDataPackage[]) {
+  public async broadcastDataPackages(signedDataPackages: SignedDataPackage[]) {
     const promises = [];
     promises.push(this.httpBroadcaster.broadcast(signedDataPackages));
     if (config.enableStreamrBroadcasting) {

@@ -1,11 +1,10 @@
 import NodeRunner from "../../src/NodeRunner";
-import { JWKInterface } from "arweave/node/lib/wallet";
 import fetchers from "../../src/fetchers";
 import axios from "axios";
 import ArweaveService from "../../src/arweave/ArweaveService";
 import { any } from "jest-mock-extended";
 import { timeout } from "../../src/utils/promise-timeout";
-import { MOCK_NODE_CONFIG } from "../helpers";
+import { MOCK_NODE_CONFIG, mockHardLimits } from "../helpers";
 import { NodeConfig } from "../../src/types";
 import {
   clearPricesSublevel,
@@ -15,6 +14,7 @@ import {
 } from "../../src/db/local-db";
 import emptyManifest from "../../manifests/dev/empty.json";
 import * as Terminator from "../../src/Terminator";
+import PricesService from "../../src/fetchers/PricesService";
 
 const TEST_PROVIDER_EVM_ADDRESS = "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A";
 
@@ -75,15 +75,13 @@ jest.mock("../../src/utils/objects", () => ({
 }));
 
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
+
+jest
+  .spyOn(PricesService.prototype, "fetchPricesLimits")
+  .mockImplementation(() => Promise.resolve(mockHardLimits));
 /****** MOCKS END ******/
 
 describe("NodeRunner", () => {
-  const jwk: JWKInterface = {
-    e: "e",
-    kty: "kty",
-    n: "n",
-  };
-
   const nodeConfig: NodeConfig = MOCK_NODE_CONFIG;
 
   const runTestNode = async () => {
@@ -358,6 +356,62 @@ describe("NodeRunner", () => {
           {
             symbol: "ETH",
             value: "error",
+          },
+        ]),
+      };
+
+      await runTestNode();
+
+      expect(axios.post).not.toHaveBeenCalledWith(broadcastingUrl, any());
+      expect(axios.post).not.toHaveBeenCalledWith(
+        priceDataBroadcastingUrl,
+        any()
+      );
+    });
+
+    it("should filter out aggregated price out of hard limits", async () => {
+      // Mocking fetchers to provide invalid values
+      fetchers["coingecko"] = {
+        fetchAll: jest.fn().mockResolvedValue([
+          { symbol: "BTC", value: 439 },
+          {
+            symbol: "ETH",
+            value: 42,
+          },
+        ]),
+      };
+      fetchers["uniswap"] = {
+        fetchAll: jest.fn().mockResolvedValue([
+          { symbol: "BTC", value: 440 },
+          {
+            symbol: "ETH",
+            value: 43,
+          },
+        ]),
+      };
+
+      await runTestNode();
+
+      expectValueBroadcasted("ETH", 42.5);
+    });
+
+    it("should not broadcast if all aggregated prices out of hard limits", async () => {
+      // Mocking fetchers to provide invalid values
+      fetchers["coingecko"] = {
+        fetchAll: jest.fn().mockResolvedValue([
+          { symbol: "BTC", value: 439 },
+          {
+            symbol: "ETH",
+            value: 47,
+          },
+        ]),
+      };
+      fetchers["uniswap"] = {
+        fetchAll: jest.fn().mockResolvedValue([
+          { symbol: "BTC", value: 440 },
+          {
+            symbol: "ETH",
+            value: 46,
           },
         ]),
       };

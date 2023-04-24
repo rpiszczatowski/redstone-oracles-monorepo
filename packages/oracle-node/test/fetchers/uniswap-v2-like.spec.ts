@@ -1,7 +1,7 @@
 import { Contract } from "ethers";
-import { MockProvider, deployContract } from "ethereum-waffle";
+import { MockProvider, deployMockContract } from "ethereum-waffle";
 import { UniswapV2LikeFetcher } from "../../src/fetchers/uniswap-v2-like/UniswapV2LikeFetcher";
-import UniswapV2Mock from "./mocks/UniswapV2Mock.json";
+import abi from "../../src/fetchers/uniswap-v2-like/UniswapV2.abi.json";
 import { saveMockPriceInLocalDb } from "./_helpers";
 import {
   clearPricesSublevel,
@@ -17,10 +17,12 @@ describe("UniswapV2Like", () => {
     setupLocalDb();
     provider = new MockProvider();
     const [wallet] = provider.getWallets();
-    uniswapV2LikeContract = await deployContract(wallet, {
-      bytecode: UniswapV2Mock.bytecode,
-      abi: UniswapV2Mock.abi,
-    });
+    uniswapV2LikeContract = await deployMockContract(wallet, abi);
+    await uniswapV2LikeContract.mock.getReserves.returns(
+      "37240658972367",
+      "17968718500361203250875",
+      1681731755
+    );
   });
 
   beforeEach(async () => {
@@ -35,30 +37,30 @@ describe("UniswapV2Like", () => {
     const fetcher = new UniswapV2LikeFetcher(
       "uniswap-v2-like-mock",
       {
-        MockToken: {
+        USDC: {
           address: uniswapV2LikeContract.address,
-          symbol0: "MockToken",
-          symbol0Decimals: 9,
-          symbol1: "DAI",
+          symbol0: "USDC",
+          symbol0Decimals: 6,
+          symbol1: "WETH",
           symbol1Decimals: 18,
-          pairedToken: "DAI",
+          pairedToken: "ETH",
         },
       },
       provider
     );
 
-    await saveMockPriceInLocalDb(1, "DAI");
+    await saveMockPriceInLocalDb(2085.39, "ETH");
 
     const result = await fetcher.fetchAll([
-      "MockToken",
-      "MockToken_uniswap-v2-like-mock_liquidity",
+      "USDC",
+      "USDC_uniswap-v2-like-mock_liquidity",
     ]);
 
     expect(result).toEqual([
-      { symbol: "MockToken", value: 10.439079904087286 },
+      { symbol: "USDC", value: 1.0062063053522414 },
       {
-        symbol: "MockToken_uniswap-v2-like-mock_liquidity",
-        value: 153215.79754985688,
+        symbol: "USDC_uniswap-v2-like-mock_liquidity",
+        value: 74943571.7469365,
       },
     ]);
   });
