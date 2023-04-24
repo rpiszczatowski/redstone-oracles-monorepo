@@ -3,8 +3,7 @@ on:
   push:
     paths:
       - packages/oracle-node/**
-      - .github/workflows/oracle-tests.yaml
-      - .github/workflows/deploy-to-ecr-public.yaml
+      - .github/workflows/oracle-main-dry-run-test.yaml
 
 jobs:
   tests:
