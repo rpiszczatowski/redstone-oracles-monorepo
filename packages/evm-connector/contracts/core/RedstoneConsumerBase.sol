@@ -104,7 +104,6 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
     bytes32[] memory dataFeedIds,
     uint256 calldataNegativeOffset
   ) internal view returns (uint256[] memory) {
-    calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;
     uint256 signersCount = _extractDataPackageSignersCountFromCalldata(calldataNegativeOffset);
 
     calldataNegativeOffset += SIGNERS_COUNT_BS;
@@ -139,7 +138,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
     // Extracting data points values
     {
       // Detects if all requested data feeds are present in the data package
-      uint256 dataFeedsMatched = 0; 
+      uint256 dataFeedsMatched = 0;
 
       bytes32 dataPointDataFeedId;
       uint256 dataPointValue;
@@ -251,19 +250,19 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
   }
 
   /**
- * @dev This internal function validates the signatures of authorized signers for the transaction calldata
- * based on a given signed hash. It recovers the signer address from each signature in the calldata and checks
- * that the address is authorized. The function keeps track of the unique signers and reverts the transaction if
- * the number of unique signers is below a certain threshold. The signed hash, negative offset of the transaction
- * calldata, number of signers, and unique signers threshold are passed as parameters.
- *
- * Note that this function should not be called from a consumer contract. It is intended for internal use only.
- *
- * @param signedHash The keccak256 hash of the signed message in the transaction calldata.
- * @param calldataNegativeOffset The negative offset of the transaction calldata.
- * @param signersCount The number of authorized signers for the transaction.
- * @param uniqueSignersThreshold The minimum number of unique authorized signers required to validate the signatures.
- */
+   * @dev This internal function validates the signatures of authorized signers for the transaction calldata
+   * based on a given signed hash. It recovers the signer address from each signature in the calldata and checks
+   * that the address is authorized. The function keeps track of the unique signers and reverts the transaction if
+   * the number of unique signers is below a certain threshold. The signed hash, negative offset of the transaction
+   * calldata, number of signers, and unique signers threshold are passed as parameters.
+   *
+   * Note that this function should not be called from a consumer contract. It is intended for internal use only.
+   *
+   * @param signedHash The keccak256 hash of the signed message in the transaction calldata.
+   * @param calldataNegativeOffset The negative offset of the transaction calldata.
+   * @param signersCount The number of authorized signers for the transaction.
+   * @param uniqueSignersThreshold The minimum number of unique authorized signers required to validate the signatures.
+   */
   function _validateSignatures(
     bytes32 signedHash,
     uint256 calldataNegativeOffset,
@@ -323,7 +322,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       // signersBitmapForDataFeedIds[i] = 0; // <- setting to an empty bitmap
       valuesForDataFeeds[i] = new uint256[](getUniqueSignersThreshold());
     }
-    
+
     // Extracting the number of data packages from calldata
     uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(calldataNegativeOffset);
     calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;

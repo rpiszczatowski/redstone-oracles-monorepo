@@ -23,7 +23,7 @@ import { DataPoint } from "../data-point/DataPoint";
 import { NumericDataPoint } from "../data-point/NumericDataPoint";
 
 export interface RedstonePayloadParsingResult {
-  signedDataPackages: SignedDataPackage[] | MultiSignDataPackage[];
+  signedDataPackages: SignedDataPackage[] | MultiSignDataPackage;
   unsignedMetadata: Uint8Array;
   remainderPrefix: Uint8Array;
 }
@@ -59,19 +59,31 @@ export class RedstonePayloadParser {
       UNSIGNED_METADATA_BYTE_SIZE_BS +
       REDSTONE_MARKER_BS;
 
-    const numberOfDataPackages = this.extractNumber({
-      negativeOffset,
-      length: DATA_PACKAGES_COUNT_BS,
-    });
+    let numberOfDataPackages = 0;
 
-    negativeOffset += DATA_PACKAGES_COUNT_BS;
+    if (version === SINGLESIGN_REDSTONE_PAYLOAD_VERSION) {
+      numberOfDataPackages = this.extractNumber({
+        negativeOffset,
+        length: DATA_PACKAGES_COUNT_BS,
+      });
+      negativeOffset += DATA_PACKAGES_COUNT_BS;
+    } else {
+      numberOfDataPackages = 1;
+    }
 
-    const signedDataPackages = this.extractDataPackages(numberOfDataPackages, version, negativeOffset);
-    
-    // Hack to call the reduce function
-    negativeOffset += (signedDataPackages as Array<SignedDataPackage | MultiSignDataPackage>).reduce((acc, dataPackage) => {
-      return acc + dataPackage.toBytes().length;
-    }, 0);
+    const signedDataPackages = this.extractDataPackages(
+      numberOfDataPackages,
+      version,
+      negativeOffset
+    );
+
+    if (Array.isArray(signedDataPackages)) {
+      negativeOffset += signedDataPackages.reduce((acc, dataPackage) => {
+        return acc + dataPackage.toBytes().length;
+      }, 0);
+    } else {
+      negativeOffset += (signedDataPackages as MultiSignDataPackage).toBytes().length;
+    }
 
     // Preparing remainder prefix bytes
     const remainderPrefix = this.slice({
@@ -150,29 +162,21 @@ export class RedstonePayloadParser {
     numberOfDataPackages: number,
     version: number,
     negativeOffset: number
-  ): SignedDataPackage[] | MultiSignDataPackage[] {
+  ): SignedDataPackage[] | MultiSignDataPackage {
     const signedDataPackages: SignedDataPackage[] = [];
-    const multiSignDataPackages: MultiSignDataPackage[] = [];
-  
+
     if (version === SINGLESIGN_REDSTONE_PAYLOAD_VERSION) {
       for (let i = 0; i < numberOfDataPackages; i++) {
         const signedDataPackage = this.extractSignedDataPackage(negativeOffset);
         signedDataPackages.push(signedDataPackage);
         negativeOffset += signedDataPackage.toBytes().length;
       }
+      return signedDataPackages.reverse();
     } else if (version === MULTISIGN_REDSTONE_PAYLOAD_VERSION) {
-      for (let i = 0; i < numberOfDataPackages; i++) {
-        const multiSignDataPackage = this.extractMultiSignDataPackage(negativeOffset);
-        multiSignDataPackages.push(multiSignDataPackage);
-        negativeOffset += multiSignDataPackage.toBytes().length;
-      }
+      return this.extractMultiSignDataPackage(negativeOffset);
     } else {
       throw new Error(`Unsupported redstone payload version: ${version}`);
     }
-  
-    return version === SINGLESIGN_REDSTONE_PAYLOAD_VERSION
-      ? signedDataPackages.reverse()
-      : multiSignDataPackages.reverse();
   }
 
   extractMultiSignDataPackage(

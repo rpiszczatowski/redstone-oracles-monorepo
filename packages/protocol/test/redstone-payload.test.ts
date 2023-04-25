@@ -27,7 +27,7 @@ const EXPECTED_SIGNATURES = [
 describe("Fixed size data package", () => {
   let dataPackage: DataPackage;
   let signedDataPackages: SignedDataPackage[];
-  let multiSignedDataPackages: MultiSignDataPackage[];
+  let multiSignedDataPackage: MultiSignDataPackage;
 
   beforeEach(() => {
     // Prepare data points
@@ -48,9 +48,10 @@ describe("Fixed size data package", () => {
     ];
 
     // Prepare multi-signed data packages
-    multiSignedDataPackages = [
-      dataPackage.multiSign([PRIVATE_KEY_FOR_TESTS_1, PRIVATE_KEY_FOR_TESTS_2])
-    ];
+    multiSignedDataPackage = dataPackage.multiSign([
+      PRIVATE_KEY_FOR_TESTS_1,
+      PRIVATE_KEY_FOR_TESTS_2,
+    ]);
   });
 
   test("Should correctly serialize many signed data packages", () => {
@@ -73,8 +74,8 @@ describe("Fixed size data package", () => {
 
   test("Should correctly serialize multi signed data package", () => {
     const serializedHex = RedstonePayload.prepare(
-      multiSignedDataPackages,
-      UNSIGNED_METADATA,
+      multiSignedDataPackage,
+      UNSIGNED_METADATA
     );
 
     expect(serializedHex).toBe(
@@ -82,7 +83,6 @@ describe("Fixed size data package", () => {
         EXPECTED_SIGNATURES[0] +
         EXPECTED_SIGNATURES[1] +
         "0002" + // signatures count
-        "0001" + // data packages count
         "0002" + // payload version
         hexlifyWithout0xPrefix(toUtf8Bytes(UNSIGNED_METADATA)) +
         EXPECTED_UNSIGNED_METADATA_WITH_VERSION_BYTE_SIZE +
@@ -116,8 +116,8 @@ describe("Fixed size data package", () => {
   test("Should correctly parse redstone payload with multi signed data package", () => {
     const remainderPrefixHex = "0x1234";
     const redstonePayloadHex = RedstonePayload.prepare(
-      multiSignedDataPackages,
-      UNSIGNED_METADATA,
+      multiSignedDataPackage,
+      UNSIGNED_METADATA
     );
 
     const parsingResult = RedstonePayload.parse(
@@ -131,8 +131,8 @@ describe("Fixed size data package", () => {
 
     const newRedstonePayloadHex = RedstonePayload.prepare(
       parsingResult.signedDataPackages,
-      UNSIGNED_METADATA,
+      UNSIGNED_METADATA
     );
     expect(newRedstonePayloadHex).toBe(redstonePayloadHex);
-    });
+  });
 });

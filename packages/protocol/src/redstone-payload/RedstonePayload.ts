@@ -20,40 +20,43 @@ export class RedstonePayload extends Serializable {
   constructor(
     public readonly signedDataPackages:
       | SignedDataPackage[]
-      | MultiSignDataPackage[],
-    public readonly unsignedMetadata: string,
-    public readonly version: number
+      | MultiSignDataPackage,
+    public readonly unsignedMetadata: string
   ) {
     super();
   }
 
   public static preparePayload(
-    signedDataPackages: SignedDataPackage[] | MultiSignDataPackage[],
+    signedDataPackages: SignedDataPackage[] | MultiSignDataPackage,
     unsignedMetadata: string
   ): RedstonePayload {
-    const version = this.getVersion(signedDataPackages);
-    return new RedstonePayload(signedDataPackages, unsignedMetadata, version);
+    return new RedstonePayload(signedDataPackages, unsignedMetadata);
   }
 
   // Bit hacky, improve later
   public static prepare(
-    signedDataPackages: SignedDataPackage[] | MultiSignDataPackage[],
+    signedDataPackages: SignedDataPackage[] | MultiSignDataPackage,
     unsignedMetadata: string
   ): string {
-    if (this.getVersion(signedDataPackages) === SINGLESIGN_REDSTONE_PAYLOAD_VERSION) {
-      return this.prepareSingleSign(signedDataPackages as SignedDataPackage[], unsignedMetadata);
+    if (Array.isArray(signedDataPackages)) {
+      return this.prepareSingleSign(
+        signedDataPackages as SignedDataPackage[],
+        unsignedMetadata
+      );
     }
-    return this.prepareMultiSign(signedDataPackages as MultiSignDataPackage[], unsignedMetadata);
+    return this.prepareMultiSign(
+      signedDataPackages as MultiSignDataPackage,
+      unsignedMetadata
+    );
   }
 
   private static prepareMultiSign(
-    signedDataPackages: MultiSignDataPackage[],
+    signedDataPackage: MultiSignDataPackage,
     unsignedMetadata: string
   ): string {
     return new RedstonePayload(
-      signedDataPackages,
-      unsignedMetadata,
-      MULTISIGN_REDSTONE_PAYLOAD_VERSION
+      signedDataPackage,
+      unsignedMetadata
     ).toBytesHexWithout0xPrefix();
   }
 
@@ -63,34 +66,22 @@ export class RedstonePayload extends Serializable {
   ): string {
     return new RedstonePayload(
       signedDataPackages,
-      unsignedMetadata,
-      SINGLESIGN_REDSTONE_PAYLOAD_VERSION
+      unsignedMetadata
     ).toBytesHexWithout0xPrefix();
   }
 
-  private static getVersion(signedDataPackages: SignedDataPackage[] | MultiSignDataPackage[])
-    : number {
-    if (Array.isArray(signedDataPackages) && signedDataPackages.length > 0) {
-      const firstElement = signedDataPackages[0];
-  
-      if (firstElement instanceof SignedDataPackage) {
-        return SINGLESIGN_REDSTONE_PAYLOAD_VERSION;
-      } else if (firstElement instanceof MultiSignDataPackage) {
-        return MULTISIGN_REDSTONE_PAYLOAD_VERSION;
-      } else {
-        throw new Error('Invalid data package type');
-      }
-    } else {
-      throw new Error('Empty data packages array');
-    }
-  }
-
-
   toObj() {
-    return {
-      signedDataPackages: this.signedDataPackages.map((signedDataPackage) =>
+    let signedDataPackages: any;
+    if (Array.isArray(this.signedDataPackages)) {
+      signedDataPackages = this.signedDataPackages.map((signedDataPackage) =>
         signedDataPackage.toObj()
-      ),
+      );
+    } else {
+      signedDataPackages = this.signedDataPackages.toObj();
+    }
+
+    return {
+      signedDataPackages: signedDataPackages,
       unsignedMetadata: this.unsignedMetadata,
     };
   }
@@ -104,7 +95,7 @@ export class RedstonePayload extends Serializable {
   }
 
   serializeUnsignedMetadata(): Uint8Array {
-    if (this.version === SINGLESIGN_REDSTONE_PAYLOAD_VERSION) {
+    if (Array.isArray(this.signedDataPackages)) {
       return this.serializeUnsignedMetadataWithoutVersion();
     }
     return this.serializeUnsignedMetadataWithVersion();
@@ -116,16 +107,15 @@ export class RedstonePayload extends Serializable {
       unsignedMetadataBytes.length,
       UNSIGNED_METADATA_BYTE_SIZE_BS
     );
-    return concat([
-      unsignedMetadataBytes,
-      unsignedMetadataByteSizeBytes,
-    ]);
+    return concat([unsignedMetadataBytes, unsignedMetadataByteSizeBytes]);
   }
 
   serializeUnsignedMetadataWithVersion(): Uint8Array {
     const unsignedMetadataBytes = toUtf8Bytes(this.unsignedMetadata);
     const payloadVersionBytes = convertIntegerNumberToBytes(
-      this.version,
+      Array.isArray(this.signedDataPackages)
+        ? SINGLESIGN_REDSTONE_PAYLOAD_VERSION
+        : MULTISIGN_REDSTONE_PAYLOAD_VERSION,
       REDSTONE_PAYLOAD_VERSION_BS
     );
     const unsignedMetadataByteSizeBytes = convertIntegerNumberToBytes(
@@ -140,15 +130,23 @@ export class RedstonePayload extends Serializable {
   }
 
   serializeSignedDataPackages(): Uint8Array {
-    return concat([
-      ...this.signedDataPackages.map((signedDataPackage) =>
+    let signedDataPackages: any;
+    if (Array.isArray(this.signedDataPackages)) {
+      signedDataPackages = this.signedDataPackages.map((signedDataPackage) =>
         signedDataPackage.toBytes()
-      ),
-      convertIntegerNumberToBytes(
-        this.signedDataPackages.length,
-        DATA_PACKAGES_COUNT_BS
-      ),
-    ]);
+      );
+
+      return concat([
+        ...signedDataPackages,
+        convertIntegerNumberToBytes(
+          this.signedDataPackages.length,
+          DATA_PACKAGES_COUNT_BS
+        ),
+      ]);
+    } else {
+      signedDataPackages = this.signedDataPackages.toBytes();
+      return signedDataPackages;
+    }
   }
 
   public static parse(

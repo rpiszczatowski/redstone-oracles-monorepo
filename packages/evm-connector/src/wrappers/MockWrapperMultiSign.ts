@@ -39,9 +39,6 @@ export class MockWrapperMultiSign extends BaseWrapper {
       this.mockDataPackage.dataPackage.multiSign(privateKeys);
     const unsignedMetadata = this.getUnsignedMetadata();
 
-    return RedstonePayload.prepare(
-      [signedDataPackage],
-      unsignedMetadata
-    );
+    return RedstonePayload.prepare(signedDataPackage, unsignedMetadata);
   }
 }
