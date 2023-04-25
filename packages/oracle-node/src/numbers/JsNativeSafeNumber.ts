@@ -23,7 +23,7 @@ export let JsNativeSafeNumberConfig = {
   MAX_NUMBER: Number.MAX_SAFE_INTEGER,
   MIN_NUMBER: 1e-14,
   MAX_DECIMALS: 14,
-  DIGIT_REGEXP: /^[-+]?(\d+(\.\d{14})?)$/,
+  DIGIT_REGEXP: /^[-+]?(\d+(\.\d{1,63})?)$/,
   ON_NUMBER_VALIDATION_ERROR: {
     [NumberValidationResult.isNaN]: (msg) => {
       throw new Error(msg);
@@ -210,10 +210,11 @@ const parseToSafeNumber = (value: NumberLike) => {
   let number;
   if (typeof value === "string") {
     if (!JsNativeSafeNumberConfig.DIGIT_REGEXP.test(value)) {
-      logger.warn(
-        `Invalid number format: ${number}, not matching regexp: ${JsNativeSafeNumberConfig.DIGIT_REGEXP}`
+      throw new Error(
+        `Invalid number format: ${value}, not matching regexp: ${JsNativeSafeNumberConfig.DIGIT_REGEXP}`
       );
     }
+    reportIfLoosingPrecision(value);
     number = Number(value);
   } else if (typeof value === "number") {
     number = Number(value);
@@ -229,4 +230,14 @@ const parseToSafeNumber = (value: NumberLike) => {
   }
 
   return number;
+};
+
+const reportIfLoosingPrecision = (number: string) => {
+  const [_, decimals] = number.split(".");
+
+  if (decimals && decimals.length > JsNativeSafeNumberConfig.MAX_DECIMALS) {
+    logger.warn(
+      `Lost precision casting number ${number} to ${JsNativeSafeNumberConfig.MAX_DECIMALS} decimals`
+    );
+  }
 };
