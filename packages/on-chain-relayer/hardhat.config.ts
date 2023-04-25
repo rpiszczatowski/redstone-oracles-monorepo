@@ -8,6 +8,8 @@ import { HardhatUserConfig } from "hardhat/config";
 
 dotenv.config();
 
+const accounts = process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined;
+
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
   gasReporter: {
@@ -17,20 +19,24 @@ const config: HardhatUserConfig = {
   networks: {
     "arbitrum-goerli": {
       url: "https://arbitrum-goerli.public.blastapi.io",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined,
+      accounts,
     },
     arbitrum: {
       url: "https://arb1.croswap.com/rpc",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined,
+      accounts,
     },
     ethereum: {
       url: "https://eth-mainnet.public.blastapi.io",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined,
+      accounts,
     },
     "ethereum-goerli": {
       url: "https://eth-goerli.public.blastapi.io",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined,
+      accounts,
     },
+    "zk-evm-testnet": {
+      url: "https://rpc.public.zkevm-test.net",
+      accounts,
+    }
   },
 };
 

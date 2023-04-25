@@ -118,9 +118,28 @@ abstract contract RedstoneAdapterBase is RedstoneConsumerNumericBase, IRedstoneA
     return MIN_INTERVAL_BETWEEN_UPDATES;
   }
 
-  function validateProposedDataPackagesTimestamp(uint256 dataPackagesTimestamp) public view virtual {
+  function validateProposedDataPackagesTimestamp(uint256 dataPackagesTimestamp) public view {
     preventUpdateWithOlderDataPackages(dataPackagesTimestamp);
-    RedstoneDefaultsLib.validateTimestamp(dataPackagesTimestamp);
+    validateDataPackagesTimestampOnce(dataPackagesTimestamp);
+  }
+
+  function validateDataPackagesTimestampOnce(uint256 dataPackagesTimestamp) public view virtual {
+    uint256 receivedTimestampSeconds = dataPackagesTimestamp / 1000;
+
+    (uint256 maxDataAheadSeconds, uint256 maxDataDelaySeconds) = getAllowedTimestampDiffsInSeconds();
+
+    if (block.timestamp < receivedTimestampSeconds) {
+      if ((receivedTimestampSeconds - block.timestamp) > maxDataAheadSeconds) {
+        revert RedstoneDefaultsLib.TimestampFromTooLongFuture(receivedTimestampSeconds, block.timestamp);
+      }
+    } else if ((block.timestamp - receivedTimestampSeconds) > maxDataDelaySeconds) {
+      revert RedstoneDefaultsLib.TimestampIsTooOld(receivedTimestampSeconds, block.timestamp);
+    }
+  }
+
+  function getAllowedTimestampDiffsInSeconds() public view virtual returns (uint256 maxDataAheadSeconds, uint256 maxDataDelaySeconds) {
+    maxDataAheadSeconds = RedstoneDefaultsLib.DEFAULT_MAX_DATA_TIMESTAMP_AHEAD_SECONDS;
+    maxDataDelaySeconds = RedstoneDefaultsLib.DEFAULT_MAX_DATA_TIMESTAMP_DELAY_SECONDS;
   }
 
   function preventUpdateWithOlderDataPackages(uint256 dataPackagesTimestamp) internal view {

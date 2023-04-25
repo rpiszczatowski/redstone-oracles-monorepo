@@ -1,7 +1,8 @@
 import { WrapperBuilder } from "@redstone-finance/evm-connector";
 import { ethers } from "hardhat";
 
-const SLEEP_TIME_MS = 3000;
+const SLEEP_TIME_MS = 15 * 60 * 1000;
+const GAS_LIMIT = 8_000_000;
 
 const contractNames = [
   "PriceFeedsAdapterWithRoundsMock",
@@ -37,7 +38,9 @@ async function benchmarkContract(contractName: string) {
 
     // Evaluating gas costs
     console.log(`Running test iteration nr: ${i}...`);
-    const tx = await wrappedContract.updateDataFeedsValues(mockDataTimestamp);
+    const tx = await wrappedContract.updateDataFeedsValues(mockDataTimestamp, {
+      gasLimit: GAS_LIMIT,
+    });
     console.log(`Transaction hash: ${tx.hash}`);
     const receipt = await tx.wait();
     console.log(`Gas used: ${receipt.gasUsed}`);
