@@ -11,6 +11,7 @@ const config: Config.InitialOptions = {
     "<rootDir>/.jest/set-env-vars.js",
     "<rootDir>/.jest/set-redstone-number-config.ts",
   ],
+  testPathIgnorePatterns: ["<rootDir>/test/dry-run/*"],
 };
 
 export default config;
