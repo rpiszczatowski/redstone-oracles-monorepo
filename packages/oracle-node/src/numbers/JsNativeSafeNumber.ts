@@ -23,7 +23,7 @@ export let JsNativeSafeNumberConfig = {
   MAX_NUMBER: Number.MAX_SAFE_INTEGER,
   MIN_NUMBER: 1e-14,
   MAX_DECIMALS: 14,
-  DIGIT_REGEXP: /^[-+]?(\d+(\.\d{1,63})?)$/,
+  DIGIT_REGEXP: /^[-+]?(\d+(\.\d{1,63})?|\.\d{1,63})([eE][-+]?\d+)?$/,
   ON_NUMBER_VALIDATION_ERROR: {
     [NumberValidationResult.isNaN]: (msg) => {
       throw new Error(msg);
