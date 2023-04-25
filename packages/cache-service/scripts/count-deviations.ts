@@ -5,29 +5,29 @@ import config from "../src/config";
 import { fetchDataPackages, getDeviationPercentage } from "./common";
 
 const END_TIMESTAMP = Date.now();
-const TIMESTAMPS_INTERVAL = 28 * 24 * 60 * 60 * 1000;
+const TIMESTAMPS_INTERVAL = 20 * 24 * 60 * 60 * 1000;
 const START_TIMESTAMP = END_TIMESTAMP - TIMESTAMPS_INTERVAL;
-const TIMESTAMP_GRANULATION = 10 * 60 * 1000;
-const DATA_SERVICE_INTERVAL = 10 * 1000;
+const TIMESTAMP_GRANULATION = 1000;
+const DATA_SERVICE_INTERVAL = 60 * 1000;
 const DATA_SERVICE_TIMESTAMP_GRANULATION =
   TIMESTAMP_GRANULATION / DATA_SERVICE_INTERVAL;
-const DEVIATION_LIMIT = 0.5;
+const DEVIATION_LIMIT = 0.01;
 
 (async () => {
-  // const dataPackages = await fetchDataPackages(config.mongoDbUrl, {
-  //   startTimestamp: START_TIMESTAMP,
-  //   endTimestamp: END_TIMESTAMP,
-  //   dataServiceId: "redstone-rapid-demo",
-  //   dataFeedId: "VST",
-  // });
+  const dataPackages = await fetchDataPackages(config.mongoDbUrl, {
+    startTimestamp: START_TIMESTAMP,
+    endTimestamp: END_TIMESTAMP,
+    dataServiceId: "redstone-main-demo",
+    dataFeedId: "IB01.L",
+  });
 
-  const pricesFromApi = await fetchPricesFromApi(
-    START_TIMESTAMP,
-    END_TIMESTAMP
-  );
+  // const pricesFromApi = await fetchPricesFromApi(
+  //   START_TIMESTAMP,
+  //   END_TIMESTAMP
+  // );
 
   const { deviationsWithGranulation, deviationsWithoutGranulation } =
-    await countDeviationsBiggerThanLimitAndFindMax(pricesFromApi);
+    await countDeviationsBiggerThanLimitAndFindMax(dataPackages);
   console.log(
     `Found ${deviationsWithGranulation} deviations with granulation ${TIMESTAMP_GRANULATION} milliseconds bigger than limit`
   );
@@ -36,14 +36,14 @@ const DEVIATION_LIMIT = 0.5;
   );
 })();
 
-async function countDeviationsBiggerThanLimitAndFindMax(pricesFromApi: any[]) {
+async function countDeviationsBiggerThanLimitAndFindMax(prices: any[]) {
   console.log(`Counting deviations bigger than ${DEVIATION_LIMIT}`);
-  const deviationsWithGranulation = handleDeviationsCalculationsFromApi(
-    pricesFromApi,
+  const deviationsWithGranulation = handleDeviationsCalculationsFromDb(
+    prices,
     DATA_SERVICE_TIMESTAMP_GRANULATION
   );
-  const deviationsWithoutGranulation = handleDeviationsCalculationsFromApi(
-    pricesFromApi,
+  const deviationsWithoutGranulation = handleDeviationsCalculationsFromDb(
+    prices,
     1
   );
   return { deviationsWithGranulation, deviationsWithoutGranulation };
