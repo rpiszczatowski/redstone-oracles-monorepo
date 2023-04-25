@@ -95,22 +95,6 @@ export class RedstonePayload extends Serializable {
   }
 
   serializeUnsignedMetadata(): Uint8Array {
-    if (Array.isArray(this.signedDataPackages)) {
-      return this.serializeUnsignedMetadataWithoutVersion();
-    }
-    return this.serializeUnsignedMetadataWithVersion();
-  }
-
-  serializeUnsignedMetadataWithoutVersion(): Uint8Array {
-    const unsignedMetadataBytes = toUtf8Bytes(this.unsignedMetadata);
-    const unsignedMetadataByteSizeBytes = convertIntegerNumberToBytes(
-      unsignedMetadataBytes.length,
-      UNSIGNED_METADATA_BYTE_SIZE_BS
-    );
-    return concat([unsignedMetadataBytes, unsignedMetadataByteSizeBytes]);
-  }
-
-  serializeUnsignedMetadataWithVersion(): Uint8Array {
     const unsignedMetadataBytes = toUtf8Bytes(this.unsignedMetadata);
     const payloadVersionBytes = convertIntegerNumberToBytes(
       Array.isArray(this.signedDataPackages)

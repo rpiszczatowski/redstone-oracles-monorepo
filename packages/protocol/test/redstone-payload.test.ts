@@ -10,8 +10,7 @@ import { hexlifyWithout0xPrefix } from "../src/common/utils";
 
 const TIMESTAMP_FOR_TESTS = 1654353400000;
 const UNSIGNED_METADATA = "1.1.2#test-data-feed";
-const EXPECTED_UNSIGNED_METADATA_BYTE_SIZE = "000014"; // 20 in hex
-const EXPECTED_UNSIGNED_METADATA_WITH_VERSION_BYTE_SIZE = "000016"; // 22 in hex
+const EXPECTED_UNSIGNED_METADATA_BYTE_SIZE = "000016"; // 20 in hex
 const REDSTONE_MARKER = "000002ed57011e0000";
 const PRIVATE_KEY_FOR_TESTS_1 =
   "0x1111111111111111111111111111111111111111111111111111111111111111";
@@ -62,10 +61,11 @@ describe("Fixed size data package", () => {
 
     expect(serializedHex).toBe(
       EXPECTED_SERIALIZED_DATA_PACKAGE +
-        EXPECTED_SIGNATURES[0] +
-        EXPECTED_SERIALIZED_DATA_PACKAGE +
-        EXPECTED_SIGNATURES[1] +
-        "0002" + // data packages count
+      EXPECTED_SIGNATURES[0] +
+      EXPECTED_SERIALIZED_DATA_PACKAGE +
+      EXPECTED_SIGNATURES[1] +
+      "0002" + // data packages count
+      "0001" + // payload version
         hexlifyWithout0xPrefix(toUtf8Bytes(UNSIGNED_METADATA)) +
         EXPECTED_UNSIGNED_METADATA_BYTE_SIZE +
         REDSTONE_MARKER
@@ -80,12 +80,12 @@ describe("Fixed size data package", () => {
 
     expect(serializedHex).toBe(
       EXPECTED_SERIALIZED_DATA_PACKAGE +
-        EXPECTED_SIGNATURES[0] +
-        EXPECTED_SIGNATURES[1] +
-        "0002" + // signatures count
-        "0002" + // payload version
+      EXPECTED_SIGNATURES[0] +
+      EXPECTED_SIGNATURES[1] +
+      "0002" + // signatures count
+      "0002" + // payload version
         hexlifyWithout0xPrefix(toUtf8Bytes(UNSIGNED_METADATA)) +
-        EXPECTED_UNSIGNED_METADATA_WITH_VERSION_BYTE_SIZE +
+        EXPECTED_UNSIGNED_METADATA_BYTE_SIZE +
         REDSTONE_MARKER
     );
   });

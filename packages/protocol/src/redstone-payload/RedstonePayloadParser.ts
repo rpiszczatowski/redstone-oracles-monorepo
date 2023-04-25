@@ -49,10 +49,7 @@ export class RedstonePayloadParser {
 
     const version = this.extractPayloadVersion(unsignedMetadataSize);
 
-    let unsignedMetadata = this.extractUnsignedMetadata(
-      unsignedMetadataSize,
-      version
-    );
+    let unsignedMetadata = this.extractUnsignedMetadata(unsignedMetadataSize);
 
     let negativeOffset =
       unsignedMetadataSize +
@@ -129,20 +126,10 @@ export class RedstonePayloadParser {
     return SINGLESIGN_REDSTONE_PAYLOAD_VERSION;
   }
 
-  extractUnsignedMetadata(
-    unsignedMetadataSize: number,
-    version: number
-  ): Uint8Array {
-    const negativeOffset = REDSTONE_MARKER_BS + UNSIGNED_METADATA_BYTE_SIZE_BS;
-
-    const hasVersionField = version === MULTISIGN_REDSTONE_PAYLOAD_VERSION;
-    const length = hasVersionField
-      ? unsignedMetadataSize - REDSTONE_PAYLOAD_VERSION_BS
-      : unsignedMetadataSize;
-
+  extractUnsignedMetadata(unsignedMetadataSize: number): Uint8Array {
     return this.slice({
-      negativeOffset: negativeOffset,
-      length: length,
+      negativeOffset: REDSTONE_MARKER_BS + UNSIGNED_METADATA_BYTE_SIZE_BS,
+      length: unsignedMetadataSize - REDSTONE_PAYLOAD_VERSION_BS,
     });
   }
 
