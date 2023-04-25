@@ -1,4 +1,4 @@
-import { NumberLike } from "redstone-protocol/src/common/utils";
+import { utils } from "redstone-protocol";
 
 export interface ISafeNumber {
   add(numberLike: NumberArg): ISafeNumber;
@@ -18,4 +18,4 @@ export interface ISafeNumber {
   unsafeToNumber(): number;
 }
 
-export type NumberArg = NumberLike | ISafeNumber;
+export type NumberArg = utils.NumberLike | ISafeNumber;

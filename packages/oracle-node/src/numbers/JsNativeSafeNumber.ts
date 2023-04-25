@@ -1,5 +1,5 @@
 import { Consola } from "consola";
-import { assert, NumberLike } from "redstone-protocol/src/common/utils";
+import { utils } from "redstone-protocol";
 import { NumberArg, ISafeNumber } from "./ISafeNumber";
 
 const logger = require("../utils/logger")(
@@ -109,7 +109,7 @@ export class JsNativeSafeNumber implements ISafeNumber {
   }
 
   assertNonNegative(): JsNativeSafeNumber {
-    assert(this._value >= 0, `${this.toString} >= 0`);
+    utils.assert(this._value >= 0, `${this.toString} >= 0`);
     return this;
   }
 
@@ -206,7 +206,7 @@ const validateNumber = (
   return { result: NumberValidationResult.isOk, message: "" };
 };
 
-const parseToSafeNumber = (value: NumberLike) => {
+const parseToSafeNumber = (value: utils.NumberLike) => {
   let number;
   if (typeof value === "string") {
     if (!JsNativeSafeNumberConfig.DIGIT_REGEXP.test(value)) {
