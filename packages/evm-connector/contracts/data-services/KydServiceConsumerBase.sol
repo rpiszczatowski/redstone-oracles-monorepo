@@ -8,17 +8,17 @@ contract KydServiceConsumerBase is RedstoneConsumerNumericBase {
   error ValuesArrayCanNotBeEmpty();
   error AllValuesMustBeEqual();
 
+  function getDataServiceId() public view virtual override returns (string memory) {
+    return "redstone-custom-urls-demo";
+  }
+
   function getUniqueSignersThreshold() public view virtual override returns (uint8) {
     return 2;
   }
 
-  function getAuthorisedSignerIndex(address signerAddress)
-    public
-    view
-    virtual
-    override
-    returns (uint8)
-  {
+  function getAuthorisedSignerIndex(
+    address signerAddress
+  ) public view virtual override returns (uint8) {
     if (signerAddress == 0x70997970C51812dc3A010C7d01b50e0d17dc79C8) {
       return 0;
     } else if (signerAddress == 0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC) {
@@ -28,13 +28,9 @@ contract KydServiceConsumerBase is RedstoneConsumerNumericBase {
     }
   }
 
-  function aggregateValues(uint256[] memory values)
-    public
-    view
-    virtual
-    override
-    returns (uint256)
-  {
+  function aggregateValues(
+    uint256[] memory values
+  ) public view virtual override returns (uint256) {
     if (values.length == 0) {
       revert ValuesArrayCanNotBeEmpty();
     }

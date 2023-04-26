@@ -8,10 +8,6 @@ import { runDryRun } from "../helpers/run-dry-run";
 import { version } from "../../package.json";
 import { resolveDataServiceUrls } from "redstone-protocol";
 
-type Optional<T, K extends keyof T> = Omit<T, K> & {
-  [P in K]?: T[P];
-};
-
 const DEFAULT_UNIQUE_SIGNERS_COUNT = 2;
 
 export interface DryRunParamsWithUnsignedMetadata
@@ -19,23 +15,14 @@ export interface DryRunParamsWithUnsignedMetadata
   unsignedMetadataMsg: string;
 }
 
-export type DataPackagesRequestInput = Optional<
-  DataPackagesRequestParams,
-  "dataServiceId" | "uniqueSignersCount"
->;
+export type DataPackagesRequestInput = Partial<DataPackagesRequestParams>;
 
 export class DataServiceWrapper extends BaseWrapper {
   private _urls?: string[];
-  private readonly dataPackagesRequestParams: Optional<
-    DataPackagesRequestParams,
-    "dataServiceId"
-  >;
+  private readonly dataPackagesRequestParams: DataPackagesRequestInput;
 
   constructor(
-    dataPackagesRequestParams: Optional<
-      DataPackagesRequestParams,
-      "dataServiceId" | "uniqueSignersCount"
-    >,
+    dataPackagesRequestParams: DataPackagesRequestInput,
     urls?: string[]
   ) {
     super();
@@ -68,6 +55,11 @@ export class DataServiceWrapper extends BaseWrapper {
     const disablePayloadsDryRun = Boolean(
       this.dataPackagesRequestParams.disablePayloadsDryRun
     );
+
+    if (!this.dataPackagesRequestParams.uniqueSignersCount) {
+      this.dataPackagesRequestParams.uniqueSignersCount =
+        await this.getUniqueSignersThresholdFromContract();
+    }
 
     if (!this.dataPackagesRequestParams.dataServiceId) {
       this.dataPackagesRequestParams.dataServiceId =
@@ -118,10 +110,26 @@ export class DataServiceWrapper extends BaseWrapper {
 
   private async getDataServiceIdFromContract(): Promise<string> {
     try {
-      return await this.contract.getDataServiceId();
+      const dataServiceId = await this.contract.getDataServiceId();
+      // throw on default implementation
+      if (dataServiceId === "") {
+        throw new Error(`getDataServiceId was not overridden.`);
+      }
+      return dataServiceId;
     } catch (e: any) {
       throw new Error(
-        `DataServiceId not provided and failed to get service id from underlying contract.` +
+        `DataServiceId not provided and failed to get it from underlying contract. Error: ` +
+          e?.message
+      );
+    }
+  }
+
+  private async getUniqueSignersThresholdFromContract(): Promise<number> {
+    try {
+      return await this.contract.getUniqueSignersThreshold();
+    } catch (e: any) {
+      throw new Error(
+        `UniqueSignersCount not provided and failed to get it from underlying contract.` +
           e?.message
       );
     }

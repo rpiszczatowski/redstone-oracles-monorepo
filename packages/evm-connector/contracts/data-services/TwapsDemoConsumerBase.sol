@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.4;
 
-import "./RedstoneDataServiceConsumer.sol";
+import "../core/RedstoneConsumerNumericBase.sol";
 
-contract TwapsDemoConsumerBase is RedstoneDataServiceConsumer {
+contract TwapsDemoConsumerBase is RedstoneConsumerNumericBase {
   function getDataServiceId() public view virtual override returns (string memory) {
     return "redstone-twaps-demo";
   }
@@ -13,13 +13,9 @@ contract TwapsDemoConsumerBase is RedstoneDataServiceConsumer {
     return 1;
   }
 
-  function getAuthorisedSignerIndex(address signerAddress)
-    public
-    view
-    virtual
-    override
-    returns (uint8)
-  {
+  function getAuthorisedSignerIndex(
+    address signerAddress
+  ) public view virtual override returns (uint8) {
     if (signerAddress == 0xAAb9568f7165E66AcaFF50B705C3f3e964cbD24f) {
       return 0;
     } else {

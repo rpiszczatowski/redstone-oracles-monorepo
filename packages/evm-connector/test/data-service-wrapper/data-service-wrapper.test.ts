@@ -13,12 +13,13 @@ chai.use(chaiAsPromised);
 const runTest = async (
   contract: Contract,
   urls?: string[],
-  dataServiceId?: string
+  dataServiceId?: string,
+  uniqueSignersCount?: number
 ) => {
   const wrappedContract = WrapperBuilder.wrap(contract).usingDataService(
     {
       dataServiceId,
-      uniqueSignersCount: 10,
+      uniqueSignersCount,
       dataFeeds: ["ETH", "BTC"],
     },
     urls
@@ -91,7 +92,7 @@ describe.only("DataServiceWrapper", () => {
 
     it("Should failed if contract doesn't expose getDataServiceId and dataServiceId is not passed", async () => {
       await expect(runTest(contract, undefined, undefined)).rejectedWith(
-        "DataServiceId not provided and failed to get service id from underlying contract.this.contract.getDataServiceId is not a function"
+        "DataServiceId not provided and failed to get it from underlying contract. Error: getDataServiceId was not overridden."
       );
     });
 

@@ -23,6 +23,16 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
 
   /**
    * @dev This function must be implemented by the child consumer contract.
+   * It should return dataServiceId which DataServiceWrapper will use if not provided explicite .
+   * If not overriden, value will always have to be provided explicite in DataServiceWrapper.
+   * @return dataServiceId being consumed by contract
+   */
+  function getDataServiceId() public view virtual returns (string memory) {
+    return "";
+  }
+
+  /**
+   * @dev This function must be implemented by the child consumer contract.
    * It should return a unique index for a given signer address if the signer
    * is authorised, otherwise it should revert
    * @param receivedSigner The address of a signer, recovered from ECDSA signature
@@ -75,11 +85,9 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
    * @return An array of the extracted and verified oracle values in the same order
    * as they are requested in dataFeedIds array
    */
-  function _securelyExtractOracleValuesFromTxMsg(bytes32[] memory dataFeedIds)
-    internal
-    view
-    returns (uint256[] memory)
-  {
+  function _securelyExtractOracleValuesFromTxMsg(
+    bytes32[] memory dataFeedIds
+  ) internal view returns (uint256[] memory) {
     // Initializing helpful variables and allocating memory
     uint256[] memory uniqueSignerCountForDataFeedIds = new uint256[](dataFeedIds.length);
     uint256[] memory signersBitmapForDataFeedIds = new uint256[](dataFeedIds.length);
@@ -161,14 +169,17 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       bytes memory signedMessage;
       uint256 signedMessageBytesCount;
 
-      signedMessageBytesCount = dataPointsCount.mul(eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS)
-        + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS; //DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
+      signedMessageBytesCount =
+        dataPointsCount.mul(eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS) +
+        DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS; //DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
 
       uint256 timestampCalldataOffset = msg.data.length.sub(
-        calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS);
+        calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS
+      );
 
       uint256 signedMessageCalldataOffset = msg.data.length.sub(
-        calldataNegativeOffset + SIG_BS + signedMessageBytesCount);
+        calldataNegativeOffset + SIG_BS + signedMessageBytesCount
+      );
 
       assembly {
         // Extracting the signed message
@@ -192,11 +203,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
 
         function extractBytesFromCalldata(offset, bytesCount) -> extractedBytes {
           let extractedBytesStartPtr := initByteArray(bytesCount)
-          calldatacopy(
-            extractedBytesStartPtr,
-            offset,
-            bytesCount
-          )
+          calldatacopy(extractedBytesStartPtr, offset, bytesCount)
           extractedBytes := sub(extractedBytesStartPtr, BYTES_ARR_LEN_VAR_BS)
         }
       }
@@ -233,7 +240,10 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
             uint256 bitmapSignersForDataFeedId = signersBitmapForDataFeedIds[dataFeedIdIndex];
 
             if (
-              !BitmapLib.getBitFromBitmap(bitmapSignersForDataFeedId, signerIndex) && /* current signer was not counted for current dataFeedId */
+              !BitmapLib.getBitFromBitmap(
+                bitmapSignersForDataFeedId,
+                signerIndex
+              ) /* current signer was not counted for current dataFeedId */ &&
               uniqueSignerCountForDataFeedIds[dataFeedIdIndex] < getUniqueSignersThreshold()
             ) {
               // Increase unique signer counter
@@ -287,7 +297,8 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       if (uniqueSignerCountForDataFeedIds[dataFeedIndex] < uniqueSignersThreshold) {
         revert InsufficientNumberOfUniqueSigners(
           uniqueSignerCountForDataFeedIds[dataFeedIndex],
-          uniqueSignersThreshold);
+          uniqueSignersThreshold
+        );
       }
       uint256 aggregatedValueForDataFeedId = aggregateValues(valuesForDataFeeds[dataFeedIndex]);
       aggregatedValues[dataFeedIndex] = aggregatedValueForDataFeedId;

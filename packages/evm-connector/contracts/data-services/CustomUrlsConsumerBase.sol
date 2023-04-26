@@ -2,9 +2,9 @@
 
 pragma solidity ^0.8.4;
 
-import "./RedstoneDataServiceConsumer.sol";
+import "../core/RedstoneConsumerNumericBase.sol";
 
-contract CustomUrlsConsumerBase is RedstoneDataServiceConsumer {
+contract CustomUrlsConsumerBase is RedstoneConsumerNumericBase {
   function getDataServiceId() public view virtual override returns (string memory) {
     return "redstone-custom-urls-demo";
   }
@@ -13,13 +13,9 @@ contract CustomUrlsConsumerBase is RedstoneDataServiceConsumer {
     return 2;
   }
 
-  function getAuthorisedSignerIndex(address signerAddress)
-    public
-    view
-    virtual
-    override
-    returns (uint8)
-  {
+  function getAuthorisedSignerIndex(
+    address signerAddress
+  ) public view virtual override returns (uint8) {
     if (signerAddress == 0x11fFFc9970c41B9bFB9Aa35Be838d39bce918CfF) {
       return 0;
     } else if (signerAddress == 0xdBcC2C6c892C8d3e3Fe4D325fEc810B7376A5Ed6) {
