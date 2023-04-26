@@ -48783,6 +48783,16 @@
       "name": "NuriFootBall"
     }
   ],
+  "SUSD": [
+    {
+      "id": "nusd",
+      "name": "sUSD"
+    },
+    {
+      "id": "stabilize-usd",
+      "name": "Stabilize USD"
+    }
+  ],
   "NUTGV2": [
     {
       "id": "nutgain",
