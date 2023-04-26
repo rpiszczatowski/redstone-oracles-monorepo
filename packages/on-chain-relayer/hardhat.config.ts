@@ -8,10 +8,24 @@ import { HardhatUserConfig } from "hardhat/config";
 
 dotenv.config();
 
-const accounts = process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined;
+const accounts = process.env.PRIVATE_KEY
+  ? [process.env.PRIVATE_KEY]
+  : undefined;
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.17",
+  solidity: {
+    compilers: [
+      {
+        version: "0.8.17",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 10000,
+          },
+        },
+      },
+    ],
+  },
   gasReporter: {
     enabled: true,
     currency: "USD",
@@ -36,7 +50,7 @@ const config: HardhatUserConfig = {
     "zk-evm-testnet": {
       url: "https://rpc.public.zkevm-test.net",
       accounts,
-    }
+    },
   },
 };
 
