@@ -94,6 +94,9 @@ describe("Main dry run test", () => {
         console.log(`Missing token ${token} during dry run test`);
       }
       if (wideSupportTokens.includes(token)) {
+        if (currentDataFeedPrice === undefined) {
+          console.log("CRASHINNNNNG TOKEN: " + token);
+        }
         expect(currentDataFeedPrice).toBeGreaterThan(0);
       }
     }
