@@ -8,39 +8,20 @@ import { runDryRun } from "../helpers/run-dry-run";
 import { version } from "../../package.json";
 import { resolveDataServiceUrls } from "redstone-protocol";
 
-const DEFAULT_UNIQUE_SIGNERS_COUNT = 2;
-
 export interface DryRunParamsWithUnsignedMetadata
   extends ParamsForDryRunVerification {
   unsignedMetadataMsg: string;
+  urls: string[];
 }
 
 export type DataPackagesRequestInput = Partial<DataPackagesRequestParams>;
 
 export class DataServiceWrapper extends BaseWrapper {
-  private _urls?: string[];
-  private readonly dataPackagesRequestParams: DataPackagesRequestInput;
-
   constructor(
-    dataPackagesRequestParams: DataPackagesRequestInput,
-    urls?: string[]
+    private readonly dataPackagesRequestParams: DataPackagesRequestInput,
+    private urls?: string[]
   ) {
     super();
-    this._urls = urls;
-    this.dataPackagesRequestParams = {
-      uniqueSignersCount: DEFAULT_UNIQUE_SIGNERS_COUNT,
-      ...dataPackagesRequestParams,
-    };
-  }
-
-  private get urls(): string[] {
-    if (this._urls) {
-      return this._urls;
-    }
-    this._urls = resolveDataServiceUrls(
-      this.dataPackagesRequestParams.dataServiceId as string
-    );
-    return this._urls;
   }
 
   getUnsignedMetadata(): string {
@@ -66,10 +47,20 @@ export class DataServiceWrapper extends BaseWrapper {
         await this.getDataServiceIdFromContract();
     }
 
+    if (!this.urls) {
+      this.urls = resolveDataServiceUrls(
+        this.dataPackagesRequestParams.dataServiceId
+      );
+    }
+
     if (disablePayloadsDryRun) {
       return this.requestPayloadWithoutDryRun(this.urls, unsignedMetadataMsg);
     }
-    return this.requestPayloadWithDryRun({ ...params, unsignedMetadataMsg });
+    return this.requestPayloadWithDryRun({
+      ...params,
+      unsignedMetadataMsg,
+      urls: this.urls,
+    });
   }
 
   /* 
@@ -79,9 +70,10 @@ export class DataServiceWrapper extends BaseWrapper {
   */
   async requestPayloadWithDryRun({
     unsignedMetadataMsg,
+    urls,
     ...params
   }: DryRunParamsWithUnsignedMetadata) {
-    const promises = this.urls.map(async (url) => {
+    const promises = urls.map(async (url) => {
       const redstonePayload = await this.requestPayloadWithoutDryRun(
         [url],
         unsignedMetadataMsg
