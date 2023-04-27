@@ -74,8 +74,8 @@ const mockWallets = [
   },
 ];
 
-export const getDataPackagesResponse = () => {
-  const timestampMilliseconds = Date.now();
+export const getDataPackagesResponse = async () => {
+  const timestampMilliseconds = (await time.latest()) * 1000;
 
   const dataPoints = [
     { dataFeedId: "ETH", value: 1670.99 },

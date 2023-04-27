@@ -15,11 +15,6 @@ contract PriceFeedsAdapterWithoutRoundsMock is PriceFeedsAdapterWithoutRounds, A
     return 2;
   }
 
-  function getAllowedTimestampDiffsInSeconds() public pure override returns (uint256 maxDataAheadSeconds, uint256 maxDataDelaySeconds) {
-    maxDataAheadSeconds = 20 minutes;
-    maxDataDelaySeconds = 20 minutes;
-  }
-
   function getAuthorisedSignerIndex(address signerAddress)
     public
     view

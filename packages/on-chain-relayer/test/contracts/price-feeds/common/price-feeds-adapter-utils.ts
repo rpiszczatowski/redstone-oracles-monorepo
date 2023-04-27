@@ -147,9 +147,8 @@ export const describeCommonPriceFeedsAdapterTests = ({
     ).to.be.revertedWith("MinIntervalBetweenUpdatesHasNotPassedYet");
   });
 
-  (skipTestsForPrevDataTimestamp ? it.skip : it)(
-    "should revert if proposed data package timestamp is same as before",
-    async () => {
+  if (!skipTestsForPrevDataTimestamp) {
+    it("should revert if proposed data package timestamp is same as before", async () => {
       const { mockDataTimestamp } = await updateValues({
         increaseBlockTimeBySeconds: 1,
       });
@@ -160,12 +159,9 @@ export const describeCommonPriceFeedsAdapterTests = ({
           calculateMockDataTimestamp: () => mockDataTimestamp,
         })
       ).to.be.revertedWith("DataTimestampShouldBeNewerThanBefore");
-    }
-  );
+    });
 
-  (skipTestsForPrevDataTimestamp ? it.skip : it)(
-    "should revert if proposed data package timestamp is older than before",
-    async () => {
+    it("should revert if proposed data package timestamp is older than before", async () => {
       const { mockDataTimestamp } = await updateValues({
         increaseBlockTimeBySeconds: 1,
       });
@@ -176,8 +172,8 @@ export const describeCommonPriceFeedsAdapterTests = ({
           calculateMockDataTimestamp: () => mockDataTimestamp - 1,
         })
       ).to.be.revertedWith("DataTimestampShouldBeNewerThanBefore");
-    }
-  );
+    });
+  }
 
   it("should revert if proposed data package timestamp is too old", async () => {
     await expect(
@@ -310,9 +306,8 @@ export const describeCommonPriceFeedsAdapterTests = ({
     expect(value.toNumber()).to.be.equal(42 * 10 ** 8);
   });
 
-  (hasOnlyOneDataFeed ? it.skip : it)(
-    "should get several data feed values",
-    async () => {
+  if (!hasOnlyOneDataFeed) {
+    it("should get several data feed values", async () => {
       await updateValues({
         increaseBlockTimeBySeconds: 1,
       });
@@ -322,8 +317,8 @@ export const describeCommonPriceFeedsAdapterTests = ({
       ]);
       expect(values.length).to.equal(1);
       expect(values[0].toNumber()).to.equal(42 * 10 ** 8);
-    }
-  );
+    });
+  }
 
   it("should revert trying to get invalid (zero) data feed value", async () => {
     await expect(

@@ -5,10 +5,10 @@ const SLEEP_TIME_MS = 15 * 60 * 1000;
 const GAS_LIMIT = 8_000_000;
 
 const contractNames = [
-  "PriceFeedsAdapterWithRoundsMock",
-  "PriceFeedsAdapterWithoutRoundsMock",
-  "SinglePriceFeedAdapterMock",
-  "SinglePriceFeedAdapterWithClearingMock",
+  "PriceFeedsAdapterWithRoundsBenchmark",
+  "PriceFeedsAdapterWithoutRoundsBenchmark",
+  "SinglePriceFeedAdapterBenchmark",
+  "SinglePriceFeedAdapterWithClearingBenchmark",
 ];
 
 main();

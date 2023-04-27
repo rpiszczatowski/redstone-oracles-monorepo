@@ -19,7 +19,7 @@ chai.use(chaiAsPromised);
 const mockToken1Address = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9"; // CELO token address
 const mockToken2Address = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"; // cUSD token address
 
-describe("#updatePrices", () => {
+describe("update-prices", () => {
   before(() => {
     mockEnvVariables();
     server.listen();
@@ -40,7 +40,7 @@ describe("#updatePrices", () => {
     // Update prices
     const { lastUpdateTimestamp } =
       await getLastRoundParamsFromContract(priceFeedsAdapter);
-    const dataPackages = getDataPackagesResponse();
+    const dataPackages = await getDataPackagesResponse();
     await updatePrices(
       dataPackages,
       priceFeedsAdapter,
@@ -78,7 +78,7 @@ describe("#updatePrices", () => {
     // Update prices
     const { lastUpdateTimestamp } =
       await getLastRoundParamsFromContract(mentoAdapter);
-    const dataPackages = getDataPackagesResponse();
+    const dataPackages = await getDataPackagesResponse();
     await updatePrices(
       dataPackages,
       mentoAdapter,
