@@ -4,10 +4,10 @@ import {
   SignedDataPackage,
   NumericDataPoint,
   RedstonePayloadSingleSign,
+  RedstonePayloadMultiSign,
   MultiSignDataPackage,
 } from "../src";
 import { hexlifyWithout0xPrefix } from "../src/common/utils";
-import { RedstonePayloadMultiSign } from "../src/redstone-payload/RedstonePayloadMultiSign";
 
 const TIMESTAMP_FOR_TESTS = 1654353400000;
 const UNSIGNED_METADATA = "1.1.2#test-data-feed";
