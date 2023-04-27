@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Cache } from "cache-manager";
 import {
-  RedstonePayload,
+  RedstonePayloadSingleSign,
   UniversalSigner,
   recoverDeserializedSignerAddress,
 } from "redstone-protocol";
@@ -136,7 +136,7 @@ export class DataPackagesService {
   async getPayload(
     requestParams: DataPackagesRequestParams,
     cacheManager: Cache
-  ): Promise<RedstonePayload> {
+  ): Promise<RedstonePayloadSingleSign> {
     const dataPackages = await this.getDataPackages(
       requestParams,
       cacheManager

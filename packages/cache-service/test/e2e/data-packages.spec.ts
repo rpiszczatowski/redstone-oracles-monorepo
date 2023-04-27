@@ -217,7 +217,7 @@ describe("Data packages (e2e)", () => {
       })
       .expect(200);
 
-    const expectedStreamLengthWithFeedsSpecified = 1662;
+    const expectedStreamLengthWithFeedsSpecified = 1664;
     const expectedDataPackagesCountWithFeedSpecified = 8; // 4 * 2
     verifyPayloadResponse(
       testResponse,
@@ -236,7 +236,7 @@ describe("Data packages (e2e)", () => {
       })
       .expect(200);
 
-    const expectedStreamLengthForAllFeeds = 838;
+    const expectedStreamLengthForAllFeeds = 840;
     const expectedDataPackagesCountForAllFeeds = 4;
     verifyPayloadResponse(
       testResponse2,
