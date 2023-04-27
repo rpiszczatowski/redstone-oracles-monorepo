@@ -749,8 +749,27 @@
         "okx"
       ]
     },
+    "FXS": {
+      "source": [
+        "binance",
+        "bitrue",
+        "bkex",
+        "btcex",
+        "coingecko",
+        "lbank",
+        "kucoin",
+        "phemex"
+      ]
+    },
     "FRAX": {
-      "source": ["coingecko", "curve-usdc", "uniswap-v3"]
+      "source": [
+        "coingecko",
+        "curve-usdc",
+        "fraxswap-on-chain-fxs",
+        "fraxswap-on-chain-weth",
+        "uniswap-v2-on-chain-fxs",
+        "uniswap-v3"
+      ]
     },
     "VST": {
       "source": ["curve-frax"]
