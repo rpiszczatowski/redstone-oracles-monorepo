@@ -31,7 +31,7 @@ export const getWrappedContractAndUpdateBlockTimestamp = async (
   const blockTimestamp = await time.latest();
   await time.setNextBlockTimestamp(blockTimestamp + 10);
   return WrapperBuilder.wrap(contract).usingSimpleNumericMock({
-    mockSignersCount: 10,
+    mockSignersCount: 2,
     dataPoints,
     timestampMilliseconds: timestamp,
   });

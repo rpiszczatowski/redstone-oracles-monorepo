@@ -25,7 +25,7 @@ contract VSTPriceFeedsAdapter is SinglePriceFeedAdapter {
     }
 
     _checkCircuitBreaker(values[0]);
-    _checkCircuitBreaker(values[0]);
+    _checkCircuitBreaker(values[1]);
 
     return (values[0] + values[1]) / 2;
   }
