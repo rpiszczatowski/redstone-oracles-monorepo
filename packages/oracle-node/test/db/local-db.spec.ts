@@ -5,11 +5,13 @@ import {
   setupLocalDb,
   PriceValuesInLocalDB,
   savePrices,
+  getLastPrice,
 } from "../../src/db/local-db";
 import { PriceDataAfterAggregation } from "../../src/types";
 import { roundTimestamp } from "../../src/utils/timestamps";
 
 const PRICES_TTL_MILLISECONDS = 15 * 60 * 1000; // 15 minutes
+const FIVE_MINUTES_IN_MILLISECONDS = 1000 * 60 * 5;
 
 const source = {};
 const id = "mock-id";
@@ -177,5 +179,21 @@ describe("Local DB", () => {
       testPricesFromDB(pricesFromDB, timestamp, expectedPricesCountPerAsset);
       iterationIndex++;
     }
+  });
+
+  it("shouldn't return last price if time diff too big", async () => {
+    await savePrices([
+      ...prices,
+      {
+        ...defaultPriceProps,
+        timestamp: defaultPriceProps.timestamp - FIVE_MINUTES_IN_MILLISECONDS,
+        symbol: "AVAX",
+        value: 17,
+      },
+    ]);
+
+    expect(() => getLastPrice("AVAX")).toThrowError(
+      "Last price in local DB for AVAX is obsolete, time diff"
+    );
   });
 });

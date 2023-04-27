@@ -6,7 +6,7 @@ const evmSigner = new EvmPriceSigner();
 const ethereumPrivateKey = ethers.Wallet.createRandom().privateKey;
 
 describe("evmSignPricesAndVerify", () => {
-  jest.useFakeTimers("modern").setSystemTime(new Date("2021-09-01").getTime());
+  jest.useFakeTimers().setSystemTime(new Date("2021-09-01").getTime());
 
   it("should sign price package", () => {
     // given

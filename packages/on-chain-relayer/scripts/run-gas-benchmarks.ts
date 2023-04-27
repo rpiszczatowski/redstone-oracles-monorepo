@@ -1,5 +1,6 @@
 import { WrapperBuilder } from "@redstone-finance/evm-connector";
 import { ethers } from "hardhat";
+import { IRedstoneAdapter } from "../typechain-types";
 
 const SLEEP_TIME_MS = 15 * 60 * 1000;
 const GAS_LIMIT = 8_000_000;

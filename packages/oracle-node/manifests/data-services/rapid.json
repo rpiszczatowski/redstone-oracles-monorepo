@@ -36,7 +36,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "liquid",
         "oceanex",
         "okx",
         "poloniex",
@@ -72,7 +71,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "liquid",
         "oceanex",
         "okx",
         "poloniex",
@@ -164,7 +162,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "liquid",
         "oceanex",
         "okx",
         "poloniex",
@@ -300,8 +297,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "liquid",
-        "oceanex",
         "okx",
         "probit",
         "sushiswap",
@@ -312,12 +307,11 @@
       "source": ["coingecko", "curve-usdc", "uniswap-v3"]
     },
     "VST": {
-      "source": ["coingecko", "curve-frax"]
+      "source": ["curve-frax"]
     },
     "DAI": {
       "source": [
         "binanceus",
-        "bkex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",

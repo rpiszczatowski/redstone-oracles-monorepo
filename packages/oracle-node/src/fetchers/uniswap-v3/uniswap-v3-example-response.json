@@ -4,24 +4,34 @@
       {
         "id": "0x893f503fac2ee1e5b78665db23f9c94017aae97d",
         "token0": {
+          "id": "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5",
           "symbol": "OHM"
         },
         "token1": {
+          "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
           "symbol": "WETH"
         },
         "token0Price": "162.7324324344106281160183719301235",
-        "token1Price": "0.006145056551053831259943633387658395"
+        "token1Price": "0.006145056551053831259943633387658395",
+        "totalValueLockedToken0": "8620.546410029",
+        "totalValueLockedToken1": "21.216545374680041685",
+        "totalValueLockedUSD": "119742.1374183119367788597165697004"
       },
       {
         "id": "0x1d42064fc4beb5f8aaf85f4617ae8b3b5b8bd801",
         "token0": {
+          "id": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
           "symbol": "UNI"
         },
         "token1": {
+          "id": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
           "symbol": "WETH"
         },
         "token0Price": "245.6264225802587741371146028936403",
-        "token1Price": "0.004071223240135122733012256844014491"
+        "token1Price": "0.004071223240135122733012256844014491",
+        "totalValueLockedToken0": "4600903.679286235475017397",
+        "totalValueLockedToken1": "8324.316136403127375857",
+        "totalValueLockedUSD": "43693773.4848037025031078503942853"
       }
     ]
   }

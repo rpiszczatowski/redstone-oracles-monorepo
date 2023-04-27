@@ -8,6 +8,7 @@ const config: Config.InitialOptions = {
   },
   testEnvironment: "node",
   setupFiles: ["<rootDir>/.jest/set-env-vars.js"],
+  testPathIgnorePatterns: ["<rootDir>/test/dry-run/*"],
 };
 
 export default config;
