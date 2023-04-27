@@ -16,11 +16,10 @@ import { connectToTestDB, dropTestDatabase } from "../common/test-db";
 import { DataPackage } from "../../src/data-packages/data-packages.model";
 import { BundlrService } from "../../src/bundlr/bundlr.service";
 import { ALL_FEEDS_KEY } from "../../src/data-packages/data-packages.service";
-import { RedstonePayloadParser } from "redstone-protocol/dist/src/redstone-payload/RedstonePayloadParser";
+import { RedstoneSingleSignPayloadParser } from "redstone-protocol/dist/src/redstone-payload/RedstonePayloadParserSingleSign";
 import { ethers } from "ethers";
 import { ResponseFormat } from "../../src/data-packages/data-packages.controller";
 import { base64 } from "ethers/lib/utils";
-import { SignedDataPackage } from "redstone-protocol/dist/src/data-package/SignedDataPackage";
 
 jest.mock("redstone-sdk", () => ({
   __esModule: true,
@@ -257,10 +256,10 @@ describe("Data packages (e2e)", () => {
 
     expect(payloadBytes.length).toBe(expectedStreamLength);
 
-    const payload = new RedstonePayloadParser(payloadBytes).parse();
+    const payload = new RedstoneSingleSignPayloadParser(payloadBytes).parse();
     expect(payload.signedDataPackages.length).toBe(expectedDataPackagesLength);
 
-    const signedDataPackage: SignedDataPackage = payload.signedDataPackages[0] as SignedDataPackage;
+    const signedDataPackage = payload.signedDataPackages[0];
     const mockDataPackage = mockDataPackages[0];
     
     expect(base64.encode(signedDataPackage.serializeSignatureToHex())).toBe(

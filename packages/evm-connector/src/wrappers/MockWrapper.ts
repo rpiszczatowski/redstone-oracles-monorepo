@@ -1,7 +1,7 @@
 import {
   DataPackage,
   SignedDataPackage,
-  RedstonePayload,
+  RedstonePayloadSingleSign,
 } from "redstone-protocol";
 import {
   MockSignerAddress,
@@ -39,6 +39,6 @@ export class MockWrapper extends BaseWrapper {
 
     const unsignedMetadata = this.getUnsignedMetadata();
 
-    return RedstonePayload.prepare(signedDataPackages, unsignedMetadata);
+    return RedstonePayloadSingleSign.prepare(signedDataPackages, unsignedMetadata);
   }
 }

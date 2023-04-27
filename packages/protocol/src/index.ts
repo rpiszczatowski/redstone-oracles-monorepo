@@ -8,7 +8,8 @@ export * from "./data-point/DataPoint";
 export * from "./data-point/NumericDataPoint";
 export * from "./data-point/StringDataPoint";
 
-export * from "./redstone-payload/RedstonePayload";
+export * from "./redstone-payload/RedstonePayloadSingleSign";
+export * from "./redstone-payload/RedstonePayloadMultiSign";
 
 export * from "./UniversalSigner";
 

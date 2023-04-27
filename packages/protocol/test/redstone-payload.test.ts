@@ -3,10 +3,11 @@ import {
   DataPackage,
   SignedDataPackage,
   NumericDataPoint,
-  RedstonePayload,
+  RedstonePayloadSingleSign,
   MultiSignDataPackage,
 } from "../src";
 import { hexlifyWithout0xPrefix } from "../src/common/utils";
+import { RedstonePayloadMultiSign } from "../src/redstone-payload/RedstonePayloadMultiSign";
 
 const TIMESTAMP_FOR_TESTS = 1654353400000;
 const UNSIGNED_METADATA = "1.1.2#test-data-feed";
@@ -54,7 +55,7 @@ describe("Fixed size data package", () => {
   });
 
   test("Should correctly serialize many signed data packages", () => {
-    const serializedHex = RedstonePayload.prepare(
+    const serializedHex = RedstonePayloadSingleSign.prepare(
       signedDataPackages,
       UNSIGNED_METADATA
     );
@@ -73,7 +74,7 @@ describe("Fixed size data package", () => {
   });
 
   test("Should correctly serialize multi signed data package", () => {
-    const serializedHex = RedstonePayload.prepare(
+    const serializedHex = RedstonePayloadMultiSign.prepare(
       multiSignedDataPackage,
       UNSIGNED_METADATA
     );
@@ -92,12 +93,12 @@ describe("Fixed size data package", () => {
 
   test("Should correctly parse redstone payload", () => {
     const remainderPrefixHex = "0x1234";
-    const redstonePayloadHex = RedstonePayload.prepare(
+    const redstonePayloadHex = RedstonePayloadSingleSign.prepare(
       signedDataPackages,
       UNSIGNED_METADATA
     );
 
-    const parsingResult = RedstonePayload.parse(
+    const parsingResult = RedstonePayloadSingleSign.parse(
       arrayify(remainderPrefixHex + redstonePayloadHex)
     );
 
@@ -106,7 +107,7 @@ describe("Fixed size data package", () => {
     );
     expect(hexlify(parsingResult.remainderPrefix)).toBe(remainderPrefixHex);
 
-    const newRedstonePayloadHex = RedstonePayload.prepare(
+    const newRedstonePayloadHex = RedstonePayloadSingleSign.prepare(
       parsingResult.signedDataPackages,
       UNSIGNED_METADATA
     );
@@ -115,12 +116,12 @@ describe("Fixed size data package", () => {
 
   test("Should correctly parse redstone payload with multi signed data package", () => {
     const remainderPrefixHex = "0x1234";
-    const redstonePayloadHex = RedstonePayload.prepare(
+    const redstonePayloadHex = RedstonePayloadMultiSign.prepare(
       multiSignedDataPackage,
       UNSIGNED_METADATA
     );
 
-    const parsingResult = RedstonePayload.parse(
+    const parsingResult = RedstonePayloadMultiSign.parse(
       arrayify(remainderPrefixHex + redstonePayloadHex)
     );
 
@@ -129,8 +130,8 @@ describe("Fixed size data package", () => {
     );
     expect(hexlify(parsingResult.remainderPrefix)).toBe(remainderPrefixHex);
 
-    const newRedstonePayloadHex = RedstonePayload.prepare(
-      parsingResult.signedDataPackages,
+    const newRedstonePayloadHex = RedstonePayloadMultiSign.prepare(
+      parsingResult.signedDataPackage,
       UNSIGNED_METADATA
     );
     expect(newRedstonePayloadHex).toBe(redstonePayloadHex);

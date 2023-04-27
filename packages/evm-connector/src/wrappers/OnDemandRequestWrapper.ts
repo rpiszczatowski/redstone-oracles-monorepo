@@ -2,7 +2,7 @@ import axios from "axios";
 import { Signer } from "ethers";
 import {
   SignedDataPackage,
-  RedstonePayload,
+  RedstonePayloadSingleSign,
   SignedDataPackagePlainObj,
   ScoreType,
   UniversalSigner,
@@ -50,6 +50,6 @@ export class OnDemandRequestWrapper extends BaseWrapper {
       SignedDataPackage.fromObj(response.data as SignedDataPackagePlainObj)
     );
     const unsignedMetadata = this.getUnsignedMetadata();
-    return RedstonePayload.prepare(signedDataPackages, unsignedMetadata);
+    return RedstonePayloadSingleSign.prepare(signedDataPackages, unsignedMetadata);
   }
 }

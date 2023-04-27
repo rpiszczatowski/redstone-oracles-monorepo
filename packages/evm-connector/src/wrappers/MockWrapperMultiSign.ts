@@ -1,6 +1,6 @@
 import {
   DataPackage,
-  RedstonePayload,
+  RedstonePayloadMultiSign,
 } from "redstone-protocol";
 import {
   MockSignerAddress,
@@ -39,6 +39,6 @@ export class MockWrapperMultiSign extends BaseWrapper {
       this.mockDataPackage.dataPackage.multiSign(privateKeys);
     const unsignedMetadata = this.getUnsignedMetadata();
 
-    return RedstonePayload.prepare(signedDataPackage, unsignedMetadata);
+    return RedstonePayloadMultiSign.prepare(signedDataPackage, unsignedMetadata);
   }
 }

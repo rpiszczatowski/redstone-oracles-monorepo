@@ -1,5 +1,5 @@
 import { DataPackagesResponse } from "redstone-sdk";
-import { RedstonePayload } from "redstone-protocol";
+import { RedstonePayloadSingleSign } from "redstone-protocol";
 import { BaseWrapper } from "./BaseWrapper";
 import { version } from "../../package.json";
 
@@ -20,7 +20,7 @@ export class DataPackagesWrapper extends BaseWrapper {
     const unsignedMetadataMsg = this.getUnsignedMetadata();
     const signedDataPackages = Object.values(this.dataPackages).flat();
 
-    return RedstonePayload.prepare(
+    return RedstonePayloadSingleSign.prepare(
       signedDataPackages,
       unsignedMetadataMsg || ""
     );
