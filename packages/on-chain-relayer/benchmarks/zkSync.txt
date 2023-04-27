@@ -16,6 +16,19 @@ Gas used: 988933
 Sleeping for 900000 ms...
 
 === Benchmarking contract: SinglePriceFeedAdapterMock ===
+Deploying contract: SinglePriceFeedAdapterMock
+Contract deployed to: 0xB173595d4a03368BC8805d50D640aC0205CDB728
+Running test iteration nr: 1...
+Transaction hash: 0xb48081bb808e34a4b4557b70eac91d698968c51d6d5ce1a426a60950d8cfc3f8
+Gas used: 530744
+
+Running test iteration nr: 2...
+Transaction hash: 0x8bcbce7f013c8cf7cc076812e532ca01ba3063db8ab2b59f53399f89d4f9ff8d
+Gas used: 650043
+
+Running test iteration nr: 3...
+Transaction hash: 0x2d0a9d8d15b29304cf80b958e0087d9d8ce21039bb5e3a48a331764d06aee2ca
+Gas used: 651437
 
 
 zkSync testnet:
