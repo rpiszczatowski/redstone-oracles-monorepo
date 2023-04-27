@@ -37,6 +37,20 @@ export class DataServiceWrapper extends BaseWrapper {
       this.dataPackagesRequestParams.disablePayloadsDryRun
     );
 
+    const { urls } = await this.loadDefaultParams();
+
+    if (disablePayloadsDryRun) {
+      return this.requestPayloadWithoutDryRun(urls, unsignedMetadataMsg);
+    }
+
+    return this.requestPayloadWithDryRun({
+      ...params,
+      unsignedMetadataMsg,
+      urls,
+    });
+  }
+
+  private async loadDefaultParams() {
     if (!this.dataPackagesRequestParams.uniqueSignersCount) {
       this.dataPackagesRequestParams.uniqueSignersCount =
         await this.getUniqueSignersThresholdFromContract();
@@ -53,14 +67,7 @@ export class DataServiceWrapper extends BaseWrapper {
       );
     }
 
-    if (disablePayloadsDryRun) {
-      return this.requestPayloadWithoutDryRun(this.urls, unsignedMetadataMsg);
-    }
-    return this.requestPayloadWithDryRun({
-      ...params,
-      unsignedMetadataMsg,
-      urls: this.urls,
-    });
+    return { ...this.dataPackagesRequestParams, urls: this.urls };
   }
 
   /* 
