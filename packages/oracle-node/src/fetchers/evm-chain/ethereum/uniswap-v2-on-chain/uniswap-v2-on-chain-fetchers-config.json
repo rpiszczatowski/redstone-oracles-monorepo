@@ -16,5 +16,15 @@
       "symbol1Decimals": 18,
       "pairedToken": "ETH"
     }
+  },
+  "uniswap-v2-on-chain-fxs": {
+    "FRAX": {
+      "address": "0xe1573b9d29e2183b1af0e743dc2754979a40d237",
+      "symbol0": "FXS",
+      "symbol0Decimals": 18,
+      "symbol1": "FRAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "FXS"
+    }
   }
 }
