@@ -1,14 +1,16 @@
 import * as dotenv from "dotenv";
+import { HardhatUserConfig } from "hardhat/config";
 import "@openzeppelin/hardhat-upgrades";
-import "hardhat-gas-reporter";
-import "@nomicfoundation/hardhat-toolbox";
 import "@nomiclabs/hardhat-waffle";
 import "@nomiclabs/hardhat-ethers";
-import { HardhatUserConfig } from "hardhat/config";
+import "@typechain/hardhat";
+import "hardhat-gas-reporter";
 
 dotenv.config();
 
-const accounts = process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : undefined;
+const accounts = process.env.PRIVATE_KEY
+  ? [process.env.PRIVATE_KEY]
+  : undefined;
 
 const config: HardhatUserConfig = {
   solidity: "0.8.17",
@@ -36,7 +38,7 @@ const config: HardhatUserConfig = {
     "zk-evm-testnet": {
       url: "https://rpc.public.zkevm-test.net",
       accounts,
-    }
+    },
   },
 };
 
