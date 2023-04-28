@@ -4920,9 +4920,9 @@
     form-data "^3.0.0"
 
 "@types/node@*", "@types/node@^18.11.18", "@types/node@^18.13.0", "@types/node@^18.14.6", "@types/node@^18.7.16":
-  version "18.16.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.16.1.tgz#5db121e9c5352925bb1f1b892c4ae620e3526799"
-  integrity sha512-DZxSZWXxFfOlx7k7Rv4LAyiMroaxa3Ly/7OOzZO8cBNho0YzAi4qlbrx8W27JGqG57IgR/6J7r+nOJWw6kcvZA==
+  version "18.16.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.16.2.tgz#2f610ea71034b3971c312192377f8a7178eb57f1"
+  integrity sha512-GQW/JL/5Fz/0I8RpeBG9lKp0+aNcXEaVL71c0D2Q0QHDTFvlYKT7an0onCUXj85anv7b4/WesqdfchLc0jtsCg==
 
 "@types/node@11.11.6":
   version "11.11.6"
@@ -6250,9 +6250,9 @@ axios@^0.27.2:
     form-data "^4.0.0"
 
 axios@^1.1.3:
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-1.3.6.tgz#1ace9a9fb994314b5f6327960918406fa92c6646"
-  integrity sha512-PEcdkk7JcdPiMDkvM4K6ZBRYq9keuVJsToxm2zQIM70Qqo2WHTdJZMXcG9X+RmRp2VPNUQC8W1RAGbgt6b1yMg==
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.4.0.tgz#38a7bf1224cd308de271146038b551d725f0be1f"
+  integrity sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA==
   dependencies:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"
@@ -7604,9 +7604,9 @@ cbor@^8.0.0, cbor@^8.1.0:
     nofilter "^3.1.0"
 
 ccxt@^3.0.79:
-  version "3.0.79"
-  resolved "https://registry.yarnpkg.com/ccxt/-/ccxt-3.0.79.tgz#df9335a2432e7636c2be399e1356033327fc24d7"
-  integrity sha512-CxYKAf+++jvOJesSyiPDFV+I+9muQrN/1Kbhof6NrVV/DtaWBYE5MfiybCittk4CXUz/uzI2v4Y/9tqoBkVgmw==
+  version "3.0.81"
+  resolved "https://registry.yarnpkg.com/ccxt/-/ccxt-3.0.81.tgz#0df91dc942795d8d9aebd222c17d68f306af0a17"
+  integrity sha512-2YpyJhxujpmvuxOhDIZ7XhO6TR386zBvvXl9CnsMpE6hYePFlKgsvFZTAhjAPxDFo6NoTqDAclJtzJphheu5Sw==
   dependencies:
     ws "^8.8.1"
 
@@ -8991,9 +8991,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.3.47, electron-to-chromium@^1.4.284:
-  version "1.4.374"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.374.tgz#091b2de9d80b970f9b5e689675ea62622cd1d74b"
-  integrity sha512-dNP9tQNTrjgVlSXMqGaj0BdrCS+9pcUvy5/emB6x8kh0YwCoDZ0Z4ce1+7aod+KhybHUd5o5LgKrc5al4kVmzQ==
+  version "1.4.376"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.376.tgz#a771d6c4db028634df126348a4f94075e07e7f65"
+  integrity sha512-TFeOKd98TpJzRHkr4Aorn16QkMnuCQuGAE6IZ0wYF+qkbSfMPqjplvRppR02tMUpVxZz8nyBNvVm9lIZsqrbPQ==
 
 elliptic@6.5.4, elliptic@^6.4.0, elliptic@^6.5.2, elliptic@^6.5.3, elliptic@^6.5.4:
   version "6.5.4"
@@ -15353,7 +15353,7 @@ mongodb-memory-server-core@8.12.2:
     uuid "^9.0.0"
     yauzl "^2.10.0"
 
-mongodb-memory-server@^8.9.0:
+mongodb-memory-server@^8.9.5:
   version "8.12.2"
   resolved "https://registry.yarnpkg.com/mongodb-memory-server/-/mongodb-memory-server-8.12.2.tgz#09d7f7fb7877d309c486f3e703390633bfd137f4"
   integrity sha512-WM3uJnKWqhJxu3LlHfvRXRrhc+kiEGdGDHMrAG0N1E2fWbRlvSnUKau7Jdcf7cIA5HlRC/K8uVe0DCym45KfAA==
@@ -20175,9 +20175,9 @@ walker@^1.0.7, walker@^1.0.8:
     makeerror "1.0.12"
 
 warp-contracts@^1.2.47:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/warp-contracts/-/warp-contracts-1.4.4.tgz#9284c831f647b37768a98bfb19257ab3e8614415"
-  integrity sha512-NKlzGWqayYcfeHM2xwpB38bj7WN7DKtHDmSHRJOGDnJc0WBepmpDivvc+ETjnJ7LlxQY6E7Wx+OoAmN1TbUl9w==
+  version "1.4.5"
+  resolved "https://registry.yarnpkg.com/warp-contracts/-/warp-contracts-1.4.5.tgz#a9113c1f4fe963ca6a65410ae0917e55db5cc7fe"
+  integrity sha512-hUlJt1DXQapPf7cQRUehv9bEMNl6gX9srJ3K3LFAjKvtv2evD22tdcAH0MYHb+QchGIBLqJwva9d2pC7pSA+PQ==
   dependencies:
     archiver "^5.3.0"
     arweave "1.13.7"
@@ -21065,9 +21065,9 @@ yargs@16.2.0, yargs@^16.1.0, yargs@^16.2.0:
     yargs-parser "^20.2.2"
 
 yargs@^17.2.1, yargs@^17.3.1, yargs@^17.5.1:
-  version "17.7.1"
-  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.7.1.tgz#34a77645201d1a8fc5213ace787c220eabbd0967"
-  integrity sha512-cwiTb08Xuv5fqF4AovYacTFNxk62th7LKJ6BL9IGUpTJrWoU7/7WdQGTP2SjKf1dUNBGzDd28p/Yfs/GI6JrLw==
+  version "17.7.2"
+  resolved "https://registry.yarnpkg.com/yargs/-/yargs-17.7.2.tgz#991df39aca675a192b816e1e0363f9d75d2aa269"
+  integrity sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==
   dependencies:
     cliui "^8.0.1"
     escalade "^3.1.1"
