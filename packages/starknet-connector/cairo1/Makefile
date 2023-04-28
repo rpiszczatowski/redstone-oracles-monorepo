@@ -8,11 +8,11 @@ DATA_NAME=test
 BASE_PARAMS=1 1 705335037426945376962179958892205701850402278804929746807328243025897230237 #0x18f349a975878208678624cc989a5613c76980dc0fd995f5f31498dca168f9d
 
 OWNER_ADDRESS=0x03f2197e9d1ea7f389ec18a27c2899c3176543ab83bc028edf063fdcef8789ba
-MANAGER_ADDRESS=0x03b0342a72495f2db707707be5a1df3374549c9777c1bbf8ab2b4ffdfa8ec281
+MANAGER_ADDRESS=0x07b4d88384d8f8d12c45cf630422a1f6d3e388c6ab80e902fa059778e64cdbed
 
-CONTRACT=price_feed
-IS_OWNABLE=0
-IS_CONSUMER=1
+CONTRACT=price_manager
+IS_OWNABLE=1
+IS_CONSUMER=0
 
 BTC=4346947
 ETH=4543560
@@ -39,7 +39,7 @@ DATA_DIR=../../protocol/scripts/payload-generator/data
 SHELL := /bin/bash
 
 BIN=/Users/lukaszkalbarczyk/Devel/cairo/target/release/
-BASE_STARKNET_PARAMS=--account=$(ACC) --network=$(NETWORK) --wallet=starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount 
+BASE_STARKNET_PARAMS=--account=$(ACC) --network=$(NETWORK) --wallet=starkware.starknet.wallets.open_zeppelin.OpenZeppelinAccount
 
 ifeq ($(IS_DEVNET), 1)
 	STARKNET_PARAMS=$(BASE_STARKNET_PARAMS) --gateway_url=http://127.0.0.1:5050 --feeder_gateway_url=http://127.0.0.1:5050
@@ -72,13 +72,13 @@ new_account:
 	starknet new_account $(STARKNET_PARAMS)
 
 deploy_account:
-	starknet deploy_account $(STARKNET_PARAMS) --force 
+	starknet deploy_account $(STARKNET_PARAMS) --force
 
 declare: $(CNC)
 	starknet declare $(STARKNET_PARAMS) \
 	--contract $(CNC) --max_fee=$(MAX_FEE) \
 	--compiler_dir=$(BIN) \
- 	--compiler_args="--allowed-libfuncs-list-name=experimental_v0.1.0 --add-pythonic-hints" 
+ 	--compiler_args="--allowed-libfuncs-list-name=experimental_v0.1.0 --add-pythonic-hints"
 
 $(CNC): contract
 $(ABI): contract
@@ -89,7 +89,7 @@ deploy:
 	--class_hash $(CLASS_HASH) \
 	--inputs $(CONSTRUCTOR_PARAMS)
 
-invoke: 'make CONTRACT_ADDRESS=0xabc get_prices' or define the variable CONTRACT_ADDRESS above
+#invoke: 'make CONTRACT_ADDRESS=0xabc get_prices' or define the variable CONTRACT_ADDRESS above
 get_prices:
 	starknet call $(STARKNET_PARAMS) \
 	--address ${CONTRACT_ADDRESS} \
@@ -113,39 +113,44 @@ read_prices:
 read_timestamp:
 	starknet call $(STARKNET_PARAMS) \
 	--address ${CONTRACT_ADDRESS} \
-	--function read_timestamp 
+	--function read_timestamp
 
 manager_write_prices:
 	starknet invoke $(STARKNET_PARAMS) \
-	--address ${CONTRACT_ADDRESS} \
+	--address ${MANAGER_ADDRESS} \
 	--function write_prices \
 	--inputs 1 2 $(BTC) $(ETH) $(shell (ls -lf $(DATA_DIR)/${DATA_NAME}.splitted | awk '{print $$5}' | awk '{print ($$1-1)/5}')) $(shell cat $(DATA_DIR)/${DATA_NAME}.splitted)
 
 write_price_values:
 	starknet invoke $(STARKNET_PARAMS) \
-	--address ${CONTRACT_ADDRESS} \
+	--address ${MANAGER_ADDRESS} \
 	--function write_price_values \
-	--inputs 1 2 $(ETH) $(BTC) 2 1255 5421 5463334
+	--inputs 2 2 $(ETH) $(BTC) 2 1265 5433 546333513
 
-latest_round_data: 
+read_round_data:
 	starknet call $(STARKNET_PARAMS) \
-	--address ${CONTRACT_ADDRESS} \
-	--function latest_round_data 
+	--address ${MANAGER_ADDRESS} \
+	--function read_round_data
 
-read_round_data: 
+read_round_data_and_price:
 	starknet call $(STARKNET_PARAMS) \
-	--address ${CONTRACT_ADDRESS} \
-	--function read_round_data 
+	--address ${MANAGER_ADDRESS} \
+	--function read_round_data_and_price --inputs $(ETH)
 
 read_eth_price:
 	starknet call $(STARKNET_PARAMS) \
-	--address ${CONTRACT_ADDRESS} \
-	--function read_price --inputs $(ETH) 
+	--address ${MANAGER_ADDRESS} \
+	--function read_price --inputs $(ETH)
 
 read_btc_price:
 	starknet call $(STARKNET_PARAMS) \
+	--address ${MANAGER_ADDRESS} \
+	--function read_price --inputs $(BTC)
+
+latest_round_data:
+	starknet call $(STARKNET_PARAMS) \
 	--address ${CONTRACT_ADDRESS} \
-	--function read_price --inputs $(BTC) 
+	--function latest_round_data
 
 
 # #invoke: 'make CONTRACT_ADDRESS=0xabc get_price' or define the variable CONTRACT_ADDRESS above
@@ -187,26 +192,26 @@ read_btc_price:
 # 	--abi $(ABI) \
 # 	--address ${CONTRACT_ADDRESS} \
 # 	--function get_saved_price \
-# 	--inputs $(BTC) 
+# 	--inputs $(BTC)
 
 # #invoke: 'make CONTRACT_ADDRESS=0xabc get_timestamp' or define the variable CONTRACT_ADDRESS above
 # get_saved_timestamp:
 # 	starknet call --account=$(ACC) --network=$(NETWORK) \
 # 	--abi $(ABI) \
 # 	--address ${CONTRACT_ADDRESS} \
-# 	--function get_saved_timestamp 
+# 	--function get_saved_timestamp
 
-# read_timestamp_and_round: 
+# read_timestamp_and_round:
 # 	starknet call --account=$(ACC) --network=$(NETWORK) \
 # 	--abi $(ABI) \
 # 	--address ${CONTRACT_ADDRESS} \
-# 	--function read_timestamp_and_round 
+# 	--function read_timestamp_and_round
 
 # read_eth_price:
 # 	starknet call --account=$(ACC) --network=$(NETWORK) \
 # 	--abi $(ABI) \
 # 	--address ${CONTRACT_ADDRESS} \
-# 	--function read_eth_price 
+# 	--function read_eth_price
 
 # write_eth_price:
 # 	starknet invoke --account=$(ACC) --network=$(NETWORK) \

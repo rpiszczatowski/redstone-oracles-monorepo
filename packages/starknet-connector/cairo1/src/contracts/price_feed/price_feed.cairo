@@ -1,6 +1,7 @@
 #[contract]
 mod PriceFeed {
     use option::OptionTrait;
+    use traits::Into;
 
     use starknet::ContractAddress;
     use starknet::contract_address_try_from_felt252;
@@ -32,11 +33,11 @@ mod PriceFeed {
         let (round_data, price) = manager.read_round_data_and_price(feed_identifier::read());
 
         Round {
-            round_id: round_data.round,
+            round_id: round_data.round_number.into(),
             answer: price,
-            block_num: round_data.block_number,
-            started_at: round_data.payload_timestamp,
-            updated_at: round_data.block_timestamp,
+            block_num: round_data.block_number.into(),
+            started_at: round_data.payload_timestamp.into(),
+            updated_at: round_data.block_timestamp.into(),
         }
     }
 
