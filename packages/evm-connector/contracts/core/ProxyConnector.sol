@@ -135,7 +135,7 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
     uint256 signersCount = _extractDataPackageSignersCountFromCalldata(calldataNegativeOffset);
     uint256 signaturesByteSize = signersCount.mul(SIG_BS);
     uint256 dataPackageNegativeOffset = calldataNegativeOffset +
-      SIGNERS_COUNT_BS +
+      MULTI_SIGNERS_COUNT_BS +
       signaturesByteSize;
 
     (
@@ -147,7 +147,7 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
       dataPointsCount *
       (DATA_POINT_SYMBOL_BS + eachDataPointValueByteSize) +
       DATA_PACKAGE_WITHOUT_SIG_BS +
-      SIGNERS_COUNT_BS +
+      MULTI_SIGNERS_COUNT_BS +
       signaturesByteSize;
   }
 

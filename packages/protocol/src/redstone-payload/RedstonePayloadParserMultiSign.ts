@@ -3,7 +3,7 @@ import {
   REDSTONE_MARKER_BS,
   SIGNATURE_BS,
   UNSIGNED_METADATA_BYTE_SIZE_BS,
-  SIGNERS_COUNT_BS,
+  MULTI_SIGNERS_COUNT_BS,
   REDSTONE_PAYLOAD_VERSION_BS,
 } from "../common/redstone-constants";
 import { DataPackage } from "../data-package/DataPackage";
@@ -57,10 +57,10 @@ export class RedstoneMultiSignPayloadParser extends RedstonePayloadParserBase {
 
     const signaturesCount = this.extractNumber({
       negativeOffset,
-      length: SIGNERS_COUNT_BS,
+      length: MULTI_SIGNERS_COUNT_BS,
     });
 
-    negativeOffset += SIGNERS_COUNT_BS;
+    negativeOffset += MULTI_SIGNERS_COUNT_BS;
 
     const signatures = [];
     for (let i = 0; i < signaturesCount; i++) {

@@ -15,7 +15,7 @@ import {
   MultiSignDataPackageLike,
 } from "./multi-sign-package-deserializing";
 import { convertIntegerNumberToBytes } from "../common/utils";
-import { SIGNERS_COUNT_BS } from "../common/redstone-constants";
+import { MULTI_SIGNERS_COUNT_BS } from "../common/redstone-constants";
 
 export interface MultiSignDataPackagePlainObj extends DataPackagePlainObj {
   signatures: string[]; // base64-encoded joined signatures
@@ -44,7 +44,7 @@ export class MultiSignDataPackage extends Serializable
 
   protected serializeSignaturesCount(): Uint8Array {
     const signaturesCount = this.signatures.length;
-    return convertIntegerNumberToBytes(signaturesCount, SIGNERS_COUNT_BS);
+    return convertIntegerNumberToBytes(signaturesCount, MULTI_SIGNERS_COUNT_BS);
   }
 
   serializeSignaturesToHex(): string[] {

@@ -26,7 +26,7 @@ contract RedstoneConstants {
   uint256 internal constant SIG_BS = 65;
   uint256 internal constant TIMESTAMP_BS = 6;
   uint256 internal constant DATA_PACKAGES_COUNT_BS = 2;
-  uint256 internal constant SIGNERS_COUNT_BS = 2;
+  uint256 internal constant MULTI_SIGNERS_COUNT_BS = 2;
   uint256 internal constant DATA_POINTS_COUNT_BS = 3;
   uint256 internal constant DATA_POINT_VALUE_BYTE_SIZE_BS = 4;
   uint256 internal constant DATA_POINT_SYMBOL_BS = 32;

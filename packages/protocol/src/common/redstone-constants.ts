@@ -8,7 +8,7 @@ export const TIMESTAMP_BS = 6;
 export const DATA_POINTS_COUNT_BS = 3;
 
 // Number of bytes reserved to store the number of signers
-export const SIGNERS_COUNT_BS = 2;
+export const MULTI_SIGNERS_COUNT_BS = 2;
 
 // Number of bytes reserved to store datapoints byte size
 export const DATA_POINT_VALUE_BYTE_SIZE_BS = 4;
