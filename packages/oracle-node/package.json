@@ -65,7 +65,7 @@
     "@types/prompts": "^2.0.14",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^8.3.0",
-    "ar-gql": "^0.0.6",
+    "ar-gql": "^0.0.11",
     "copyfiles": "^2.4.1",
     "dateformat": "^4.5.1",
     "deep-sort-object": "^1.0.2",
