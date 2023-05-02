@@ -36,10 +36,12 @@ describe("EVM chain multicall service", () => {
     ];
     const result = await multicallService.performMulticall(requests);
     expect(result).toEqual({
-      [multicallContract.address]: {
-        getBlockNumber:
-          "0x0000000000000000000000000000000000000000000000000000000000000001",
-      },
+      [multicallContract.address]: [
+        {
+          getBlockNumber:
+            "0x0000000000000000000000000000000000000000000000000000000000000001",
+        },
+      ],
     });
   });
 
@@ -65,11 +67,15 @@ describe("EVM chain multicall service", () => {
 
     const result = await multicallService.performMulticall(requests);
     expect(result).toEqual({
-      [multicallContract.address]: {
-        theOneThatFails: undefined,
-        getBlockNumber:
-          "0x0000000000000000000000000000000000000000000000000000000000000001",
-      },
+      [multicallContract.address]: [
+        {
+          theOneThatFails: undefined,
+        },
+        {
+          getBlockNumber:
+            "0x0000000000000000000000000000000000000000000000000000000000000001",
+        },
+      ],
     });
   });
 });

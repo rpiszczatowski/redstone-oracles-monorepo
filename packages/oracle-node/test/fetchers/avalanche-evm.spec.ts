@@ -17,6 +17,8 @@ import {
   closeLocalLevelDB,
   setupLocalDb,
 } from "../../src/db/local-db";
+import { gmdTokensDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/contracts-details/gmd";
+import GmdVaultAbi from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/contracts-details/gmd/GmdVault.abi.json";
 
 jest.setTimeout(15000);
 
@@ -216,6 +218,54 @@ describe("Avalanche EVM fetcher", () => {
 
     const result = await fetcher.fetchAll(["sAVAX"]);
     expect(result).toEqual([{ symbol: "sAVAX", value: 22.21594395 }]);
+  });
+
+  describe("GMD Token", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+
+      const gmdTokenContract = await deployMockContract(
+        wallet,
+        gmdTokensDetails.GMD_WAVAX.abi
+      );
+      await gmdTokenContract.mock.totalSupply.returns(
+        "13893284805458516865839"
+      );
+      const gmdVaultContract = await deployMockContract(wallet, GmdVaultAbi);
+      await gmdVaultContract.mock.poolInfo.returns(
+        "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+        gmdTokenContract.address,
+        "57529812360454",
+        "14514081300794260141483",
+        "1683032305",
+        "15500000000000000000000",
+        "500",
+        "1250",
+        true,
+        true,
+        true
+      );
+
+      multicallContract = await deployMulticallContract(wallet);
+
+      gmdTokensDetails.GMD_WAVAX.address = gmdTokenContract.address;
+      gmdTokensDetails.GMD_WAVAX.vaultAddress = gmdVaultContract.address;
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new AvalancheEvmFetcher(
+        { avalancheProvider: provider },
+        multicallContract.address
+      );
+
+      await saveMockPriceInLocalDb(16.64, "AVAX");
+
+      const result = await fetcher.fetchAll(["GMD_WAVAX"]);
+      expect(result).toEqual([
+        { symbol: "GMD_WAVAX", value: 17.383528533894893 },
+      ]);
+    });
   });
 });
 

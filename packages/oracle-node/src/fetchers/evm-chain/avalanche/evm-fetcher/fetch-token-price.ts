@@ -1,18 +1,24 @@
 import { BigNumber, ethers } from "ethers";
 import { getLastPrice } from "../../../../db/local-db";
 import {
+  GmdTokensDetailsKeys,
   MooJoeTokensDetailsKeys,
   YieldYakDetailsKeys,
 } from "./AvalancheEvmFetcher";
 import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { yieldYakContractsDetails } from "./contracts-details/yield-yak";
+import { gmdTokensDetails } from "./contracts-details/gmd";
 
-type TokenContractKeys = YieldYakDetailsKeys | MooJoeTokensDetailsKeys;
+type TokenContractKeys =
+  | YieldYakDetailsKeys
+  | MooJoeTokensDetailsKeys
+  | GmdTokensDetailsKeys;
 
 export const fetchTokenPrice = (id: string) => {
   const contractDetails = {
     ...yieldYakContractsDetails,
     ...mooTokensContractsDetails,
+    ...gmdTokensDetails,
   };
   const tokenContractDetails = contractDetails[id as TokenContractKeys];
   if (!tokenContractDetails) {

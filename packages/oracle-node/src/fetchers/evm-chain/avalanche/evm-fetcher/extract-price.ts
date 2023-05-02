@@ -1,4 +1,4 @@
-import { BigNumber, ethers } from "ethers";
+import { BigNumber, utils } from "ethers";
 import { MulticallParsedResponses } from "../../../../types";
 import {
   YieldYakDetailsKeys,
@@ -9,6 +9,8 @@ import {
   MooJoeTokensDetailsKeys,
   oracleAdaptersTokens,
   OracleAdaptersDetailsKeys,
+  gmdTokens,
+  GmdTokensDetailsKeys,
 } from "./AvalancheEvmFetcher";
 import { fetchTokenPrice, fetchTokensPrices } from "./fetch-token-price";
 import { lpTokensContractsDetails } from "./contracts-details/lp-tokens";
@@ -17,11 +19,13 @@ import { mooTokensContractsDetails } from "./contracts-details/moo-joe";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
 import { sqrt } from "../../../../utils/math";
 import {
+  extractValuesWithTheSameNameFromMulticall,
   extractPriceForGlpToken,
-  extractValueFromMulticallResponse,
+  extractValuesFromMulticallResponse,
 } from "../../shared/extract-prices";
 import { glpToken } from "../../shared/contracts-details/glp-manager";
 import { glpManagerAddress } from "./contracts-details/glp-manager";
+import { gmdTokensDetails } from "./contracts-details/gmd";
 
 // Fair LP Token Pricing has been implemented with the help of: https://blog.alphaventuredao.io/fair-lp-token-pricing/
 
@@ -46,6 +50,8 @@ export const extractPrice = (
     return extractPriceForOracleAdapterTokens(response, id);
   } else if (glpToken.includes(id)) {
     return extractPriceForGlpToken(response, glpManagerAddress);
+  } else if (gmdTokens.includes(id)) {
+    return extractPriceForGmdToken(response, id);
   }
 };
 
@@ -57,14 +63,14 @@ const extractPriceForYieldYakOrMoo = (
   secondFunctionName: string = "totalSupply"
 ) => {
   const totalDeposits = BigNumber.from(
-    extractValueFromMulticallResponse(
+    extractValuesFromMulticallResponse(
       multicallResult,
       address,
       firstFunctionName
     )
   );
   const totalSupply = BigNumber.from(
-    extractValueFromMulticallResponse(
+    extractValuesFromMulticallResponse(
       multicallResult,
       address,
       secondFunctionName
@@ -72,16 +78,16 @@ const extractPriceForYieldYakOrMoo = (
   );
 
   const tokenValue = totalDeposits
-    .mul(ethers.utils.parseUnits("1.0", 8))
+    .mul(utils.parseUnits("1.0", 8))
     .div(totalSupply);
 
   const tokenPrice = fetchTokenPrice(id);
   if (tokenPrice) {
     const yieldYakPrice = tokenValue
       .mul(tokenPrice)
-      .div(ethers.utils.parseUnits("1.0", 8));
+      .div(utils.parseUnits("1.0", 8));
 
-    return ethers.utils.formatEther(yieldYakPrice);
+    return utils.formatEther(yieldYakPrice);
   }
 };
 
@@ -91,7 +97,7 @@ const extractPriceForLpTokens = (
 ) => {
   const { address, tokensToFetch } =
     lpTokensContractsDetails[id as LpTokensDetailsKeys];
-  const reserves = extractValueFromMulticallResponse(
+  const reserves = extractValuesFromMulticallResponse(
     multicallResult,
     address,
     "getReserves"
@@ -128,12 +134,16 @@ const extractPriceForLpTokens = (
       reservesMultipliedSqrt.mul(pricesMultipliedSqrt);
 
     const totalSupply = BigNumber.from(
-      extractValueFromMulticallResponse(multicallResult, address, "totalSupply")
+      extractValuesFromMulticallResponse(
+        multicallResult,
+        address,
+        "totalSupply"
+      )
     );
 
     const lpTokenPrice = reservesPricesMulitplied.div(totalSupply).mul(2);
 
-    return ethers.utils.formatEther(lpTokenPrice);
+    return utils.formatEther(lpTokenPrice);
   }
 };
 
@@ -146,23 +156,25 @@ const calculateReserveTokensPrices = (tokenReserves: TokenReserve) => {
     return tokensPrices;
   }
 };
+
 const serializeDecimals = (tokenReserves: TokenReserve) => {
   const serializedTokenReserves = {} as TokenReserve;
   for (const tokenName of Object.keys(tokenReserves)) {
     let tokenReserveSerialized = tokenReserves[tokenName];
     if (["USDC", "USDT"].includes(tokenName)) {
       tokenReserveSerialized = tokenReserves[tokenName].mul(
-        ethers.utils.parseUnits("1.0", 12)
+        utils.parseUnits("1.0", 12)
       );
     } else if (tokenName === "BTC") {
       tokenReserveSerialized = tokenReserves[tokenName].mul(
-        ethers.utils.parseUnits("1.0", 10)
+        utils.parseUnits("1.0", 10)
       );
     }
     serializedTokenReserves[tokenName] = tokenReserveSerialized;
   }
   return serializedTokenReserves;
 };
+
 const extractPriceForOracleAdapterTokens = (
   multicallResult: MulticallParsedResponses,
   id: string
@@ -170,7 +182,39 @@ const extractPriceForOracleAdapterTokens = (
   const { address } =
     oracleAdaptersContractsDetails[id as OracleAdaptersDetailsKeys];
   const latestAnswer = BigNumber.from(
-    extractValueFromMulticallResponse(multicallResult, address, "latestAnswer")
+    extractValuesFromMulticallResponse(multicallResult, address, "latestAnswer")
   );
-  return ethers.utils.formatUnits(latestAnswer, 8);
+  return utils.formatUnits(latestAnswer, 8);
+};
+
+const extractPriceForGmdToken = (
+  multicallResult: MulticallParsedResponses,
+  id: string
+) => {
+  const gmdTokenDetails = gmdTokensDetails[id as GmdTokensDetailsKeys];
+  const totalSupply = BigNumber.from(
+    extractValuesFromMulticallResponse(
+      multicallResult,
+      gmdTokenDetails.address,
+      "totalSupply"
+    )
+  );
+  const poolsInfo = extractValuesWithTheSameNameFromMulticall(
+    multicallResult,
+    gmdTokenDetails.vaultAddress,
+    "poolInfo"
+  );
+  const poolInfo = poolsInfo.find(
+    (poolInfo) =>
+      `0x${poolInfo?.slice(90, 130)}` === gmdTokenDetails.address.toLowerCase()
+  );
+  if (poolInfo) {
+    const totalStaked = BigNumber.from(`0x${poolInfo.slice(194, 258)}`);
+    const ratio = totalStaked.mul(utils.parseUnits("1.0", 18)).div(totalSupply);
+    const tokenToFetchPrice = fetchTokenPrice(id);
+    if (tokenToFetchPrice) {
+      const price = ratio.mul(tokenToFetchPrice);
+      return utils.formatUnits(price, 36);
+    }
+  }
 };

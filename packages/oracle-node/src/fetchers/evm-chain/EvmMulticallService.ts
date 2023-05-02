@@ -24,10 +24,10 @@ export class EvmMulticallService {
       const { name, address } = requests[i];
       const [success, value] = responses[i];
 
-      parsedResponses[address] = {
-        ...parsedResponses[address],
-        [name]: success ? value : undefined, // omit values which comes from responses with error
-      };
+      parsedResponses[address] = [
+        ...(parsedResponses?.[address] ?? []),
+        { [name]: success ? value : undefined },
+      ]; // omit values which comes from responses with error
     }
     return parsedResponses;
   }

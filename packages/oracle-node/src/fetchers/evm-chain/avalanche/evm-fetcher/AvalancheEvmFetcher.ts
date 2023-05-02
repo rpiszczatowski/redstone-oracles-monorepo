@@ -12,6 +12,7 @@ import {
 } from "../../../../types";
 import { extractPrice } from "./extract-price";
 import { oracleAdaptersContractsDetails } from "./contracts-details/oracle-adapters";
+import { gmdTokensDetails } from "./contracts-details/gmd";
 import { stringifyError } from "../../../../utils/error-stringifier";
 
 interface Providers {
@@ -24,11 +25,13 @@ export type LpTokensDetailsKeys = keyof typeof lpTokensContractsDetails;
 export type MooJoeTokensDetailsKeys = keyof typeof mooTokensContractsDetails;
 export type OracleAdaptersDetailsKeys =
   keyof typeof oracleAdaptersContractsDetails;
+export type GmdTokensDetailsKeys = keyof typeof gmdTokensDetails;
 
 export const yyTokenIds = Object.keys(yieldYakContractsDetails);
 export const lpTokensIds = Object.keys(lpTokensContractsDetails);
 export const mooTokens = Object.keys(mooTokensContractsDetails);
 export const oracleAdaptersTokens = Object.keys(oracleAdaptersContractsDetails);
+export const gmdTokens = Object.keys(gmdTokensDetails);
 
 const MUTLICALL_CONTRACT_ADDRESS = "0x8755b94F88D120AB2Cc13b1f6582329b067C760d";
 

@@ -1441,6 +1441,18 @@
     "YY_GLP": {
       "source": ["avalanche-evm-fetcher"]
     },
+    "GMD_USDC": {
+      "source": ["avalanche-evm-fetcher"]
+    },
+    "GMD_WAVAX": {
+      "source": ["avalanche-evm-fetcher"]
+    },
+    "GMD_BTCB": {
+      "source": ["avalanche-evm-fetcher"]
+    },
+    "GMD_WETHE": {
+      "source": ["avalanche-evm-fetcher"]
+    },
     "ABNB": {
       "source": ["currencycom"]
     },

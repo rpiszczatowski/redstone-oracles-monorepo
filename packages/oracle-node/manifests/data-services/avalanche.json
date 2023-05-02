@@ -344,6 +344,18 @@
         "curve-weth",
         "uniswap-v2-on-chain-weth"
       ]
+    },
+    "GMD_USDC": {
+      "source": ["avalanche-evm-fetcher"]
+    },
+    "GMD_WAVAX": {
+      "source": ["avalanche-evm-fetcher"]
+    },
+    "GMD_BTCB": {
+      "source": ["avalanche-evm-fetcher"]
+    },
+    "GMD_WETHE": {
+      "source": ["avalanche-evm-fetcher"]
     }
   }
 }
