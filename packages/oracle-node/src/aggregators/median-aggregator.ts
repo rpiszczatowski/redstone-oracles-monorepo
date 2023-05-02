@@ -1,5 +1,5 @@
 import { ISafeNumber } from "../numbers/ISafeNumber";
-import { SafeNumber } from "../numbers/SafeNumberFactory";
+import { createSafeNumber } from "../numbers/SafeNumberFactory";
 import {
   Aggregator,
   PriceDataAfterAggregation,
@@ -22,7 +22,7 @@ export function getMedianValue(arr: ISafeNumber[]): ISafeNumber {
     throw new Error("Cannot get median value of an empty array");
   }
 
-  arr = arr.sort((a, b) => SafeNumber(a).sub(b).unsafeToNumber());
+  arr = arr.sort((a, b) => createSafeNumber(a).sub(b).unsafeToNumber());
 
   const middle = Math.floor(arr.length / 2);
 

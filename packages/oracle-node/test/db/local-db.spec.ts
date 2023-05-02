@@ -7,7 +7,7 @@ import {
   savePrices,
   getLastPrice,
 } from "../../src/db/local-db";
-import { SafeNumber } from "../../src/numbers/SafeNumberFactory";
+import { createSafeNumber } from "../../src/numbers/SafeNumberFactory";
 import { PriceDataAfterAggregation } from "../../src/types";
 import { roundTimestamp } from "../../src/utils/timestamps";
 
@@ -28,12 +28,12 @@ const prices: PriceDataAfterAggregation[] = [
   {
     ...defaultPriceProps,
     symbol: "BTC",
-    value: SafeNumber(4242),
+    value: createSafeNumber(4242),
   },
   {
     ...defaultPriceProps,
     symbol: "ETH",
-    value: SafeNumber(42),
+    value: createSafeNumber(42),
   },
 ];
 
@@ -130,7 +130,7 @@ describe("Local DB", () => {
         prices.push({
           ...defaultPriceProps,
           symbol,
-          value: SafeNumber(assetIndex),
+          value: createSafeNumber(assetIndex),
           timestamp: roundedTimestamp,
         });
       }
@@ -189,7 +189,7 @@ describe("Local DB", () => {
         ...defaultPriceProps,
         timestamp: defaultPriceProps.timestamp - FIVE_MINUTES_IN_MILLISECONDS,
         symbol: "AVAX",
-        value: SafeNumber("17"),
+        value: createSafeNumber("17"),
       },
     ]);
 

@@ -1,6 +1,6 @@
 import { Consola } from "consola";
 import { ISafeNumber } from "../numbers/ISafeNumber";
-import { SafeNumber } from "../numbers/SafeNumberFactory";
+import { createSafeNumber } from "../numbers/SafeNumberFactory";
 
 const logger = require("./logger")("utils/numbers") as Consola;
 
@@ -16,7 +16,7 @@ export const safelyConvertAnyValueToNumber = (value: any): number => {
 };
 
 export const calculateSum = (numbers: ISafeNumber[]) =>
-  numbers.reduce((prev, curr) => prev.add(curr), SafeNumber(0));
+  numbers.reduce((prev, curr) => prev.add(curr), createSafeNumber(0));
 
 export const calculateAverageValue = (nums: ISafeNumber[]): ISafeNumber => {
   if (nums.length === 0) {
@@ -35,7 +35,7 @@ export const calculateDeviationPercent = (args: {
 
   if (trueValue.eq(0)) {
     // TODO: make it more generic
-    return SafeNumber(Number.MAX_SAFE_INTEGER);
+    return createSafeNumber(Number.MAX_SAFE_INTEGER);
   }
 
   const result = measuredValue.sub(trueValue).div(trueValue).abs().mul(100);

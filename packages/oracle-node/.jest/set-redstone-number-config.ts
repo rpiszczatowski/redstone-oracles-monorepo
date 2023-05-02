@@ -1,17 +1,12 @@
-import {
-  NumberValidationResult,
-  setJsNativeSafeNumberConfig,
-} from "../src/numbers/JsNativeSafeNumber";
+import * as JsNativeSafeNumber from "../src/numbers/JsNativeSafeNumber";
 
 const throwErr = (msg: string) => {
   throw new Error(msg);
 };
 
-setJsNativeSafeNumberConfig({
-  ON_NUMBER_VALIDATION_ERROR: {
-    [NumberValidationResult.isNaN]: throwErr,
-    [NumberValidationResult.isNotFinite]: throwErr,
-    [NumberValidationResult.isOverflow]: throwErr,
-    [NumberValidationResult.isUnderflow]: throwErr,
-  },
-});
+JsNativeSafeNumber.JsNativeSafeNumberConfig.ON_NUMBER_VALIDATION_ERROR = {
+  [JsNativeSafeNumber.NumberValidationResult.isNaN]: throwErr,
+  [JsNativeSafeNumber.NumberValidationResult.isNotFinite]: throwErr,
+  [JsNativeSafeNumber.NumberValidationResult.isOverflow]: throwErr,
+  [JsNativeSafeNumber.NumberValidationResult.isUnderflow]: throwErr,
+};

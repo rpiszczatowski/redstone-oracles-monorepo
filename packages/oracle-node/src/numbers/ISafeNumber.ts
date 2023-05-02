@@ -12,7 +12,7 @@ export interface ISafeNumber {
   gte(numberLike: NumberArg): boolean;
   abs(): ISafeNumber;
   decimals(): number;
-  assertNonNegative(): ISafeNumber;
+  assertNonNegative(): void;
   /** Convert number to string without loosing precision */
   toString(): string;
   unsafeToNumber(): number;

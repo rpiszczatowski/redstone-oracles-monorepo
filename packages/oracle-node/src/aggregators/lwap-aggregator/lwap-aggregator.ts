@@ -1,5 +1,5 @@
 import { ISafeNumber } from "../../numbers/ISafeNumber";
-import { SafeNumber } from "../../numbers/SafeNumberFactory";
+import { createSafeNumber } from "../../numbers/SafeNumberFactory";
 import {
   Aggregator,
   PriceDataAfterAggregation,
@@ -43,7 +43,7 @@ const calculateLwap = (
   valuesWithLiquidity: PricesWithLiquidity[]
 ): ISafeNumber => {
   const liquiditySum = calculateLiquiditySum(valuesWithLiquidity);
-  let lwapValue = SafeNumber(0);
+  let lwapValue = createSafeNumber(0);
   for (const { price, liquidity } of valuesWithLiquidity) {
     const liquidityNormalized = liquidity.div(liquiditySum);
     const amount = price.mul(liquidityNormalized);
@@ -55,7 +55,7 @@ const calculateLwap = (
 const calculateLiquiditySum = (valuesWithLiquidity: PricesWithLiquidity[]) => {
   return valuesWithLiquidity.reduce(
     (sum, { liquidity }) => sum.add(liquidity),
-    SafeNumber(0)
+    createSafeNumber(0)
   );
 };
 

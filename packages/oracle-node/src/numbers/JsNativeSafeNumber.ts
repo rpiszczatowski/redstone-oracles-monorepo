@@ -7,7 +7,7 @@ const logger = require("../utils/logger")(
 ) as Consola;
 
 export enum NumberValidationResult {
-  isOk = 0,
+  isOk,
   isNaN,
   isNotFinite,
   isOverflow,
@@ -19,7 +19,7 @@ export type NumberValidationError = Exclude<
   NumberValidationResult.isOk
 >;
 
-export let JsNativeSafeNumberConfig = {
+export const JsNativeSafeNumberConfig = {
   MAX_NUMBER: Number.MAX_SAFE_INTEGER,
   MIN_NUMBER: 1e-14,
   MAX_DECIMALS: 14,
@@ -35,17 +35,6 @@ export let JsNativeSafeNumberConfig = {
     [NumberValidationResult.isUnderflow]: logger.error,
   } as Record<NumberValidationError, (msg: string) => any>,
   EPSILON: 1e-14,
-};
-
-export const setJsNativeSafeNumberConfig = (
-  newConfig: Partial<typeof JsNativeSafeNumberConfig>
-): typeof JsNativeSafeNumberConfig => {
-  const mergedConfig = {
-    ...JsNativeSafeNumberConfig,
-    ...newConfig,
-  };
-  JsNativeSafeNumberConfig = mergedConfig;
-  return mergedConfig;
 };
 
 export class JsNativeSafeNumber implements ISafeNumber {
@@ -81,36 +70,35 @@ export class JsNativeSafeNumber implements ISafeNumber {
 
   abs(): JsNativeSafeNumber {
     const result = Math.abs(this._value);
-    return this.produceNewNumber(result);
+    return this.produceNewSafeNumber(result);
   }
 
   add(numberLike: NumberArg): JsNativeSafeNumber {
     const result = this._value + JsNativeSafeNumber.from(numberLike)._value;
 
-    return this.produceNewNumber(result);
+    return this.produceNewSafeNumber(result);
   }
 
   sub(numberLike: NumberArg): JsNativeSafeNumber {
     const result = this._value - JsNativeSafeNumber.from(numberLike)._value;
 
-    return this.produceNewNumber(result);
+    return this.produceNewSafeNumber(result);
   }
 
   div(numberLike: NumberArg): JsNativeSafeNumber {
     const result = this._value / JsNativeSafeNumber.from(numberLike)._value;
 
-    return this.produceNewNumber(result);
+    return this.produceNewSafeNumber(result);
   }
 
   mul(numberLike: NumberArg): JsNativeSafeNumber {
     const result = this._value * JsNativeSafeNumber.from(numberLike)._value;
 
-    return this.produceNewNumber(result);
+    return this.produceNewSafeNumber(result);
   }
 
-  assertNonNegative(): JsNativeSafeNumber {
+  assertNonNegative() {
     utils.assert(this._value >= 0, `${this.toString} >= 0`);
-    return this;
   }
 
   /** In the case of this implementation it is actually safe. */
@@ -132,9 +120,8 @@ export class JsNativeSafeNumber implements ISafeNumber {
 
   lte(numberArg: NumberArg): boolean {
     return (
-      this._value <=
-      JsNativeSafeNumber.from(numberArg)._value +
-        JsNativeSafeNumberConfig.EPSILON
+      this._value < JsNativeSafeNumber.from(numberArg)._value ||
+      this.eq(numberArg)
     );
   }
 
@@ -144,9 +131,8 @@ export class JsNativeSafeNumber implements ISafeNumber {
 
   gte(numberArg: NumberArg): boolean {
     return (
-      this._value >=
-      JsNativeSafeNumber.from(numberArg)._value -
-        JsNativeSafeNumberConfig.EPSILON
+      this._value > JsNativeSafeNumber.from(numberArg)._value ||
+      this.eq(numberArg)
     );
   }
 
@@ -154,7 +140,7 @@ export class JsNativeSafeNumber implements ISafeNumber {
     return this.unsafeToNumber();
   }
 
-  private produceNewNumber(result: number) {
+  private produceNewSafeNumber(result: number) {
     const newNumber = new JsNativeSafeNumber(result);
     newNumber.assertValidAndRound();
     return newNumber;

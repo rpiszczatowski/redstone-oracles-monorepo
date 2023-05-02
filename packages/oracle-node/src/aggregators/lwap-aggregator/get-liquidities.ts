@@ -2,7 +2,7 @@ import { buildLiquidityDataFeedId } from "../../fetchers/liquidity/utils";
 import { PricesWithLiquidity } from "./lwap-aggregator";
 import { PriceDataBeforeAggregation, PriceSource } from "../../types";
 import { ISafeNumber } from "../../numbers/ISafeNumber";
-import { SafeNumber } from "../../numbers/SafeNumberFactory";
+import { createSafeNumber } from "../../numbers/SafeNumberFactory";
 
 export const getTickLiquidities = (
   symbol: string,
@@ -23,7 +23,7 @@ export const getTickLiquidities = (
     const theOnlySourceValue = Object.values(liquidity.source)[0];
     pricesWithLiquidity.push({
       price,
-      liquidity: SafeNumber(theOnlySourceValue),
+      liquidity: createSafeNumber(theOnlySourceValue),
     });
   }
   return pricesWithLiquidity;

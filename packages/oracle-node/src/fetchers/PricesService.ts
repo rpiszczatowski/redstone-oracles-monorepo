@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import ManifestHelper, { TokensBySource } from "../manifest/ManifestHelper";
 import { ISafeNumber } from "../numbers/ISafeNumber";
-import { SafeNumber } from "../numbers/SafeNumberFactory";
+import { createSafeNumber } from "../numbers/SafeNumberFactory";
 import { IterationContext } from "../schedulers/IScheduler";
 import { terminateWithManifestConfigError } from "../Terminator";
 import {
@@ -247,7 +247,7 @@ export default class PricesService {
 
     for (const [sourceName, valueFromSource] of Object.entries(price.source)) {
       try {
-        const valueFromSourceNum = SafeNumber(valueFromSource);
+        const valueFromSourceNum = createSafeNumber(valueFromSource);
 
         valueFromSourceNum.assertNonNegative();
 
@@ -303,10 +303,10 @@ export default class PricesService {
           timestamp - recentPrice.timestamp <=
           deviationWithRecentValues.maxDelayMilliseconds
       )
-      .map((recentPrice) => SafeNumber(recentPrice.value));
+      .map((recentPrice) => createSafeNumber(recentPrice.value));
 
     if (priceValuesToCompareWith.length === 0) {
-      return SafeNumber(0);
+      return createSafeNumber(0);
     } else {
       const recentPricesAvg = calculateAverageValue(priceValuesToCompareWith);
       return calculateDeviationPercent({

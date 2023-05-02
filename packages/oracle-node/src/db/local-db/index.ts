@@ -136,8 +136,8 @@ export const getLastPrice = (
     return undefined;
   }
   return {
-    value: Number(lastPrices[symbol].value),
-    timestamp: lastPrices[symbol].timestamp,
+    value: Number(price.value),
+    timestamp: price.timestamp,
   };
 };
 
