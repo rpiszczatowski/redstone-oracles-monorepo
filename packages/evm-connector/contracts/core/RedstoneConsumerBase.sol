@@ -171,17 +171,14 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       bytes memory signedMessage;
       uint256 signedMessageBytesCount;
 
-      signedMessageBytesCount =
-        dataPointsCount.mul(eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS) +
-        DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS; //DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
+      signedMessageBytesCount = dataPointsCount.mul(eachDataPointValueByteSize + DATA_POINT_SYMBOL_BS)
+        + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS; //DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
 
       uint256 timestampCalldataOffset = msg.data.length.sub(
-        calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS
-      );
+        calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS);
 
       uint256 signedMessageCalldataOffset = msg.data.length.sub(
-        calldataNegativeOffset + SIG_BS + signedMessageBytesCount
-      );
+        calldataNegativeOffset + SIG_BS + signedMessageBytesCount);
 
       assembly {
         // Extracting the signed message
@@ -205,7 +202,11 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
 
         function extractBytesFromCalldata(offset, bytesCount) -> extractedBytes {
           let extractedBytesStartPtr := initByteArray(bytesCount)
-          calldatacopy(extractedBytesStartPtr, offset, bytesCount)
+          calldatacopy(
+            extractedBytesStartPtr,
+            offset,
+            bytesCount
+          )
           extractedBytes := sub(extractedBytesStartPtr, BYTES_ARR_LEN_VAR_BS)
         }
       }
@@ -296,8 +297,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
       if (uniqueSignerCountForDataFeedIds[dataFeedIndex] < uniqueSignersThreshold) {
         revert InsufficientNumberOfUniqueSigners(
           uniqueSignerCountForDataFeedIds[dataFeedIndex],
-          uniqueSignersThreshold
-        );
+          uniqueSignersThreshold);
       }
       uint256 aggregatedValueForDataFeedId = aggregateValues(valuesForDataFeeds[dataFeedIndex]);
       aggregatedValues[dataFeedIndex] = aggregatedValueForDataFeedId;

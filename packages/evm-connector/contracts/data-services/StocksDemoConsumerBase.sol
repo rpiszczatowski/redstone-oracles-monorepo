@@ -13,9 +13,13 @@ contract StocksDemoConsumerBase is RedstoneConsumerNumericBase {
     return 1;
   }
 
-  function getAuthorisedSignerIndex(
-    address signerAddress
-  ) public view virtual override returns (uint8) {
+  function getAuthorisedSignerIndex(address signerAddress)
+    public
+    view
+    virtual
+    override
+    returns (uint8)
+  {
     if (signerAddress == 0x926E370fD53c23f8B71ad2B3217b227E41A92b12) {
       return 0;
     } else {
