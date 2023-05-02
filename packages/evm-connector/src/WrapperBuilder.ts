@@ -21,12 +21,10 @@ export class WrapperBuilder {
   }
 
   usingDataService(
-    dataPackagesRequestParams: DataPackagesRequestInput,
-    urls?: string[]
+    dataPackagesRequestInput: DataPackagesRequestInput
   ): Contract {
     return new DataServiceWrapper(
-      dataPackagesRequestParams,
-      urls
+      dataPackagesRequestInput
     ).overwriteEthersContract(this.baseContract);
   }
 

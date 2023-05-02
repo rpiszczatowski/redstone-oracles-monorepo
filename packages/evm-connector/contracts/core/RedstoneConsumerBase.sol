@@ -28,7 +28,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
    * @return dataServiceId being consumed by contract
    */
   function getDataServiceId() public view virtual returns (string memory) {
-    return "";
+    revert("getDataServiceId not implemented");
   }
 
   /**
@@ -85,9 +85,11 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
    * @return An array of the extracted and verified oracle values in the same order
    * as they are requested in dataFeedIds array
    */
-  function _securelyExtractOracleValuesFromTxMsg(
-    bytes32[] memory dataFeedIds
-  ) internal view returns (uint256[] memory) {
+  function _securelyExtractOracleValuesFromTxMsg(bytes32[] memory dataFeedIds)
+    internal
+    view
+    returns (uint256[] memory)
+  {
     // Initializing helpful variables and allocating memory
     uint256[] memory uniqueSignerCountForDataFeedIds = new uint256[](dataFeedIds.length);
     uint256[] memory signersBitmapForDataFeedIds = new uint256[](dataFeedIds.length);
@@ -240,10 +242,7 @@ abstract contract RedstoneConsumerBase is CalldataExtractor {
             uint256 bitmapSignersForDataFeedId = signersBitmapForDataFeedIds[dataFeedIdIndex];
 
             if (
-              !BitmapLib.getBitFromBitmap(
-                bitmapSignersForDataFeedId,
-                signerIndex
-              ) /* current signer was not counted for current dataFeedId */ &&
+              !BitmapLib.getBitFromBitmap(bitmapSignersForDataFeedId, signerIndex) && /* current signer was not counted for current dataFeedId */
               uniqueSignerCountForDataFeedIds[dataFeedIdIndex] < getUniqueSignersThreshold()
             ) {
               // Increase unique signer counter
