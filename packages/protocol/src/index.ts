@@ -17,5 +17,3 @@ export * as consts from "./common/redstone-constants";
 export * from "./common/types";
 
 export * from "./on-demand";
-
-export * from "./data-services-urls";

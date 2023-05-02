@@ -6,7 +6,8 @@ import { BaseWrapper, ParamsForDryRunVerification } from "./BaseWrapper";
 import { parseAggregatedErrors } from "../helpers/parse-aggregated-errors";
 import { runDryRun } from "../helpers/run-dry-run";
 import { version } from "../../package.json";
-import { resolveDataServiceUrls } from "redstone-protocol";
+import { resolveDataServiceUrls } from "redstone-sdk";
+import { Contract } from "ethers";
 
 export interface DryRunParamsWithUnsignedMetadata
   extends ParamsForDryRunVerification {
@@ -14,9 +15,7 @@ export interface DryRunParamsWithUnsignedMetadata
   dataPackagesRequestParams: Required<DataPackagesRequestInput>;
 }
 
-export type DataPackagesRequestInput = Partial<DataPackagesRequestParams> & {
-  urls?: string[];
-};
+export type DataPackagesRequestInput = Partial<DataPackagesRequestParams>;
 
 export class DataServiceWrapper extends BaseWrapper {
   constructor(
@@ -114,7 +113,6 @@ export class DataServiceWrapper extends BaseWrapper {
   ) {
     return requestRedstonePayload(
       dataPackagesRequestParams,
-      dataPackagesRequestParams.urls,
       unsignedMetadataMsg
     );
   }
