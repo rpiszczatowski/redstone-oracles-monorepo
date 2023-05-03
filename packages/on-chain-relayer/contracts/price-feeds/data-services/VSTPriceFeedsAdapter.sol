@@ -4,6 +4,8 @@ pragma solidity ^0.8.4;
 
 import "../without-rounds/SinglePriceFeedAdapter.sol";
 
+// TODO: save circuit breaker flags in the most significant 3 bytes
+// TODO: clear circuit breaker flags after checking them
 contract VSTPriceFeedsAdapter is SinglePriceFeedAdapter {
 
   uint256 internal constant BIT_MASK_TO_CHECK_CIRCUIT_BREAKER_FLAG = 0x0000000000000000000000000100000000000000000000000000000000000000;
