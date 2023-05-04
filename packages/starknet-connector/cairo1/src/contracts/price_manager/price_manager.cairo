@@ -20,16 +20,16 @@ mod PriceManager {
     use redstone::sliceable_array::SliceableArray;
     use redstone::numbers::Felt252PartialOrd;
     use redstone::numbers::Felt252Div;
-    use redstone::u64tuple_convertible::U64TupleFelt252Convertible;
 
+    use utils::u64tuple_convertible::U64TupleFelt252Convertible;
+    use utils::felt252_convertible_storage::StorageAccessFelt252Convertible;
     use utils::serde_storage::StorageAccessSerde;
     use utils::gas::out_of_gas_array;
 
     use interface::round_data::RoundData;
     use interface::round_data::RoundDataSerde;
 
-    use price_manager::round_data_storage::StorageAccessU64TupleConvertible;
-    use price_manager::round_data_storage::RoundDataU64TupleConvertible;
+    use price_manager::round_data_u64tuple_convertible::RoundDataU64TupleConvertible;
 
     struct Storage {
         signer_count: usize,

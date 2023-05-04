@@ -27,5 +27,3 @@ mod dict;
 mod sort;
 mod gas;
 
-mod u64tuple_convertible;
-mod felt252_convertible;

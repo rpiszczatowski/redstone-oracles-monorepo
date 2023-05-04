@@ -1,3 +1,5 @@
 [crate_roots]
-redstone = "../src/redstone"
 test = "."
+utils = "../src/utils"
+redstone = "../src/redstone"
+
