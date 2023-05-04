@@ -37,7 +37,9 @@ contract CalldataExtractor is RedstoneConstants {
         revert DataPackageTimestampMustNotBeZero();
       }
 
-      if (extractedTimestamp > 0 && dataPackageTimestamp != extractedTimestamp) {
+      if (extractedTimestamp == 0) {
+        extractedTimestamp = dataPackageTimestamp;
+      } else if (dataPackageTimestamp != extractedTimestamp) {
         revert DataPackageTimestampsMustBeEqual();
       }
 
