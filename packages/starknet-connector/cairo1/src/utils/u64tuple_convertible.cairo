@@ -8,6 +8,8 @@ use option::OptionTrait;
 use utils::felt252_convertible::Felt252Convertible;
 
 const U64_TUPLE_MAX_A: u64 = 0x800000000000000;
+const U64_BASE: felt252 = 0x10000000000000000;
+const U64_BASE_u128: u128 = 0x10000000000000000_u128;
 
 trait U64TupleConvertible<T> {
     fn from_u64_tuple(a: u64, b: u64, c: u64, d: u64) -> T;
@@ -28,13 +30,8 @@ impl TU64TupleConvertible: U64TupleConvertible<T>> of Felt252Convertible<T> {
     fn from_felt252(value: felt252) -> T {
         let value_u256 = u256_from_felt252(value);
 
-        let (a_u128, b_u128) = u128_safe_divmod(
-            value_u256.high, u128_as_non_zero(0x10000000000000000_u128)
-        );
-
-        let (c_u128, d_u128) = u128_safe_divmod(
-            value_u256.low, u128_as_non_zero(0x10000000000000000_u128)
-        );
+        let (a_u128, b_u128) = u128_safe_divmod(value_u256.high, u128_as_non_zero(U64_BASE_u128));
+        let (c_u128, d_u128) = u128_safe_divmod(value_u256.low, u128_as_non_zero(U64_BASE_u128));
 
         U64TupleConvertible::from_u64_tuple(
             a: a_u128.try_into().unwrap(),
@@ -49,9 +46,9 @@ impl TU64TupleConvertible: U64TupleConvertible<T>> of Felt252Convertible<T> {
 
         assert(a < U64_TUPLE_MAX_A, 'a overflow');
 
-        a.into() * 0x10000000000000000 * 0x10000000000000000 * 0x10000000000000000
-            + b.into() * 0x10000000000000000 * 0x10000000000000000
-            + c.into() * 0x10000000000000000
+        a.into() * U64_BASE * U64_BASE * U64_BASE
+            + b.into() * U64_BASE * U64_BASE
+            + c.into() * U64_BASE
             + d.into()
     }
 }
@@ -90,7 +87,6 @@ mod tests {
 
     const MAX_U64: u64 = 18446744073709551615;
     const MAX_FELT252: felt252 = 0x800000000000011000000000000000000000000000000000000000000000000;
-
 
     #[test]
     fn test_u64tuple_convertible() {
