@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.37.1
+  Fuels version: 0.41.0
   Forc version: 0.35.5
   Fuel-Core version: 0.17.3
 */
@@ -335,7 +335,7 @@ const _abi = {
       logId: 6,
       loggedType: {
         name: "",
-        type: 8,
+        type: 2,
         typeArguments: null,
       },
     },
@@ -367,12 +367,20 @@ const _abi = {
       logId: 10,
       loggedType: {
         name: "",
-        type: 2,
+        type: 8,
         typeArguments: null,
       },
     },
     {
       logId: 11,
+      loggedType: {
+        name: "",
+        type: 2,
+        typeArguments: null,
+      },
+    },
+    {
+      logId: 12,
       loggedType: {
         name: "",
         type: 8,

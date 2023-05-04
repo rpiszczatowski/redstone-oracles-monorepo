@@ -11,7 +11,7 @@ use std::{
 };
 
 configurable {
-    CONTRACT_ID: b256 = 0x8fdae6cb766121b5382977e98dc948dbdc95812a3e60c2cf2c0dfff06e877989,
+    CONTRACT_ID: b256 = 0x401cc4cabc60765d9f1f4bff3f41aa2c14cfb1ab542fc355f9bc7726cc6db0bb,
 }
 
 abi Prices {

@@ -12,29 +12,41 @@ const provider = IS_LOCAL
 
 describe("Gas Usage of integrated and initialized prices contract", () => {
   it("write_prices should write the price data that can be read then", async () => {
-    await performGasUsageTests(1, ["ETH"]);
-    await performGasUsageTests(4, ["ETH", "BTC", "AVAX"]);
+    const minDataFeeds = ["ETH"];
+    const maxDataFeeds = ["ETH", "BTC", "AVAX"];
+    const minSignerCount = 1;
+    const maxSignerCount = 4;
 
-    // c + p = a_1
-    // c + n * p = a_n,
-    // so... p = (a_n - a_1) / ( n - 1), c = a_1 - p
+    const minSize = minDataFeeds.length * minSignerCount;
+    const maxSize = maxDataFeeds.length * maxSignerCount;
+
+    await performGasUsageTests(minSignerCount, minDataFeeds); // :1
+    await performGasUsageTests(minSignerCount, maxDataFeeds); // :3
+    await performGasUsageTests(maxSignerCount, maxDataFeeds); // :12
+
+    // c + min * p = a_min
+    // c + max * p = a_max,
+    // so... p = (a_max - a_min) / (max - min), c = a_max - min * p
 
     for (let obj of [
-      { func: "get_prices", num: 12, subject: "packages" },
-      { func: "write_prices", num: 12, subject: "packages" },
-      { func: "read_prices", num: 4, subject: "feeds" },
-      { func: "read_timestamp", num: 12, subject: "packages" },
+      { func: "get_prices", maxSize, subject: "packages" },
+      { func: "write_prices", maxSize, subject: "packages" },
+      { func: "write_prices", maxSize: 3, subject: "feeds" },
+      { func: "read_prices", maxSize: 3, subject: "feeds" },
+      { func: "read_timestamp", maxSize, subject: "packages" },
     ]) {
-      const maxGasUsage = results[`${obj.func}:4:3`];
-      const minGasUsage = results[`${obj.func}:1:1`];
+      const maxSize = obj.maxSize;
+
+      const maxGasUsage = results[`${obj.func}:${maxSize}`];
+      const minGasUsage = results[`${obj.func}:${minSize}`];
 
       const perSubject = Math.round(
-        (maxGasUsage - minGasUsage) / (obj.num - 1)
+        (maxGasUsage - minGasUsage) / (maxSize - minSize)
       );
-      const perSubjectConst = minGasUsage - perSubject;
+      const perSubjectConst = minGasUsage - perSubject * minSize;
 
       console.log(
-        `${obj.func} costs: ${perSubjectConst} + ${perSubject} * #${obj.subject}`
+        `${obj.func} costs: ${perSubjectConst} + ${perSubject} * #${obj.subject}, min: ${minGasUsage} for ${minSize} ${obj.subject}, max: ${maxGasUsage} for ${obj.maxSize} ${obj.subject}`
       );
     }
   });
@@ -89,6 +101,6 @@ describe("Gas Usage of integrated and initialized prices contract", () => {
       `Gas usage for ${method}, ${uniqueSignerCount} signer(s), ${dataFeeds.length} feed(s): ${gasUsage}`
     );
 
-    results[`${method}:${uniqueSignerCount}:${dataFeeds.length}`] = gasUsage;
+    results[`${method}:${uniqueSignerCount * dataFeeds.length}`] = gasUsage;
   }
 });

@@ -6,8 +6,8 @@ use std::{
     bytes::Bytes,
     logging::log,
     storage::{
-        get,
-        StorageVec,
+        storage_api::read,
+        storage_vec::*,
     },
     u256::U256,
     vec::Vec,
@@ -43,7 +43,7 @@ fn get_timestamp() -> u64 {
 
 #[storage(read)]
 fn get_u64(key: b256, or_value: u64) -> u64 {
-    let value = get(key).unwrap_or(U256::new());
+    let value = read(key, 0).unwrap_or(U256::new());
     let mut config_value = value.d;
     if (config_value == 0) {
         config_value = or_value;

@@ -8,7 +8,13 @@ use std::{
     bytes::Bytes,
     inputs::input_count,
     logging::log,
-    storage::StorageVec,
+    storage::{
+        storage_api::{
+            read,
+            write,
+        },
+        storage_vec::*,
+    },
     u256::U256,
     vec::Vec,
 };
@@ -32,12 +38,13 @@ impl Prices for Contract {
         signer_count_threshold: u64,
         skip_setting_owner: u64,
     ) {
-        assert(storage.owner.is_none() || storage.owner.unwrap() == msg_sender().unwrap());
+        let storage_owner = storage.owner.read();
+
+        assert(storage_owner.is_none() || storage_owner.unwrap() == msg_sender().unwrap());
         if (skip_setting_owner == 0) {
-            storage.owner = Option::Some(msg_sender().unwrap());
+            storage.owner.write(Option::Some(msg_sender().unwrap()));
         }
-        storage.signer_count_threshold = signer_count_threshold;
-        storage.signers.clear();
+        storage.signer_count_threshold.write(signer_count_threshold);
 
         let mut i = 0;
         while (i < signers.len) {
@@ -55,7 +62,7 @@ impl Prices for Contract {
 
     #[storage(read)]
     fn read_timestamp() -> u64 {
-        return storage.timestamp;
+        return storage.timestamp.read();
     }
 
     #[storage(read)]
@@ -65,13 +72,8 @@ impl Prices for Contract {
         let mut i = 0;
         while (i < feed_ids.len) {
             let feed_id = feed_ids.get(i).unwrap();
-            let price = storage.prices.get(feed_id);
-            match price {
-                Option::Some(value) => {
-                    result[i] = value;
-                },
-                Option::None => {}
-            }
+            let price = storage.prices.get(feed_id).read();
+            result[i] = price;
 
             i += 1;
         }
@@ -87,11 +89,10 @@ impl Prices for Contract {
             let feed_id = feed_ids.get(i).unwrap();
             let price = aggregated_values[i];
             storage.prices.insert(feed_id, price);
-
             i += 1;
         }
 
-        storage.timestamp = block_timestamp;
+        storage.timestamp.write(block_timestamp);
 
         return aggregated_values;
     }
@@ -101,13 +102,14 @@ impl Prices for Contract {
 fn get_prices(feed_ids: Vec<U256>, payload: Vec<u64>) -> ([U256; 50], u64) {
     let mut signers: Vec<b256> = Vec::new();
     let mut i = 0;
+
     while (i < storage.signers.len()) {
-        signers.push(storage.signers.get(i).unwrap());
+        signers.push(storage.signers.get(i).unwrap().read());
 
         i += 1;
     }
 
-    let config = Config::base(feed_ids, signers, storage.signer_count_threshold);
+    let config = Config::base(feed_ids, signers, storage.signer_count_threshold.read());
 
     let mut payload_bytes = Bytes::new();
     let mut i = 0;

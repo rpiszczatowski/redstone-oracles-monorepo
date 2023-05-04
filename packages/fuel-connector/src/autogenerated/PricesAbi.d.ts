@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.37.1
+  Fuels version: 0.41.0
   Forc version: 0.35.5
   Fuel-Core version: 0.17.3
 */
@@ -43,18 +43,22 @@ interface PricesAbiInterface extends Interface {
     functionFragment: "get_prices",
     values: [Vec<U256Input>, Vec<BigNumberish>]
   ): Uint8Array;
+
   encodeFunctionData(
     functionFragment: "init",
     values: [Vec<string>, BigNumberish, BigNumberish]
   ): Uint8Array;
+
   encodeFunctionData(
     functionFragment: "read_prices",
     values: [Vec<U256Input>]
   ): Uint8Array;
+
   encodeFunctionData(
     functionFragment: "read_timestamp",
     values: []
   ): Uint8Array;
+
   encodeFunctionData(
     functionFragment: "write_prices",
     values: [Vec<U256Input>, Vec<BigNumberish>]
@@ -64,15 +68,19 @@ interface PricesAbiInterface extends Interface {
     functionFragment: "get_prices",
     data: BytesLike
   ): DecodedValue;
+
   decodeFunctionData(functionFragment: "init", data: BytesLike): DecodedValue;
+
   decodeFunctionData(
     functionFragment: "read_prices",
     data: BytesLike
   ): DecodedValue;
+
   decodeFunctionData(
     functionFragment: "read_timestamp",
     data: BytesLike
   ): DecodedValue;
+
   decodeFunctionData(
     functionFragment: "write_prices",
     data: BytesLike
