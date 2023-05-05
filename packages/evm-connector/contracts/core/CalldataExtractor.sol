@@ -27,7 +27,7 @@ contract CalldataExtractor is RedstoneConstants {
 
       // Extracting timestamp for the current data package
       uint48 dataPackageTimestamp; // uint48, because timestamp uses 6 bytes
-      uint256 timestampNegativeOffset = (calldataNegativeOffset + SIG_BS + DATA_POINTS_COUNT_BS + DATA_POINT_VALUE_BYTE_SIZE_BS + STANDARD_SLOT_BS); // TODO: optimise using constant
+      uint256 timestampNegativeOffset = (calldataNegativeOffset + TIMESTAMP_NEGATIVE_OFFSET_IN_DATA_PACKAGE_WITH_STANDARD_SLOT_BS);
       uint256 timestampOffset = msg.data.length - timestampNegativeOffset;
       assembly {
         dataPackageTimestamp := calldataload(timestampOffset)
