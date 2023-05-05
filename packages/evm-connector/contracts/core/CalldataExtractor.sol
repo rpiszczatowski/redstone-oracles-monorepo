@@ -15,6 +15,50 @@ import "./RedstoneConstants.sol";
 contract CalldataExtractor is RedstoneConstants {
   using SafeMath for uint256;
 
+  error DataPackageTimestampMustNotBeZero();
+  error DataPackageTimestampsMustBeEqual();
+
+  function extractTimestampsAndAssertAllAreEqual() public pure returns (uint256 extractedTimestamp) {
+    uint256 calldataNegativeOffset = _extractByteSizeOfUnsignedMetadata();
+    uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(calldataNegativeOffset);
+    calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;
+    for (uint256 dataPackageIndex = 0; dataPackageIndex < dataPackagesCount; dataPackageIndex++) {
+      uint256 dataPackageByteSize = _getDataPackageByteSize(calldataNegativeOffset);
+
+      // Extracting timestamp for the current data package
+      uint48 dataPackageTimestamp; // uint48, because timestamp uses 6 bytes
+      uint256 timestampNegativeOffset = (calldataNegativeOffset + SIG_BS + DATA_POINTS_COUNT_BS + DATA_POINT_VALUE_BYTE_SIZE_BS + STANDARD_SLOT_BS); // TODO: optimise using constant
+      uint256 timestampOffset = msg.data.length - timestampNegativeOffset;
+      assembly {
+        dataPackageTimestamp := calldataload(timestampOffset)
+      }
+
+      if (dataPackageTimestamp == 0) {
+        revert DataPackageTimestampMustNotBeZero();
+      }
+
+      if (extractedTimestamp == 0) {
+        extractedTimestamp = dataPackageTimestamp;
+      } else if (dataPackageTimestamp != extractedTimestamp) {
+        revert DataPackageTimestampsMustBeEqual();
+      }
+
+      calldataNegativeOffset += dataPackageByteSize;
+    }
+  }
+
+  function _getDataPackageByteSize(uint256 calldataNegativeOffset) internal pure returns (uint256) {
+    (
+      uint256 dataPointsCount,
+      uint256 eachDataPointValueByteSize
+    ) = _extractDataPointsDetailsForDataPackage(calldataNegativeOffset);
+
+    return
+      dataPointsCount *
+      (DATA_POINT_SYMBOL_BS + eachDataPointValueByteSize) +
+      DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
+  }
+
   function _extractByteSizeOfUnsignedMetadata() internal pure returns (uint256) {
     // Checking if the calldata ends with the RedStone marker
     bool hasValidRedstoneMarker;
