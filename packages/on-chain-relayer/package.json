@@ -9,10 +9,10 @@
     "start:dev": "ts-node src/run-relayer.ts",
     "compile": "hardhat compile",
     "run-script": "hardhat run",
-    "test": " NODE_ENV=test hardhat test"
+    "test": "NODE_ENV=test hardhat test"
   },
   "dependencies": {
-    "@redstone-finance/evm-connector": "^0.0.22",
+    "@redstone-finance/evm-connector": "^0.0.21",
     "dotenv": "^16.0.3",
     "ethers": "^5.7.2",
     "toad-scheduler": "^2.2.0"

@@ -241,7 +241,7 @@ export const describeCommonPriceFeedsAdapterTests = ({
       })
     )
       .to.be.revertedWith("InsufficientNumberOfUniqueSigners")
-      .withArgs(0, 2);
+      .withArgs(1, 2);
   });
 
   it("should properly update data feeds one time", async () => {
