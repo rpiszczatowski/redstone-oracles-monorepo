@@ -12,6 +12,7 @@ interface AdapterTestsParams {
   adapterContractName: string;
   hasOnlyOneDataFeed: boolean;
   skipTestsForPrevDataTimestamp: boolean;
+  passProposedTimestampArg: boolean;
 }
 
 interface UpdateValuesParams {
@@ -32,6 +33,7 @@ export const describeCommonPriceFeedsAdapterTests = ({
   adapterContractName,
   hasOnlyOneDataFeed,
   skipTestsForPrevDataTimestamp,
+  passProposedTimestampArg
 }: AdapterTestsParams) => {
   let adapterContract: IRedstoneAdapter;
 
