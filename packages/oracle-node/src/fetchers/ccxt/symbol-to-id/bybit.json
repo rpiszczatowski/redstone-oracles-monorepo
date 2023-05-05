@@ -1,7 +1,6 @@
 {
-  "AVAX": "AVAX/USDT",
-  "XAVA": "XAVA/USDT",
-  "GMX": "GMX/USDT",
-  "BIT": "BIT/USDT",
+  "AVAX": "AVAXUSDT",
+  "GMX": "GMXUSDT",
+  "BIT": "BITUSDT",
   "CMP": "CMP/USDT"
 }

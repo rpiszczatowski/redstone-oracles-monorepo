@@ -81,7 +81,11 @@ export class CcxtFetcher extends BaseFetcher {
 
   serializePairSymbol(pairSymbol: string) {
     if (pairSymbol.endsWith("/USDT:USDT")) {
-      return pairSymbol.replace("/USDT:USDT", "USDT");
+      if (this.name === "bybit") {
+        return pairSymbol.replace("/USDT:USDT", "USDT");
+      } else if (this.name === "binanceusdm") {
+        return pairSymbol.replace("/USDT:USDT", "/USDT");
+      }
     }
     return pairSymbol;
   }
