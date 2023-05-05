@@ -53,7 +53,8 @@ describe("SampleRedstoneConsumerBytesMock", function () {
 
   const testShouldRevertWith = async (
     mockPackages: MockDataPackageConfig[],
-    revertMsg: string
+    revertMsg: string,
+    args?: (string | number)[]
   ) => {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockPackages);
@@ -61,7 +62,9 @@ describe("SampleRedstoneConsumerBytesMock", function () {
       wrappedContract.saveOracleValueInContractStorage(
         DEFAULT_DATA_FEED_ID_BYTES_32
       )
-    ).to.be.revertedWith(revertMsg);
+    )
+      .to.be.revertedWith(revertMsg)
+      .withArgs(...(args ?? []));
   };
 
   this.beforeEach(async () => {
@@ -93,14 +96,16 @@ describe("SampleRedstoneConsumerBytesMock", function () {
   it("Should revert if there are too few signers", async () => {
     await testShouldRevertWith(
       [mockBytesPackages[0], mockBytesPackages[1]],
-      "InsufficientNumberOfUniqueSigners(2, 3)"
+      "InsufficientNumberOfUniqueSigners",
+      [2, 3]
     );
   });
 
   it("Should revert if there are too few unique signers", async () => {
     await testShouldRevertWith(
       [mockBytesPackages[0], mockBytesPackages[1], mockBytesPackages[1]],
-      "InsufficientNumberOfUniqueSigners(2, 3)"
+      "InsufficientNumberOfUniqueSigners",
+      [2, 3]
     );
   });
 
@@ -113,10 +118,9 @@ describe("SampleRedstoneConsumerBytesMock", function () {
         mockSignerIndex: UNAUTHORISED_SIGNER_INDEX,
       }),
     ];
-    await testShouldRevertWith(
-      newMockPackages,
-      `SignerNotAuthorised("0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199")`
-    );
+    await testShouldRevertWith(newMockPackages, "SignerNotAuthorised", [
+      "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199",
+    ]);
   });
 
   it("Should revert for too old timestamp", async () => {
@@ -128,7 +132,7 @@ describe("SampleRedstoneConsumerBytesMock", function () {
         timestampMilliseconds: DEFAULT_TIMESTAMP_FOR_TESTS - 1,
       }),
     ];
-    await testShouldRevertWith(newMockPackages, "TimestampIsNotValid()");
+    await testShouldRevertWith(newMockPackages, "TimestampIsNotValid");
   });
 
   it("Should revert is data feed id not found", async () => {
@@ -138,6 +142,8 @@ describe("SampleRedstoneConsumerBytesMock", function () {
       wrappedContract.saveOracleValueInContractStorage(
         convertStringToBytes32("ANOTHER_DATA_FEED_ID")
       )
-    ).to.be.revertedWith("InsufficientNumberOfUniqueSigners(0, 3)");
+    )
+      .to.be.revertedWith("InsufficientNumberOfUniqueSigners")
+      .withArgs(0, 3);
   });
 });

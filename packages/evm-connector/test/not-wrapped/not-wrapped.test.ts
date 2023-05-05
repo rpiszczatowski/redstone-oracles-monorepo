@@ -19,6 +19,6 @@ describe("Not Wrapped Contract", function () {
       contract.saveOracleValueInContractStorage(
         utils.convertStringToBytes32("BTC")
       )
-    ).to.be.revertedWith("CalldataMustHaveValidPayload()");
+    ).to.be.revertedWith("CalldataMustHaveValidPayload");
   });
 });

@@ -59,7 +59,9 @@ describe("Simple Mock Numeric Wrapper", function () {
         utils.convertStringToBytes32(dataPoints[0].dataFeedId),
         utils.convertStringToBytes32(dataPoints[1].dataFeedId),
       ])
-    ).to.be.revertedWith("InsufficientNumberOfUniqueSigners(9, 10)");
+    )
+      .to.be.revertedWith("InsufficientNumberOfUniqueSigners")
+      .withArgs(9, 10);
   });
 
   it("Should revert for too old timestamp", async () => {
@@ -76,6 +78,6 @@ describe("Simple Mock Numeric Wrapper", function () {
         utils.convertStringToBytes32(dataPoints[0].dataFeedId),
         utils.convertStringToBytes32(dataPoints[1].dataFeedId),
       ])
-    ).to.be.revertedWith("TimestampIsNotValid()");
+    ).to.be.revertedWith("TimestampIsNotValid");
   });
 });

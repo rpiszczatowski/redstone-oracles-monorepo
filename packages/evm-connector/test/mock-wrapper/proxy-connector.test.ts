@@ -24,13 +24,14 @@ describe("SampleProxyConnector", function () {
 
   const testShouldRevertWith = async (
     mockPackages: MockDataPackageConfig[],
-    revertMsg: string
+    revertMsg: string,
+    args?: (string | number)[]
   ) => {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockPackages);
-    await expect(
-      wrappedContract.getOracleValueUsingProxy(ethDataFeedId)
-    ).to.be.revertedWith(revertMsg);
+    await expect(wrappedContract.getOracleValueUsingProxy(ethDataFeedId))
+      .to.be.revertedWith(revertMsg)
+      .withArgs(...(args ?? []));
   };
 
   this.beforeEach(async () => {
@@ -109,7 +110,7 @@ describe("SampleProxyConnector", function () {
     ).not.to.be.reverted;
     await expect(
       wrappedContract.checkOracleValueLongEncodedFunction(ethDataFeedId, 9999)
-    ).to.be.revertedWith("WrongValue()");
+    ).to.be.revertedWith("WrongValue");
   });
 
   it("Should fail with correct message (timestamp invalid)", async () => {
@@ -120,7 +121,8 @@ describe("SampleProxyConnector", function () {
     });
     await testShouldRevertWith(
       newMockPackages,
-      `errorArgs=["0x355b8743"], errorName="ProxyCalldataFailedWithCustomError"`
+      "ProxyCalldataFailedWithCustomError",
+      ["0x355b8743"]
     );
   });
 
@@ -131,7 +133,10 @@ describe("SampleProxyConnector", function () {
     );
     await testShouldRevertWith(
       newMockPackages,
-      `errorArgs=["0x2b13aef50000000000000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000a"], errorName="ProxyCalldataFailedWithCustomError"`
+      "ProxyCalldataFailedWithCustomError",
+      [
+        "0x2b13aef50000000000000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000a",
+      ]
     );
   });
 
@@ -143,7 +148,10 @@ describe("SampleProxyConnector", function () {
     });
     await testShouldRevertWith(
       newMockPackages,
-      `errorArgs=["0xec459bc00000000000000000000000008626f6940e2eb28930efb4cef49b2d1f2c9c1199"], errorName="ProxyCalldataFailedWithCustomError"`
+      "ProxyCalldataFailedWithCustomError",
+      [
+        "0xec459bc00000000000000000000000008626f6940e2eb28930efb4cef49b2d1f2c9c1199",
+      ]
     );
   });
 
@@ -151,15 +159,15 @@ describe("SampleProxyConnector", function () {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
     await expect(wrappedContract.proxyEmptyError()).to.be.revertedWith(
-      `errorName="ProxyCalldataFailedWithoutErrMsg"`
+      "ProxyCalldataFailedWithoutErrMsg"
     );
   });
 
   it("Should fail with correct message (string test message)", async () => {
     const wrappedContract =
       WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-    await expect(wrappedContract.proxyTestStringError()).to.be.revertedWith(
-      `errorArgs=["Test message"], errorName="ProxyCalldataFailedWithStringMessage"`
-    );
+    await expect(wrappedContract.proxyTestStringError())
+      .to.be.revertedWith("ProxyCalldataFailedWithStringMessage")
+      .withArgs("Test message");
   });
 });
