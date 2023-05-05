@@ -12,7 +12,7 @@
   "DATA_FEEDS": ["VST"],
   "CACHE_SERVICE_URLS": ["https://d1zm8lxy9v2ddd.cloudfront.net"],
   "GAS_LIMIT": 10000000,
-
+  "RELAYER_ADDRESSES": ["0x713daae39d84bd226b1971f109e2f5dde2a734f6"],
   "PRICE_FEEDS": {
     "VST": "0x449F0bC26B7Ad7b48DA2674Fb4030F0e9323b466"
   }
