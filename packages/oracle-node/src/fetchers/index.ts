@@ -43,6 +43,7 @@ import pangolinOnChainFetchers from "./evm-chain/avalanche/pangolin-on-chain/pan
 import traderJoeOnChainFetchers from "./evm-chain/avalanche/trader-joe-on-chain/trader-joe-on-chain-fetchers";
 import twelveDataFetchers from "./twelve-data/all-twelve-data-fetchers";
 import fraxswapOnChainFetchers from "./evm-chain/ethereum/fraxswap-on-chain/all-fraxswap-on-chain-fetchers";
+import { CcxtFetcher } from "./ccxt/CcxtFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -74,6 +75,7 @@ export default {
   newyorkfed: new NewyorkfedFetcher(),
   "arbitrum-evm-fetcher": new ArbitrumEvmFetcher(arbitrumProvider),
   "non-usd-based": new NonUsdBasedFetcher(),
+  "bybit-v5": new CcxtFetcher("bybit"),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...balancerFetchers,
