@@ -41,12 +41,13 @@ import camelotFetchers from "./evm-chain/arbitrum/camelot/all-camelot-fetchers";
 import { NonUsdBasedFetcher } from "./non-usd-based/NonUsdBasedFetcher";
 import pangolinOnChainFetchers from "./evm-chain/avalanche/pangolin-on-chain/pangolin-on-chain-fetchers";
 import traderJoeOnChainFetchers from "./evm-chain/avalanche/trader-joe-on-chain/trader-joe-on-chain-fetchers";
+import twelveDataFetchers from "./twelve-data/all-twelve-data-fetchers";
+import fraxswapOnChainFetchers from "./evm-chain/ethereum/fraxswap-on-chain/all-fraxswap-on-chain-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
   "custom-urls": new CustomUrlsFetcher(),
   "trader-joe": new TraderJoeFetcher(),
-  "twelve-data": new TwelveDataFetcher(),
   mock: new MockFetcher(),
   coingecko: new CoingeckoFetcher(),
   sushiswap: new SushiswapFetcher(),
@@ -83,4 +84,6 @@ export default {
   ...camelotFetchers,
   ...pangolinOnChainFetchers,
   ...traderJoeOnChainFetchers,
+  ...twelveDataFetchers,
+  ...fraxswapOnChainFetchers,
 } as { [name: string]: Fetcher };
