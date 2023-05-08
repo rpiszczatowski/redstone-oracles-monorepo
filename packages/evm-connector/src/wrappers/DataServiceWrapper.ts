@@ -57,7 +57,9 @@ export class DataServiceWrapper extends BaseWrapper {
   private async resolveDataPackagesRequestParams(): Promise<
     Required<DataPackagesRequestInput>
   > {
-    const fetchedParams = {} as Required<DataPackagesRequestInput>;
+    const fetchedParams = {
+      ...this.dataPackagesRequestParams,
+    } as Required<DataPackagesRequestInput>;
 
     if (!this.dataPackagesRequestParams.uniqueSignersCount) {
       fetchedParams.uniqueSignersCount =
@@ -75,7 +77,7 @@ export class DataServiceWrapper extends BaseWrapper {
       );
     }
 
-    return { ...this.dataPackagesRequestParams, ...fetchedParams };
+    return fetchedParams;
   }
 
   /* 

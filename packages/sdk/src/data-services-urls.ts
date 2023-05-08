@@ -13,7 +13,7 @@ export const REDSTONE_DATA_SERVICES_URLS: Record<string, string[]> = {
   "mock-data-service": ["http://valid-cache.com"],
 };
 
-export function resolveDataServiceUrls(dataServiceId: string): string[] {
+export const resolveDataServiceUrls = (dataServiceId: string): string[] => {
   const urls = REDSTONE_DATA_SERVICES_URLS[dataServiceId];
   if (!urls) {
     throw Error(
@@ -22,4 +22,4 @@ export function resolveDataServiceUrls(dataServiceId: string): string[] {
   }
 
   return urls;
-}
+};
