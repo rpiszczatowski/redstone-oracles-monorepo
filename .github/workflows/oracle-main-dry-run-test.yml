@@ -18,7 +18,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run dry run test
-        run: yarn test:dry-run
+        run: yarn test:main-dry-run
         env:
           NODE_ENV: test
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price

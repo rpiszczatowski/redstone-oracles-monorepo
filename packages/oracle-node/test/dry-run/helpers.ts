@@ -1,19 +1,23 @@
 import { ethers } from "ethers";
+import { SignedDataPackage } from "redstone-protocol";
 import { IterationContext } from "../../src/schedulers/IScheduler";
 import { roundTimestamp } from "../../src/utils/timestamps";
-import mainManifest from "../../manifests/data-services/main.json";
-import wideSupportTokensManifest from "../../manifests/dev/main-wide-support.json";
-import { NodeConfig } from "../../src/types";
+import { Manifest, NodeConfig } from "../../src/types";
+import NodeRunner from "../../src/NodeRunner";
+
+interface PricesForDataFeedId {
+  [dataFeedId: string]: number;
+}
 
 export const HARDHAT_MOCK_PRIVATE_KEY =
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 
-export const dryRunTestNodeConfig: NodeConfig = {
+export const getDryRunTestNodeConfig = (manifest: Manifest): NodeConfig => ({
   enableJsonLogs: false,
   enablePerformanceTracking: false,
   printDiagnosticInfo: false,
   manifestRefreshInterval: 120000,
-  overrideManifestUsingFile: { ...mainManifest, sourceTimeout: 10000 },
+  overrideManifestUsingFile: { ...manifest, sourceTimeout: 10000 },
   privateKeys: {
     ethereumPrivateKey: HARDHAT_MOCK_PRIVATE_KEY,
   },
@@ -28,7 +32,7 @@ export const dryRunTestNodeConfig: NodeConfig = {
   coingeckoApiUrl: "",
   enableHttpServer: false,
   pricesHardLimitsUrl: "",
-};
+});
 
 export const MockScheduler = {
   startIterations: async (
@@ -40,7 +44,29 @@ export const MockScheduler = {
   },
 };
 
-export const getMainManifestTokens = () => Object.keys(mainManifest.tokens);
+export const getTokensFromManifest = (manifest: Manifest) =>
+  Object.keys(manifest.tokens);
 
-export const getWideSupportTokens = () =>
-  Object.keys(wideSupportTokensManifest.tokens);
+export const runTestNode = async (manifest: Manifest) => {
+  const sut = await NodeRunner.create(getDryRunTestNodeConfig(manifest));
+  await sut.run();
+};
+
+export const runNodeMultipleTimes = async (
+  manifest: Manifest,
+  iterationsCount: number
+) => {
+  for (let i = 0; i < iterationsCount; i++) {
+    await runTestNode(manifest);
+  }
+};
+
+export const getPricesForDataFeedId = (dataPackages: SignedDataPackage[]) => {
+  const pricesForDataFeedId: PricesForDataFeedId = {};
+  for (const dataPackage of dataPackages) {
+    const dataPackageObject = dataPackage.dataPackage.toObj();
+    const { dataFeedId, value } = dataPackageObject.dataPoints[0];
+    pricesForDataFeedId[dataFeedId] = Number(value);
+  }
+  return pricesForDataFeedId;
+};
