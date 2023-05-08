@@ -50,7 +50,6 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
     for (const requestId of requestIds) {
       promises.push(this.makeSafeRequest(requestId));
     }
-    // dupa
     return Promise.all(promises);
   }
 
@@ -67,7 +66,8 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
         validResponses[promiseResult.requestId] = promiseResult.response;
       }
     }
-
+    // bla bla
+    // blals
     // Extracting price values for each symbol
     for (const dataFeedId of dataFeedIds) {
       try {
