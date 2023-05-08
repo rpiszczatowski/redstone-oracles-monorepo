@@ -44,7 +44,7 @@ contract RedstoneConstants {
   uint256 internal constant DATA_PACKAGE_WITHOUT_SIG_BS = 13; // DATA_PACKAGE_WITHOUT_DATA_POINTS_BS - SIG_BS
   uint256 internal constant DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS = 13; // DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS + DATA_POINTS_COUNT_BS
   uint256 internal constant REDSTONE_MARKER_BS_PLUS_STANDARD_SLOT_BS = 41; // REDSTONE_MARKER_BS + STANDARD_SLOT_BS
-
+  uint256 internal constant STANDARD_SLOT_WITHOUT_VERSION_BS = 30; // STANDARD_SLOT_BS - VERSION_BS
   // Error messages
   error CalldataOverOrUnderFlow();
   error IncorrectUnsignedMetadataSize();

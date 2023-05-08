@@ -16,21 +16,20 @@ contract CalldataExtractor is RedstoneConstants {
   using SafeMath for uint256;
 
   // Extracts Redstone payload version from calldata. Used to differentiate between single and multi sign approach
-  function _extractVersionFromUnsignedMetadata(uint256 calldataNegativeOffset) internal pure returns (uint256) { 
-    uint256 unsignedMetadataByteSize = calldataNegativeOffset - UNSIGNED_METADATA_BYTE_SIZE_BS - REDSTONE_MARKER_BS;
-
+  function _extractVersionFromUnsignedMetadata(uint256 unsignedMetadataByteSize) internal pure returns (uint256) { 
     // Version 1 does not have a version field in the unsigned metadata
-    if (unsignedMetadataByteSize < VERSION_BS) {
-      return 1;
+    if (unsignedMetadataByteSize - REDSTONE_MARKER_BS - UNSIGNED_METADATA_BYTE_SIZE_BS < VERSION_BS) {
+      revert CalldataOverOrUnderFlow();
     }
 
-    uint16 version;
+    uint256 versionOffset = msg.data.length - unsignedMetadataByteSize - STANDARD_SLOT_WITHOUT_VERSION_BS;
+    uint256 version;
     assembly {
-      let versionOffset := sub(calldatasize(), add(sub(calldataNegativeOffset, VERSION_BS), STANDARD_SLOT_BS))
       version := calldataload(versionOffset)
     }
 
-    return version;
+    uint256 mask = (1 << VERSION_BS * 8) - 1;
+    return version & mask;
   }
 
   function _extractByteSizeOfUnsignedMetadata() internal pure returns (uint256) {
@@ -85,17 +84,20 @@ contract CalldataExtractor is RedstoneConstants {
   }
 
   // Used for multi sign approach
-  function _extractDataPackageSignersCountFromCalldata(uint256 calldataNegativeOffset) internal pure returns (uint16 signerCount) {
+  function _extractDataPackageSignersCountFromCalldata(uint256 calldataNegativeOffset) internal pure returns (uint256) {
     uint256 calldataNegativeOffsetWithStandardSlot = calldataNegativeOffset + STANDARD_SLOT_BS;
 
     if (calldataNegativeOffsetWithStandardSlot > msg.data.length) {
       revert CalldataOverOrUnderFlow();
     }
+    uint256 signerCountOffset = msg.data.length - calldataNegativeOffsetWithStandardSlot;
+    uint256 signerCount;
+
     assembly {
-      signerCount := calldataload(
-        sub(calldatasize(), calldataNegativeOffsetWithStandardSlot)
-      )
+      signerCount := calldataload(signerCountOffset)
     }
+
+    return signerCount & ((1 << MULTI_SIGNERS_COUNT_BS * 8) - 1);
   }
 
   function _extractDataPointValueAndDataFeedId(
