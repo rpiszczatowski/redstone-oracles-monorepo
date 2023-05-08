@@ -3,7 +3,7 @@ import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice } from "../../db/local-db";
 import abi from "./CurveFactory.abi.json";
 
-const CURVE_PRECISION_RATIO = BigNumber.from(10 ** 18);
+const CURVE_PRECISION_RATIO = BigNumber.from("1000000000000000000");
 
 export interface PoolsConfig {
   [symbol: string]: {
