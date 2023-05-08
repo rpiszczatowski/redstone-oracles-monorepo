@@ -41,7 +41,7 @@ export class JsNativeSafeNumber implements ISafeNumber {
   /** This method should only be called by factory {N} */
   static from(numberLike: NumberArg): JsNativeSafeNumber {
     if (numberLike instanceof JsNativeSafeNumber) {
-      return new JsNativeSafeNumber(numberLike._value);
+      return new JsNativeSafeNumber(numberLike.unsafeToNumber());
     } else if (
       typeof numberLike === "number" ||
       typeof numberLike === "string"
@@ -74,25 +74,29 @@ export class JsNativeSafeNumber implements ISafeNumber {
   }
 
   add(numberLike: NumberArg): JsNativeSafeNumber {
-    const result = this._value + JsNativeSafeNumber.from(numberLike)._value;
+    const result =
+      this._value + JsNativeSafeNumber.from(numberLike).unsafeToNumber();
 
     return this.produceNewSafeNumber(result);
   }
 
   sub(numberLike: NumberArg): JsNativeSafeNumber {
-    const result = this._value - JsNativeSafeNumber.from(numberLike)._value;
+    const result =
+      this._value - JsNativeSafeNumber.from(numberLike).unsafeToNumber();
 
     return this.produceNewSafeNumber(result);
   }
 
   div(numberLike: NumberArg): JsNativeSafeNumber {
-    const result = this._value / JsNativeSafeNumber.from(numberLike)._value;
+    const result =
+      this._value / JsNativeSafeNumber.from(numberLike).unsafeToNumber();
 
     return this.produceNewSafeNumber(result);
   }
 
   mul(numberLike: NumberArg): JsNativeSafeNumber {
-    const result = this._value * JsNativeSafeNumber.from(numberLike)._value;
+    const result =
+      this._value * JsNativeSafeNumber.from(numberLike).unsafeToNumber();
 
     return this.produceNewSafeNumber(result);
   }
@@ -110,30 +114,25 @@ export class JsNativeSafeNumber implements ISafeNumber {
     const number = JsNativeSafeNumber.from(numberArg);
 
     return (
-      Math.abs(number._value - this._value) < JsNativeSafeNumberConfig.EPSILON
+      Math.abs(number.unsafeToNumber() - this._value) <
+      JsNativeSafeNumberConfig.EPSILON
     );
   }
 
   lt(numberArg: NumberArg): boolean {
-    return this._value < JsNativeSafeNumber.from(numberArg)._value;
+    return this._value < JsNativeSafeNumber.from(numberArg).unsafeToNumber();
   }
 
   lte(numberArg: NumberArg): boolean {
-    return (
-      this._value < JsNativeSafeNumber.from(numberArg)._value ||
-      this.eq(numberArg)
-    );
+    return this.lt(numberArg) || this.eq(numberArg);
   }
 
   gt(numberArg: NumberArg): boolean {
-    return this._value > JsNativeSafeNumber.from(numberArg)._value;
+    return this._value > JsNativeSafeNumber.from(numberArg).unsafeToNumber();
   }
 
   gte(numberArg: NumberArg): boolean {
-    return (
-      this._value > JsNativeSafeNumber.from(numberArg)._value ||
-      this.eq(numberArg)
-    );
+    return this.gt(numberArg) || this.eq(numberArg);
   }
 
   toJSON(): number {

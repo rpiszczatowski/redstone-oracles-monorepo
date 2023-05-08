@@ -34,7 +34,6 @@ export const calculateDeviationPercent = (args: {
   const { measuredValue, trueValue } = args;
 
   if (trueValue.eq(0)) {
-    // TODO: make it more generic
     return createSafeNumber(Number.MAX_SAFE_INTEGER);
   }
 
