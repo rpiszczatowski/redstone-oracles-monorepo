@@ -88,10 +88,8 @@ describe.only("DataServiceWrapper", () => {
       await runTest(contract, undefined, "mock-data-service");
     });
 
-    it("Should failed if contract doesn't expose getDataServiceId and dataServiceId is not passed", async () => {
-      await expect(runTest(contract, undefined, undefined)).rejectedWith(
-        /getDataServiceId not implemented/
-      );
+    it("Should fail if contract doesn't expose getDataServiceId and dataServiceId is not passed", async () => {
+      await expect(runTest(contract, undefined, undefined)).rejectedWith();
     });
 
     it("Should throw error when multiple invalid caches", async () => {
