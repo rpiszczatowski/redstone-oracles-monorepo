@@ -12,6 +12,9 @@ jobs:
         working-directory: packages/integration
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15
       - name: Run tests
         run: bash integration-test-core.sh
         env:
