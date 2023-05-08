@@ -63,6 +63,7 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
   calculateSpotPrice(assetId: string, response: Response): number {
     const pairedTokenPrice = this.getPairedTokenPrice(assetId);
     const { ratio } = response;
+
     return ratio * pairedTokenPrice;
   }
 
@@ -77,6 +78,7 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
     if (!lastPriceFromCache) {
       throw new Error(`Cannot get last price from cache for: ${pairedToken}`);
     }
+
     return lastPriceFromCache.value;
   }
 }

@@ -50,6 +50,7 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
     for (const requestId of requestIds) {
       promises.push(this.makeSafeRequest(requestId));
     }
+
     return Promise.all(promises);
   }
 
