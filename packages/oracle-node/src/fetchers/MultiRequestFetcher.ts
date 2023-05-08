@@ -66,8 +66,7 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
         validResponses[promiseResult.requestId] = promiseResult.response;
       }
     }
-    // bla bla
-    // blals
+
     // Extracting price values for each symbol
     for (const dataFeedId of dataFeedIds) {
       try {

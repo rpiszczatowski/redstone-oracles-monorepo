@@ -1,13 +1,9 @@
-import { BigNumber, providers, utils, Contract } from "ethers";
-import {
-  DexOnChainFetcher,
-  Responses,
-} from "../dex-on-chain/DexOnChainFetcher";
+import { BigNumber, providers, Contract } from "ethers";
+import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice } from "../../db/local-db";
 import abi from "./CurveFactory.abi.json";
 
-const DEFAULT_DECIMALS = 8;
-const DEFAULT_RATIO_QUANTITY = 10 ** DEFAULT_DECIMALS;
+const CURVE_PRECISION_RATIO = BigNumber.from(10 ** 18);
 
 export interface PoolsConfig {
   [symbol: string]: {
@@ -33,41 +29,40 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
     super(name);
   }
 
-  async makeRequest(id: string): Promise<Response> {
-    try {
-      const { address, provider, ratioMultiplier, functionName } =
-        this.poolsConfig[id];
-      const curveFactory = new Contract(address, abi, provider);
+  async makeRequest(assetId: string): Promise<Response> {
+    const {
+      address,
+      provider,
+      ratioMultiplier,
+      functionName,
+      tokenIndex,
+      pairedTokenIndex,
+    } = this.poolsConfig[assetId];
 
-      const { tokenIndex, pairedTokenIndex } = this.poolsConfig[id];
+    const curveFactory = new Contract(address, abi, provider);
 
-      const ratio = await curveFactory[functionName](
-        tokenIndex,
-        pairedTokenIndex,
-        (DEFAULT_RATIO_QUANTITY * ratioMultiplier).toString()
-      );
+    const ratio = (await curveFactory[functionName](
+      tokenIndex,
+      pairedTokenIndex,
+      // as default value we should use 10 ** 18 this the PRECISION on Curve StableSwap contract
+      // if we provide value lower then 10 ** 18 we start loosing PRECISION
+      // if we provide value bigger then 10 ** 18  for example 100 * 10**18 we are saying how much pairedTokenIndex i wil receive for tokenIndex
+      // thus there is higher chance that slippage will occur and will affect price
+      // same in examples https://curve.readthedocs.io/factory-pools.html#StableSwap.get_dy and on Curve frontend
+      // in case of LPs (with big volume) it shouldn't be a problem, however this just not correct
+      CURVE_PRECISION_RATIO.toString()
+    )) as BigNumber;
 
-      return {
-        ratio,
-        assetId: id,
-      };
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  getAssetId(response: Response) {
-    return response.assetId;
-  }
-
-  validateResponse(response: Responses<Response>): boolean {
-    return response !== undefined;
+    return {
+      ratio: ratio.div(CURVE_PRECISION_RATIO.div(ratioMultiplier)),
+      assetId,
+    };
   }
 
   calculateSpotPrice(assetId: string, response: Response): number {
     const pairedTokenPrice = this.getPairedTokenPrice(assetId);
     const { ratio } = response;
-    const ratioAsNumber = Number(utils.formatUnits(ratio, DEFAULT_DECIMALS));
+    const ratioAsNumber = ratio.toNumber();
     return ratioAsNumber * pairedTokenPrice;
   }
 
