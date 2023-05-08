@@ -8,6 +8,7 @@ import {
   setupLocalDb,
 } from "../../src/db/local-db";
 import abi from "../../src/fetchers/curve/CurveFactory.abi.json";
+import { BigNumber } from "ethers";
 
 describe("Curve", () => {
   let mockContract: MockContract;
@@ -18,7 +19,10 @@ describe("Curve", () => {
     provider = new MockProvider();
     const [wallet] = provider.getWallets();
     mockContract = await deployMockContract(wallet, abi);
-    await mockContract.mock.get_dy.returns(99857292);
+    // sample data taken from https://etherscan.io/address/0x828b154032950c8ff7cf8085d841723db2696056#readContract get_dy(0,1,10**18)
+    await mockContract.mock.get_dy.returns(
+      BigNumber.from("1000130962107597656")
+    );
   });
 
   beforeEach(async () => {
@@ -46,6 +50,6 @@ describe("Curve", () => {
 
     const result = await fetcher.fetchAll(["STETH"]);
 
-    expect(result).toEqual([{ symbol: "STETH", value: 2101.0872952428 }]);
+    expect(result).toEqual([{ symbol: "STETH", value: 2104.3655560609755 }]);
   });
 });

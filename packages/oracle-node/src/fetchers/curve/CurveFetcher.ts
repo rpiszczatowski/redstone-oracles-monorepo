@@ -3,7 +3,7 @@ import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice } from "../../db/local-db";
 import abi from "./CurveFactory.abi.json";
 
-const CURVE_PRECISION_RATIO = BigNumber.from("1000000000000000000");
+const CURVE_PRECISION_RATIO = 10 ** 18;
 
 export interface PoolsConfig {
   [symbol: string]: {
@@ -18,7 +18,7 @@ export interface PoolsConfig {
 }
 
 interface Response {
-  ratio: BigNumber;
+  ratio: number;
   assetId: string;
 }
 
@@ -54,7 +54,8 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
     )) as BigNumber;
 
     return {
-      ratio: ratio.div(CURVE_PRECISION_RATIO.div(ratioMultiplier)),
+      ratio:
+        Number(ratio.toString()) / (CURVE_PRECISION_RATIO / ratioMultiplier),
       assetId,
     };
   }
@@ -62,8 +63,7 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
   calculateSpotPrice(assetId: string, response: Response): number {
     const pairedTokenPrice = this.getPairedTokenPrice(assetId);
     const { ratio } = response;
-    const ratioAsNumber = ratio.toNumber();
-    return ratioAsNumber * pairedTokenPrice;
+    return ratio * pairedTokenPrice;
   }
 
   calculateLiquidity(_assetId: string, _response: Response): number {
