@@ -50,7 +50,7 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
     for (const requestId of requestIds) {
       promises.push(this.makeSafeRequest(requestId));
     }
-
+    // dupa
     return Promise.all(promises);
   }
 
