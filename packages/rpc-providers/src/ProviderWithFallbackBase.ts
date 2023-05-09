@@ -17,7 +17,6 @@ export abstract class ProviderWithFallbackBase implements Provider {
   _isProvider: boolean = true;
 
   protected abstract executeWithFallback(
-    retryNumber: number,
     fnName: string,
     ...args: any[]
   ): Promise<any>;
@@ -38,70 +37,70 @@ export abstract class ProviderWithFallbackBase implements Provider {
   ): Promise<TransactionReceipt>;
 
   sendTransaction(...args: any[]): Promise<TransactionResponse> {
-    return this.executeWithFallback(0, "sendTransaction", ...args);
+    return this.executeWithFallback("sendTransaction", ...args);
   }
 
   getBlockNumber(): Promise<number> {
-    return this.executeWithFallback(0, "getBlockNumber");
+    return this.executeWithFallback("getBlockNumber");
   }
 
   getGasPrice(): Promise<BigNumber> {
-    return this.executeWithFallback(0, "getGasPrice");
+    return this.executeWithFallback("getGasPrice");
   }
 
   getFeeData(): Promise<FeeData> {
-    return this.executeWithFallback(0, "getFeeData");
+    return this.executeWithFallback("getFeeData");
   }
 
   getBalance(...args: any[]): Promise<BigNumber> {
-    return this.executeWithFallback(0, "getBalance", ...args);
+    return this.executeWithFallback("getBalance", ...args);
   }
 
   getTransactionCount(...args: any[]): Promise<number> {
-    return this.executeWithFallback(0, "getTransactionCount", ...args);
+    return this.executeWithFallback("getTransactionCount", ...args);
   }
 
   getCode(...args: any[]): Promise<string> {
-    return this.executeWithFallback(0, "getCode", ...args);
+    return this.executeWithFallback("getCode", ...args);
   }
 
   getStorageAt(...args: any[]): Promise<string> {
-    return this.executeWithFallback(0, "getStorageAt", ...args);
+    return this.executeWithFallback("getStorageAt", ...args);
   }
 
   call(...args: any[]): Promise<string> {
-    return this.executeWithFallback(0, "call", ...args);
+    return this.executeWithFallback("call", ...args);
   }
 
   estimateGas(...args: any[]): Promise<BigNumber> {
-    return this.executeWithFallback(0, "estimateGas", ...args);
+    return this.executeWithFallback("estimateGas", ...args);
   }
 
   getBlock(...args: any[]): Promise<Block> {
-    return this.executeWithFallback(0, "getBlock", ...args);
+    return this.executeWithFallback("getBlock", ...args);
   }
 
   getBlockWithTransactions(...args: any[]): Promise<BlockWithTransactions> {
-    return this.executeWithFallback(0, "getBlockWithTransactions", ...args);
+    return this.executeWithFallback("getBlockWithTransactions", ...args);
   }
 
   getTransaction(...args: any[]): Promise<TransactionResponse> {
-    return this.executeWithFallback(0, "getTransaction", ...args);
+    return this.executeWithFallback("getTransaction", ...args);
   }
 
   getTransactionReceipt(...args: any[]): Promise<TransactionReceipt> {
-    return this.executeWithFallback(0, "getTransactionReceipt", ...args);
+    return this.executeWithFallback("getTransactionReceipt", ...args);
   }
 
   getLogs(...args: any[]): Promise<Log[]> {
-    return this.executeWithFallback(0, "getLogs", ...args);
+    return this.executeWithFallback("getLogs", ...args);
   }
 
   resolveName(...args: any[]): Promise<string | null> {
-    return this.executeWithFallback(0, "resolveName", ...args);
+    return this.executeWithFallback("resolveName", ...args);
   }
 
   lookupAddress(...args: any[]): Promise<string | null> {
-    return this.executeWithFallback(0, "lookupAddress", ...args);
+    return this.executeWithFallback("lookupAddress", ...args);
   }
 }

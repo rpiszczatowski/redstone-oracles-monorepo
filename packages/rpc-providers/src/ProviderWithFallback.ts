@@ -33,6 +33,10 @@ export class ProviderWithFallback
   private currentProvider: Provider;
   private providerIndex = 0;
 
+  getCurrentProviderIndex(): number {
+    return this.providerIndex;
+  }
+
   getProviderWithFallbackConfig() {
     return { ...this.providerWithFallbackConfig };
   }
@@ -145,18 +149,29 @@ export class ProviderWithFallback
     }
   }
 
-  protected override async executeWithFallback(
+  protected override executeWithFallback(
+    fnName: string,
+    ...args: any[]
+  ): Promise<any> {
+    return this.doExecuteWithFallback(0, this.providerIndex, fnName, ...args);
+  }
+
+  private async doExecuteWithFallback(
     retryNumber = 0,
+    lastProviderUsedIndex: number,
     fnName: string,
     ...args: any[]
   ): Promise<any> {
     try {
       return await (this.currentProvider as any)[fnName](...[...args]);
     } catch (error: any) {
-      const newProviderIndex = this.electNewProviderOrFail(error, retryNumber);
-      this.useProvider(newProviderIndex);
-
-      return await this.executeWithFallback(retryNumber + 1, fnName, ...args);
+      this.electNewProviderOrFail(error, retryNumber, lastProviderUsedIndex);
+      return await this.doExecuteWithFallback(
+        retryNumber + 1,
+        this.providerIndex,
+        fnName,
+        ...args
+      );
     }
   }
 
@@ -181,7 +196,11 @@ export class ProviderWithFallback
     );
   }
 
-  private electNewProviderOrFail(error: any, retryNumber: number): number {
+  private electNewProviderOrFail(
+    error: any,
+    retryNumber: number,
+    lastUsedProviderIndex: number
+  ): void {
     const providerName = this.extractProviderName(this.providerIndex);
 
     if (
@@ -205,15 +224,20 @@ export class ProviderWithFallback
       throw error;
     }
 
-    // if we haven't tried provider for this request
-    const nextProviderIndex = (this.providerIndex + 1) % this.providers.length;
+    // we want to avoid situation were 2 calls fail in very short period
+    // if this happens we would choose effectively as new provider this.providerIndex + 2 % this.providers.length
+    // if first request already has changed provider we do nothing
+    if (lastUsedProviderIndex !== this.providerIndex) {
+      return;
+    }
 
+    const nextProviderIndex = (this.providerIndex + 1) % this.providers.length;
     const nextProviderName = this.extractProviderName(nextProviderIndex);
 
     this.providerWithFallbackConfig.logger.info(
       `Fallback in to next provider ${nextProviderName}.`
     );
 
-    return nextProviderIndex;
+    this.useProvider(nextProviderIndex);
   }
 }

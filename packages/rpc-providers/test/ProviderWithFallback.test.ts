@@ -176,11 +176,31 @@ describe("ProviderWithFallback", () => {
     expect(hardhat.ethers.provider.listenerCount()).to.eq(1);
   });
 
-  it("should revert", async () => {
+  it("should throw on revert", async () => {
     const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
     const contract = await ContractFactory.deploy();
     await contract.deployed();
 
     await expect(contract.fail()).rejectedWith();
+  });
+
+  it("should not increase provider index by 2 on two concurrent requests (rare case)", async () => {
+    const stubProvider = new providers.StaticJsonRpcProvider();
+    const spy = sinon.stub(stubProvider, "getBlockNumber");
+
+    const fallbackProvider = new ProviderWithFallback([
+      stubProvider,
+      stubProvider,
+      stubProvider,
+    ]);
+
+    spy.onFirstCall().rejects().onSecondCall().rejects();
+
+    await Promise.allSettled([
+      fallbackProvider.getBlockNumber(),
+      fallbackProvider.getBlockNumber(),
+    ]);
+
+    expect(fallbackProvider.getCurrentProviderIndex()).to.eq(1);
   });
 });
