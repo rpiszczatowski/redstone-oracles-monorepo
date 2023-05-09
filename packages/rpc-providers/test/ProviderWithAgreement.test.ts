@@ -24,6 +24,7 @@ describe("ProviderWithAgreement", () => {
 
   describe("with 3 same providers", () => {
     let providerWithAgreement: ProviderWithAgreement;
+    let counter: Counter;
 
     beforeEach(async () => {
       providerWithAgreement = new ProviderWithAgreement([
@@ -31,23 +32,18 @@ describe("ProviderWithAgreement", () => {
         hardhat.ethers.provider,
         hardhat.ethers.provider,
       ]);
+      counter = contract.connect(signer.connect(providerWithAgreement));
     });
 
     it("should read from contract", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       expect(await counter.getCount()).to.eq(0);
     });
 
     it("should write to contract", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       await counter.inc();
     });
 
     it("should await tx", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       const tx = await counter.inc();
       expect(await tx.wait()).not.to.be.undefined;
     });
@@ -55,6 +51,7 @@ describe("ProviderWithAgreement", () => {
 
   describe("with 2 same providers and 1 always failing", () => {
     let providerWithAgreement: ProviderWithAgreement;
+    let counter: Counter;
 
     beforeEach(async () => {
       providerWithAgreement = new ProviderWithAgreement([
@@ -62,23 +59,18 @@ describe("ProviderWithAgreement", () => {
         hardhat.ethers.provider,
         hardhat.ethers.provider,
       ]);
+      counter = contract.connect(signer.connect(providerWithAgreement));
     });
 
     it("should read from contract", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       expect(await counter.getCount()).to.eq(0);
     });
 
     it("should write to contract", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       await counter.inc();
     });
 
     it("should await tx", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       const tx = await counter.inc();
       expect(await tx.wait()).not.to.be.undefined;
     });
@@ -86,6 +78,7 @@ describe("ProviderWithAgreement", () => {
 
   describe("with  1 good provider 1 bad provider and 1 always failing", () => {
     let providerWithAgreement: ProviderWithAgreement;
+    let counter: Counter;
 
     const falseProvider = new providers.StaticJsonRpcProvider(
       "http://blabla.xd"
@@ -103,25 +96,20 @@ describe("ProviderWithAgreement", () => {
         new providers.StaticJsonRpcProvider("http://blabla.xd"),
         hardhat.ethers.provider,
       ]);
+      counter = contract.connect(signer.connect(providerWithAgreement));
     });
 
     it("should read from contract", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       await expect(counter.getCount()).rejectedWith(
         `Failed to find at least 2 agreeing providers.`
       );
     });
 
     it("should write to contract", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       await counter.inc();
     });
 
     it("should await tx", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       const tx = await counter.inc();
       expect(await tx.wait()).not.to.be.undefined;
     });
@@ -129,31 +117,28 @@ describe("ProviderWithAgreement", () => {
 
   describe("with  1 good provider and 2 always failing", () => {
     let providerWithAgreement: ProviderWithAgreement;
+    let counter: Counter;
+
     beforeEach(async () => {
       providerWithAgreement = new ProviderWithAgreement([
         hardhat.ethers.provider,
         new providers.StaticJsonRpcProvider("http://blabla.xd"),
         new providers.StaticJsonRpcProvider("http://blabla.xd"),
       ]);
+      counter = contract.connect(signer.connect(providerWithAgreement));
     });
 
     it("should read from contract", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       await expect(counter.getCount()).rejectedWith(
         `Failed to find at least 2 agreeing providers.`
       );
     });
 
     it("should write to contract", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       await counter.inc();
     });
 
     it("should await tx", async () => {
-      const counter = contract.connect(signer.connect(providerWithAgreement));
-
       const tx = await counter.inc();
       expect(await tx.wait()).not.to.be.undefined;
     });

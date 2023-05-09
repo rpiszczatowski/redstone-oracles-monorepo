@@ -13,9 +13,15 @@ const TEST_PRIV_KEY =
 
 describe("ProviderWithFallback", () => {
   let signer: Signer = new Wallet(TEST_PRIV_KEY);
+  let contract: Counter;
+
+  beforeEach(async () => {
+    contract = await deployCounter();
+  });
+
   describe("with first always failing and second always working provider", () => {
     let fallbackProvider: ProviderWithFallback;
-    let contract: Counter;
+    let counter: Counter;
 
     beforeEach(async () => {
       const alwaysFailingProvider = new providers.JsonRpcProvider(
@@ -25,31 +31,18 @@ describe("ProviderWithFallback", () => {
         alwaysFailingProvider,
         hardhat.ethers.provider,
       ]);
-
-      const ContractFactory = await hardhat.ethers.getContractFactory(
-        "Counter"
-      );
-      contract = await ContractFactory.deploy();
-      await contract.deployed();
+      counter = contract.connect(signer.connect(fallbackProvider));
     });
 
-    afterEach(() => {});
-
     it("should read from contract", async () => {
-      const counter = contract.connect(signer.connect(fallbackProvider));
-
       expect(await counter.getCount()).to.eq(0);
     });
 
     it("should write to contract", async () => {
-      const counter = contract.connect(signer.connect(fallbackProvider));
-
       const tx = await counter.inc();
     });
 
     it("should await tx", async () => {
-      const counter = contract.connect(signer.connect(fallbackProvider));
-
       const tx = await counter.inc();
       expect(await tx.wait()).not.to.be.undefined;
     });
@@ -102,10 +95,6 @@ describe("ProviderWithFallback", () => {
   });
 
   it("should react on events event if current provider is second one (and first doesn't work)", async () => {
-    const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
-    const contract = await ContractFactory.deploy();
-    await contract.deployed();
-
     const alwaysFailingProvider = new providers.JsonRpcProvider(
       "http://blabla.xd"
     );
@@ -127,10 +116,6 @@ describe("ProviderWithFallback", () => {
   });
 
   it("removing listener after swapping providers", async () => {
-    const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
-    const contract = await ContractFactory.deploy();
-    await contract.deployed();
-
     const alwaysFailingProvider = new providers.JsonRpcProvider(
       "http://blabla.xd"
     );
@@ -153,10 +138,6 @@ describe("ProviderWithFallback", () => {
   });
 
   it("event is triggered only once per all fallback providers", async () => {
-    const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
-    const contract = await ContractFactory.deploy();
-    await contract.deployed();
-
     const alwaysFailingProvider = new providers.JsonRpcProvider(
       "http://blabla.xd"
     );
@@ -177,10 +158,6 @@ describe("ProviderWithFallback", () => {
   });
 
   it("should throw on revert", async () => {
-    const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
-    const contract = await ContractFactory.deploy();
-    await contract.deployed();
-
     await expect(contract.fail()).rejectedWith();
   });
 
@@ -204,3 +181,10 @@ describe("ProviderWithFallback", () => {
     expect(fallbackProvider.getCurrentProviderIndex()).to.eq(1);
   });
 });
+
+async function deployCounter() {
+  const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
+  const contract = await ContractFactory.deploy();
+  await contract.deployed();
+  return contract;
+}
