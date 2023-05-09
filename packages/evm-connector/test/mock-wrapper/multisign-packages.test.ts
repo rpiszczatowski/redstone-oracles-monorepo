@@ -24,7 +24,7 @@ describe("SampleRedstoneConsumerNumericMockMultiSign", function () {
   ) => {
     const wrappedContract = WrapperBuilder.wrap(
       contract
-    ).usingMockMultiSignDataPackages(mockNumericPackage);
+    ).usingMockMultiSignDataPackage(mockNumericPackage);
 
     const tx = await wrappedContract.saveOracleValueInContractStorage(
       utils.convertStringToBytes32(dataFeedId)
@@ -45,7 +45,7 @@ describe("SampleRedstoneConsumerNumericMockMultiSign", function () {
   ) => {
     const wrappedContract = WrapperBuilder.wrap(
       contract
-    ).usingMockMultiSignDataPackages(mockNumericPackage);
+    ).usingMockMultiSignDataPackage(mockNumericPackage);
 
     await expect(
       wrappedContract.saveOracleValueInContractStorage(

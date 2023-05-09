@@ -73,7 +73,7 @@ describe("SampleChainableStorageProxy", function () {
 
   it("Should process oracle value for one asset with multi sign package", async () => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
         mockNumericPackageMultiSign
       );
 

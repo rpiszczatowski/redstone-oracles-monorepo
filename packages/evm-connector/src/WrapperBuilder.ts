@@ -37,7 +37,7 @@ export class WrapperBuilder {
     );
   }
 
-  usingMockMultiSignDataPackages(
+  usingMockMultiSignDataPackage(
     mockDataPackage: MockMultiSignDataPackageConfig
   ) {
     return new MockWrapperMultiSign(mockDataPackage).overwriteEthersContract(

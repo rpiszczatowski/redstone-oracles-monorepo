@@ -42,7 +42,7 @@ describe("SampleProxyConnector", function () {
     revertMsg: string
   ) => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(mockPackage);
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(mockPackage);
     await expect(
       wrappedContract.getOracleValueUsingProxy(ethDataFeedId)
     ).to.be.revertedWith(revertMsg);
@@ -68,7 +68,7 @@ describe("SampleProxyConnector", function () {
 
   it("Should return correct oracle value for one asset with multi sign package", async () => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
         mockNumericPackageMultiSign
       );
 
@@ -138,7 +138,7 @@ describe("SampleProxyConnector", function () {
     });
 
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
         mockNumericPackageMultiSign
       );
 
@@ -164,7 +164,7 @@ describe("SampleProxyConnector", function () {
 
   it("Should forward msg.value with multi sign package", async () => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
         mockNumericPackageMultiSign
       );
     await expect(
@@ -190,7 +190,7 @@ describe("SampleProxyConnector", function () {
 
   it("Should work properly with long encoded functions with multi sign package", async () => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
         mockNumericPackageMultiSign
       );
     await expect(

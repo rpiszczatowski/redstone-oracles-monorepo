@@ -48,6 +48,16 @@ abstract contract RedstoneConsumerMultiSign is CalldataExtractor {
     return 1;
   }
 
+  /**
+   * 
+   * @dev This function should be overridden by the child consumer contract if the value is not a number.
+   * @param value The value to decode
+   * @return The decoded value
+   */
+  function decodeValue(uint256 value) internal pure virtual returns(uint256){
+    return value;
+  }
+
   /* ========== FUNCTIONS WITH IMPLEMENTATION (CAN NOT BE OVERRIDDEN) ========== */
 
   /**
@@ -108,20 +118,28 @@ abstract contract RedstoneConsumerMultiSign is CalldataExtractor {
       uint256 dataPointValue;
       uint256[] memory dataPointsValues = new uint256[](dataFeedIds.length);
 
-      uint256 dataPointNegativeOffset = calldataNegativeOffset +
-        signaturesByteSize +
-        DATA_PACKAGE_WITHOUT_SIG_BS;
+      // uint256 dataPointNegativeOffset = calldataNegativeOffset +
+      //   signaturesByteSize +
+      //   DATA_PACKAGE_WITHOUT_SIG_BS;
 
       for (uint256 dataPointIndex = 0; dataPointIndex < dataPointsCount; dataPointIndex++) {
-        dataPointNegativeOffset =
-          dataPointNegativeOffset +
-          eachDataPointValueByteSize +
-          DATA_POINT_SYMBOL_BS;
+        // dataPointNegativeOffset =
+        //   dataPointNegativeOffset +
+        //   eachDataPointValueByteSize +
+        //   DATA_POINT_SYMBOL_BS;
 
-        (dataPointDataFeedId, dataPointValue) = _extractDataPointValueAndDataFeedIdMultiSign(
-          dataPointNegativeOffset
+        (dataPointDataFeedId, dataPointValue) = _extractDataPointValueAndDataFeedId(
+          calldataNegativeOffset,
+          eachDataPointValueByteSize,
+          dataPointIndex,
+          signersCount
         );
 
+        dataPointValue = decodeValue(dataPointValue);
+
+        // (dataPointDataFeedId, dataPointValue) = _extractDataPointValueAndDataFeedIdFast(
+        //   dataPointNegativeOffset
+        // );
         for (uint256 requestedDataFeedId = 0; requestedDataFeedId < dataFeedIds.length; requestedDataFeedId++) {
           if (dataFeedIds[requestedDataFeedId] == dataPointDataFeedId) {
             dataFeedsMatched++;

@@ -103,9 +103,10 @@ contract CalldataExtractor is RedstoneConstants {
   function _extractDataPointValueAndDataFeedId(
     uint256 calldataNegativeOffsetForDataPackage,
     uint256 defaultDataPointValueByteSize,
-    uint256 dataPointIndex
+    uint256 dataPointIndex,
+    uint256 signatureCount
   ) internal pure virtual returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
-    uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
+    uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS + signatureCount * SIG_BS;
     uint256 dataPointNegativeOffset = negativeOffsetToDataPoints.add(
       (1 + dataPointIndex).mul((defaultDataPointValueByteSize + DATA_POINT_SYMBOL_BS))
     );
@@ -117,16 +118,16 @@ contract CalldataExtractor is RedstoneConstants {
   }
 
   // Used for multi sign approach
-  function _extractDataPointValueAndDataFeedIdMultiSign(
-    uint256 dataPointNegativeOffset
-  ) internal pure virtual returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
+  // function _extractDataPointValueAndDataFeedIdMultiSign(
+  //   uint256 dataPointNegativeOffset
+  // ) internal pure virtual returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
     
-    uint256 dataPointCalldataOffset = msg.data.length.sub(dataPointNegativeOffset);
-    assembly {
-      dataPointDataFeedId := calldataload(dataPointCalldataOffset)
-      dataPointValue := calldataload(add(dataPointCalldataOffset, DATA_POINT_SYMBOL_BS))
-    }
-  }
+  //   uint256 dataPointCalldataOffset = msg.data.length.sub(dataPointNegativeOffset);
+  //   assembly {
+  //     dataPointDataFeedId := calldataload(dataPointCalldataOffset)
+  //     dataPointValue := calldataload(add(dataPointCalldataOffset, DATA_POINT_SYMBOL_BS))
+  //   }
+  // }
 
   function _extractDataPointsDetailsForDataPackage(uint256 calldataNegativeOffsetForDataPackage)
     internal

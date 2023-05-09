@@ -186,9 +186,10 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
   function _extractDataPointValueAndDataFeedId(
     uint256 calldataNegativeOffsetForDataPackage,
     uint256 dataPointValueByteSize,
-    uint256 dataPointIndex
+    uint256 dataPointIndex,
+    uint256 signersCount
   ) internal pure override returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
-    uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
+    uint256 negativeOffsetToDataPoints = calldataNegativeOffsetForDataPackage + DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS + signersCount * SIG_BS;
     uint256 dataPointNegativeOffset = negativeOffsetToDataPoints
       + (1 + dataPointIndex).mul(dataPointValueByteSize + DATA_POINT_SYMBOL_BS);
     uint256 dataPointCalldataOffset = msg.data.length.sub(dataPointNegativeOffset);
@@ -213,5 +214,13 @@ abstract contract RedstoneConsumerBytesBase is RedstoneConsumerBase {
   /// @dev This is a helpful function for "tricky" calldata pointers
   function _getNumberFromLast128Bits(uint256 number) internal pure returns (uint256) {
     return uint128(number);
+  }
+
+  /// @dev This is a helpful function for "tricky" calldata pointers
+  function decodeValue(uint256 value) override internal pure returns (uint256 result) {
+    bytes memory aggregatedBytes = getCalldataBytesFromCalldataPointer(value);
+    assembly {
+      result := aggregatedBytes
+    }
   }
 }

@@ -84,6 +84,10 @@ export interface MockStringPackageArgs extends MockPackageArgs {
   dataPoints: IStringDataPoint[];
 }
 
+export interface MockStringMultiSignPackageArgs extends MockMultiSignPackageArgs {
+  dataPoints: IStringDataPoint[];
+}
+
 export interface MockPackageWithOneNumericDataPointArgs
   extends MockPackageArgs,
     INumericDataPoint {}
@@ -289,6 +293,13 @@ export const getMockStringPackage = (
 ): MockDataPackageConfig => {
   const stringDataPoints = args.dataPoints.map((dp) => new StringDataPoint(dp));
   return getMockPackage(args, stringDataPoints);
+};
+
+export const getMockStringMultiSignPackage = (
+  args: MockStringMultiSignPackageArgs
+): MockMultiSignDataPackageConfig => {
+  const stringDataPoints = args.dataPoints.map((dp) => new StringDataPoint(dp));
+  return getMockMultiSignedPackage(args, stringDataPoints);
 };
 
 export const getMockPackageWithOneNumericDataPoint = (

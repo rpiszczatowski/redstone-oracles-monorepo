@@ -4,11 +4,13 @@ import {
   getMockNumericMultiSignPackage,
   getMockSignedDataPackageObj,
   getMockStringPackage,
+  getMockStringMultiSignPackage,
   getRange,
   MockNumericPackageArgs,
   MockSignerIndex,
   MockStringPackageArgs,
   MockNumericMultiSignPackageArgs,
+  MockStringMultiSignPackageArgs,
 } from "../src/helpers/test-utils";
 
 export const NUMBER_OF_MOCK_NUMERIC_SIGNERS = 10;
@@ -103,8 +105,20 @@ export const mockBytesPackageConfigs: MockStringPackageArgs[] = getRange({
   mockSignerIndex: i as MockSignerIndex,
 }));
 
+export const mockBytesPackageMultiSignConfig: MockStringMultiSignPackageArgs = {
+  mockSignerIndices: getRange({
+    start: 0,
+    length: 3,
+  }).map((i: number) => i as MockSignerIndex),
+  dataPoints: bytesDataPoints,
+};
+
 export const mockBytesPackages = mockBytesPackageConfigs.map(
   getMockStringPackage
+);
+
+export const mockBytesPackageMultiSign = getMockStringMultiSignPackage(
+  mockBytesPackageMultiSignConfig
 );
 
 export const expectedBytesValues = {

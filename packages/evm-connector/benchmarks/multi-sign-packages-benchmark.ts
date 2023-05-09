@@ -189,7 +189,7 @@ describe("Benchmark", function () {
 
     const wrappedMultiSignContract = WrapperBuilder.wrap(
       multiSignContract
-    ).usingMockMultiSignDataPackages(
+    ).usingMockMultiSignDataPackage(
       mockMultiSingDataPackagesConfig
     );
 

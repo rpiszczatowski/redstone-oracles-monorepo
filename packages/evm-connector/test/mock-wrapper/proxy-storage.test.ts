@@ -99,7 +99,7 @@ describe("SampleStorageProxy", function () {
 
   it("Should return correct oracle value for one asset using dry run with multi sign package", async () => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
         mockNumericPackageMultiSign
       );
 
@@ -195,7 +195,7 @@ describe("SampleStorageProxy", function () {
 
   it("Should return correct oracle value for one asset with multi sign package", async () => {
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
         mockNumericPackageMultiSign
       );
 
@@ -228,7 +228,7 @@ describe("SampleStorageProxy", function () {
     const mockNumericPackage = prepareMockPackagesForManyAssetsMultiSign();
 
     const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackages(
+      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
         mockNumericPackage
       );
       

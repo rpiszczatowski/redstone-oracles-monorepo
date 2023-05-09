@@ -211,15 +211,27 @@ abstract contract RedstoneConsumerBase is RedstoneConsumerMultiSign {
 
     // Updating helpful arrays
     {
+      // uint256 dataPointNegativeOffset = calldataNegativeOffset + DATA_PACKAGE_WITHOUT_DATA_POINTS_BS;
       bytes32 dataPointDataFeedId;
       uint256 dataPointValue;
       for (uint256 dataPointIndex = 0; dataPointIndex < dataPointsCount; dataPointIndex++) {
+
+          // dataPointNegativeOffset =
+          // dataPointNegativeOffset +
+          // eachDataPointValueByteSize +
+          // DATA_POINT_SYMBOL_BS;
         // Extracting data feed id and value for the current data point
         (dataPointDataFeedId, dataPointValue) = _extractDataPointValueAndDataFeedId(
           calldataNegativeOffset,
           eachDataPointValueByteSize,
-          dataPointIndex
+          dataPointIndex,
+          1
         );
+
+
+        // (dataPointDataFeedId, dataPointValue) = _extractDataPointValueAndDataFeedIdMultiSign(
+        //   dataPointNegativeOffset
+        // );
 
         for (
           uint256 dataFeedIdIndex = 0;
