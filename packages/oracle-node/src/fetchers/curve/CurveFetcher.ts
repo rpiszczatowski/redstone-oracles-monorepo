@@ -37,7 +37,7 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
     try {
       const { address, provider, ratioMultiplier, functionName } =
         this.poolsConfig[id];
-      const curveFactory = new Contract(address, abi as any, provider);
+      const curveFactory = new Contract(address, abi, provider);
 
       const { tokenIndex, pairedTokenIndex } = this.poolsConfig[id];
 
@@ -52,7 +52,6 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
         assetId: id,
       };
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
@@ -68,10 +67,8 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
   calculateSpotPrice(assetId: string, response: Response): number {
     const pairedTokenPrice = this.getPairedTokenPrice(assetId);
     const { ratio } = response;
-
-    const spotPrice = ratio.mul(utils.parseEther("1.0")).div(pairedTokenPrice);
-
-    return parseFloat(utils.formatUnits(spotPrice, DEFAULT_DECIMALS));
+    const ratioAsNumber = Number(utils.formatUnits(ratio, DEFAULT_DECIMALS));
+    return ratioAsNumber * pairedTokenPrice;
   }
 
   calculateLiquidity(_assetId: string, _response: Response): number {
@@ -85,10 +82,6 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
     if (!lastPriceFromCache) {
       throw new Error(`Cannot get last price from cache for: ${pairedToken}`);
     }
-    const pairedTokenPriceAsBigNumber = utils.parseEther(
-      lastPriceFromCache.value.toString()
-    );
-
-    return pairedTokenPriceAsBigNumber;
+    return lastPriceFromCache.value;
   }
 }

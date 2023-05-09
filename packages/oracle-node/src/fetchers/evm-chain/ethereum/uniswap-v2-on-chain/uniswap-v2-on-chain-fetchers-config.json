@@ -7,6 +7,32 @@
       "symbol1": "WETH",
       "symbol1Decimals": 18,
       "pairedToken": "ETH"
+    },
+    "LINK": {
+      "address": "0xa2107fa5b38d9bbd2c461d6edf11b11a50f6b974",
+      "symbol0": "LINK",
+      "symbol0Decimals": 18,
+      "symbol1": "WETH",
+      "symbol1Decimals": 18,
+      "pairedToken": "ETH"
+    },
+    "STETH": {
+      "address": "0x4028daac072e492d34a3afdbef0ba7e35d8b55c4",
+      "symbol0": "STETH",
+      "symbol0Decimals": 18,
+      "symbol1": "WETH",
+      "symbol1Decimals": 18,
+      "pairedToken": "ETH"
+    }
+  },
+  "uniswap-v2-on-chain-fxs": {
+    "FRAX": {
+      "address": "0xe1573b9d29e2183b1af0e743dc2754979a40d237",
+      "symbol0": "FXS",
+      "symbol0Decimals": 18,
+      "symbol1": "FRAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "FXS"
     }
   }
 }

@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Consola } from "consola";
 import { v4 as uuidv4 } from "uuid";
 import fetchers from "./index";
@@ -21,6 +22,7 @@ import {
 import { IterationContext } from "../schedulers/IScheduler";
 import { terminateWithManifestConfigError } from "../Terminator";
 import { stringifyError } from "../utils/error-stringifier";
+import { config } from "../config";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -36,11 +38,21 @@ export interface PriceValidationArgs {
   timestamp: number;
   deviationConfig: DeviationCheckConfig;
   recentPrices: PriceValueInLocalDB[];
+  priceLimits?: PriceLimits;
 }
 
 interface PriceValidationResult {
   isValid: boolean;
   reason: string;
+}
+
+interface PriceLimits {
+  lower: number;
+  upper: number;
+}
+
+interface PricesLimits {
+  [symbol: string]: PriceLimits;
 }
 
 export default class PricesService {
@@ -168,11 +180,13 @@ export default class PricesService {
       - invalid values excluding
       - aggregation across different sources
       - valid sources number
+      - aggregated prices hard limits
   */
   async calculateAggregatedValues(
     prices: PriceDataBeforeAggregation[]
   ): Promise<PriceDataAfterAggregation[]> {
     const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
+    const pricesLimits = await this.fetchPricesLimits();
 
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
     for (const price of prices) {
@@ -198,11 +212,12 @@ export default class PricesService {
           prices
         );
 
-        // Throwing an error if price is invalid or too deviated
+        // Throwing an error if price is invalid, too deviated or out of hard limits
         this.assertValidPrice(
           priceAfterAggregation,
           pricesInLocalDBForSymbol,
-          deviationCheckConfig
+          deviationCheckConfig,
+          pricesLimits
         );
 
         // Throwing an error if not enough sources for symbol
@@ -250,13 +265,15 @@ export default class PricesService {
   assertValidPrice(
     price: PriceDataAfterAggregation,
     recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
-    deviationCheckConfig: DeviationCheckConfig
+    deviationCheckConfig: DeviationCheckConfig,
+    pricesLimits: PricesLimits
   ) {
     const { isValid, reason } = this.validatePrice({
       value: price.value,
       timestamp: price.timestamp,
       deviationConfig: deviationCheckConfig,
       recentPrices: recentPricesInLocalDBForSymbol,
+      priceLimits: pricesLimits[price.symbol],
     });
 
     if (!isValid) {
@@ -267,7 +284,7 @@ export default class PricesService {
   }
 
   validatePrice(args: PriceValidationArgs): PriceValidationResult {
-    const { value, deviationConfig } = args;
+    const { value, deviationConfig, priceLimits } = args;
     const { deviationWithRecentValues } = deviationConfig;
 
     let isValid = false;
@@ -282,6 +299,12 @@ export default class PricesService {
 
       if (deviationPercent > deviationWithRecentValues.maxPercent) {
         reason = `Value is too deviated (${deviationPercent}%)`;
+      } else if (
+        priceLimits &&
+        (value > priceLimits.upper || value < priceLimits.lower)
+      ) {
+        const { lower, upper } = priceLimits;
+        reason = `Value is out of hard limits (value: ${value}, limits: ${lower}-${upper})`;
       } else {
         isValid = true;
       }
@@ -374,5 +397,13 @@ export default class PricesService {
           `Valid sources: ${sources.join(",")}`
       );
     }
+  }
+
+  async fetchPricesLimits(): Promise<PricesLimits> {
+    if (!config.pricesHardLimitsUrl) {
+      return {};
+    }
+    const response = await axios.get<PricesLimits>(config.pricesHardLimitsUrl);
+    return response.data;
   }
 }

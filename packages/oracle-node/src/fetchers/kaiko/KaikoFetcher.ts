@@ -13,13 +13,9 @@ const KAIKO_REQUEST_HEADERS = {
 };
 const KAIKO_REQUEST_PARAMS = {
   page_size: 10,
-  interval: "1m",
+  interval: "5m",
   sort: "desc",
   extrapolate_missing_values: true,
-};
-const KAIKO_CONFIG = {
-  headers: KAIKO_REQUEST_HEADERS,
-  params: KAIKO_REQUEST_PARAMS,
 };
 
 export class KaikoFetcher extends MultiRequestFetcher {
@@ -32,7 +28,10 @@ export class KaikoFetcher extends MultiRequestFetcher {
   };
 
   override makeRequest(id: string): Promise<any> {
-    return axios.get(this.buildKaikoApiUrl(id), KAIKO_CONFIG);
+    return axios.get(this.buildKaikoApiUrl(id), {
+      headers: KAIKO_REQUEST_HEADERS,
+      params: KAIKO_REQUEST_PARAMS,
+    });
   }
 
   override extractPrice(

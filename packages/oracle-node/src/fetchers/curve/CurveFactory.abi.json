@@ -9,7 +9,7 @@
     ],
     "stateMutability": "view",
     "type": "function",
-    "gas": 2673791
+    "gas": "2673791"
   },
   {
     "name": "get_dy_underlying",
@@ -21,6 +21,6 @@
     ],
     "stateMutability": "view",
     "type": "function",
-    "gas": 2673474
+    "gas": "2673474"
   }
 ]

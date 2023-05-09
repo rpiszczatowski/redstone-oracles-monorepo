@@ -46,4 +46,26 @@ export const curveFetchersConfig = {
       functionName: "get_dy_underlying",
     },
   },
+  "curve-eth": {
+    STETH: {
+      address: "0xdc24316b9ae028f1497c275eb9192a3ea0f67022",
+      tokenIndex: 1,
+      pairedTokenIndex: 0,
+      pairedToken: "ETH",
+      provider: ethereumProvider,
+      ratioMultiplier: 1,
+      functionName: "get_dy",
+    },
+  },
+  "curve-weth": {
+    STETH: {
+      address: "0x828b154032950C8ff7CF8085D841723Db2696056",
+      tokenIndex: 1,
+      pairedTokenIndex: 0,
+      pairedToken: "ETH",
+      provider: ethereumProvider,
+      ratioMultiplier: 1,
+      functionName: "get_dy",
+    },
+  },
 };

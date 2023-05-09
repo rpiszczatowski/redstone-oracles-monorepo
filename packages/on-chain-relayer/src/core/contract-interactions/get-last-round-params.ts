@@ -1,20 +1,10 @@
-import { BigNumber, Contract } from "ethers";
-
-const parseBigNumberParam = (valueInBigNumber: BigNumber) =>
-  valueInBigNumber.toNumber();
-
-export type LastRoundParams = {
-  lastRound: number;
-  lastUpdateTimestamp: number;
-};
+import { IRedstoneAdapter } from "../../../typechain-types";
 
 export const getLastRoundParamsFromContract = async (
-  managerContract: Contract
-): Promise<LastRoundParams> => {
-  const [lastRound, lastUpdateTimestamp] =
-    await managerContract.getLastRoundParams();
+  adapterContract: IRedstoneAdapter
+) => {
+  const timestamps = await adapterContract.getTimestampsFromLatestUpdate();
   return {
-    lastRound: parseBigNumberParam(lastRound),
-    lastUpdateTimestamp: parseBigNumberParam(lastUpdateTimestamp),
+    lastUpdateTimestamp: timestamps.blockTimestamp.toNumber() * 1000,
   };
 };

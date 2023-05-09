@@ -1,14 +1,16 @@
-import { Contract } from "ethers";
+import { Provider } from "@ethersproject/providers";
+import { Contract, Signer } from "ethers";
+import { abi as redstoneAdapterABI } from "../../../artifacts/contracts/core/IRedstoneAdapter.sol/IRedstoneAdapter.json";
 import { abi as sortedOraclesABI } from "../../../artifacts/contracts/custom-integrations/mento/ISortedOracles.sol/ISortedOracles.json";
-import { abi as mentoAdapterABI } from "../../../artifacts/contracts/custom-integrations/mento/MentoAdapter.sol/MentoAdapter.json";
-import { abi as priceFeedsAdapterABI } from "../../../artifacts/contracts/price-feeds/PriceFeedsAdapter.sol/PriceFeedsAdapter.json";
+import { abi as mentoAdapterABI } from "../../../artifacts/contracts/custom-integrations/mento/MentoAdapterBase.sol/MentoAdapterBase.json";
+import { IRedstoneAdapter } from "../../../typechain-types";
 import { config } from "../../config";
-import { getProvider, getSigner } from "./get-provider-or-signer";
+import { getProvider } from "./get-provider-or-signer";
 
-export const getAdapterContract = () => {
+export const getAdapterContract = (signer: Signer | Provider) => {
   const { adapterContractAddress } = config;
   const abi = getAbiForAdapter();
-  return new Contract(adapterContractAddress, abi, getSigner());
+  return new Contract(adapterContractAddress, abi, signer) as IRedstoneAdapter;
 };
 
 export const getSortedOraclesContractAtAddress = (
@@ -24,7 +26,7 @@ export const getSortedOraclesContractAtAddress = (
 const getAbiForAdapter = () => {
   switch (config.adapterContractType) {
     case "price-feeds":
-      return priceFeedsAdapterABI;
+      return redstoneAdapterABI;
     case "mento":
       return mentoAdapterABI;
     default:

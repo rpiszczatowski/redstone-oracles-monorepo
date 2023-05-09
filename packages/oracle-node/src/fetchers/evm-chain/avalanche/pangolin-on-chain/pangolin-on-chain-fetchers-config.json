@@ -1,0 +1,54 @@
+{
+  "pangolin-on-chain-wavax": {
+    "PNG": {
+      "address": "0xd7538cabbf8605bde1f4901b47b8d42c61de0367",
+      "symbol0": "PNG",
+      "symbol0Decimals": 18,
+      "symbol1": "WAVAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    },
+    "QI": {
+      "address": "0xe530dc2095ef5653205cf5ea79f8979a7028065c",
+      "symbol0": "QI",
+      "symbol0Decimals": 18,
+      "symbol1": "WAVAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    },
+    "PTP": {
+      "address": "0xa7a175a26bbcb1eaca6ff5318022e27e1df46fce",
+      "symbol0": "PTP",
+      "symbol0Decimals": 18,
+      "symbol1": "WAVAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    },
+    "XAVA": {
+      "address": "0x42152bdd72de8d6767fe3b4e17a221d6985e8b25",
+      "symbol0": "WAVAX",
+      "symbol0Decimals": 18,
+      "symbol1": "XAVA",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    },
+    "YAK": {
+      "address": "0xd2f01cd87a43962fd93c21e07c1a420714cc94c9",
+      "symbol0": "YAK",
+      "symbol0Decimals": 18,
+      "symbol1": "WAVAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    }
+  },
+  "pangolin-on-chain-usdc": {
+    "YAK": {
+      "address": "0xd9bf8b0ae36f31f27e6beb1d187f4fbb68da2754",
+      "symbol0": "YAK",
+      "symbol0Decimals": 18,
+      "symbol1": "USDC",
+      "symbol1Decimals": 6,
+      "pairedToken": "USDC"
+    }
+  }
+}
