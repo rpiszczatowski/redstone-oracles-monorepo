@@ -1,4 +1,4 @@
-import { ErrorCode } from "@ethersproject/logger";
+import { ErrorCode, Logger } from "@ethersproject/logger";
 import {
   EventType,
   JsonRpcProvider,
@@ -9,9 +9,10 @@ import {
 } from "@ethersproject/providers";
 import { ProviderWithFallbackBase } from "./ProviderWithFallbackBase";
 
+const logger = Logger.globalLogger();
+
 export type ProviderWithFallbackConfig = {
   unrecoverableErrors: ErrorCode[];
-  logger: { info: (message: string) => void; warn: (message: string) => void };
   providerNames?: string[];
 };
 
@@ -21,7 +22,6 @@ export const FALLBACK_DEFAULT_CONFIG: ProviderWithFallbackConfig = {
     ErrorCode.MISSING_ARGUMENT,
     ErrorCode.MISSING_NEW,
   ],
-  logger: { info: console.log, warn: console.log },
 };
 
 export class ProviderWithFallback
@@ -207,20 +207,16 @@ export class ProviderWithFallback
       error?.code &&
       this.providerWithFallbackConfig.unrecoverableErrors.includes(error.code)
     ) {
-      this.providerWithFallbackConfig.logger.warn(
-        `Unrecoverable error ${error.code}, rethrowing error`
-      );
+      logger.warn(`Unrecoverable error ${error.code}, rethrowing error`);
       throw error;
     }
 
-    this.providerWithFallbackConfig.logger.warn(
+    logger.warn(
       `Provider ${providerName} failed with error: ${error?.code} ${error?.message}`
     );
 
     if (retryNumber === this.providers.length - 1) {
-      this.providerWithFallbackConfig.logger.warn(
-        `All providers failed to execute action, rethrowing error`
-      );
+      logger.warn(`All providers failed to execute action, rethrowing error`);
       throw error;
     }
 
@@ -234,9 +230,7 @@ export class ProviderWithFallback
     const nextProviderIndex = (this.providerIndex + 1) % this.providers.length;
     const nextProviderName = this.extractProviderName(nextProviderIndex);
 
-    this.providerWithFallbackConfig.logger.info(
-      `Fallback in to next provider ${nextProviderName}.`
-    );
+    logger.info(`Fallback in to next provider ${nextProviderName}.`);
 
     this.useProvider(nextProviderIndex);
   }

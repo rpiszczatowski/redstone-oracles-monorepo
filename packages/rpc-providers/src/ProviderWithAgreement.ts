@@ -1,4 +1,5 @@
 import { BlockTag, TransactionRequest } from "@ethersproject/abstract-provider";
+import { Logger } from "@ethersproject/logger";
 import { Deferrable } from "@ethersproject/properties";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { utils } from "ethers";
@@ -6,6 +7,8 @@ import {
   ProviderWithFallback,
   ProviderWithFallbackConfig,
 } from "./ProviderWithFallback";
+
+const logger = Logger.globalLogger();
 
 export interface ProviderWithAgreementConfig
   extends ProviderWithFallbackConfig {
@@ -69,9 +72,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     }
 
     if (blockNumbers.length === 0) {
-      this.multiProviderConfig.logger.warn(
-        "Failed to getBlockNumber from at least one provider"
-      );
+      logger.warn("Failed to getBlockNumber from at least one provider");
       throw new AggregateError(errors);
     }
 
@@ -109,9 +110,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
           .finally(() => {
             handledResults += 1;
             if (handledResults === callPromises.length) {
-              this.multiProviderConfig.logger.warn(
-                "All providers failed to execute call."
-              );
+              logger.warn("All providers failed to execute call.");
               reject(
                 new AggregateError(
                   errors,
