@@ -3,6 +3,17 @@ import {
   ethereumProvider,
 } from "../../utils/blockchain-providers";
 
+const ETH_MULTI_BLOCK_CONFIG = {
+  sequenceStep: 1,
+  sequenceLength: 10,
+};
+
+// manipulation would require  8 * 30 = 240 blocks to be 100%
+const ARBITRUM_MULTI_BLOCK_CONFIG = {
+  sequenceStep: 8, // ~2 seconds
+  sequenceLength: 30, // ~2 * 30 = ~1min
+};
+
 export const curveFetchersConfig = {
   "curve-frax": {
     VST: {
@@ -13,6 +24,7 @@ export const curveFetchersConfig = {
       provider: arbitrumProvider,
       ratioMultiplier: 1,
       functionName: "get_dy",
+      multiBlockConfig: ARBITRUM_MULTI_BLOCK_CONFIG,
     },
   },
   "curve-usdc": {
@@ -24,6 +36,7 @@ export const curveFetchersConfig = {
       provider: ethereumProvider,
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
     },
     DAI: {
       address: "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
@@ -33,6 +46,7 @@ export const curveFetchersConfig = {
       provider: ethereumProvider,
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy_underlying",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
     },
   },
   "curve-usdt": {
@@ -44,6 +58,7 @@ export const curveFetchersConfig = {
       provider: ethereumProvider,
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy_underlying",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
     },
   },
   "curve-eth": {
@@ -55,6 +70,7 @@ export const curveFetchersConfig = {
       provider: ethereumProvider,
       ratioMultiplier: 1,
       functionName: "get_dy",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
     },
   },
   "curve-weth": {
@@ -66,6 +82,7 @@ export const curveFetchersConfig = {
       provider: ethereumProvider,
       ratioMultiplier: 1,
       functionName: "get_dy",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
     },
   },
 };

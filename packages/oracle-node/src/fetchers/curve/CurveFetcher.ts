@@ -1,9 +1,6 @@
-import { BigNumber, providers, utils, Contract } from "ethers";
-import {
-  DexOnChainFetcher,
-  Responses,
-} from "../dex-on-chain/DexOnChainFetcher";
+import { BigNumber, Contract, providers, utils } from "ethers";
 import { getLastPrice } from "../../db/local-db";
+import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import abi from "./CurveFactory.abi.json";
 
 const DEFAULT_DECIMALS = 8;
@@ -18,60 +15,63 @@ export interface PoolsConfig {
     provider: providers.Provider;
     ratioMultiplier: number;
     functionName: string;
+    multiBlockConfig: { sequenceStep: number; sequenceLength: number };
   };
 }
 
-interface Response {
+export interface CurveFetcherResponse {
   ratio: BigNumber;
   assetId: string;
 }
 
-export class CurveFetcher extends DexOnChainFetcher<Response> {
+export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
   protected retryForInvalidResponse: boolean = true;
 
   constructor(name: string, private readonly poolsConfig: PoolsConfig) {
     super(name);
   }
 
-  async makeRequest(id: string): Promise<Response> {
-    try {
-      const { address, provider, ratioMultiplier, functionName } =
-        this.poolsConfig[id];
-      const curveFactory = new Contract(address, abi, provider);
-
-      const { tokenIndex, pairedTokenIndex } = this.poolsConfig[id];
-
-      const ratio = await curveFactory[functionName](
-        tokenIndex,
-        pairedTokenIndex,
-        (DEFAULT_RATIO_QUANTITY * ratioMultiplier).toString()
-      );
-
-      return {
-        ratio,
-        assetId: id,
-      };
-    } catch (error) {
-      throw error;
-    }
+  getPoolConfig(): PoolsConfig {
+    return this.poolsConfig;
   }
 
-  getAssetId(response: Response) {
-    return response.assetId;
+  async makeRequest(
+    id: string,
+    blockTag?: string | number
+  ): Promise<CurveFetcherResponse> {
+    const { address, provider, ratioMultiplier, functionName } =
+      this.poolsConfig[id];
+    const curveFactory = new Contract(address, abi, provider);
+
+    const { tokenIndex, pairedTokenIndex } = this.poolsConfig[id];
+
+    const ratio = await curveFactory[functionName](
+      tokenIndex,
+      pairedTokenIndex,
+      (DEFAULT_RATIO_QUANTITY * ratioMultiplier).toString(),
+      { blockTag }
+    );
+
+    return {
+      ratio,
+      assetId: id,
+    };
   }
 
-  validateResponse(response: Responses<Response>): boolean {
-    return response !== undefined;
-  }
-
-  calculateSpotPrice(assetId: string, response: Response): number {
+  override calculateSpotPrice(
+    assetId: string,
+    response: CurveFetcherResponse
+  ): number {
     const pairedTokenPrice = this.getPairedTokenPrice(assetId);
     const { ratio } = response;
     const ratioAsNumber = Number(utils.formatUnits(ratio, DEFAULT_DECIMALS));
     return ratioAsNumber * pairedTokenPrice;
   }
 
-  calculateLiquidity(_assetId: string, _response: Response): number {
+  calculateLiquidity(
+    _assetId: string,
+    _response: CurveFetcherResponse
+  ): number {
     return 0;
   }
 
