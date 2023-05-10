@@ -5,12 +5,16 @@ import { abi as sortedOraclesABI } from "../../../artifacts/contracts/custom-int
 import { abi as mentoAdapterABI } from "../../../artifacts/contracts/custom-integrations/mento/MentoAdapterBase.sol/MentoAdapterBase.json";
 import { IRedstoneAdapter } from "../../../typechain-types";
 import { config } from "../../config";
-import { getProvider } from "./get-provider-or-signer";
+import { getProvider, getSigner } from "./get-provider-or-signer";
 
-export const getAdapterContract = (signer: Signer | Provider) => {
+export const getAdapterContract = (signerOrProvider?: Signer | Provider) => {
   const { adapterContractAddress } = config;
   const abi = getAbiForAdapter();
-  return new Contract(adapterContractAddress, abi, signer) as IRedstoneAdapter;
+  return new Contract(
+    adapterContractAddress,
+    abi,
+    signerOrProvider ?? getSigner()
+  ) as IRedstoneAdapter;
 };
 
 export const getSortedOraclesContractAtAddress = (

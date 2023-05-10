@@ -15,8 +15,8 @@
     "@redstone-finance/evm-connector": "^0.0.19",
     "dotenv": "^16.0.3",
     "ethers": "^5.7.2",
-    "toad-scheduler": "^2.2.0",
-    "redstone-rpc-providers": "*"
+    "redstone-rpc-providers": "*",
+    "toad-scheduler": "^2.2.0"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.7",
@@ -30,6 +30,7 @@
     "@types/chai": "^4.2.0",
     "@types/mocha": ">=9.1.0",
     "@types/node": "^18.14.6",
+    "@types/sinon": "^10.0.14",
     "chai": "^4.2.0",
     "hardhat": "^2.9.7",
     "hardhat-gas-reporter": "^1.0.9",
