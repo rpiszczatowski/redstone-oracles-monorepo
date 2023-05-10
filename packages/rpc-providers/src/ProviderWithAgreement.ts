@@ -41,10 +41,11 @@ export class ProviderWithAgreement extends ProviderWithFallback {
   }
 
   override async call(
-    transaction: Deferrable<TransactionRequest>
+    transaction: Deferrable<TransactionRequest>,
+    blockTag?: BlockTag
   ): Promise<string> {
     const electedBlockTag = utils.hexlify(
-      await this.electBlockNumber()
+      blockTag ?? (await this.electBlockNumber())
     ) as BlockTag;
 
     const promises = this.providers.map((provider) =>
@@ -110,7 +111,6 @@ export class ProviderWithAgreement extends ProviderWithFallback {
           .finally(() => {
             handledResults += 1;
             if (handledResults === callPromises.length) {
-              logger.warn("All providers failed to execute call.");
               reject(
                 new AggregateError(
                   errors,

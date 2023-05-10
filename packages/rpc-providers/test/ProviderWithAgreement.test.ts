@@ -74,6 +74,14 @@ describe("ProviderWithAgreement", () => {
       const tx = await counter.inc();
       expect(await tx.wait()).not.to.be.undefined;
     });
+
+    it("should use given block", async () => {
+      const blockNumber = await providerWithAgreement.getBlockNumber();
+      const tx = await counter.inc();
+      await tx.wait();
+      expect(await counter.getCount({ blockTag: blockNumber })).to.eq(0);
+      expect(await counter.getCount()).to.eq(1);
+    });
   });
 
   describe("with  1 good provider 1 bad provider and 1 always failing", () => {
