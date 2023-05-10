@@ -141,6 +141,6 @@ export class DataPackageBroadcastPerformer
 function priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
   return new NumericDataPoint({
     dataFeedId: price.symbol,
-    value: price.value,
+    value: price.value.unsafeToNumber(),
   });
 }

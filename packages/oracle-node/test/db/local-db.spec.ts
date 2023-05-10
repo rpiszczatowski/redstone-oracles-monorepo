@@ -7,6 +7,7 @@ import {
   savePrices,
   getLastPrice,
 } from "../../src/db/local-db";
+import { createSafeNumber } from "../../src/numbers/SafeNumberFactory";
 import { PriceDataAfterAggregation } from "../../src/types";
 import { roundTimestamp } from "../../src/utils/timestamps";
 
@@ -27,12 +28,12 @@ const prices: PriceDataAfterAggregation[] = [
   {
     ...defaultPriceProps,
     symbol: "BTC",
-    value: 4242,
+    value: createSafeNumber(4242),
   },
   {
     ...defaultPriceProps,
     symbol: "ETH",
-    value: 42,
+    value: createSafeNumber(42),
   },
 ];
 
@@ -64,20 +65,20 @@ describe("Local DB", () => {
     await savePrices(prices);
 
     expect(await getPrices(["BTC", "ETH"])).toEqual({
-      BTC: [{ value: 4242, timestamp }],
-      ETH: [{ value: 42, timestamp }],
+      BTC: [{ value: "4242", timestamp }],
+      ETH: [{ value: "42", timestamp }],
     });
 
     await savePrices(prices);
 
     expect(await getPrices(["BTC", "ETH"])).toEqual({
       BTC: [
-        { value: 4242, timestamp },
-        { value: 4242, timestamp },
+        { value: "4242", timestamp },
+        { value: "4242", timestamp },
       ],
       ETH: [
-        { value: 42, timestamp },
-        { value: 42, timestamp },
+        { value: "42", timestamp },
+        { value: "42", timestamp },
       ],
     });
   });
@@ -88,12 +89,12 @@ describe("Local DB", () => {
 
     expect(await getPrices(["BTC", "ETH"])).toEqual({
       BTC: [
-        { value: 4242, timestamp },
-        { value: 4242, timestamp },
+        { value: "4242", timestamp },
+        { value: "4242", timestamp },
       ],
       ETH: [
-        { value: 42, timestamp },
-        { value: 42, timestamp },
+        { value: "42", timestamp },
+        { value: "42", timestamp },
       ],
     });
 
@@ -107,8 +108,8 @@ describe("Local DB", () => {
     await savePrices(newerPrices);
 
     expect(await getPrices(["BTC", "ETH"])).toEqual({
-      BTC: [{ value: 4242, timestamp: newCurrentTimestamp }],
-      ETH: [{ value: 42, timestamp: newCurrentTimestamp }],
+      BTC: [{ value: "4242", timestamp: newCurrentTimestamp }],
+      ETH: [{ value: "42", timestamp: newCurrentTimestamp }],
     });
   });
 
@@ -119,17 +120,17 @@ describe("Local DB", () => {
     const endTimestamp = startTimestamp + testingRangeLengthMilliseconds;
     const interval = 10000; // 10 seconds
 
-    const getTestSymbol = (assetIndex: number) => `SYMBOL-${assetIndex}`;
+    const getTestSymbol = (assetIndex: string) => `SYMBOL-${assetIndex}`;
 
     const preparePrices = (timestamp: number): PriceDataAfterAggregation[] => {
       const roundedTimestamp = roundTimestamp(timestamp);
       const prices: PriceDataAfterAggregation[] = [];
       for (let assetIndex = 0; assetIndex < testAssetsCount; assetIndex++) {
-        const symbol = getTestSymbol(assetIndex);
+        const symbol = getTestSymbol(assetIndex.toString());
         prices.push({
           ...defaultPriceProps,
           symbol,
-          value: assetIndex,
+          value: createSafeNumber(assetIndex),
           timestamp: roundedTimestamp,
         });
       }
@@ -144,7 +145,7 @@ describe("Local DB", () => {
       expectedPricesCountPerAsset: number
     ) => {
       // We check values only for few assets to speed up tests
-      for (const assetIndex of [0, 42, 1500]) {
+      for (const assetIndex of ["0", "42", "1500"]) {
         const symbol = getTestSymbol(assetIndex);
         expect(pricesFromDB).toHaveProperty(symbol);
         expect(pricesFromDB[symbol].length).toBe(expectedPricesCountPerAsset);
@@ -188,7 +189,7 @@ describe("Local DB", () => {
         ...defaultPriceProps,
         timestamp: defaultPriceProps.timestamp - FIVE_MINUTES_IN_MILLISECONDS,
         symbol: "AVAX",
-        value: 17,
+        value: createSafeNumber("17"),
       },
     ]);
 
