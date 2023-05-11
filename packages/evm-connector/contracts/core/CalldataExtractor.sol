@@ -17,10 +17,16 @@ contract CalldataExtractor is RedstoneConstants {
 
   error DataPackageTimestampMustNotBeZero();
   error DataPackageTimestampsMustBeEqual();
+  error RedstonePayloadMustHaveAtLeastOneDataPackage();
 
   function extractTimestampsAndAssertAllAreEqual() public pure returns (uint256 extractedTimestamp) {
     uint256 calldataNegativeOffset = _extractByteSizeOfUnsignedMetadata();
     uint256 dataPackagesCount = _extractDataPackagesCountFromCalldata(calldataNegativeOffset);
+
+    if (dataPackagesCount == 0) {
+      revert RedstonePayloadMustHaveAtLeastOneDataPackage();
+    }
+
     calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;
     for (uint256 dataPackageIndex = 0; dataPackageIndex < dataPackagesCount; dataPackageIndex++) {
       uint256 dataPackageByteSize = _getDataPackageByteSize(calldataNegativeOffset);
