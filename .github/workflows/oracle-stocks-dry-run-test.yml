@@ -21,4 +21,4 @@ jobs:
         run: yarn test:stocks-dry-run
         env:
           NODE_ENV: test
-          TWELVE_DATA_RAPID_API_KEY: ${{ secrets.TWELVE_DATA_RAPID_API_KEY }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
