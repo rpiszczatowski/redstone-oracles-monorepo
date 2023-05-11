@@ -160,7 +160,7 @@ export interface NodeConfig {
   arbitrumRpcUrl: string;
   enableStreamrBroadcasting: boolean;
   mockPricesUrlOrPath: string;
-  twelveDataRapidApiKey?: string;
+  twelveDataApiKey?: string;
   coinmarketcapApiKey?: string;
   kaikoApiKey?: string;
   stlouisfedApiKey?: string;

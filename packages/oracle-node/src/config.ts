@@ -8,7 +8,7 @@ const DEFAULT_ENABLE_JSON_LOGS = "true";
 const DEFAULT_PRINT_DIAGNOSTIC_INFO = "true";
 const DEFAULT_ENABLE_STREAMR_BROADCASTING = "false";
 const DEFAULT_MANIFEST_REFRESH_INTERVAL = "120000";
-const DEFAULT_TWELVE_DATA_RAPID_API_KEY = "";
+const DEFAULT_TWELVE_DATA_API_KEY = "";
 const DEFAULT_ETH_MAIN_RPC_URL = "https://rpc.ankr.com/eth";
 const DEFAULT_LEVEL_DB_LOCATION = "oracle-node-level-db";
 const DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS = "900000";
@@ -117,9 +117,9 @@ export const config: NodeConfig = Object.freeze({
   overrideManifestUsingFile: getOptionallyManifestData(),
   overrideDirectCacheServiceUrls: getOptionallyCacheServiceUrls(),
   overridePriceCacheServiceUrls: getOptionallyPriceDataServiceUrls(),
-  twelveDataRapidApiKey: getFromEnv(
-    "TWELVE_DATA_RAPID_API_KEY",
-    DEFAULT_TWELVE_DATA_RAPID_API_KEY
+  twelveDataApiKey: getFromEnv(
+    "TWELVE_DATA_API_KEY",
+    DEFAULT_TWELVE_DATA_API_KEY
   ),
   coinmarketcapApiKey: getFromEnv(
     "COINMARKETCAP_API_KEY",
