@@ -150,5 +150,23 @@ describe("ProviderWithAgreement", () => {
       const tx = await counter.inc();
       expect(await tx.wait()).not.to.be.undefined;
     });
+
+    it("should respect getBlockNumber timeout", async () => {
+      const firstProvider = new providers.StaticJsonRpcProvider(
+        "http://blabla.xd"
+      );
+
+      firstProvider.getBlockNumber = () =>
+        new Promise((resolve) => setTimeout(() => resolve(0), 22));
+
+      const providerWithAgreement = new ProviderWithAgreement(
+        [firstProvider, hardhat.ethers.provider],
+        { getBlockNumberTimeoutMS: 20 }
+      );
+
+      expect(await providerWithAgreement.getBlockNumber()).to.eq(
+        await hardhat.ethers.provider.getBlockNumber()
+      );
+    });
   });
 });

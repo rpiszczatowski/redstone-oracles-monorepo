@@ -3,34 +3,50 @@ import { Logger } from "@ethersproject/logger";
 import { Deferrable } from "@ethersproject/properties";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { utils } from "ethers";
+import { timeout } from "./common";
 import {
   ProviderWithFallback,
   ProviderWithFallbackConfig,
 } from "./ProviderWithFallback";
 
-const logger = Logger.globalLogger();
-
 export interface ProviderWithAgreementConfig
   extends ProviderWithFallbackConfig {
   numberOfNodesWhichHaveToAgree: number;
+  getBlockNumberTimeoutMS: number;
+  electBlockFn: (blocks: number[], numberOfAgreeingNodes: number) => number;
 }
+
+const DEFAULT_ELECT_BLOCK_FN = (
+  blockNumbers: number[],
+  numberOfProviders: number
+): number => {
+  if (blockNumbers.length === 1) {
+    return blockNumbers[0];
+  }
+
+  return blockNumbers
+    .sort((a, b) => a - b)
+    .at(Math.floor(numberOfProviders / 3)) as number;
+};
 
 const defaultConfig: Omit<
   ProviderWithAgreementConfig,
   keyof ProviderWithFallbackConfig
 > = {
   numberOfNodesWhichHaveToAgree: 2,
+  getBlockNumberTimeoutMS: 5_000,
+  electBlockFn: DEFAULT_ELECT_BLOCK_FN,
 };
 
 export class ProviderWithAgreement extends ProviderWithFallback {
-  private readonly multiProviderConfig: ProviderWithAgreementConfig;
+  private readonly agreementConfig: ProviderWithAgreementConfig;
 
   constructor(
     providers: JsonRpcProvider[],
     config: Partial<ProviderWithAgreementConfig> = {}
   ) {
     super(providers, config);
-    this.multiProviderConfig = {
+    this.agreementConfig = {
       ...defaultConfig,
       ...this.getProviderWithFallbackConfig(),
     };
@@ -56,32 +72,30 @@ export class ProviderWithAgreement extends ProviderWithFallback {
   }
 
   private async electBlockNumber(): Promise<number> {
-    const blockNumbers: number[] = [];
-
     // collect block numbers
     const blockNumbersResults = await Promise.allSettled(
-      this.providers.map((provider) => provider.getBlockNumber())
+      this.providers.map((provider) =>
+        timeout(
+          provider.getBlockNumber(),
+          this.agreementConfig.getBlockNumberTimeoutMS
+        )
+      )
     );
 
-    const errors = [];
-    for (const blockNumberResult of blockNumbersResults) {
-      if (blockNumberResult.status === "fulfilled") {
-        blockNumbers.push(blockNumberResult.value);
-      } else {
-        errors.push(new Error(blockNumberResult.reason));
-      }
-    }
+    const blockNumbers = blockNumbersResults
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => (result as PromiseFulfilledResult<number>).value);
 
     if (blockNumbers.length === 0) {
-      logger.warn("Failed to getBlockNumber from at least one provider");
-      throw new AggregateError(errors);
+      throw new AggregateError(
+        "Failed to getBlockNumber from at least one provider"
+      );
     }
 
-    if (blockNumbers.length === 1) {
-      return blockNumbers[0];
-    }
-
-    return blockNumbers.sort((a, b) => a - b).at(1) as number;
+    return this.agreementConfig.electBlockFn(
+      blockNumbers,
+      this.providers.length
+    );
   }
 
   private resolveCallPromises(callPromises: Promise<string>[]) {
@@ -102,7 +116,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
             // we have found satisfying number of same responses
             if (
               agreedResults.length ===
-              this.multiProviderConfig.numberOfNodesWhichHaveToAgree
+              this.agreementConfig.numberOfNodesWhichHaveToAgree
             ) {
               resolve(currentResult);
             }
@@ -114,7 +128,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
               reject(
                 new AggregateError(
                   errors,
-                  `Failed to find at least ${this.multiProviderConfig.numberOfNodesWhichHaveToAgree} agreeing providers.`
+                  `Failed to find at least ${this.agreementConfig.numberOfNodesWhichHaveToAgree} agreeing providers.`
                 )
               );
             }
