@@ -1,22 +1,24 @@
-import { BigNumber, Contract, Wallet } from "ethers";
+import { Contract, Wallet } from "ethers";
 import {
   MockContract,
   MockProvider,
   deployContract,
   deployMockContract,
 } from "ethereum-waffle";
-import { AvalancheEvmFetcher } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/AvalancheEvmFetcher";
+import { EvmFetcher } from "../../src/fetchers/evm-chain/shared/EvmFetcher";
+import { requestHandlers } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources";
 import Multicall2 from "../../src/fetchers/evm-chain/shared/abis/Multicall2.abi.json";
-import { yieldYakContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/contracts-details/yield-yak";
-import { lpTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/contracts-details/lp-tokens";
-import { mooTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/contracts-details/moo-joe";
 import { saveMockPriceInLocalDb, saveMockPricesInLocalDb } from "./_helpers";
-import { oracleAdaptersContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/contracts-details/oracle-adapters";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
   setupLocalDb,
 } from "../../src/db/local-db";
+import { dexLpTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/dex-lp-tokens";
+import { glpManagerContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/glp-manager";
+import { mooTraderJoeTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/moo-trader-joe";
+import { oracleAdapterContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/oracle-adapter";
+import { yieldYakTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/yield-yak";
 
 jest.setTimeout(15000);
 
@@ -44,26 +46,30 @@ describe("Avalanche EVM fetcher", () => {
 
       yycontract = await deployMockContract(
         wallet,
-        yieldYakContractsDetails.YY_AAVE_AVAX.abi
+        yieldYakTokensContractsDetails.YY_AAVE_AVAX.abi
       );
       await yycontract.mock.totalDeposits.returns("147818834870104122793011");
       await yycontract.mock.totalSupply.returns("141732077110706865863209");
 
       multicallContract = await deployMulticallContract(wallet);
 
-      yieldYakContractsDetails.YY_AAVE_AVAX.address = yycontract.address;
+      yieldYakTokensContractsDetails.YY_AAVE_AVAX.address = yycontract.address;
     });
 
     test("Should properly fetch data", async () => {
-      const fetcher = new AvalancheEvmFetcher(
-        { avalancheProvider: provider },
-        multicallContract.address
+      const fetcher = new EvmFetcher(
+        "avalanche-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
       );
 
       await saveMockPriceInLocalDb(17, "AVAX");
 
       const result = await fetcher.fetchAll(["YY_AAVE_AVAX"]);
-      expect(result).toEqual([{ symbol: "YY_AAVE_AVAX", value: 17.73007384 }]);
+      expect(result).toEqual([
+        { symbol: "YY_AAVE_AVAX", value: 17.730073840863344 },
+      ]);
     });
   });
 
@@ -74,55 +80,61 @@ describe("Avalanche EVM fetcher", () => {
 
       const yycontract = await deployMockContract(
         wallet,
-        yieldYakContractsDetails.YY_PTP_sAVAX.abi
+        yieldYakTokensContractsDetails.YY_PTP_sAVAX.abi
       );
       await yycontract.mock.totalDeposits.returns("24882891934878312264803");
       await yycontract.mock.totalSupply.returns("23574725205283071781434");
 
       multicallContract = await deployMulticallContract(wallet);
 
-      yieldYakContractsDetails.YY_PTP_sAVAX.address = yycontract.address;
+      yieldYakTokensContractsDetails.YY_PTP_sAVAX.address = yycontract.address;
     });
 
     test("Should properly fetch data", async () => {
-      const fetcher = new AvalancheEvmFetcher(
-        { avalancheProvider: provider },
-        multicallContract.address
+      const fetcher = new EvmFetcher(
+        "avalanche-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
       );
 
       await saveMockPriceInLocalDb(23, "sAVAX");
 
       const result = await fetcher.fetchAll(["YY_PTP_sAVAX"]);
-      expect(result).toEqual([{ symbol: "YY_PTP_sAVAX", value: 24.27627506 }]);
+      expect(result).toEqual([
+        { symbol: "YY_PTP_sAVAX", value: 24.27627510050246 },
+      ]);
     });
   });
 
-  describe("LP Token", () => {
+  describe("DEX LP Token - TJ_AVAX_USDC_LP", () => {
     beforeAll(async () => {
       provider = new MockProvider();
       const [wallet] = provider.getWallets();
 
-      const lpTokenContract = await deployMockContract(
+      const cexLpTokenContract = await deployMockContract(
         wallet,
-        lpTokensContractsDetails.TJ_AVAX_USDC_LP.abi
+        dexLpTokensContractsDetails.TJ_AVAX_USDC_LP.abi
       );
-      await lpTokenContract.mock.getReserves.returns(
+      await cexLpTokenContract.mock.getReserves.returns(
         "116071821240319574811726",
         2399967450763,
         1681724100
       );
-      await lpTokenContract.mock.totalSupply.returns("374628493439219919");
+      await cexLpTokenContract.mock.totalSupply.returns("374628493439219919");
 
       multicallContract = await deployMulticallContract(wallet);
 
-      lpTokensContractsDetails.TJ_AVAX_USDC_LP.address =
-        lpTokenContract.address;
+      dexLpTokensContractsDetails.TJ_AVAX_USDC_LP.address =
+        cexLpTokenContract.address;
     });
 
     test("Should properly fetch data", async () => {
-      const fetcher = new AvalancheEvmFetcher(
-        { avalancheProvider: provider },
-        multicallContract.address
+      const fetcher = new EvmFetcher(
+        "avalanche-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
       );
 
       await saveMockPricesInLocalDb([17, 1], ["AVAX", "USDC"]);
@@ -134,35 +146,76 @@ describe("Avalanche EVM fetcher", () => {
     });
   });
 
-  describe("Moo Token", () => {
+  describe("DEX LP Token - TJ_AVAX_BTC_LP", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+
+      const cexLpTokenContract = await deployMockContract(
+        wallet,
+        dexLpTokensContractsDetails.TJ_AVAX_BTC_LP.abi
+      );
+      await cexLpTokenContract.mock.getReserves.returns(
+        1830801156,
+        "33041173352087533019593",
+        1683827563
+      );
+      await cexLpTokenContract.mock.totalSupply.returns("7434434708217657");
+
+      multicallContract = await deployMulticallContract(wallet);
+
+      dexLpTokensContractsDetails.TJ_AVAX_BTC_LP.address =
+        cexLpTokenContract.address;
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new EvmFetcher(
+        "avalanche-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
+      );
+
+      await saveMockPricesInLocalDb([14.89, 26844.66], ["AVAX", "BTC"]);
+
+      const result = await fetcher.fetchAll(["TJ_AVAX_BTC_LP"]);
+      expect(result).toEqual([
+        { symbol: "TJ_AVAX_BTC_LP", value: 132283801.36493877 },
+      ]);
+    });
+  });
+
+  describe("Moo Trader Joe Token", () => {
     beforeAll(async () => {
       provider = new MockProvider();
       const [wallet] = provider.getWallets();
 
       const mooTokenContract = await deployMockContract(
         wallet,
-        mooTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.abi
+        mooTraderJoeTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.abi
       );
       await mooTokenContract.mock.balance.returns("71564564588400204");
       await mooTokenContract.mock.totalSupply.returns("62713817908999769");
 
       multicallContract = await deployMulticallContract(wallet);
 
-      mooTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.address =
+      mooTraderJoeTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.address =
         mooTokenContract.address;
     });
 
     test("Should properly fetch data", async () => {
-      const fetcher = new AvalancheEvmFetcher(
-        { avalancheProvider: provider },
-        multicallContract.address
+      const fetcher = new EvmFetcher(
+        "avalanche-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
       );
 
       await saveMockPriceInLocalDb(11232453.706920957, "TJ_AVAX_USDC_LP");
 
       const result = await fetcher.fetchAll(["MOO_TJ_AVAX_USDC_LP"]);
       expect(result).toEqual([
-        { symbol: "MOO_TJ_AVAX_USDC_LP", value: 12817680.126343986 },
+        { symbol: "MOO_TJ_AVAX_USDC_LP", value: 12817680.147644207 },
       ]);
     });
   });
@@ -174,24 +227,55 @@ describe("Avalanche EVM fetcher", () => {
 
       const oracleTokenContract = await deployMockContract(
         wallet,
-        oracleAdaptersContractsDetails.sAVAX.abi
+        oracleAdapterContractsDetails.sAVAX.abi
       );
       await oracleTokenContract.mock.latestAnswer.returns("2221594395");
 
       multicallContract = await deployMulticallContract(wallet);
 
-      oracleAdaptersContractsDetails.sAVAX.address =
-        oracleTokenContract.address;
+      oracleAdapterContractsDetails.sAVAX.address = oracleTokenContract.address;
     });
 
     test("Should properly fetch data", async () => {
-      const fetcher = new AvalancheEvmFetcher(
-        { avalancheProvider: provider },
-        multicallContract.address
+      const fetcher = new EvmFetcher(
+        "avalanche-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
       );
-
       const result = await fetcher.fetchAll(["sAVAX"]);
       expect(result).toEqual([{ symbol: "sAVAX", value: 22.21594395 }]);
+    });
+  });
+
+  describe("Glp Manager Token", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+
+      const glpManagerContract = await deployMockContract(
+        wallet,
+        glpManagerContractsDetails.GLP.abi
+      );
+      await glpManagerContract.mock.getPrice.returns(
+        "770441001309746795129889619853"
+      );
+
+      multicallContract = await deployMulticallContract(wallet);
+
+      glpManagerContractsDetails.GLP.address = glpManagerContract.address;
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new EvmFetcher(
+        "avalanche-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
+      );
+
+      const result = await fetcher.fetchAll(["GLP"]);
+      expect(result).toEqual([{ symbol: "GLP", value: 0.7704410013097468 }]);
     });
   });
 
@@ -201,17 +285,19 @@ describe("Avalanche EVM fetcher", () => {
 
     const oracleTokenContract = await deployMockContract(
       wallet,
-      oracleAdaptersContractsDetails.sAVAX.abi
+      oracleAdapterContractsDetails.sAVAX.abi
     );
     await oracleTokenContract.mock.latestAnswer.returns("2221594395");
 
     multicallContract = await deployMulticallContract(wallet);
 
-    oracleAdaptersContractsDetails.sAVAX.address = oracleTokenContract.address;
+    oracleAdapterContractsDetails.sAVAX.address = oracleTokenContract.address;
 
-    const fetcher = new AvalancheEvmFetcher(
-      { avalancheProvider: {} as any, fallbackProvider },
-      multicallContract.address
+    const fetcher = new EvmFetcher(
+      "avalanche-evm-test-fetcher",
+      { mainProvider: {} as any, fallbackProvider },
+      multicallContract.address,
+      requestHandlers
     );
 
     const result = await fetcher.fetchAll(["sAVAX"]);

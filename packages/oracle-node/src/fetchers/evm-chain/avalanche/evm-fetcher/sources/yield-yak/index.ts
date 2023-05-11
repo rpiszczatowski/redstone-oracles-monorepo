@@ -4,7 +4,7 @@ import YYTraderJoeLPTokenAbi from "./YYTraderJoeLPToken.abi.json";
 import YYPangolinLPTokenAbi from "./YYPangolinLPToken.abi.json";
 import YYGLPTokenAbi from "./YYGLP.abi.json";
 
-export const yieldYakContractsDetails = {
+export const yieldYakTokensContractsDetails = {
   YY_AAVE_AVAX: {
     address: "0xaAc0F2d0630d1D09ab2B5A400412a4840B866d95",
     abi: YieldYakAaveAVAXAbi,
