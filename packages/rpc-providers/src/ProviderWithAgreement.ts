@@ -1,5 +1,4 @@
 import { BlockTag, TransactionRequest } from "@ethersproject/abstract-provider";
-import { Logger } from "@ethersproject/logger";
 import { Deferrable } from "@ethersproject/properties";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { utils } from "ethers";
@@ -50,6 +49,14 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       ...defaultConfig,
       ...this.getProviderWithFallbackConfig(),
     };
+    if (
+      this.agreementConfig.numberOfNodesWhichHaveToAgree < 2 ||
+      this.agreementConfig.numberOfNodesWhichHaveToAgree > this.providers.length
+    ) {
+      throw new Error(
+        "numberOfNodesWhichHaveToAgree should be >= 2 and > then supplied providers count"
+      );
+    }
   }
 
   override getBlockNumber(): Promise<number> {
@@ -101,25 +108,26 @@ export class ProviderWithAgreement extends ProviderWithFallback {
   private resolveCallPromises(callPromises: Promise<string>[]) {
     return new Promise<string>((resolve, reject) => {
       const errors: Error[] = [];
-      const agreedResults: string[] = [];
+      const results = new Map<string, number>();
       let handledResults = 0;
 
       for (const callPromise of callPromises) {
         callPromise
           .then((currentResult) => {
-            const lastResult = agreedResults.at(-1);
-            if (lastResult && currentResult !== lastResult) {
-              return;
-            }
-            agreedResults.push(currentResult);
+            const currentResultCount = results.get(currentResult);
 
             // we have found satisfying number of same responses
-            if (
-              agreedResults.length ===
-              this.agreementConfig.numberOfNodesWhichHaveToAgree
-            ) {
-              resolve(currentResult);
+            if (currentResultCount) {
+              results.set(currentResult, currentResultCount + 1);
+              if (
+                currentResultCount + 1 ===
+                this.agreementConfig.numberOfNodesWhichHaveToAgree
+              ) {
+                resolve(currentResult);
+              }
             }
+
+            results.set(currentResult, 1);
           })
           .catch((e) => errors.push(e))
           .finally(() => {

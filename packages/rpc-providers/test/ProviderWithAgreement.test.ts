@@ -169,4 +169,65 @@ describe("ProviderWithAgreement", () => {
       );
     });
   });
+
+  describe("call resolution algorithm", () => {
+    it("should should return 2 when results from providers are [1,2,2]", async () => {
+      await testCallResolutionAlgo(["1", "2", "2"], "2");
+    });
+
+    it("should should return 2 when results from providers are [2,2,1]", async () => {
+      await testCallResolutionAlgo(["2", "2", "1"], "2");
+    });
+
+    it("should should return 5 when results from providers are [5,3,5,3,2,4,2,2]", async () => {
+      await testCallResolutionAlgo(
+        ["5", "3", "5", "3", "2", "4", "2", "2"],
+        "5"
+      );
+    });
+
+    it('should should return 2 when results from providers are ["5", "3", "8", "7", "1", "4", "2", "2"]', async () => {
+      await testCallResolutionAlgo(
+        ["5", "3", "8", "7", "1", "4", "2", "2"],
+        "2"
+      );
+    });
+
+    it("should fail on [1,2]", async () => {
+      await expect(testCallResolutionAlgo(["1", "2"], "")).rejectedWith(
+        "Failed to find at least 2 agreeing providers."
+      );
+    });
+
+    it("should fail on [1,2,3,4,5,6,7,8,9]", async () => {
+      await expect(
+        testCallResolutionAlgo(
+          ["1", "2", "3", "4", "5", "6", "7", "8", "9"],
+          ""
+        )
+      ).rejectedWith("Failed to find at least 2 agreeing providers.");
+    });
+  });
 });
+
+const testCallResolutionAlgo = async (
+  providerResponses: string[],
+  expected: string
+) => {
+  const mockProvider = new providers.StaticJsonRpcProvider("http://blabla.xd");
+  const stubCall = sinon.stub(mockProvider, "call");
+
+  const stubBlockNumber = sinon.stub(mockProvider, "getBlockNumber");
+  stubBlockNumber.resolves(1);
+
+  const agreementProvider = new ProviderWithAgreement(
+    new Array(providerResponses.length).fill(mockProvider)
+  );
+
+  for (let i = 0; i < providerResponses.length; i++) {
+    stubCall.onCall(i).resolves(providerResponses[i]);
+  }
+
+  const result = await agreementProvider.call("" as any);
+  expect(result).to.eq(expected);
+};
