@@ -17,15 +17,17 @@ To learn more about RedStone oracles design go to the [RedStone docs](https://do
 fn init(signers: Vec<b256>, signer_count_threshold: u64, skip_setting_owner: u64,)
 ```
 
-As mentioned above, the data packages transferred to the contract are being verified by signature checking. 
-To be counted to achieve the ```signer_count_threshold```, the signer signing the passed data 
-should be one of the ```signers``` passed in the initializer. 
+As mentioned above, the data packages transferred to the contract are being verified by signature checking.
+To be counted to achieve the ```signer_count_threshold```, the signer signing the passed data
+should be one of the ```signers``` passed in the initializer.
 There is also needed ```signer_count_threshold``` to be passed.
 
-When the `skip_setting_owner` flag is set to `0`, the contract becomes owned by the function invoker. 
-To avoid that, the `skip_setting_owner` should be set to `0`. 
+When the `skip_setting_owner` flag is set to `0` (which means 'perform setting the owner'), the contract becomes owned
+by the function invoker.
+To avoid that and to have the contract owned by no-one, the `skip_setting_owner` should be set to `1`.
 
 That initializer can be invoked only by the owner or by anyone when no owner was previously set.
+Contract can be re-initialized by subsequent invocations of the initializer.
 
 That's a `#[storage(write)]` function - it consumes GAS and modifies the contract's storage, so must be paid by ETHs.
 
@@ -93,10 +95,13 @@ The sample data passed to the contract deployed for the showroom/sample can be f
 https://d33trozg86ya9x.cloudfront.net/data-packages/payload?data-packages/payload?unique-signers-count=1&data-service-id=redstone-rapid-demo&format=hex
 That's an example endpoint for `redstone-rapid-demo` data-service id, also for the sample value of the signer-address that can be used for the initializer (`0xf786a909D559F5Dee2dc6706d8e5A81728a39aE9`)
 
-Then the hex response is needed to be split to single bytes, for example by using `Array.from(arrayify(payloadHex))` functions of ```ethers``` or ```starknet``` node packages.
+Then the hex response is needed to be split to single bytes, for example by using `Array.from(arrayify(payloadHex))`
+functions of ```ethers``` or ```starknet``` node packages.
 
-📟 You can use: [Makefile](../../../protocol/scripts/payload-generator/Makefile) by invoking ```make DATA_NAME=xxx prepare_data``` or
-directly from the [payload-generator](../../../protocol/scripts/payload-generator/) environment directory. 
+📟 You can use: [Makefile](../../../protocol/scripts/payload-generator/Makefile) by
+invoking ```make DATA_NAME=[name] prepare_data``` or
+directly from the [payload-generator](../../../protocol/scripts/payload-generator/) environment directory where `[name]`
+is a string you wish.
 
 📖 See: [README.md](../README.md) to see the environment possibilities and sample scripts invoking the functions.
 
