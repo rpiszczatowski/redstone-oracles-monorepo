@@ -13,8 +13,7 @@ import { EcbFetcher } from "./ecb/EcbFetcher";
 import { DrandFetcher } from "./drand/DrandFetcher";
 import { DiaFetcher } from "./dia/DiaFetcher";
 import twapFetchers from "./twap/all-twap-fetchers";
-import { TwelveDataFetcher } from "./twelve-data/TwelveDataFetcher";
-import { AvalancheEvmFetcher } from "./evm-chain/avalanche/evm-fetcher/AvalancheEvmFetcher";
+import { avalancheEvmFetcher } from "./evm-chain/avalanche/evm-fetcher/AvalancheEvmFetcher";
 import { PlatypusFetcher } from "./platypus/PlatypusFetcher";
 import { LensFetcher } from "./lens/LensFetcher";
 import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
@@ -25,12 +24,7 @@ import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
 import balancerFetchers from "./balancer/all-balancer-fetchers";
-import { ArbitrumEvmFetcher } from "./evm-chain/arbitrum/evm-fetcher/ArbitrumEvmFetcher";
-import {
-  arbitrumProvider,
-  avalancheProvider,
-  fallbackProvider,
-} from "../utils/blockchain-providers";
+import { arbitrumEvmFetcher } from "./evm-chain/arbitrum/evm-fetcher/ArbitrumEvmFetcher";
 import sushiswapEthereumOnChainFetchers from "./evm-chain/ethereum/sushiswap-on-chain/all-sushiswap-fetchers";
 import curveFetchers from "./curve/all-curve-fetchers";
 import { DeribitFetcher } from "./deribit/DeribitFetcher";
@@ -60,10 +54,7 @@ export default {
   verto: new VertoFetcher(),
   ecb: new EcbFetcher(),
   band: new BandFetcher(),
-  "avalanche-evm-fetcher": new AvalancheEvmFetcher({
-    avalancheProvider,
-    fallbackProvider,
-  }),
+  "avalanche-evm-fetcher": avalancheEvmFetcher,
   platypus: new PlatypusFetcher(),
   chainlink: new ChainlinkFetcher(),
   lens: new LensFetcher(),
@@ -72,7 +63,7 @@ export default {
   kaiko: new KaikoFetcher(),
   stlouisfed: new StlouisfedFetcher(),
   newyorkfed: new NewyorkfedFetcher(),
-  "arbitrum-evm-fetcher": new ArbitrumEvmFetcher(arbitrumProvider),
+  "arbitrum-evm-fetcher": arbitrumEvmFetcher,
   "non-usd-based": new NonUsdBasedFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
