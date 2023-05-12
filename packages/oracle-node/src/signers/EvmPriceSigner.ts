@@ -12,6 +12,7 @@ import _ from "lodash";
 import { ISafeNumber } from "../numbers/ISafeNumber";
 import { JsNativeSafeNumber } from "../numbers/JsNativeSafeNumber";
 
+/** IMPORTANT: This function as side effect convert Class instances to pure objects */
 const sortDeepObjects = <T>(arr: T[]): T[] => sortDeepObjectArrays(arr);
 
 const serializePriceValue = (value: number | ISafeNumber): number => {
@@ -42,8 +43,7 @@ export default class EvmPriceSigner {
 
   private getLiteDataToSign(priceData: SerializedPriceData): string {
     const data = this.getLiteDataBytesString(priceData);
-    const hash = bufferToHex(keccak256(toBuffer("0x" + data)));
-    return hash;
+    return bufferToHex(keccak256(toBuffer("0x" + data)));
   }
 
   calculateLiteEvmSignature(
@@ -72,18 +72,21 @@ export default class EvmPriceSigner {
   serializeToMessage(pricePackage: PricePackage): SerializedPriceData {
     // We clean and sort prices to be sure that prices
     // always have the same format
-    const cleanPricesData = pricePackage.prices.map((p) =>
-      _.pick(p, ["symbol", "value"])
-    );
+    const cleanPricesData = pricePackage.prices.map((p) => ({
+      symbol: EvmPriceSigner.convertStringToBytes32String(p.symbol),
+      value: serializePriceValue(p.value),
+    }));
     const sortedPrices = sortDeepObjects(cleanPricesData);
 
+    const symbols: string[] = [];
+    const values: string[] = [];
+    sortedPrices.forEach((p: ShortSinglePrice) => {
+      symbols.push(p.symbol);
+      values.push(p.value);
+    });
     return {
-      symbols: sortedPrices.map((p: ShortSinglePrice) =>
-        EvmPriceSigner.convertStringToBytes32String(p.symbol)
-      ),
-      values: sortedPrices.map((p: ShortSinglePrice) =>
-        serializePriceValue(p.value)
-      ),
+      symbols,
+      values,
       timestamp: pricePackage.timestamp,
     };
   }
