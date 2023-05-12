@@ -21,7 +21,6 @@ the [whole RedStone Oracle model](https://docs.redstone.finance/docs/introductio
 
 - [👨‍ Code structure](#-code-structure)
 - [🔥 Connecing to the contract](#-connecting-to-the-contract)
-  - [Installing the dependencies](#installing-the-dependencies)
 - [⚡ The Fuel Grants Program](#-the-fuel-grants-program)
 - [📄 License](#-license)
 
@@ -30,17 +29,19 @@ the [whole RedStone Oracle model](https://docs.redstone.finance/docs/introductio
 - [sway](sway) directory contains the fuel-network on-chain libraries written in sway `0.35.5`.
   - There are also various tests of signature verification with the given signers, timestamp validation, value
     aggregation as well as full data-processing tests with various configurations.
-  - You can find all the possibilities [here](sway/contract/README.md).
+  - You can find all the possibilities [here](sway/README.md).
   - You can read [here](sway/contract/README.md) how the contract works.
 - [src](src) directory contains the typescript classes, useful for establishing a connection between typescript and
   fuel-network layers.
   - See [below](#-connecting-to-the-contract), how to connect to the contract.
 - [test](test) directory contains the off-chain tests, especially:
-  - e2e contract usage tests - with payload sending and receiving aggregated data
-  - integration tests - to be used for checking if the contract was properly initialized in the fuel network
-  - gas usage tests - to be used for checking the gas costs of particular operations in various configurations and also
+  - [e2e contract usage tests](test%2Fprices%2Fprices.spec.ts) - with payload sending and receiving aggregated data
+  - [integration tests](test%2Fprices%2Fintegration.spec.ts) - to be used for checking if the contract was properly
+    initialized in the fuel network
+  - [gas usage tests](test%2Fprices%2Fgas-usage.spec.ts) - to be used for checking the gas costs of particular
+    operations in various configurations and also
     the summary of the single item costs.
-  - a piece of code for transferring ETHs from genesis accounts on the local network
+  - [a piece of code](test%2Fprices%2Ftransfer.spec.ts) for transferring ETHs from genesis accounts on the local network
 
 ## 🔥 Connecting to the contract
 

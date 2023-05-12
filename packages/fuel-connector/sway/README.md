@@ -41,7 +41,10 @@ run a local Fuel node (with or without state persistence), as described [here](h
          running  [transfer.spec.ts](..%2Ftest%2Fprices%2Ftransfer.spec.ts), passing there one of the account
          private-keys listed above.
 
-### Fetching sample data
+### Preparing sample data
+
+The scripts below process the given sample data payload and return the aggregated data in the output logs. To prepare
+the data follow the steps:
 
 1. check/fill the value with `PAYLOAD_URL` in the
    protocol-payload-generator's [Makefile](../../protocol/scripts/payload-generator/Makefile) (it should have
@@ -65,9 +68,9 @@ run a local Fuel node (with or without state persistence), as described [here](h
    contract initialized.
 1. The contract is available for use. You can check it by exploring the
    account [here](https://fuellabs.github.io/block-explorer-v2/beta-3/)
-1. run `make invoke` to save example values (prepared as [above](#fetching-sample-data)) to the contract and then read
+1. Run `make invoke` to write example values (prepared as [above](#preparing-sample-data)) to the contract and then read
    it.
-   1. see how to read the output in logs [below](#how-to-read-the-logs)
+   1. see how to read the output logs [below](#how-to-read-the-logs)
    1. there are no other possibilities of invoking the contract but scripts, so see/modify the script in
       the [main.sw](contract_invoker/src/main.sw) file.
 
@@ -77,7 +80,7 @@ run a local Fuel node (with or without state persistence), as described [here](h
 
 The sway script executes the whole logic of the data-processing by using the same sway code as the contract uses. It
 processes the given payload and returns the aggregated data in the output logs.
-Firstly you need to have the sample data generated as [above](#fetching-sample-data), then the running script processes
+Firstly you need to have the sample data generated as [above](#preparing-sample-data), then the running script processes
 it.
 The code is executed on one of networks (local or testnet), as it's described above.
 
