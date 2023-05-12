@@ -48,7 +48,7 @@ export function getMedianBigNumber(arr: BigNumber[]): BigNumber {
     throw new Error("Cannot get median value of an empty array");
   }
 
-  arr = arr.sort((a, b) => a.toNumber() - b.toNumber());
+  arr = arr.sort((a, b) => (a.lt(b) ? -1 : 1));
 
   const middle = Math.floor(arr.length / 2);
 

@@ -54,11 +54,11 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
   ): number[] {
     const blocks = [];
     for (
-      let i = lastBlock;
-      i > lastBlock - sequenceLength * sequenceStep;
-      i -= sequenceStep
+      let currentBlock = lastBlock;
+      currentBlock > lastBlock - sequenceLength * sequenceStep;
+      currentBlock -= sequenceStep
     ) {
-      blocks.push(i);
+      blocks.push(currentBlock);
     }
     return blocks;
   }
