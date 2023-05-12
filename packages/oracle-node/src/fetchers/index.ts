@@ -75,7 +75,6 @@ export default {
   newyorkfed: new NewyorkfedFetcher(),
   "arbitrum-evm-fetcher": new ArbitrumEvmFetcher(arbitrumProvider),
   "non-usd-based": new NonUsdBasedFetcher(),
-  "bybit-v5": new CcxtFetcher("bybit"),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...balancerFetchers,
