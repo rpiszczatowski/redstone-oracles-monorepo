@@ -9,8 +9,20 @@ import {
   SerializedPriceData,
 } from "../types";
 import _ from "lodash";
+import { ISafeNumber } from "../numbers/ISafeNumber";
+import { JsNativeSafeNumber } from "../numbers/JsNativeSafeNumber";
 
-const serializePriceValue = (value: number) => Math.round(value * 10 ** 8);
+const sortDeepObjects = <T>(arr: T[]): T[] => sortDeepObjectArrays(arr);
+
+const serializePriceValue = (value: number | ISafeNumber): number => {
+  if (typeof value === "number") {
+    return Math.round(value * 10 ** 8);
+  } else if (value instanceof JsNativeSafeNumber) {
+    return Math.round(value.unsafeToNumber() * 10 ** 8);
+  } else {
+    throw new Error(`Don't know how to serialize ${value} to price`);
+  }
+};
 
 export default class EvmPriceSigner {
   getLiteDataBytesString(priceData: SerializedPriceData): string {
@@ -63,7 +75,7 @@ export default class EvmPriceSigner {
     const cleanPricesData = pricePackage.prices.map((p) =>
       _.pick(p, ["symbol", "value"])
     );
-    const sortedPrices = sortDeepObjectArrays(cleanPricesData);
+    const sortedPrices = sortDeepObjects(cleanPricesData);
 
     return {
       symbols: sortedPrices.map((p: ShortSinglePrice) =>
