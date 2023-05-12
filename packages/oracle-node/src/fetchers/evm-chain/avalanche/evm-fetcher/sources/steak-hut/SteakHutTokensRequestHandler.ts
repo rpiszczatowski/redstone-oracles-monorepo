@@ -2,14 +2,17 @@ import { Decimal } from "decimal.js";
 import { IEvmRequestHandlers } from "../../../../shared/IEvmRequestHandlers";
 import { buildMulticallRequests } from "../../../../shared/utils/build-multicall-request";
 import { extractValueFromMulticallResponse } from "../../../../shared/utils/extract-prices";
-import { getLastPrice } from "../../../../../../db/local-db";
 import { steakHutTokensContractDetails } from "./steakHutTokensContractDetails";
 import { MulticallParsedResponses } from "../../../../../../types";
+import { getFairPriceForLpToken } from "../../../../shared/utils/get-fair-price-lp-token";
+import { serializeDecimalsForLpTokens } from "../../../../shared/utils/serialize-decimals-lp-tokens";
 
 export type SteakHutTokensDetailsKeys =
   keyof typeof steakHutTokensContractDetails;
 
 const TEN_TO_POWER_EIGHTEEN_AS_STRING = "1000000000000000000";
+const FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [0, 66];
+const SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [66, 130];
 
 export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
   prepareMulticallRequest(id: SteakHutTokensDetailsKeys) {
@@ -20,7 +23,17 @@ export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
         values: [TEN_TO_POWER_EIGHTEEN_AS_STRING],
       },
     ];
-    return buildMulticallRequests(abi, address, functionsNamesWithValues);
+    const underlyingAssetsRequest = buildMulticallRequests(
+      abi,
+      address,
+      functionsNamesWithValues
+    );
+
+    const totalSupplyRequest = buildMulticallRequests(abi, address, [
+      { name: "totalSupply" },
+    ]);
+
+    return [...underlyingAssetsRequest, ...totalSupplyRequest];
   }
 
   extractPrice(
@@ -33,26 +46,27 @@ export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
       address,
       "getUnderlyingAssets"
     );
-    const firstAsset = new Decimal(underlyingAssets.slice(0, 66));
-    const secondAsset = new Decimal(`0x${underlyingAssets.slice(66, 130)}`);
-    const tokensPrices = this.fetchTokensFromLocalCache(tokensToFetch);
+    const firstUnderlyingAsset = new Decimal(
+      underlyingAssets.slice(...FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE)
+    );
+    const firstToken = tokensToFetch[0];
+    const secondUnderlyingAsset = new Decimal(
+      `0x${underlyingAssets.slice(
+        ...SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE
+      )}`
+    );
+    const secondToken = tokensToFetch[1];
 
-    const firstAssetPrice = firstAsset.mul(tokensPrices[0]);
-    const secondAssetPrice = secondAsset.mul(tokensPrices[1]);
-    return firstAssetPrice.add(secondAssetPrice).toNumber();
-  }
+    const tokenReserves = {
+      [firstToken]: firstUnderlyingAsset,
+      [secondToken]: secondUnderlyingAsset,
+    };
+    const serializedTokenReserves = serializeDecimalsForLpTokens(tokenReserves);
 
-  fetchTokensFromLocalCache(tokensToFetch: string[]) {
-    const tokensPrices = [];
-    for (const tokenToFetch of tokensToFetch) {
-      const tokenPrice = getLastPrice(tokenToFetch);
-      if (!tokenPrice) {
-        throw new Error(
-          `Cannot get last price from cache for: ${tokenToFetch}`
-        );
-      }
-      tokensPrices.push(new Decimal(tokenPrice.value));
-    }
-    return tokensPrices;
+    const totalSupply = new Decimal(
+      extractValueFromMulticallResponse(response, address, "totalSupply")
+    );
+
+    return getFairPriceForLpToken(serializedTokenReserves, totalSupply);
   }
 }

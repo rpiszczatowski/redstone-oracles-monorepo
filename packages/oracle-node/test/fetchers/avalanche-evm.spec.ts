@@ -291,7 +291,10 @@ describe("Avalanche EVM fetcher", () => {
       );
       await steakHutVaultContract.mock.getUnderlyingAssets.returns(
         "10661",
-        "1894773190423221806"
+        "1894861017009646333"
+      );
+      await steakHutVaultContract.mock.totalSupply.returns(
+        "373022375711998840044"
       );
 
       multicallContract = await deployMulticallContract(wallet);
@@ -308,12 +311,11 @@ describe("Avalanche EVM fetcher", () => {
         requestHandlers
       );
 
-      await saveMockPriceInLocalDb(27869.88, "BTC");
-      await saveMockPriceInLocalDb(15.84, "AVAX");
+      await saveMockPricesInLocalDb([26371.56, 15.11], ["BTC", "AVAX"]);
 
       const result = await fetcher.fetchAll(["SHLB_BTC.b-AVAX_B"]);
       expect(result).toEqual([
-        { symbol: "SHLB_BTC.b-AVAX_B", value: 30013207336600953000 },
+        { symbol: "SHLB_BTC.b-AVAX_B", value: 0.04810419007910609 },
       ]);
     });
   });
