@@ -11,9 +11,11 @@ export const getFairPriceForLpToken = (
   const tokensReservesPrices = getTokensPricesFromLocalCache(tokenNames);
 
   if (checkIfAllTokensFetched(tokensReservesPrices, tokenReserves)) {
-    const [firstReserve, secondReserve] = Object.values(tokenReserves);
-    const [firstTokenReservePrice, secondTokenReservePrice] =
-      tokensReservesPrices;
+    const tokenReservesEntries = Object.entries(tokenReserves);
+    const [firstToken, firstReserve] = tokenReservesEntries[0];
+    const [secondToken, secondReserve] = tokenReservesEntries[1];
+    const firstTokenReservePrice = tokensReservesPrices[firstToken];
+    const secondTokenReservePrice = tokensReservesPrices[secondToken];
 
     const reservesMultiplied = firstReserve.mul(secondReserve);
     const pricesMultiplied = firstTokenReservePrice.mul(
@@ -31,8 +33,11 @@ export const getFairPriceForLpToken = (
 };
 
 function checkIfAllTokensFetched(
-  tokensReservesPrices: Decimal[],
+  tokensReservesPrices: Record<string, Decimal>,
   tokenReserves: Record<string, Decimal>
 ) {
-  return tokensReservesPrices.length === Object.keys(tokenReserves).length;
+  return (
+    Object.keys(tokensReservesPrices).length ===
+    Object.keys(tokenReserves).length
+  );
 }
