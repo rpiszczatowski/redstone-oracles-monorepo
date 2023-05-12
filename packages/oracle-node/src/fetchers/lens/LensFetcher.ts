@@ -1,7 +1,6 @@
 import { BaseFetcher } from "../BaseFetcher";
 import { PricesObj as ReputationObject } from "../../types";
 import graphProxy from "../../utils/graph-proxy";
-import { stringifyError } from "../../utils/error-stringifier";
 
 interface LensProfile {
   id: string;
