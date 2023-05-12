@@ -9,6 +9,8 @@ import { OracleAdapterRequestHandlers } from "./oracle-adapter/OracleAdapterRequ
 import { oracleAdapterContractsDetails } from "./oracle-adapter";
 import { GlpManagerRequestHandler } from "./glp-manager/GlpManagerRequestHandlers";
 import { glpManagerContractsDetails } from "./glp-manager";
+import { steakHutTokensContractDetails } from "./steak-hut/steakHutTokensContractDetails";
+import { SteakHutTokensRequestHandlers } from "./steak-hut/SteakHutTokensRequestHandler";
 
 export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
@@ -30,5 +32,9 @@ export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
     glpManagerContractsDetails,
     GlpManagerRequestHandler
+  ),
+  ...buildRequestHandlersFromContractDetails(
+    steakHutTokensContractDetails,
+    SteakHutTokensRequestHandlers
   ),
 };

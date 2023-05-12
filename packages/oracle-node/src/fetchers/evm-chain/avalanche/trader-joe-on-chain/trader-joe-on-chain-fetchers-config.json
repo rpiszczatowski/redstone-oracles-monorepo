@@ -55,6 +55,14 @@
       "symbol1": "WAVAX",
       "symbol1Decimals": 18,
       "pairedToken": "AVAX"
+    },
+    "USDT.e": {
+      "address": "0xeD8CBD9F0cE3C6986b22002F03c6475CEb7a6256",
+      "symbol0": "WAVAX",
+      "symbol0Decimals": 18,
+      "symbol1": "USDT.e",
+      "symbol1Decimals": 6,
+      "pairedToken": "AVAX"
     }
   }
 }
