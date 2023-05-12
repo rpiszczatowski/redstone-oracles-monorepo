@@ -819,7 +819,7 @@
       "source": ["bitget", "bkex", "coingecko", "coinmarketcap", "camelot-weth"]
     },
     "CMP": {
-      "source": ["bybit-v5", "coingecko", "xt"]
+      "source": ["coingecko", "xt"]
     },
     "VST/ETH": {
       "source": ["non-usd-based"]
