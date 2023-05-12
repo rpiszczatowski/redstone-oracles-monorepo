@@ -24,7 +24,7 @@ the [whole RedStone Oracle model](https://docs.redstone.finance/docs/introductio
 - [⚡ The Fuel Grants Program](#-the-fuel-grants-program)
 - [📄 License](#-license)
 
-## 👨‍ Code structure
+## 👨 Code structure
 
 - [sway](sway) directory contains the fuel-network on-chain libraries written in sway `0.35.5`.
   - There are also various tests of signature verification with the given signers, timestamp validation, value

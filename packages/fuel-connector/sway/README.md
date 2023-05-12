@@ -46,9 +46,6 @@ run a local Fuel node (with or without state persistence), as described [here](h
 The scripts below process the given sample data payload and return the aggregated data in the output logs. To prepare
 the data follow the steps:
 
-1. check/fill the value with `PAYLOAD_URL` in the
-   protocol-payload-generator's [Makefile](../../protocol/scripts/payload-generator/Makefile) (it should have
-   the `format=` at the end).
 1. execute `make prepare_data`. The files are saved in the `../../data-generator/data` directory
    * the base name of files is defined as `DATA_NAME` variable in
      the [Makefile](../../protocol/scripts/payload-generator/Makefile) in the `/data-generator` directory
@@ -125,9 +122,8 @@ The demo script and the contract invoker process data for AVAX, BTC and ETH feed
 the `data` field are the
 aggregated price values of these feeds. For example,
 `00000000000000000000000000000000000000000000000000000275d9ec9918`(hex) - as the second log's value -
-means `2705190590744` in decimal, which is the BTC aggregated price value in USD with 8 decimal digit precision (
-multiplied by 10 ** 8).
-The output values depend on the input data.
+means `2705190590744` in decimal, which is the BTC's aggregated price value in USD with 8 decimal digit precision
+(multiplied by `10 ** 8`). The output values depend on the input data.
 
 ### Running tests
 
