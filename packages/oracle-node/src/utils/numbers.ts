@@ -1,4 +1,5 @@
 import { Consola } from "consola";
+import { BigNumber } from "ethers";
 import { ISafeNumber } from "../numbers/ISafeNumber";
 import { createSafeNumber } from "../numbers/SafeNumberFactory";
 
@@ -41,3 +42,19 @@ export const calculateDeviationPercent = (args: {
 
   return result;
 };
+
+export function getMedianBigNumber(arr: BigNumber[]): BigNumber {
+  if (arr.length === 0) {
+    throw new Error("Cannot get median value of an empty array");
+  }
+
+  arr = arr.sort((a, b) => (a.lt(b) ? -1 : 1));
+
+  const middle = Math.floor(arr.length / 2);
+
+  if (arr.length % 2 === 0) {
+    return arr[middle].add(arr[middle - 1]).div(2);
+  } else {
+    return arr[middle];
+  }
+}
