@@ -1,7 +1,7 @@
 import { Contract } from "ethers";
 import { Interface } from "ethers/lib/utils";
 import { deployContract, MockProvider } from "ethereum-waffle";
-import { EvmMulticallService } from "../../src/fetchers/evm-chain/EvmMulticallService";
+import { EvmMulticallService } from "../../src/fetchers/evm-chain/shared/EvmMulticallService";
 import Multicall2 from "../../src/fetchers/evm-chain/shared/abis/Multicall2.abi.json";
 
 jest.setTimeout(10000);

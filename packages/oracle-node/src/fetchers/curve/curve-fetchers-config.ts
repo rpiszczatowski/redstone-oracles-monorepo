@@ -1,9 +1,39 @@
+import { providers } from "ethers";
 import {
   arbitrumProvider,
   ethereumProvider,
 } from "../../utils/blockchain-providers";
 
-export const curveFetchersConfig = {
+export interface PoolsConfig {
+  [symbol: string]: {
+    address: string;
+    tokenIndex: number;
+    pairedToken: string;
+    pairedTokenIndex: number;
+    provider: providers.Provider;
+    ratioMultiplier: number;
+    functionName: string;
+    multiBlockConfig?: { sequenceStep: number; sequenceLength: number };
+  };
+}
+
+// 144 blocks = 30 min
+// 72 blocks = 15 min
+// 48 blocks = 10 min
+const ETH_MULTI_BLOCK_CONFIG = {
+  sequenceStep: 1,
+  sequenceLength: 48,
+};
+
+// 7200 blocks = 30 min
+// 3600 blocks = 15 min
+// 2400 blocks = 10 min
+const ARBITRUM_MULTI_BLOCK_CONFIG = {
+  sequenceStep: 50,
+  sequenceLength: 2400,
+};
+
+export const curveFetchersConfig: Record<string, PoolsConfig> = {
   "curve-frax": {
     VST: {
       address: "0x59bF0545FCa0E5Ad48E13DA269faCD2E8C886Ba4",
@@ -13,6 +43,7 @@ export const curveFetchersConfig = {
       provider: arbitrumProvider,
       ratioMultiplier: 1,
       functionName: "get_dy",
+      multiBlockConfig: ARBITRUM_MULTI_BLOCK_CONFIG,
     },
   },
   "curve-usdc": {
@@ -24,6 +55,7 @@ export const curveFetchersConfig = {
       provider: ethereumProvider,
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
     },
     DAI: {
       address: "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
@@ -33,6 +65,7 @@ export const curveFetchersConfig = {
       provider: ethereumProvider,
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy_underlying",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
     },
   },
   "curve-usdt": {
@@ -44,6 +77,7 @@ export const curveFetchersConfig = {
       provider: ethereumProvider,
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy_underlying",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
     },
   },
   "curve-eth": {
@@ -55,6 +89,7 @@ export const curveFetchersConfig = {
       provider: ethereumProvider,
       ratioMultiplier: 1,
       functionName: "get_dy",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
     },
   },
   "curve-weth": {
@@ -66,6 +101,7 @@ export const curveFetchersConfig = {
       provider: ethereumProvider,
       ratioMultiplier: 1,
       functionName: "get_dy",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
     },
   },
 };

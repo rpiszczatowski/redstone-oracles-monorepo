@@ -5,7 +5,10 @@ import createLogger from "../utils/logger";
 import { isDefined } from "../utils/objects";
 
 const MAX_RESPONSE_TIME_TO_RETRY_FETCHING_MS = 3000;
-export type ExtractPricePairFn<T> = (item: T) => { id: string; value: number };
+export type ExtractPricePairFn<T> = (item: T) => {
+  id: string;
+  value: number | undefined | null;
+};
 
 export abstract class BaseFetcher implements Fetcher {
   protected name: string;

@@ -11,8 +11,7 @@ export interface TwelveDataResponse {
   };
 }
 
-export const TWELVE_DATA_PRICE_URL =
-  "https://twelve-data1.p.rapidapi.com/price";
+export const TWELVE_DATA_PRICE_URL = "https://api.twelvedata.com/price";
 
 export class TwelveDataFetcher extends BaseFetcher {
   symbolToId: Record<string, string>;
@@ -42,9 +41,7 @@ export class TwelveDataFetcher extends BaseFetcher {
       params: {
         symbol: ids.join(","),
         ...this.requestParams,
-      },
-      headers: {
-        "RapidAPI-Key": config.twelveDataRapidApiKey,
+        apikey: config.twelveDataApiKey,
       },
     });
   }
