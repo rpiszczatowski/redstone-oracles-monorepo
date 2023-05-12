@@ -60,8 +60,7 @@ export class CcxtFetcher extends BaseFetcher {
   }
 
   private extractPricePair(ticker: Ticker) {
-    let pairSymbol = ticker.symbol;
-    pairSymbol = this.serializePairSymbol(pairSymbol);
+    const pairSymbol = ticker.symbol;
     const lastPrice = ticker.last as number;
     if (pairSymbol.endsWith("/USD")) {
       return { value: lastPrice, id: pairSymbol };
@@ -77,12 +76,5 @@ export class CcxtFetcher extends BaseFetcher {
   getStableCoinPrice(pairSymbol: string) {
     const stableCoinSymbol = pairSymbol.slice(-4);
     return getLastPrice(stableCoinSymbol)?.value;
-  }
-
-  serializePairSymbol(pairSymbol: string) {
-    if (pairSymbol.endsWith("/USDT:USDT")) {
-      return pairSymbol.replace("/USDT:USDT", "USDT");
-    }
-    return pairSymbol;
   }
 }
