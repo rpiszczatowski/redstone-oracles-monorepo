@@ -43,8 +43,7 @@ export default class EvmPriceSigner {
 
   private getLiteDataToSign(priceData: SerializedPriceData): string {
     const data = this.getLiteDataBytesString(priceData);
-    const hash = bufferToHex(keccak256(toBuffer("0x" + data)));
-    return hash;
+    return bufferToHex(keccak256(toBuffer("0x" + data)));
   }
 
   calculateLiteEvmSignature(
@@ -78,9 +77,16 @@ export default class EvmPriceSigner {
       value: serializePriceValue(p.value),
     }));
     const sortedPrices = sortDeepObjects(cleanPricesData);
+
+    const symbols: string[] = [];
+    const values: string[] = [];
+    sortedPrices.forEach((p: ShortSinglePrice) => {
+      symbols.push(p.symbol);
+      values.push(p.value);
+    });
     return {
-      symbols: sortedPrices.map((p: ShortSinglePrice) => p.symbol),
-      values: sortedPrices.map((p: ShortSinglePrice) => p.value),
+      symbols,
+      values,
       timestamp: pricePackage.timestamp,
     };
   }
