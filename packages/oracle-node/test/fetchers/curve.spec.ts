@@ -39,10 +39,6 @@ describe("Curve", () => {
         provider,
         ratioMultiplier: 1,
         functionName: "get_dy",
-        multiBlockConfig: {
-          sequenceLength: 1,
-          sequenceStep: 1,
-        },
       },
     });
 

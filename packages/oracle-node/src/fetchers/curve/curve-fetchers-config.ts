@@ -1,20 +1,39 @@
+import { providers } from "ethers";
 import {
   arbitrumProvider,
   ethereumProvider,
 } from "../../utils/blockchain-providers";
 
+export interface PoolsConfig {
+  [symbol: string]: {
+    address: string;
+    tokenIndex: number;
+    pairedToken: string;
+    pairedTokenIndex: number;
+    provider: providers.Provider;
+    ratioMultiplier: number;
+    functionName: string;
+    multiBlockConfig?: { sequenceStep: number; sequenceLength: number };
+  };
+}
+
+// 144 blocks = 30 min
+// 72 blocks = 15 min
+// 48 blocks = 10 min
 const ETH_MULTI_BLOCK_CONFIG = {
   sequenceStep: 1,
-  sequenceLength: 10,
+  sequenceLength: 48,
 };
 
-// manipulation would require  8 * 30 = 240 blocks to be 100%
+// 7200 blocks = 30 min
+// 3600 blocks = 15 min
+// 2400 blocks = 10 min
 const ARBITRUM_MULTI_BLOCK_CONFIG = {
-  sequenceStep: 8, // ~2 seconds
-  sequenceLength: 30, // ~2 * 30 = ~1min
+  sequenceStep: 50,
+  sequenceLength: 2400,
 };
 
-export const curveFetchersConfig = {
+export const curveFetchersConfig: Record<string, PoolsConfig> = {
   "curve-frax": {
     VST: {
       address: "0x59bF0545FCa0E5Ad48E13DA269faCD2E8C886Ba4",

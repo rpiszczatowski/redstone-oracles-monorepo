@@ -1,23 +1,11 @@
 import { BigNumber, Contract, providers, utils } from "ethers";
 import { getLastPrice } from "../../db/local-db";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
+import { PoolsConfig } from "./curve-fetchers-config";
 import abi from "./CurveFactory.abi.json";
 
 const DEFAULT_DECIMALS = 8;
 const DEFAULT_RATIO_QUANTITY = 10 ** DEFAULT_DECIMALS;
-
-export interface PoolsConfig {
-  [symbol: string]: {
-    address: string;
-    tokenIndex: number;
-    pairedToken: string;
-    pairedTokenIndex: number;
-    provider: providers.Provider;
-    ratioMultiplier: number;
-    functionName: string;
-    multiBlockConfig: { sequenceStep: number; sequenceLength: number };
-  };
-}
 
 export interface CurveFetcherResponse {
   ratio: BigNumber;
@@ -27,12 +15,8 @@ export interface CurveFetcherResponse {
 export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
   protected retryForInvalidResponse: boolean = true;
 
-  constructor(name: string, private readonly poolsConfig: PoolsConfig) {
+  constructor(name: string, public readonly poolsConfig: PoolsConfig) {
     super(name);
-  }
-
-  getPoolConfig(): PoolsConfig {
-    return this.poolsConfig;
   }
 
   async makeRequest(

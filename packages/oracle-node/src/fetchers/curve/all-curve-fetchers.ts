@@ -12,12 +12,18 @@ for (const [fetcherName, config] of Object.entries(curveFetchersConfig)) {
   curveFetchers[fetcherName] = new CurveFetcher(fetcherName, config);
 }
 
-for (const [lpName] of Object.entries(curveFetchersConfig)) {
-  const fetcherName = `multi-block-${lpName}`;
-  curveFetchers[fetcherName] = new MultiBlockCurveFetcher(
-    fetcherName,
-    curveFetchers[lpName] as CurveFetcher
+for (const [lpName, config] of Object.entries(curveFetchersConfig)) {
+  const fetcherName = `${lpName}-multi-block`;
+
+  const hasTokenConfiguredMultiBlock = Object.values(config).every(
+    (poolConfig) => poolConfig.multiBlockConfig
   );
+  if (hasTokenConfiguredMultiBlock) {
+    curveFetchers[fetcherName] = new MultiBlockCurveFetcher(
+      fetcherName,
+      curveFetchers[lpName] as CurveFetcher
+    );
+  }
 }
 
 export default curveFetchers;

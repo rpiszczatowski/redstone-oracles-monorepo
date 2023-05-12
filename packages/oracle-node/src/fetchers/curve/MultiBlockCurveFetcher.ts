@@ -1,4 +1,4 @@
-import { utils } from "ethers";
+import { terminateWithManifestConfigError } from "../../Terminator";
 import { getMedianBigNumber } from "../../utils/numbers";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { CurveFetcher, CurveFetcherResponse } from "./CurveFetcher";
@@ -10,7 +10,14 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
 
   async makeRequest(assetId: string): Promise<CurveFetcherResponse> {
     const { provider, multiBlockConfig } =
-      this.curveFetcher.getPoolConfig()[assetId];
+      this.curveFetcher.poolsConfig[assetId];
+
+    if (!multiBlockConfig) {
+      terminateWithManifestConfigError(
+        `${this.getName()} has not configured multi-block. In 'curve-fetchers-config'`
+      );
+    }
+
     const currentBlockNumber = await provider.getBlockNumber();
     const blockSequence = this.getBlocksSequence(
       currentBlockNumber,
@@ -18,13 +25,13 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
       multiBlockConfig.sequenceStep
     );
 
-    const responsePerBlock = await Promise.all(
+    const responsesPerBlock = await Promise.all(
       blockSequence.map((blockTag) =>
         this.curveFetcher.makeRequest(assetId, blockTag)
       )
     );
 
-    const ratios = responsePerBlock.map((r) => r.ratio);
+    const ratios = responsesPerBlock.map((response) => response.ratio);
 
     return {
       ratio: getMedianBigNumber(ratios),
