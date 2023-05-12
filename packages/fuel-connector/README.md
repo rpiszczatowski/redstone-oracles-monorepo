@@ -1,51 +1,48 @@
 # 🔗 @redstone-finance/fuel-connector
 
-[![License](https://img.shields.io/badge/license-MIT-green)](https://choosealicense.com/licenses/mit/)
 [![Discord](https://img.shields.io/discord/786251205008949258?logo=discord)](https://discord.gg/2CT6hN6C)
 [![Twitter](https://img.shields.io/twitter/follow/redstone_defi?style=flat&logo=twitter)](https://twitter.com/intent/follow?screen_name=redstone_defi)
 
 Proudly supported by:
-![Fuel Grants Program](fuel-grants-program.png)
+[![Fuel Grants Program](fuel-grants-program.png)](#-the-fuel-grants-program)
 
 RedStone proposes a completely new modular design where data is first put into a data availability layer and then
 fetched on-chain. This allow us to broadcast a large number of assets at high frequency to a cheaper layer and put it on
 chain only when required by the protocol.
 
-The @redstone-finance/fuel-connector module implements an alternative design of providing oracle data to smart
+The `@redstone-finance/fuel-connector` module implements an alternative design of providing oracle data to smart
 contracts. Instead of constantly persisting data on the Fuel network storage (by data providers), the information is
 brought on-chain only when needed (by end users). Until that moment data remains in the decentralised cache layer, which
 is powered by RedStone light cache gateways and streamr data broadcasting protocol. Data is transferred to the Fuel
 network by end users. The information integrity is verified on-chain through signature checking.
 
-- [🔥 Getting started](#-getting-started)
-  - [1. Code structure](#1-code-structure)
-  - [2. The contract](#2-the-contract)
-  - [3. Connecing to the contract](#2-connecting-to-the-contract)
-- [👨‍💻 Development and contributions](#-development-and-contributions)
+Here also you can find the description of
+the [whole RedStone Oracle model](https://docs.redstone.finance/docs/introduction).
+
+- [👨‍ Code structure](#-code-structure)
+- [🔥 Connecing to the contract](#-connecting-to-the-contract)
   - [Installing the dependencies](#installing-the-dependencies)
 - [⚡ The Fuel Grants Program](#-the-fuel-grants-program)
 - [📄 License](#-license)
 
-## 🔥 Getting started
+## 👨‍ Code structure
 
-### 1. Code structure
-
-- [sway](sway) directory contains the fuel-network on-chain libraries written in sway 0.35.5.
+- [sway](sway) directory contains the fuel-network on-chain libraries written in sway `0.35.5`.
+  - There are also various tests of signature verification with the given signers, timestamp validation, value
+    aggregation as well as full data-processing tests with various configurations.
   - You can find all the possibilities [here](sway/contract/README.md).
   - You can read [here](sway/contract/README.md) how the contract works.
-  - Here also you can find the description of
-    the [whole RedStone Oracle model](https://docs.redstone.finance/docs/introduction).
-- [src](src) directory contains the typescript classes, to be used to establish connection between typescript and
+- [src](src) directory contains the typescript classes, useful for establishing a connection between typescript and
   fuel-network layers.
-  - See [here](#2-connecting-to-the-contract), how to connect to the contract.
+  - See [below](#-connecting-to-the-contract), how to connect to the contract.
 - [test](test) directory contains the off-chain tests, especially:
-  - contract usage tests - with payload sending and receiving data
-  - integration tests - to be used for checking if the contract is properly initialized in the fuel network
+  - e2e contract usage tests - with payload sending and receiving aggregated data
+  - integration tests - to be used for checking if the contract was properly initialized in the fuel network
   - gas usage tests - to be used for checking the gas costs of particular operations in various configurations and also
     the summary of the single item costs.
   - a piece of code for transferring ETHs from genesis accounts on the local network
 
-### 2. Connecting to the contract
+## 🔥 Connecting to the contract
 
 First, you need to import the connector code to your project
 
@@ -73,7 +70,8 @@ const paramsProvider = new ContractParamsProvider({
 
 ```
 
-The `account` param is needed to be passed for storage-write-methods. Otherwise, it can remain undefined.
+The `yourWalletOrProvider` param is needed to be passed for testnet usage. For the local network it can remain
+undefined.
 
 Now you can access any of the contract's methods by invoking the code:
 
