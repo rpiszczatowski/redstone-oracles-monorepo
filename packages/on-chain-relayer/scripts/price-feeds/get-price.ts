@@ -1,16 +1,17 @@
-import { Contract, utils } from "ethers";
-import { getProvider } from "../../src/core/contract-interactions/get-provider-or-signer";
-import { abi } from "../../artifacts/contracts/price-feeds/interfaces/IPriceFeed.sol/IPriceFeed.json";
+import { utils } from "ethers";
+import { ethers } from "hardhat";
 
 // Usage: yarn run-script src/scripts/price-feeds/get-price.ts
 // Note! You should configure the .env file properly before running this script
 
-const PRICE_FEED_ADDRESS = "";
-
 (async () => {
-  const provider = getProvider();
-  const priceFeedContract = new Contract(PRICE_FEED_ADDRESS, abi, provider);
-  const latestRoundData = await priceFeedContract.latestRoundData();
-  const price = utils.formatUnits(latestRoundData.answer, 8);
-  console.log(price);
+  const priceFeedFactory = await ethers.getContractFactory(
+    "VoltzSofrPriceFeed"
+  );
+  const priceFeedContract = priceFeedFactory.attach(
+    "0x89F48f6671Ec1B1C4f6abE964EBdd21F4eb7076f"
+  );
+  const latestAnswer = await priceFeedContract.latestAnswer();
+  const price = utils.formatUnits(latestAnswer, 8);
+  console.log({ price });
 })();

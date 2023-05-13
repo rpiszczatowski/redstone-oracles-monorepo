@@ -2,7 +2,6 @@ import { utils } from "ethers";
 import { ethers } from "hardhat";
 import { WrapperBuilder } from "@redstone-finance/evm-connector";
 import { requestDataPackages } from "redstone-sdk";
-import { getSigner } from "../../src/core/contract-interactions/get-provider-or-signer";
 import { config } from "../../src/config";
 
 // Usage: yarn run-script src/scripts/price-feeds/deploy-price-feeds-contracts.ts
@@ -13,30 +12,31 @@ import { config } from "../../src/config";
 
   console.log("Deploying adapter contract...");
   const adapterFactory = await ethers.getContractFactory(
-    "PriceFeedsAdapter",
-    getSigner()
+    "VoltzPriceFeedsAdapter"
   );
-  const dataFeedsAsBytes32 = dataFeeds.map(utils.formatBytes32String);
-  const adapterContract = await adapterFactory.deploy(dataFeedsAsBytes32);
+  const adapterContract = await adapterFactory.deploy();
   await adapterContract.deployed();
   console.log(`Adapter contract deployed - ${adapterContract.address}`);
 
   console.log("Deploying price feeds contracts...");
-  for (const dataFeed of dataFeeds) {
-    const priceFeedFactory = await ethers.getContractFactory(
-      "PriceFeed",
-      getSigner()
-    );
-    const priceFeedContract = await priceFeedFactory.deploy(
-      adapterContract.address,
-      utils.formatBytes32String(dataFeed),
-      `RedStone price feed for ${dataFeed}`
-    );
-    await priceFeedContract.deployed();
-    console.log(
-      `Price feed contract for ${dataFeed} deployed - ${priceFeedContract.address}`
-    );
-  }
+  const sofrPriceFeedFactory = await ethers.getContractFactory(
+    "VoltzSofrPriceFeed"
+  );
+  const sofrPriceFeedContract = await sofrPriceFeedFactory.deploy();
+  await sofrPriceFeedContract.deployed();
+  await sofrPriceFeedContract.setAdapterAddress(adapterContract.address);
+  console.log(
+    `Price feed contract for SOFR deployed - ${sofrPriceFeedContract.address}`
+  );
+  const sofraiPriceFeedFactory = await ethers.getContractFactory(
+    "VoltzSofraiPriceFeed"
+  );
+  const sofraiPriceFeedContract = await sofraiPriceFeedFactory.deploy();
+  await sofraiPriceFeedContract.deployed();
+  await sofraiPriceFeedContract.setAdapterAddress(adapterContract.address);
+  console.log(
+    `Price feed contract for SOFRAI deployed - ${sofraiPriceFeedContract.address}`
+  );
 
   console.log("Updating data feeds values...");
   const { dataServiceId, uniqueSignersCount, cacheServiceUrls, gasLimit } =
@@ -57,9 +57,7 @@ import { config } from "../../src/config";
     const dataPackageTimestamp =
       dataPackages[dataFeeds[0]][0].dataPackage.timestampMilliseconds;
 
-    const firstRound = 1;
     const updateTransaction = await wrappedContract.updateDataFeedsValues(
-      firstRound,
       dataPackageTimestamp,
       { gasLimit }
     );

@@ -47,6 +47,10 @@ const config: HardhatUserConfig = {
       url: "https://rpc.public.zkevm-test.net",
       accounts,
     },
+    "avalanche-fuji": {
+      url: "https://api.avax-test.network/ext/bc/C/rpc",
+      accounts,
+    },
   },
 };
 
