@@ -844,7 +844,10 @@
       "source": ["verto"]
     },
     "ARDRIVE": {
-      "source": ["verto"]
+      "source": ["verto", "permaswap"]
+    },
+    "ACNH": {
+      "source": ["permaswap"]
     },
     "ARGO": {
       "source": ["verto"]
