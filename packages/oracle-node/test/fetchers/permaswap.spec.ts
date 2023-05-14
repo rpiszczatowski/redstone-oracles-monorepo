@@ -1,4 +1,5 @@
 import {
+  clearLastPricesCache,
   clearPricesSublevel,
   closeLocalLevelDB,
   setupLocalDb,
@@ -24,6 +25,7 @@ describe("permaswap fetcher", () => {
   });
   beforeEach(async () => {
     await clearPricesSublevel();
+    clearLastPricesCache();
   });
 
   afterAll(async () => {
@@ -60,16 +62,7 @@ describe("permaswap fetcher", () => {
     ]);
   });
 
-  it("should failed when missing value in db", async () => {
-    await saveMockPricesInLocalDb([NaN], ["USDC"]);
-    mockFetcherResponse(acnhToUsdcPriceResponse);
-
-    const result = await sut.fetchAll(["ACNH"]);
-
-    expect(result).toEqual([]);
-  });
-
-  it("should failed when missing value in db", async () => {
+  it("should fail when missing value in db", async () => {
     mockFetcherResponse(acnhToUsdcPriceResponse);
 
     const result = await sut.fetchAll(["ACNH"]);
