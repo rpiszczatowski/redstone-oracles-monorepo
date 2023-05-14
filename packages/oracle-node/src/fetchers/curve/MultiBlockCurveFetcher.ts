@@ -55,7 +55,7 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     const blocks = [];
     for (
       let currentBlock = lastBlock;
-      currentBlock > lastBlock - sequenceLength * sequenceStep;
+      currentBlock > lastBlock - sequenceLength;
       currentBlock -= sequenceStep
     ) {
       blocks.push(currentBlock);
