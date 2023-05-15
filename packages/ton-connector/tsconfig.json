@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "es2021"
+    ],
+    "target": "es2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
+    "declaration": true,
+    "declarationMap": true,
+    "incremental": true,
+    "composite": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": true
+  },
+  "ts-node": {
+    "files": true
+  },
+  "include": [
+    "src/**/*",
+    "wrappers/**/*",
+    "src/**/*.json",
+    "./package.json",
+    "index.ts",
+    "jest.config.js"
+  ],
+  "references": [
+    {
+      "path": "../sdk"
+    },
+    {
+      "path": "../protocol"
+    }
+  ]
+}
