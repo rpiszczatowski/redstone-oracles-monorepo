@@ -31,7 +31,4 @@ export const getProvider = () => {
   }
 };
 
-export const getSigner = () => {
-  const signer = new Wallet(config.privateKey, getProvider());
-  return signer;
-};
+export const getSigner = () => new Wallet(config.privateKey, getProvider());

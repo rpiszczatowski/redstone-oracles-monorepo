@@ -36,9 +36,7 @@ describe("updatePrices", () => {
     getProviderStub.returns(hardhat.ethers.provider);
   });
 
-  afterEach(() => {
-    server.resetHandlers();
-  });
+  afterEach(() => server.resetHandlers());
 
   after(() => {
     server.close();
