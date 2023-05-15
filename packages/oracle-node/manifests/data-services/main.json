@@ -872,6 +872,20 @@
     "TJ_AVAX_USDC_AUTO": {
       "source": ["avalanche-evm-fetcher"]
     },
+    "CRV": {
+      "source": [
+        "binance",
+        "binanceusdm",
+        "coinbaseprime",
+        "coinbasepro",
+        "okx",
+        "xt",
+        "btcex",
+        "huobipro",
+        "kucoin",
+        "gate"
+      ]
+    },
     "AUD": {
       "source": ["binance", "currencycom", "ecb", "kraken"]
     },
@@ -1455,6 +1469,9 @@
     "gmdETH": {
       "source": ["avalanche-evm-fetcher"]
     },
+    "crvUSDBTCETH": {
+      "source": ["avalanche-evm-fetcher"]
+    },
     "ABNB": {
       "source": ["currencycom"]
     },
@@ -1621,7 +1638,6 @@
     "CHZ": {},
     "QTUM": {},
     "BAND": {},
-    "CRV": {},
     "LRC": {},
     "REN": {},
     "KSM": {},

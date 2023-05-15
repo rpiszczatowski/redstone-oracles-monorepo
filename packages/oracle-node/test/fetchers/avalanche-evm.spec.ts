@@ -14,7 +14,6 @@ import {
   closeLocalLevelDB,
   setupLocalDb,
 } from "../../src/db/local-db";
-import { steakHutTokensContractDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/steak-hut/steakHutTokensContractDetails";
 import { yieldYakTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/yield-yak/yieldYakTokensContractsDetails";
 import { dexLpTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/dex-lp-tokens/dexLpTokensContractsDetails";
 import { mooTraderJoeTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/moo-trader-joe/mooTraderJoeTokensContractsDetails";
@@ -23,6 +22,8 @@ import { oracleAdapterContractsDetails } from "../../src/fetchers/evm-chain/aval
 import { gmdTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/gmd/gmdTokensContractsDetails";
 import GmdVaultAbi from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/gmd/GmdVault.abi.json";
 import { traderJoeAutoPoolTokenContractDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/trader-joe-auto/traderJoeAutoPoolTokenContractsDetails";
+import { steakHutTokensContractDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/steak-hut/steakHutTokensContractDetails";
+import { curveTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/curve/curveTokensContractsDetails";
 
 jest.setTimeout(15000);
 
@@ -407,6 +408,66 @@ describe("Avalanche EVM fetcher", () => {
       const result = await fetcher.fetchAll(["TJ_AVAX_USDC_AUTO"]);
       expect(result).toEqual([
         { symbol: "TJ_AVAX_USDC_AUTO", value: 0.7906939799374457 },
+      ]);
+    });
+  });
+
+  describe("Curve Token", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+
+      const curveLpTokenContract = await deployMockContract(
+        wallet,
+        curveTokensContractsDetails.crvUSDBTCETH.abi
+      );
+      await curveLpTokenContract.mock.totalSupply.returns(
+        "2789046954387404997799"
+      );
+      const wbtcContract = await deployMockContract(
+        wallet,
+        curveTokensContractsDetails.crvUSDBTCETH.abi
+      );
+      await wbtcContract.mock.balanceOf.returns("3827679491");
+      const wethContract = await deployMockContract(
+        wallet,
+        curveTokensContractsDetails.crvUSDBTCETH.abi
+      );
+      await wethContract.mock.balanceOf.returns("566773096955970306543");
+      const wcrvContract = await deployMockContract(
+        wallet,
+        curveTokensContractsDetails.crvUSDBTCETH.abi
+      );
+      await wcrvContract.mock.balanceOf.returns("1092413975173947426287877");
+
+      multicallContract = await deployMulticallContract(wallet);
+
+      curveTokensContractsDetails.crvUSDBTCETH.address =
+        curveLpTokenContract.address;
+      curveTokensContractsDetails.crvUSDBTCETH.avWBTCAddress =
+        wbtcContract.address;
+      curveTokensContractsDetails.crvUSDBTCETH.avWETHAddress =
+        wethContract.address;
+      curveTokensContractsDetails.crvUSDBTCETH.av3CRVAddress =
+        wcrvContract.address;
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new EvmFetcher(
+        "avalanche-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
+      );
+
+      await saveMockPricesInLocalDb(
+        [29570.8, 1991.91, 0.9718],
+        ["BTC", "ETH", "CRV"]
+      );
+
+      const result = await fetcher.fetchAll(["crvUSDBTCETH"]);
+      expect(result).toEqual([
+        { symbol: "crvUSDBTCETH", value: 785.418437398068 },
       ]);
     });
   });
