@@ -1,16 +1,18 @@
 import { buildRequestHandlersFromContractDetails } from "../../../shared/utils/build-request-handlers-from-contract-details";
 import { YieldYakTokensRequestHandlers } from "./yield-yak/YieldYakTokensRequestHandlers";
-import { yieldYakTokensContractsDetails } from "./yield-yak";
-import { DexLpTokensRequestHandler } from "./dex-lp-tokens/DexLpTokensRequestHandler";
-import { dexLpTokensContractsDetails } from "./dex-lp-tokens";
+import { yieldYakTokensContractsDetails } from "./yield-yak/yieldYakTokensContractsDetails";
+import { DexLpTokensRequestHandlers } from "./dex-lp-tokens/DexLpTokensRequestHandlers";
+import { dexLpTokensContractsDetails } from "./dex-lp-tokens/dexLpTokensContractsDetails";
 import { MooTraderJoeTokensRequestHandlers } from "./moo-trader-joe/MooTraderJoeTokensRequestHandlers";
-import { mooTraderJoeTokensContractsDetails } from "./moo-trader-joe";
+import { mooTraderJoeTokensContractsDetails } from "./moo-trader-joe/mooTraderJoeTokensContractsDetails";
 import { OracleAdapterRequestHandlers } from "./oracle-adapter/OracleAdapterRequestHandlers";
-import { oracleAdapterContractsDetails } from "./oracle-adapter";
+import { oracleAdapterContractsDetails } from "./oracle-adapter/oracleAdapterContractsDetails";
 import { GlpManagerRequestHandler } from "./glp-manager/GlpManagerRequestHandlers";
-import { glpManagerContractsDetails } from "./glp-manager";
+import { glpManagerContractsDetails } from "./glp-manager/glpManagerContractsDetails";
 import { steakHutTokensContractDetails } from "./steak-hut/steakHutTokensContractDetails";
 import { SteakHutTokensRequestHandlers } from "./steak-hut/SteakHutTokensRequestHandler";
+import { gmdTokensContractsDetails } from "./gmd/gmdTokensContractsDetails";
+import { GmdRequestHandler } from "./gmd/GmdRequestHandlers";
 
 export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
@@ -19,7 +21,7 @@ export const requestHandlers = {
   ),
   ...buildRequestHandlersFromContractDetails(
     dexLpTokensContractsDetails,
-    DexLpTokensRequestHandler
+    DexLpTokensRequestHandlers
   ),
   ...buildRequestHandlersFromContractDetails(
     mooTraderJoeTokensContractsDetails,
@@ -36,5 +38,9 @@ export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
     steakHutTokensContractDetails,
     SteakHutTokensRequestHandlers
+  ),
+  ...buildRequestHandlersFromContractDetails(
+    gmdTokensContractsDetails,
+    GmdRequestHandler
   ),
 };

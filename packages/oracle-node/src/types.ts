@@ -184,5 +184,5 @@ export interface MulticallRequest {
 export type MulticallParsedResponses = {
   [address in string]: {
     [functionName in string]?: string;
-  };
+  }[];
 };
