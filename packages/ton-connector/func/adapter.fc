@@ -1,0 +1,99 @@
+;; =============== storage =============================
+
+cell load_data() impure {
+  cell data = get_data();
+  slice ds = data.begin_parse();
+  if (ds.slice_bits() == 0) {
+    return new_dict();
+  } else {
+    return data;
+  }
+}
+
+;; =============== messages =============================
+
+() recv_internal(int balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+  int op = in_msg_body~load_uint(32);
+  int query_id = in_msg_body~load_uint(64);
+
+  cell dic = load_data();
+
+  if (op == 1) {
+      repeat (in_msg_body.slice_refs()) {
+        cell c = in_msg_body~load_ref();
+        slice s = c.begin_parse();
+
+        int key = s~load_uint(256);
+        ~strdump(key);
+
+        int val = s~load_uint(256);
+        slice v = begin_cell().store_uint(val, 256).end_cell().begin_parse();
+
+        dic~udict_set(256, key, v);
+      }
+
+    set_data(dic);
+
+    return ();
+  }
+
+  if (op == 2) {
+    int key = -1;
+    do {
+      (key, slice cs, int f) = dic.udict_get_next?(256, key);
+      if (f) {
+        int valid_until = cs~load_uint(256);
+        if (valid_until < now()) {
+          dic~udict_delete?(256, key);
+        }
+      }
+    } until (~ f);
+
+    if (dic.dict_empty?()) {
+      set_data(begin_cell().end_cell());
+    } else {
+      set_data(dic);
+    }
+
+    return ();
+  }
+
+  if (op == 101) {
+    int key = in_msg_body~load_uint(256);
+
+    var cs = in_msg_full.begin_parse();
+    var flags = cs~load_uint(4);
+    slice s_addr = cs~load_msg_addr();
+
+    var address = parse_work_addr(s_addr);
+    ~strdump(address);
+
+    cell dic = load_data();
+    (slice payload, int success) = dic.udict_get?(256, key);
+    throw_unless(98, success);
+
+    int value = payload~load_uint(256);
+    slice v = begin_cell().store_uint(value * 2, 256).end_cell().begin_parse();
+    dic~udict_set(256, key, v);
+    set_data(dic);
+
+    send_message(op, s_addr, begin_cell().store_uint(value * 2, 256));
+
+    return ();
+  }
+
+  throw (1001);
+}
+
+;; =============== getters =============================
+
+(int, slice) get_key(int key) method_id {
+  cell dic = load_data();
+  (slice payload, int success) = dic.udict_get?(256, key);
+  ~strdump("x");
+  ~strdump(success);
+  throw_unless(98, success);
+
+  int value = payload~load_uint(256);
+  return (value, payload);
+}

@@ -1,0 +1,41 @@
+{
+  "name": "ton-connector",
+  "prettier": "redstone-prettier-config",
+  "version": "0.0.1",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "op": "yarn build && ts-node scripts/ton.ts --op",
+    "build": "rm -rf dist && tsc -build",
+    "deploy-adapter": "npx func-js func/stdlib.fc func/utils.fc func/adapter.fc --boc func/adapter.cell && yarn build && ts-node scripts/ton.ts --op=deploy-adapter",
+    "deploy-feed": "npx func-js func/stdlib.fc func/utils.fc func/feed.fc --boc func/feed.cell && yarn build && ts-node scripts/ton.ts --op=deploy-feed",
+    "get-key": "yarn op get-key",
+    "init-adapter": "yarn op init-adapter",
+    "send-message": "yarn op send-message",
+    "fetch-feed-value": "yarn op fetch-feed-value",
+    "get-feed-value": "yarn op get-feed-value"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "ethers": "^5.7.2",
+    "redstone-sdk": "^1.0.9",
+    "ton": "^13.5.0",
+    "ton-crypto": "^3.2.0",
+    "ton-core": "^0.49.1",
+    "ton-contract-executor": "^0.7.0",
+    "@orbs-network/ton-access": "^2.3.3"
+  },
+  "devDependencies": {
+    "@types/node": "^18.13.0",
+    "typescript": "^4.9.5",
+    "@ton-community/func-js": "^0.6.1"
+  },
+  "references": [
+    {
+      "path": "../protocol"
+    },
+    {
+      "path": "../sdk"
+    }
+  ]
+}
