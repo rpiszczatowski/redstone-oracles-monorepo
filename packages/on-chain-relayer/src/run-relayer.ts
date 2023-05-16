@@ -27,9 +27,10 @@ const runIteration = async () => {
     cacheServiceUrls
   );
 
-  const { lastUpdateTimestamp } =
-    await getLastRoundParamsFromContract(adapterContract);
-  
+  const { lastUpdateTimestamp } = await getLastRoundParamsFromContract(
+    adapterContract
+  );
+
   // We fetch latest values from contract only if we want to check value deviation
   let valuesFromContract = {};
   if (config.updateConditions.includes("value-deviation")) {
@@ -39,7 +40,7 @@ const runIteration = async () => {
     );
   }
 
-  const { shouldUpdatePrices, warningMessage } = shouldUpdate({
+  const { shouldUpdatePrices, warningMessage } = await shouldUpdate({
     dataPackages,
     valuesFromContract,
     lastUpdateTimestamp,
@@ -48,11 +49,7 @@ const runIteration = async () => {
   if (!shouldUpdatePrices) {
     console.log(`All conditions are not fulfilled: ${warningMessage}`);
   } else {
-    await updatePrices(
-      dataPackages,
-      adapterContract,
-      lastUpdateTimestamp
-    );
+    await updatePrices(dataPackages, adapterContract, lastUpdateTimestamp);
   }
 
   await sendHealthcheckPing();

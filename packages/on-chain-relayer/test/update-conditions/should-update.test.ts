@@ -15,7 +15,7 @@ describe("should-update", () => {
       BTC: 23011.68,
     };
     const lastUpdateTimestamp = Date.now() - 1;
-    const { shouldUpdatePrices, warningMessage } = shouldUpdate({
+    const { shouldUpdatePrices, warningMessage } = await shouldUpdate({
       dataPackages,
       valuesFromContract: smallerValueDiff,
       lastUpdateTimestamp,
@@ -33,7 +33,7 @@ describe("should-update", () => {
     const dataPackages = await getDataPackagesResponse();
     const biggerValueDiff: ValuesForDataFeeds = { ETH: 1230.99, BTC: 13011.68 };
     const lastUpdateTimestamp = Date.now() - 1;
-    const { shouldUpdatePrices, warningMessage } = shouldUpdate({
+    const { shouldUpdatePrices, warningMessage } = await shouldUpdate({
       dataPackages,
       valuesFromContract: biggerValueDiff,
       lastUpdateTimestamp,
@@ -51,7 +51,7 @@ describe("should-update", () => {
       BTC: 23011.68,
     };
     const lastUpdateTimestamp = Date.now() - 100000;
-    const { shouldUpdatePrices, warningMessage } = shouldUpdate({
+    const { shouldUpdatePrices, warningMessage } = await shouldUpdate({
       dataPackages,
       valuesFromContract: smallerValueDiff,
       lastUpdateTimestamp,

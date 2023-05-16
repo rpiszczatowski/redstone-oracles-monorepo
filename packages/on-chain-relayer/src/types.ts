@@ -16,3 +16,13 @@ export interface ConditionCheckResponse {
 }
 
 export type ConditionChecksNames = "time" | "value-deviation";
+
+export interface NewyorkfedResponse {
+  refRates: NewyorkfedRefRate[];
+}
+
+interface NewyorkfedRefRate {
+  type: string;
+  percentRate?: number;
+  index?: number;
+}

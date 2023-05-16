@@ -1,11 +1,11 @@
 import { Contract, Signer } from "ethers";
+import { ethers } from "hardhat";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { WrapperBuilder } from "@redstone-finance/evm-connector";
 import { NumericDataPoint, DataPackage } from "redstone-protocol";
 import { DataPackagesResponse } from "redstone-sdk";
 import { formatBytes32String } from "ethers/lib/utils";
 import { config } from "../src/config";
-import { ethers } from "hardhat";
 
 export const ethDataFeed = formatBytes32String("ETH");
 export const btcDataFeed = formatBytes32String("BTC");
@@ -129,4 +129,37 @@ export const deployMockSortedOracles = async (signer?: Signer) => {
   const contract = await MockSortedOraclesFactory.deploy();
   await contract.deployed();
   return contract;
+};
+
+const sofraiResponse = {
+  effectiveDate: "2023-05-15",
+  type: "SOFRAI",
+  average30day: 4.90571,
+  average90day: 4.76228,
+  average180day: 4.50452,
+  index: 1.07829396,
+  revisionIndicator: "",
+};
+
+const sofrResponse = {
+  effectiveDate: "2023-05-12",
+  type: "SOFR",
+  percentRate: 5.05,
+  percentPercentile1: 4.98,
+  percentPercentile25: 5.04,
+  percentPercentile75: 5.09,
+  percentPercentile99: 5.14,
+  volumeInBillions: 1352,
+  revisionIndicator: "",
+};
+
+export const mockNewYorkFedResponse = {
+  refRates: [sofraiResponse, sofrResponse],
+};
+
+export const differentMockNewYorkFedResponse = {
+  refRates: [
+    { ...sofraiResponse, index: 1.07829434 },
+    { ...sofrResponse, percentRate: 5.06 },
+  ],
 };
