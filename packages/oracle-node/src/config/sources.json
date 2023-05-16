@@ -1,4 +1,9 @@
 {
+  "permaswap": {
+    "logoURI": "https://avatars.githubusercontent.com/u/104478862",
+    "url": "https://permaswap.network",
+    "color": "#000000"
+  },
   "ascendex": {
     "logoURI": "https://cdn.redstone.finance/sources/ascendex.png",
     "url": "https://ascendex.com",

@@ -1,0 +1,21 @@
+{
+  "tokenXTag": "ethereum-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+  "tokenYTag": "everpay-acnh-0x72247989079da354c9f0a6886b965bcc86550f8a",
+  "feeRatio": "0.0005",
+  "currentPriceUp": "0.14663999999999999695229468271718",
+  "currentPriceDown": "6.81233460000000014180482343917333",
+  "lps": [
+    {
+      "poolID": "0x7200199c193c97012893fd103c56307e44434322439ece7711f28a8c3512c082",
+      "tokenX": "ethereum-usdc-0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "tokenY": "everpay-acnh-0x72247989079da354c9f0a6886b965bcc86550f8a",
+      "feeRatio": "0.0005",
+      "accID": "0x303805Ba230E5f60A1161ef38AB25eB4BA260a4e",
+      "lowSqrtPrice": "24.738633753705963298928459135844",
+      "currentSqrtPrice": "26.106978449075391269166905278177",
+      "highSqrtPrice": "27.568097504180443535911825105868",
+      "liquidity": 24279462986653,
+      "priceDirection": "both"
+    }
+  ]
+}
