@@ -1,134 +1,142 @@
-import { expect } from "chai";
 import { ethers } from "hardhat";
 import { utils } from "redstone-protocol";
-import {
-  DEFAULT_TIMESTAMP_FOR_TESTS,
-  getMockNumericPackage,
-} from "../../src/helpers/test-utils";
-import { WrapperBuilder } from "../../src/index";
-import { MockDataPackageConfig } from "../../src/wrappers/MockWrapper";
+import { expect } from "chai";
 import { SampleRedstoneConsumerNumericMock } from "../../typechain-types";
 import {
   expectedNumericValues,
-  mockNumericPackageConfigs,
-  mockNumericPackages,
-  NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-  UNAUTHORISED_SIGNER_INDEX,
+  IMockDataPackagesSuite,
+  MockNumericDataPackagesMultiSignSuite,
+  MockNumericDataPackagesSingleSignSuite,
 } from "../tests-common";
+import { MockDataPackageConfig } from "../../src/wrappers/MockWrapper";
+import { MockMultiSignDataPackageConfig } from "../../src/wrappers/MockWrapperMultiSign";
+import { wrapContractUsingMockDataPackages } from "../../src/helpers/test-utils";
 
-describe("SampleRedstoneConsumerNumericMock", function () {
-  let contract: SampleRedstoneConsumerNumericMock;
+interface NumbersTestParams {
+  mockDataPackagesSuite: IMockDataPackagesSuite;
+}
 
-  const testShouldPass = async (
-    mockNumericPackages: MockDataPackageConfig[],
-    dataFeedId: "ETH" | "BTC"
-  ) => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
+const describeConsumerNumericTests = ({
+  mockDataPackagesSuite,
+}: NumbersTestParams) => {
+  describe("SampleRedstoneConsumerNumericMock", function () {
+    let contract: SampleRedstoneConsumerNumericMock;
 
-    const tx = await wrappedContract.saveOracleValueInContractStorage(
-      utils.convertStringToBytes32(dataFeedId)
-    );
-    await tx.wait();
+    const testShouldPass = async (
+      mockNumericPackages:
+        | MockDataPackageConfig[]
+        | MockMultiSignDataPackageConfig,
+      dataFeedId: "ETH" | "BTC"
+    ) => {
+      const wrappedContract = wrapContractUsingMockDataPackages(
+        contract,
+        mockNumericPackages
+      );
 
-    const valueFromContract = await contract.latestSavedValue();
-
-    expect(valueFromContract.toNumber()).to.be.equal(
-      expectedNumericValues[dataFeedId]
-    );
-  };
-
-  const testShouldRevertWith = async (
-    mockNumericPackages: MockDataPackageConfig[],
-    dataFeedId: string,
-    revertMsg: string
-  ) => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-
-    await expect(
-      wrappedContract.saveOracleValueInContractStorage(
+      const tx = await wrappedContract.saveOracleValueInContractStorage(
         utils.convertStringToBytes32(dataFeedId)
-      )
-    ).to.be.revertedWith(revertMsg);
-  };
+      );
+      await tx.wait();
 
-  this.beforeEach(async () => {
-    const ContractFactory = await ethers.getContractFactory(
-      "SampleRedstoneConsumerNumericMock"
-    );
-    contract = await ContractFactory.deploy();
-    await contract.deployed();
-  });
+      const valueFromContract = await contract.latestSavedValue();
 
-  it("Should properly execute transaction on RedstoneConsumerBase contract (ETH)", async () => {
-    await testShouldPass(mockNumericPackages, "ETH");
-  });
+      expect(valueFromContract.toNumber()).to.be.equal(
+        expectedNumericValues[dataFeedId]
+      );
+    };
 
-  it("Should properly execute transaction on RedstoneConsumerBase contract (BTC)", async () => {
-    await testShouldPass(mockNumericPackages, "BTC");
-  });
+    const testShouldRevertWith = async (
+      mockNumericPackages:
+        | MockDataPackageConfig[]
+        | MockMultiSignDataPackageConfig,
+      dataFeedId: string,
+      revertMsg: string
+    ) => {
+      const wrappedContract = wrapContractUsingMockDataPackages(
+        contract,
+        mockNumericPackages
+      );
 
-  it("Should work properly with the greater number of unique signers than required", async () => {
-    const newMockPackages = [
-      ...mockNumericPackages,
-      getMockNumericPackage({
-        ...mockNumericPackageConfigs[0],
-        mockSignerIndex: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-      }),
-    ];
-    await testShouldPass(newMockPackages, "BTC");
-  });
+      await expect(
+        wrappedContract.saveOracleValueInContractStorage(
+          utils.convertStringToBytes32(dataFeedId)
+        )
+      ).to.be.revertedWith(revertMsg);
+    };
 
-  it("Should revert if data feed id not found", async () => {
-    await testShouldRevertWith(
-      mockNumericPackages,
-      "NOT_BTC_AND_NOT_ETH",
-      "InsufficientNumberOfUniqueSigners(0, 10)"
-    );
-  });
-
-  it("Should revert for too old timestamp", async () => {
-    const newMockPackages = [...mockNumericPackages];
-    newMockPackages[1] = getMockNumericPackage({
-      ...mockNumericPackageConfigs[1],
-      timestampMilliseconds: DEFAULT_TIMESTAMP_FOR_TESTS - 1,
+    this.beforeEach(async () => {
+      const ContractFactory = await ethers.getContractFactory(
+        "SampleRedstoneConsumerNumericMock"
+      );
+      contract = await ContractFactory.deploy();
+      await contract.deployed();
     });
-    await testShouldRevertWith(newMockPackages, "BTC", "TimestampIsNotValid()");
-  });
 
-  it("Should revert for an unauthorised signer", async () => {
-    const newMockPackages = [...mockNumericPackages];
-    newMockPackages[1] = getMockNumericPackage({
-      ...mockNumericPackageConfigs[1],
-      mockSignerIndex: UNAUTHORISED_SIGNER_INDEX,
+    it("Should properly execute transaction on RedstoneConsumerBase contract (ETH)", async () => {
+      await testShouldPass(mockDataPackagesSuite.mockDataPackages, "ETH");
     });
-    await testShouldRevertWith(
-      newMockPackages,
-      "BTC",
-      `SignerNotAuthorised("0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199")`
-    );
-  });
 
-  it("Should revert for insufficient number of signers", async () => {
-    const newMockPackages = mockNumericPackages.slice(
-      0,
-      NUMBER_OF_MOCK_NUMERIC_SIGNERS - 1
-    );
-    await testShouldRevertWith(
-      newMockPackages,
-      "BTC",
-      "InsufficientNumberOfUniqueSigners(9, 10)"
-    );
-  });
+    it("Should properly execute transaction on RedstoneConsumerBase contract (BTC)", async () => {
+      await testShouldPass(mockDataPackagesSuite.mockDataPackages, "BTC");
+    });
 
-  it("Should revert for duplicated packages (not enough unique signers)", async () => {
-    const newMockPackages = [...mockNumericPackages];
-    newMockPackages[1] = mockNumericPackages[0];
-    await testShouldRevertWith(
-      newMockPackages,
-      "BTC",
-      "InsufficientNumberOfUniqueSigners(9, 10)"
-    );
+    it("Should work properly with the greater number of unique signers than required", async () => {
+      await testShouldPass(
+        mockDataPackagesSuite.mockDataPackagesWithAdditionalSigner,
+        "BTC"
+      );
+    });
+
+    it("Should revert if data feed id not found", async () => {
+      await testShouldRevertWith(
+        mockDataPackagesSuite.mockDataPackages,
+        "NOT_BTC_AND_NOT_ETH",
+        "InsufficientNumberOfUniqueSigners(0, 10)"
+      );
+    });
+
+    it("Should revert for too old timestamp", async () => {
+      await testShouldRevertWith(
+        mockDataPackagesSuite.mockDataPackagesWithTooOldTimestamp,
+        "BTC",
+        "TimestampIsNotValid()"
+      );
+    });
+
+    it("Should revert for an unauthorised signer", async () => {
+      await testShouldRevertWith(
+        mockDataPackagesSuite.mockDataPackagesWithUnauthorizedSigner,
+        "BTC",
+        `SignerNotAuthorised("0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199")`
+      );
+    });
+
+    it("Should revert for insufficient number of signers", async () => {
+      await testShouldRevertWith(
+        mockDataPackagesSuite.mockDataPackagesWithInsufficientNumberOfSigners,
+        "BTC",
+        "InsufficientNumberOfUniqueSigners(9, 10)"
+      );
+    });
+
+    it("Should revert for duplicated packages (not enough unique signers)", async () => {
+      await testShouldRevertWith(
+        mockDataPackagesSuite.mockDataPackagesWithDuplicateSigner,
+        "BTC",
+        "InsufficientNumberOfUniqueSigners(9, 10)"
+      );
+    });
+  });
+};
+
+describe("SampleRedstoneConsumerNumericMockSingleSign", () => {
+  describeConsumerNumericTests({
+    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  });
+});
+
+describe("SampleRedstoneConsumerNumericMockMultiSign", () => {
+  describeConsumerNumericTests({
+    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
   });
 });

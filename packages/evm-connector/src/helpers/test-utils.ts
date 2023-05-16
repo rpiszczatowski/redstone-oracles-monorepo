@@ -1,5 +1,5 @@
 import { arrayify } from "@ethersproject/bytes";
-import { ethers } from "ethers";
+import { Contract, ethers } from "ethers";
 import {
   DataPackage,
   DataPoint,
@@ -14,6 +14,7 @@ import {
 import { ConvertibleToBytes32 } from "redstone-protocol/src/common/utils";
 import { MockDataPackageConfig } from "../wrappers/MockWrapper";
 import { MockMultiSignDataPackageConfig } from "../wrappers/MockWrapperMultiSign";
+import { WrapperBuilder } from "../WrapperBuilder";
 
 export const MAX_MOCK_SIGNERS_COUNT = 19;
 
@@ -84,7 +85,8 @@ export interface MockStringPackageArgs extends MockPackageArgs {
   dataPoints: IStringDataPoint[];
 }
 
-export interface MockStringMultiSignPackageArgs extends MockMultiSignPackageArgs {
+export interface MockStringMultiSignPackageArgs
+  extends MockMultiSignPackageArgs {
   dataPoints: IStringDataPoint[];
 }
 
@@ -328,4 +330,16 @@ export const getRange = (rangeArgs: {
   length: number;
 }): number[] => {
   return [...Array(rangeArgs.length).keys()].map((i) => (i += rangeArgs.start));
+};
+
+export const wrapContractUsingMockDataPackages = (
+  contract: Contract,
+  mockPackages: MockDataPackageConfig[] | MockMultiSignDataPackageConfig
+) => {
+  if (Array.isArray(mockPackages)) {
+    return WrapperBuilder.wrap(contract).usingMockDataPackages(mockPackages);
+  }
+  return WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
+    mockPackages
+  );
 };

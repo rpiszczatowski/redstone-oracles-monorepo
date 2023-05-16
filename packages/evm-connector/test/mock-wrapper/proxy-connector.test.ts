@@ -1,295 +1,162 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import { SampleProxyConnector } from "../../typechain-types";
-import { WrapperBuilder } from "../../src";
 import { convertStringToBytes32 } from "redstone-protocol/src/common/utils";
 import {
   expectedNumericValues,
-  mockNumericPackages,
-  mockNumericPackageMultiSign,
-  mockNumericPackageConfigs,
-  mockNumericPackageMultiSignConfig,
-  NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-  UNAUTHORISED_SIGNER_INDEX,
+  IMockDataPackagesSuite,
+  MockNumericDataPackagesMultiSignSuite,
+  MockNumericDataPackagesSingleSignSuite,
+  manyAssetsDataPoints,
 } from "../tests-common";
 import { MockDataPackageConfig } from "../../src/wrappers/MockWrapper";
 import { MockMultiSignDataPackageConfig } from "../../src/wrappers/MockWrapperMultiSign";
-import {
-  DEFAULT_TIMESTAMP_FOR_TESTS,
-  getMockNumericPackage,
-  getMockNumericMultiSignPackage,
-  getRange,
-  MockSignerIndex,
-} from "../../src/helpers/test-utils";
+import { wrapContractUsingMockDataPackages } from "../../src/helpers/test-utils";
 
-describe("SampleProxyConnector", function () {
-  let contract: SampleProxyConnector;
-  const ethDataFeedId = convertStringToBytes32("ETH");
+interface ProxyConnectorTestParams {
+  mockDataPackagesSuite: IMockDataPackagesSuite;
+}
 
-  const testShouldRevertWith = async (
-    mockPackages: MockDataPackageConfig[],
-    revertMsg: string
-  ) => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockPackages);
-    await expect(
-      wrappedContract.getOracleValueUsingProxy(ethDataFeedId)
-    ).to.be.revertedWith(revertMsg);
-  };
+const describeProxyConnectorTests = ({
+  mockDataPackagesSuite,
+}: ProxyConnectorTestParams) => {
+  describe("SampleProxyConnector", function () {
+    let contract: SampleProxyConnector;
+    const ethDataFeedId = convertStringToBytes32("ETH");
 
-  const testShouldRevertWithMultiSign = async (
-    mockPackage: MockMultiSignDataPackageConfig,
-    revertMsg: string
-  ) => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(mockPackage);
-    await expect(
-      wrappedContract.getOracleValueUsingProxy(ethDataFeedId)
-    ).to.be.revertedWith(revertMsg);
-  };
-
-  this.beforeEach(async () => {
-    const ContractFactory = await ethers.getContractFactory(
-      "SampleProxyConnector"
-    );
-    contract = await ContractFactory.deploy();
-    await contract.deployed();
-  });
-
-  it("Should return correct oracle value for one asset", async () => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-
-    const fetchedValue = await wrappedContract.getOracleValueUsingProxy(
-      ethDataFeedId
-    );
-    expect(fetchedValue).to.eq(expectedNumericValues.ETH);
-  });
-
-  it("Should return correct oracle value for one asset with multi sign package", async () => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
-        mockNumericPackageMultiSign
+    const testShouldRevertWith = async (
+      mockPackages: MockDataPackageConfig[] | MockMultiSignDataPackageConfig,
+      revertMsg: string
+    ) => {
+      const wrappedContract = wrapContractUsingMockDataPackages(
+        contract,
+        mockPackages
       );
 
-    const fetchedValue = await wrappedContract.getOracleValueUsingProxy(
-      ethDataFeedId
-    );
-    expect(fetchedValue).to.eq(expectedNumericValues.ETH);
-  });
-
-  it("Should return correct oracle values for 10 assets", async () => {
-    const dataPoints = [
-      { dataFeedId: "ETH", value: 4000 },
-      { dataFeedId: "AVAX", value: 5 },
-      { dataFeedId: "BTC", value: 100000 },
-      { dataFeedId: "LINK", value: 2 },
-      { dataFeedId: "UNI", value: 200 },
-      { dataFeedId: "FRAX", value: 1 },
-      { dataFeedId: "OMG", value: 0.00003 },
-      { dataFeedId: "DOGE", value: 2 },
-      { dataFeedId: "SOL", value: 11 },
-      { dataFeedId: "BNB", value: 31 },
-    ];
-
-    const mockNumericPackages = getRange({
-      start: 0,
-      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-    }).map((i) =>
-      getMockNumericPackage({
-        dataPoints,
-        mockSignerIndex: i as MockSignerIndex,
-      })
-    );
-
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-
-    for (const dataPoint of dataPoints) {
       await expect(
-        wrappedContract.checkOracleValue(
-          convertStringToBytes32(dataPoint.dataFeedId),
-          Math.round(dataPoint.value * 10 ** 8)
+        wrappedContract.getOracleValueUsingProxy(ethDataFeedId)
+      ).to.be.revertedWith(revertMsg);
+    };
+
+    this.beforeEach(async () => {
+      const ContractFactory = await ethers.getContractFactory(
+        "SampleProxyConnector"
+      );
+      contract = await ContractFactory.deploy();
+      await contract.deployed();
+    });
+
+    it("Should return correct oracle value for one asset", async () => {
+      const wrappedContract = wrapContractUsingMockDataPackages(
+        contract,
+        mockDataPackagesSuite.mockDataPackages
+      );
+
+      const fetchedValue = await wrappedContract.getOracleValueUsingProxy(
+        ethDataFeedId
+      );
+      expect(fetchedValue).to.eq(expectedNumericValues.ETH);
+    });
+
+    it("Should return correct oracle values for 10 assets", async () => {
+      const wrappedContract = wrapContractUsingMockDataPackages(
+        contract,
+        mockDataPackagesSuite.mockDataPackagesWithManyAssets
+      );
+
+      for (const dataPoint of manyAssetsDataPoints) {
+        await expect(
+          wrappedContract.checkOracleValue(
+            convertStringToBytes32(dataPoint.dataFeedId),
+            Math.round(dataPoint.value * 10 ** 8)
+          )
+        ).not.to.be.reverted;
+      }
+    });
+
+    it("Should forward msg.value", async () => {
+      const wrappedContract = wrapContractUsingMockDataPackages(
+        contract,
+        mockDataPackagesSuite.mockDataPackages
+      );
+
+      await expect(
+        wrappedContract.requireValueForward({
+          value: ethers.utils.parseUnits("2137"),
+        })
+      ).not.to.be.reverted;
+    });
+
+    it("Should work properly with long encoded functions", async () => {
+      const wrappedContract = wrapContractUsingMockDataPackages(
+        contract,
+        mockDataPackagesSuite.mockDataPackages
+      );
+
+      await expect(
+        wrappedContract.checkOracleValueLongEncodedFunction(
+          ethDataFeedId,
+          expectedNumericValues.ETH
         )
       ).not.to.be.reverted;
-    }
-  });
-
-  it("Should return correct oracle values for 10 assets with multi sign package", async () => {
-    const dataPoints = [
-      { dataFeedId: "ETH", value: 4000 },
-      { dataFeedId: "AVAX", value: 5 },
-      { dataFeedId: "BTC", value: 100000 },
-      { dataFeedId: "LINK", value: 2 },
-      { dataFeedId: "UNI", value: 200 },
-      { dataFeedId: "FRAX", value: 1 },
-      { dataFeedId: "OMG", value: 0.00003 },
-      { dataFeedId: "DOGE", value: 2 },
-      { dataFeedId: "SOL", value: 11 },
-      { dataFeedId: "BNB", value: 31 },
-    ];
-
-    const mockNumericPackageMultiSign = getMockNumericMultiSignPackage({
-      dataPoints: dataPoints,
-      mockSignerIndices: getRange({
-        start: 0,
-        length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-      }).map((i: number) => i as MockSignerIndex),
-    });
-
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
-        mockNumericPackageMultiSign
-      );
-
-    for (const dataPoint of dataPoints) {
       await expect(
-        wrappedContract.checkOracleValue(
-          convertStringToBytes32(dataPoint.dataFeedId),
-          Math.round(dataPoint.value * 10 ** 8)
-        )
-      ).not.to.be.reverted;
-    }
-  });
+        wrappedContract.checkOracleValueLongEncodedFunction(ethDataFeedId, 9999)
+      ).to.be.revertedWith("WrongValue()");
+    });
 
-  it("Should forward msg.value", async () => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-    await expect(
-      wrappedContract.requireValueForward({
-        value: ethers.utils.parseUnits("2137"),
-      })
-    ).not.to.be.reverted;
-  });
-
-  it("Should forward msg.value with multi sign package", async () => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
-        mockNumericPackageMultiSign
+    it("Should fail with correct message (timestamp invalid)", async () => {
+      await testShouldRevertWith(
+        mockDataPackagesSuite.mockDataPackagesWithTooOldTimestamp,
+        `errorArgs=["0x355b8743"], errorName="ProxyCalldataFailedWithCustomError"`
       );
-    await expect(
-      wrappedContract.requireValueForward({
-        value: ethers.utils.parseUnits("2137"),
-      })
-    ).not.to.be.reverted;
-  });
+    });
 
-  it("Should work properly with long encoded functions", async () => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-    await expect(
-      wrappedContract.checkOracleValueLongEncodedFunction(
-        ethDataFeedId,
-        expectedNumericValues.ETH
-      )
-    ).not.to.be.reverted;
-    await expect(
-      wrappedContract.checkOracleValueLongEncodedFunction(ethDataFeedId, 9999)
-    ).to.be.revertedWith("WrongValue()");
-  });
-
-  it("Should work properly with long encoded functions with multi sign package", async () => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
-        mockNumericPackageMultiSign
+    it("Should fail with correct message (insufficient number of unique signers)", async () => {
+      await testShouldRevertWith(
+        mockDataPackagesSuite.mockDataPackagesWithInsufficientNumberOfSigners,
+        `errorArgs=["0x2b13aef50000000000000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000a"], errorName="ProxyCalldataFailedWithCustomError"`
       );
-    await expect(
-      wrappedContract.checkOracleValueLongEncodedFunction(
-        ethDataFeedId,
-        expectedNumericValues.ETH
-      )
-    ).not.to.be.reverted;
-    await expect(
-      wrappedContract.checkOracleValueLongEncodedFunction(ethDataFeedId, 9999)
-    ).to.be.revertedWith("WrongValue()");
-  });
-
-  it("Should fail with correct message (timestamp invalid)", async () => {
-    const newMockPackages = [...mockNumericPackages];
-    newMockPackages[1] = getMockNumericPackage({
-      ...mockNumericPackageConfigs[1],
-      timestampMilliseconds: DEFAULT_TIMESTAMP_FOR_TESTS - 1,
     });
-    await testShouldRevertWith(
-      newMockPackages,
-      `errorArgs=["0x355b8743"], errorName="ProxyCalldataFailedWithCustomError"`
-    );
-  });
 
-  it("Should fail with correct message (timestamp invalid with multi sign package)", async () => {
-    const newMockPackage = getMockNumericMultiSignPackage({
-      ...mockNumericPackageMultiSignConfig,
-      timestampMilliseconds: DEFAULT_TIMESTAMP_FOR_TESTS - 1,
+    it("Should fail with correct message (signer is not authorised)", async () => {
+      await testShouldRevertWith(
+        mockDataPackagesSuite.mockDataPackagesWithUnauthorizedSigner,
+        `errorArgs=["0xec459bc00000000000000000000000008626f6940e2eb28930efb4cef49b2d1f2c9c1199"], errorName="ProxyCalldataFailedWithCustomError"`
+      );
     });
-    await testShouldRevertWithMultiSign(
-      newMockPackage,
-      `errorArgs=["0x355b8743"], errorName="ProxyCalldataFailedWithCustomError"`
-    );
-  });
 
-  it("Should fail with correct message (insufficient number of unique signers)", async () => {
-    const newMockPackages = mockNumericPackages.slice(
-      0,
-      NUMBER_OF_MOCK_NUMERIC_SIGNERS - 1
-    );
-    await testShouldRevertWith(
-      newMockPackages,
-      `errorArgs=["0x2b13aef50000000000000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000a"], errorName="ProxyCalldataFailedWithCustomError"`
-    );
-  });
+    it("Should fail with correct message (no error message)", async () => {
+      const wrappedContract = wrapContractUsingMockDataPackages(
+        contract,
+        mockDataPackagesSuite.mockDataPackages
+      );
 
-  it("Should fail with correct message (insufficient number of unique signers with multi sign package)", async () => {
-    const newMockPackage = getMockNumericMultiSignPackage({
-      ...mockNumericPackageMultiSignConfig,
-      mockSignerIndices: mockNumericPackageMultiSignConfig.mockSignerIndices.slice(
-        0,
-        NUMBER_OF_MOCK_NUMERIC_SIGNERS - 1
-      ),
+      await expect(wrappedContract.proxyEmptyError()).to.be.revertedWith(
+        `errorName="ProxyCalldataFailedWithoutErrMsg"`
+      );
     });
-    await testShouldRevertWithMultiSign(
-      newMockPackage,
-      `errorArgs=["0x2b13aef50000000000000000000000000000000000000000000000000000000000000009000000000000000000000000000000000000000000000000000000000000000a"], errorName="ProxyCalldataFailedWithCustomError"`
-    );
-  }); 
 
-  it("Should fail with correct message (signer is not authorised)", async () => {
-    const newMockPackages = [...mockNumericPackages];
-    newMockPackages[1] = getMockNumericPackage({
-      ...mockNumericPackageConfigs[1],
-      mockSignerIndex: UNAUTHORISED_SIGNER_INDEX,
+    it("Should fail with correct message (string test message)", async () => {
+      const wrappedContract = wrapContractUsingMockDataPackages(
+        contract,
+        mockDataPackagesSuite.mockDataPackages
+      );
+
+      await expect(wrappedContract.proxyTestStringError()).to.be.revertedWith(
+        `errorArgs=["Test message"], errorName="ProxyCalldataFailedWithStringMessage"`
+      );
     });
-    await testShouldRevertWith(
-      newMockPackages,
-      `errorArgs=["0xec459bc00000000000000000000000008626f6940e2eb28930efb4cef49b2d1f2c9c1199"], errorName="ProxyCalldataFailedWithCustomError"`
-    );
   });
+};
 
-  it("Should fail with correct message (signer is not authorised with multi sign package)", async () => {
-    const newMockPackage = getMockNumericMultiSignPackage({
-      ...mockNumericPackageMultiSignConfig,
-      mockSignerIndices: mockNumericPackageMultiSignConfig.mockSignerIndices.map(
-        (index) => (index === 1 ? UNAUTHORISED_SIGNER_INDEX : index)
-      ),
-    });
-    await testShouldRevertWithMultiSign(
-      newMockPackage,
-      `errorArgs=["0xec459bc00000000000000000000000008626f6940e2eb28930efb4cef49b2d1f2c9c1199"], errorName="ProxyCalldataFailedWithCustomError"`
-    );
+describe("SampleProxyConnectorSingleSign", () => {
+  describeProxyConnectorTests({
+    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
   });
+});
 
-  it("Should fail with correct message (no error message)", async () => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-    await expect(wrappedContract.proxyEmptyError()).to.be.revertedWith(
-      `errorName="ProxyCalldataFailedWithoutErrMsg"`
-    );
-  });
-
-  it("Should fail with correct message (string test message)", async () => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-    await expect(wrappedContract.proxyTestStringError()).to.be.revertedWith(
-      `errorArgs=["Test message"], errorName="ProxyCalldataFailedWithStringMessage"`
-    );
+describe("SampleProxyConnectorMultiSign", () => {
+  describeProxyConnectorTests({
+    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
   });
 });

@@ -1,136 +1,125 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import {
-  SampleChainableProxyConnector,
   SampleProxyConnectorConsumer,
+  SampleChainableProxyConnector,
 } from "../../typechain-types";
-import { WrapperBuilder } from "../../src";
 import { convertStringToBytes32 } from "redstone-protocol/src/common/utils";
 import {
   expectedNumericValues,
-  mockNumericPackages,
-  mockNumericPackageMultiSign,
-  NUMBER_OF_MOCK_NUMERIC_SIGNERS,
+  MockNumericDataPackagesMultiSignSuite,
+  MockNumericDataPackagesSingleSignSuite,
+  IMockDataPackagesSuite,
+  manyAssetsDataPoints,
 } from "../tests-common";
-import {
-  getMockNumericPackage,
-  getRange,
-  MockSignerIndex,
-} from "../../src/helpers/test-utils";
+import { wrapContractUsingMockDataPackages } from "../../src/helpers/test-utils";
+import { MockDataPackageConfig } from "../../src/wrappers/MockWrapper";
+import { MockMultiSignDataPackageConfig } from "../../src/wrappers/MockWrapperMultiSign";
+interface ProxyConnectorChainableTestParams {
+  mockDataPackagesSuite: IMockDataPackagesSuite;
+}
 
-const dataPoints = [
-  { dataFeedId: "ETH", value: 4000 },
-  { dataFeedId: "AVAX", value: 5 },
-  { dataFeedId: "BTC", value: 100000 },
-  { dataFeedId: "LINK", value: 2 },
-  { dataFeedId: "UNI", value: 200 },
-  { dataFeedId: "FRAX", value: 1 },
-  { dataFeedId: "OMG", value: 0.00003 },
-  { dataFeedId: "DOGE", value: 2 },
-  { dataFeedId: "SOL", value: 11 },
-  { dataFeedId: "BNB", value: 31 },
-];
+const describeProxyConnectorChainableTests = ({
+  mockDataPackagesSuite,
+}: ProxyConnectorChainableTestParams) => {
+  describe("SampleChainableProxyConnector", function () {
+    let contract: SampleChainableProxyConnector;
+    let consumerContract: SampleProxyConnectorConsumer;
 
-describe("SampleChainableProxyConnector", function () {
-  let contract: SampleChainableProxyConnector;
-  let consumerContract: SampleProxyConnectorConsumer;
-  const ethDataFeedId = convertStringToBytes32("ETH");
-
-  this.beforeEach(async () => {
-    const ContractFactory = await ethers.getContractFactory(
-      "SampleChainableProxyConnector"
-    );
-    contract = await ContractFactory.deploy();
-    await contract.deployed();
-
-    const contractB = await ContractFactory.deploy();
-    await contractB.deployed();
-
-    await contract.registerNextConnector(contractB.address);
-
-    const ConsumerContractFactory = await ethers.getContractFactory(
-      "SampleProxyConnectorConsumer"
-    );
-    consumerContract = await ConsumerContractFactory.deploy();
-    await consumerContract.deployed();
-
-    await contractB.registerConsumer(consumerContract.address);
-  });
-
-  it("Should process oracle value for one asset", async () => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-
-    await wrappedContract.processOracleValue(ethDataFeedId);
-
-    const fetchedValue = await consumerContract.getComputationResult();
-    expect(fetchedValue).to.eq(expectedNumericValues.ETH * 42);
-  });
-
-  it("Should process oracle value for one asset with multi sign package", async () => {
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockMultiSignDataPackage(
-        mockNumericPackageMultiSign
+    const testShouldPass = async (
+      mockNumericPackages:
+        | MockDataPackageConfig[]
+        | MockMultiSignDataPackageConfig,
+      dataFeedIds: string[],
+      expectedValue: number
+    ) => {
+      const wrappedContract = wrapContractUsingMockDataPackages(
+        contract,
+        mockNumericPackages
       );
 
-    await wrappedContract.processOracleValue(ethDataFeedId);
+      const dataFeedIdsBytes = dataFeedIds.map(convertStringToBytes32);
 
-    const fetchedValue = await consumerContract.getComputationResult();
-    expect(fetchedValue).to.eq(expectedNumericValues.ETH * 42);
-  });
+      await wrappedContract.processOracleValues(dataFeedIdsBytes);
 
-  it("Should process oracle values for 10 assets", async () => {
-    const mockNumericPackages = getRange({
-      start: 0,
-      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-    }).map((i) =>
-      getMockNumericPackage({
-        dataPoints,
-        mockSignerIndex: i as MockSignerIndex,
-      })
-    );
+      const fetchedValue = await consumerContract.getComputationResult();
+      expect(fetchedValue).to.eq(expectedValue);
+    };
 
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-
-    const dataValues = dataPoints.map((dataPoint) =>
-      Math.round(dataPoint.value * 10 ** 8)
-    );
-
-    for (const dataPoint of dataPoints) {
-      await wrappedContract.processOracleValue(
-        convertStringToBytes32(dataPoint.dataFeedId)
+    this.beforeEach(async () => {
+      const ContractFactory = await ethers.getContractFactory(
+        "SampleChainableProxyConnector"
       );
-    }
+      contract = await ContractFactory.deploy();
+      await contract.deployed();
 
-    const computationResult = await consumerContract.getComputationResult();
+      const contractB = await ContractFactory.deploy();
+      await contractB.deployed();
 
-    expect(computationResult).to.eq(dataValues.reduce((a, b) => a + b, 0) * 42);
+      await contract.registerNextConnector(contractB.address);
+
+      const ConsumerContractFactory = await ethers.getContractFactory(
+        "SampleProxyConnectorConsumer"
+      );
+      consumerContract = await ConsumerContractFactory.deploy();
+      await consumerContract.deployed();
+
+      await contractB.registerConsumer(consumerContract.address);
+    });
+
+    it("Should process oracle value for one asset", async () => {
+      await testShouldPass(
+        mockDataPackagesSuite.mockDataPackagesWithManyAssets,
+        ["ETH"],
+        expectedNumericValues.ETH * 42
+      );
+    });
+
+    it("Should process oracle values for 10 assets", async () => {
+      const wrappedContract = wrapContractUsingMockDataPackages(
+        contract,
+        mockDataPackagesSuite.mockDataPackagesWithManyAssets
+      );
+
+      const dataValues = manyAssetsDataPoints.map((dataPoint) =>
+        Math.round(dataPoint.value * 10 ** 8)
+      );
+
+      const expectedValue = dataValues.reduce((a, b) => a + b, 0) * 42;
+
+      for (const dataPoint of manyAssetsDataPoints) {
+        await wrappedContract.processOracleValue(
+          convertStringToBytes32(dataPoint.dataFeedId)
+        );
+      }
+
+      const computationResult = await consumerContract.getComputationResult();
+      expect(computationResult).to.eq(expectedValue);
+    });
+
+    it("Should process oracle values for 10 assets simultaneously", async () => {
+      const dataValues = manyAssetsDataPoints.map((dataPoint) =>
+        Math.round(dataPoint.value * 10 ** 8)
+      );
+      const expectedValue = dataValues.reduce((a, b) => a + b, 0) * 42;
+
+      await testShouldPass(
+        mockDataPackagesSuite.mockDataPackagesWithManyAssets,
+        manyAssetsDataPoints.map((dp) => dp.dataFeedId),
+        expectedValue
+      );
+    });
   });
+};
 
-  it("Should process oracle values for 10 assets simultaneously", async () => {
-    const mockNumericPackages = getRange({
-      start: 0,
-      length: NUMBER_OF_MOCK_NUMERIC_SIGNERS,
-    }).map((i) =>
-      getMockNumericPackage({
-        dataPoints,
-        mockSignerIndex: i as MockSignerIndex,
-      })
-    );
+describe("SampleChainableProxyConnectorSingleSign", () => {
+  describeProxyConnectorChainableTests({
+    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  });
+});
 
-    const wrappedContract =
-      WrapperBuilder.wrap(contract).usingMockDataPackages(mockNumericPackages);
-
-    const dataFeedIds = dataPoints.map((dataPoint) => dataPoint.dataFeedId);
-    const dataFeedIdsBytes = dataFeedIds.map(convertStringToBytes32);
-    const dataValues = dataPoints.map((dataPoint) =>
-      Math.round(dataPoint.value * 10 ** 8)
-    );
-
-    await wrappedContract.processOracleValues(dataFeedIdsBytes);
-    const computationResult = await consumerContract.getComputationResult();
-
-    expect(computationResult).to.eq(dataValues.reduce((a, b) => a + b, 0) * 42);
+describe("SampleChainableProxyConnectorMultiSign", () => {
+  describeProxyConnectorChainableTests({
+    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
   });
 });
