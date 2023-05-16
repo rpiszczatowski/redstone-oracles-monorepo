@@ -1,7 +1,8 @@
 import { getTokensFromManifest } from "./helpers";
 import mainManifest from "../../manifests/data-services/main.json";
-import stocksManifest from "../../manifests/data-services/stocks.json";
 import wideSupportTokensManifest from "../../manifests/dev/main-wide-support.json";
+import stocksManifest from "../../manifests/data-services/stocks.json";
+import rapidManifest from "../../manifests/data-services/rapid.json";
 import { Manifest } from "../../src/types";
 
 interface DryRunTestConfig {
@@ -13,6 +14,7 @@ interface DryRunTestConfig {
 enum DryRunTestType {
   "main" = "main",
   "stocks" = "stocks",
+  "rapid" = "rapid",
 }
 
 const config: Record<DryRunTestType, DryRunTestConfig> = {
@@ -24,6 +26,10 @@ const config: Record<DryRunTestType, DryRunTestConfig> = {
   [DryRunTestType.stocks]: {
     manifest: stocksManifest,
     nodeIterations: 1,
+  },
+  [DryRunTestType.rapid]: {
+    manifest: rapidManifest,
+    nodeIterations: 3,
   },
 };
 
