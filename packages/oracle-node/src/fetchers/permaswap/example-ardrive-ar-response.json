@@ -1,0 +1,33 @@
+{
+  "tokenXTag": "arweave,ethereum-ar-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,0x4fadc7a98f2dc96510e42dd1a74141eeae0c1543",
+  "tokenYTag": "arweave-ardrive--8A6RexFkpfWwuyVO98wzSFZh0d6VJuI-buTJvlwOJQ",
+  "feeRatio": "0.003",
+  "currentPriceUp": "0.07679812589000000348023362850558",
+  "currentPriceDown": "12.94260405772246681418979896704968",
+  "lps": [
+    {
+      "poolID": "0xbb546a762e7d5f24549cfd97dfa394404790293277658e42732ab3b2c4345fa3",
+      "tokenX": "arweave,ethereum-ar-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,0x4fadc7a98f2dc96510e42dd1a74141eeae0c1543",
+      "tokenY": "arweave-ardrive--8A6RexFkpfWwuyVO98wzSFZh0d6VJuI-buTJvlwOJQ",
+      "feeRatio": "0.003",
+      "accID": "0xE412a3c2013Fb60c769e8c577FdD4Bd7f7756900",
+      "lowSqrtPrice": "3464.1016151377545870548926830117",
+      "currentSqrtPrice": "3603.0338778079673787548111185105",
+      "highSqrtPrice": "6324.5553203367586639977870888654",
+      "liquidity": 1531848060353937767,
+      "priceDirection": "both"
+    },
+    {
+      "poolID": "0xbb546a762e7d5f24549cfd97dfa394404790293277658e42732ab3b2c4345fa3",
+      "tokenX": "arweave,ethereum-ar-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA,0x4fadc7a98f2dc96510e42dd1a74141eeae0c1543",
+      "tokenY": "arweave-ardrive--8A6RexFkpfWwuyVO98wzSFZh0d6VJuI-buTJvlwOJQ",
+      "feeRatio": "0.003",
+      "accID": "0x0183A163AB2ef8fc03543dcC5D53291f29F7250C",
+      "lowSqrtPrice": "7071.0678118654752440084436210485",
+      "currentSqrtPrice": "8963.4157731198534276927877900285",
+      "highSqrtPrice": "18446744073709551616",
+      "liquidity": 2828427124746191181,
+      "priceDirection": "up"
+    }
+  ]
+}

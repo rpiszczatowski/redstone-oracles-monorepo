@@ -36,6 +36,7 @@ import { NonUsdBasedFetcher } from "./non-usd-based/NonUsdBasedFetcher";
 import pangolinOnChainFetchers from "./evm-chain/avalanche/pangolin-on-chain/pangolin-on-chain-fetchers";
 import traderJoeOnChainFetchers from "./evm-chain/avalanche/trader-joe-on-chain/trader-joe-on-chain-fetchers";
 import twelveDataFetchers from "./twelve-data/all-twelve-data-fetchers";
+import { PermaswapFetcher } from "./permaswap/PermaswapFetcher";
 import fraxswapOnChainFetchers from "./evm-chain/ethereum/fraxswap-on-chain/all-fraxswap-on-chain-fetchers";
 import { CcxtFetcher } from "./ccxt/CcxtFetcher";
 
@@ -64,6 +65,7 @@ export default {
   kaiko: new KaikoFetcher(),
   stlouisfed: new StlouisfedFetcher(),
   newyorkfed: new NewyorkfedFetcher(),
+  permaswap: new PermaswapFetcher(),
   "arbitrum-evm-fetcher": arbitrumEvmFetcher,
   "non-usd-based": new NonUsdBasedFetcher(),
   ...ccxtFetchers,

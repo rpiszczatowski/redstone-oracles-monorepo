@@ -33,7 +33,7 @@ let pricesSublevel: AbstractSublevel<
   PriceValueInLocalDB[]
 >;
 
-/* 
+/*
   In order to use any function from this module you need
   to run function setupLocalDb at least once before
 */
@@ -141,6 +141,12 @@ export const getLastPrice = (
   };
 };
 
+export const clearLastPricesCache = () => {
+  for (const symbol of Object.keys(lastPrices)) {
+    delete lastPrices[symbol];
+  }
+};
+
 const getRawPrice = (symbol: string): PriceValueInLocalDB | undefined => {
   const currentTimestamp = Date.now();
   const lastPrice = lastPrices[symbol];
@@ -162,4 +168,5 @@ export default {
   clearPricesSublevel,
   closeLocalLevelDB,
   getLastPrice,
+  clearLastPricesCache,
 };
