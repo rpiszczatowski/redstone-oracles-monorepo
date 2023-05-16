@@ -1,7 +1,8 @@
 import { getTokensFromManifest } from "./helpers";
 import mainManifest from "../../manifests/data-services/main.json";
-import stocksManifest from "../../manifests/data-services/stocks.json";
 import wideSupportTokensManifest from "../../manifests/dev/main-wide-support.json";
+import stocksManifest from "../../manifests/data-services/stocks.json";
+import avalancheManifest from "../../manifests/data-services/avalanche.json";
 import { Manifest } from "../../src/types";
 
 interface DryRunTestConfig {
@@ -13,6 +14,7 @@ interface DryRunTestConfig {
 enum DryRunTestType {
   "main" = "main",
   "stocks" = "stocks",
+  "avalanche" = "avalanche",
 }
 
 const config: Record<DryRunTestType, DryRunTestConfig> = {
@@ -24,6 +26,11 @@ const config: Record<DryRunTestType, DryRunTestConfig> = {
   [DryRunTestType.stocks]: {
     manifest: stocksManifest,
     nodeIterations: 1,
+  },
+  [DryRunTestType.avalanche]: {
+    manifest: avalancheManifest,
+    nodeIterations: 4,
+    additionalCheck: assertAllAvalancheTokensAreProperlyFetched,
   },
 };
 
@@ -41,6 +48,16 @@ function assertMainRequiredTokensAreProperlyFetched(
 ) {
   const wideSupportTokens = getTokensFromManifest(wideSupportTokensManifest);
   if (wideSupportTokens.includes(token)) {
+    expect(currentDataFeedPrice).toBeGreaterThan(0);
+  }
+}
+
+function assertAllAvalancheTokensAreProperlyFetched(
+  token: string,
+  currentDataFeedPrice: number
+) {
+  const avalancheTokens = getTokensFromManifest(avalancheManifest);
+  if (avalancheTokens.includes(token)) {
     expect(currentDataFeedPrice).toBeGreaterThan(0);
   }
 }
