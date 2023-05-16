@@ -15,7 +15,7 @@ export class BundlrService {
       this.bundlrClient = new Bundlr(
         config.bundlrNodeUrl,
         "arweave",
-        config.arweaveJwkKey
+        config.jwkKeyForArchivingOnArweave
       );
     }
   }
