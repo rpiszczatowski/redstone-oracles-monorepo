@@ -21,7 +21,9 @@ const config: Record<DryRunTestType, DryRunTestConfig> = {
   [DryRunTestType.main]: {
     manifest: mainManifest,
     nodeIterations: 4,
-    additionalCheck: assertMainRequiredTokensAreProperlyFetched,
+    additionalCheck: assertAllRequiredTokensAreProperlyFetched(
+      wideSupportTokensManifest
+    ),
   },
   [DryRunTestType.stocks]: {
     manifest: stocksManifest,
@@ -30,7 +32,8 @@ const config: Record<DryRunTestType, DryRunTestConfig> = {
   [DryRunTestType.avalanche]: {
     manifest: avalancheManifest,
     nodeIterations: 4,
-    additionalCheck: assertAllAvalancheTokensAreProperlyFetched,
+    additionalCheck:
+      assertAllRequiredTokensAreProperlyFetched(avalancheManifest),
   },
 };
 
@@ -42,22 +45,11 @@ export const getDryRunTestConfig = (): DryRunTestConfig => {
   return config[dryRunTestType as DryRunTestType];
 };
 
-function assertMainRequiredTokensAreProperlyFetched(
-  token: string,
-  currentDataFeedPrice: number
-) {
-  const wideSupportTokens = getTokensFromManifest(wideSupportTokensManifest);
-  if (wideSupportTokens.includes(token)) {
-    expect(currentDataFeedPrice).toBeGreaterThan(0);
-  }
-}
-
-function assertAllAvalancheTokensAreProperlyFetched(
-  token: string,
-  currentDataFeedPrice: number
-) {
-  const avalancheTokens = getTokensFromManifest(avalancheManifest);
-  if (avalancheTokens.includes(token)) {
-    expect(currentDataFeedPrice).toBeGreaterThan(0);
-  }
+function assertAllRequiredTokensAreProperlyFetched(manifest: Manifest) {
+  return function (token: string, currentDataFeedPrice: number) {
+    const avalancheTokens = getTokensFromManifest(manifest);
+    if (avalancheTokens.includes(token)) {
+      expect(currentDataFeedPrice).toBeGreaterThan(0);
+    }
+  };
 }
