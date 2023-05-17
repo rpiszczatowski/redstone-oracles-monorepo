@@ -20,7 +20,7 @@ type NewyorkfedRefRateFunctionNames = "percentRate" | "index";
 const NEWYORKFED_RATES_URL =
   "https://markets.newyorkfed.org/api/rates/all/latest.json";
 
-const RATE_TYPE_REGEX = new RegExp("^([^_]+)?");
+const RATE_TYPE_REGEX = new RegExp("^([^_]+)_EFFECTIVE_DATE");
 
 export class NewyorkfedFetcher extends BaseFetcher {
   constructor() {
@@ -80,12 +80,12 @@ export class NewyorkfedFetcher extends BaseFetcher {
 
   private getRateTypeFromEffectiveDateDataFeedId(id: NewyorkFedDataFeedsIds) {
     const rateTypeRegexResult = id.match(RATE_TYPE_REGEX);
-    if (!rateTypeRegexResult || rateTypeRegexResult?.length === 0) {
+    if (!rateTypeRegexResult || rateTypeRegexResult?.length < 2) {
       throw new Error(
         "Cannot extract rate type from effective date data feed id"
       );
     }
-    return rateTypeRegexResult[0];
+    return rateTypeRegexResult[1];
   }
 
   // We want effective date as timestamp with hour set to 8:00am EDT (New York timezone)
