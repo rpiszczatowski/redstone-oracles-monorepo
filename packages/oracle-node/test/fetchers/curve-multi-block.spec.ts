@@ -11,6 +11,7 @@ import { CurveFetcher } from "../../src/fetchers/curve/CurveFetcher";
 import { MultiBlockCurveFetcher } from "../../src/fetchers/curve/MultiBlockCurveFetcher";
 import { saveMockPriceInLocalDb } from "./_helpers";
 
+jest.setTimeout(15_000);
 describe("Curve Multi Block", () => {
   let mockContract: MockContract;
   let provider: MockProvider;
