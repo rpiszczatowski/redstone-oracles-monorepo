@@ -5,12 +5,14 @@ import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import abi from "./CurveFactory.abi.json";
 import { PoolsConfig } from "./curve-fetchers-config";
 
-// as default value we should use 10 ** 18 this the PRECISION on Curve StableSwap contract
-// if we provide value lower then 10 ** 18 we start loosing PRECISION
-// if we provide value bigger then 10 ** 18  for example 100 * 10**18 we are saying how much 100 x  pairedTokenIndex i wil receive for tokenIndex
-// thus there is higher chance that slippage will occur and will affect price
-// same in examples https://curve.readthedocs.io/factory-pools.html#StableSwap.get_dy and on Curve frontend
-// in case of LPs (with big volume) it shouldn't be a problem, however this just not correct
+/**
+ * as default value we should use 10 ** 18 this the PRECISION on Curve StableSwap contract
+ * if we provide value lower then 10 ** 18 we start loosing PRECISION
+ * if we provide value bigger then 10 ** 18  for example 100 * 10**18 we are saying how much 100 x  pairedTokenIndex i wil receive for tokenIndex
+ * thus there is higher chance that slippage will occur and will affect price
+ * same in examples https://curve.readthedocs.io/factory-pools.html#StableSwap.get_dy and on Curve frontend
+ * in case of LPs (with big volume) it shouldn't be a problem, however this just not correct
+ */
 const CURVE_PRECISION_DECIMAL = new Decimal("10").toPower(18);
 
 export interface CurveFetcherResponse {
@@ -40,17 +42,20 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
 
     const curveFactory = new Contract(address, abi, provider);
 
-    const ratio = (await curveFactory[functionName](
+    const ratioBigNumber = (await curveFactory[functionName](
       tokenIndex,
       pairedTokenIndex,
       CURVE_PRECISION_DECIMAL.toString(),
       { blockTag }
     )) as BigNumber;
 
+    const precisionDivider = CURVE_PRECISION_DECIMAL.mul(ratioMultiplier);
+    const ratioFloat = new Decimal(ratioBigNumber.toString()).div(
+      precisionDivider
+    );
+
     return {
-      ratio: new Decimal(ratio.toString()).div(
-        CURVE_PRECISION_DECIMAL.div(ratioMultiplier)
-      ),
+      ratio: ratioFloat,
       assetId,
     };
   }
