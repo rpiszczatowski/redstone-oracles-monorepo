@@ -261,7 +261,6 @@ describe("Data packages (e2e)", () => {
 
     const signedDataPackage = payload.signedDataPackages[0];
     const mockDataPackage = mockDataPackages[0];
-    
     expect(base64.encode(signedDataPackage.serializeSignatureToHex())).toBe(
       mockDataPackage.signature
     );

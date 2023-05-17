@@ -117,18 +117,6 @@ contract CalldataExtractor is RedstoneConstants {
     }
   }
 
-  // Used for multi sign approach
-  // function _extractDataPointValueAndDataFeedIdMultiSign(
-  //   uint256 dataPointNegativeOffset
-  // ) internal pure virtual returns (bytes32 dataPointDataFeedId, uint256 dataPointValue) {
-    
-  //   uint256 dataPointCalldataOffset = msg.data.length.sub(dataPointNegativeOffset);
-  //   assembly {
-  //     dataPointDataFeedId := calldataload(dataPointCalldataOffset)
-  //     dataPointValue := calldataload(add(dataPointCalldataOffset, DATA_POINT_SYMBOL_BS))
-  //   }
-  // }
-
   function _extractDataPointsDetailsForDataPackage(uint256 calldataNegativeOffsetForDataPackage)
     internal
     pure

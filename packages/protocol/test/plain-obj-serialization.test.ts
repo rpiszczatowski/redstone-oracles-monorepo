@@ -132,10 +132,10 @@ describe("Fixed size data package", () => {
         "c4JkY5+tYDdxbtn42Ky7afAp/60TWihf8AqWEhIwqDZW5WALQ4cNB+RIJOFoHL7fS1me18LrVqI0yKJzsx/z/Bs=",
       ],
     });
-    const deserializedSignedDataPackage = MultiSignDataPackage.fromObj(
+    const signedDataPackageHex = MultiSignDataPackage.fromObj(
       JSON.parse(JSON.stringify(serializedPlainObj))
     ).toBytesHex();
-    expect(deserializedSignedDataPackage).toBe(signedDataPackage.toBytesHex());
+    expect(signedDataPackageHex).toBe(signedDataPackage.toBytesHex());
   });
 
   test("Should correctly serialize signed data package with mixed values", () => {
@@ -231,7 +231,7 @@ describe("Fixed size data package", () => {
       ],
     });
     const deserializedSignedDataPackage = MultiSignDataPackage.fromObj(
-      JSON.parse(JSON.stringify(serializedPlainObj))
+      serializedPlainObj
     ).toBytesHex();
     expect(deserializedSignedDataPackage).toBe(signedDataPackage.toBytesHex());
   });

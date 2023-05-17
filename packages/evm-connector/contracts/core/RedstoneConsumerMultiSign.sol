@@ -118,15 +118,7 @@ abstract contract RedstoneConsumerMultiSign is CalldataExtractor {
       uint256 dataPointValue;
       uint256[] memory dataPointsValues = new uint256[](dataFeedIds.length);
 
-      // uint256 dataPointNegativeOffset = calldataNegativeOffset +
-      //   signaturesByteSize +
-      //   DATA_PACKAGE_WITHOUT_SIG_BS;
-
       for (uint256 dataPointIndex = 0; dataPointIndex < dataPointsCount; dataPointIndex++) {
-        // dataPointNegativeOffset =
-        //   dataPointNegativeOffset +
-        //   eachDataPointValueByteSize +
-        //   DATA_POINT_SYMBOL_BS;
 
         (dataPointDataFeedId, dataPointValue) = _extractDataPointValueAndDataFeedId(
           calldataNegativeOffset,
@@ -137,9 +129,6 @@ abstract contract RedstoneConsumerMultiSign is CalldataExtractor {
 
         dataPointValue = decodeValue(dataPointValue);
 
-        // (dataPointDataFeedId, dataPointValue) = _extractDataPointValueAndDataFeedIdFast(
-        //   dataPointNegativeOffset
-        // );
         for (uint256 requestedDataFeedId = 0; requestedDataFeedId < dataFeedIds.length; requestedDataFeedId++) {
           if (dataFeedIds[requestedDataFeedId] == dataPointDataFeedId) {
             dataFeedsMatched++;

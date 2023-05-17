@@ -108,7 +108,6 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
     }
 
     calldataNegativeOffset += DATA_PACKAGES_COUNT_BS;
-
     for (uint256 dataPackageIndex = 0; dataPackageIndex < dataPackagesCount; dataPackageIndex++) {
       uint256 dataPackageByteSize = _getDataPackageByteSize(calldataNegativeOffset);
       calldataNegativeOffset += dataPackageByteSize;
@@ -146,7 +145,7 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
     return
       dataPointsCount *
       (DATA_POINT_SYMBOL_BS + eachDataPointValueByteSize) +
-      DATA_PACKAGE_WITHOUT_SIG_BS +
+      DATA_PACKAGE_WITHOUT_DATA_POINTS_AND_SIG_BS +
       MULTI_SIGNERS_COUNT_BS +
       signaturesByteSize;
   }
@@ -158,6 +157,7 @@ contract ProxyConnector is RedstoneConstants, CalldataExtractor {
     returns (bytes memory)
   {
     if (!success) {
+
       if (result.length == 0) {
         revert ProxyCalldataFailedWithoutErrMsg();
       } else {
