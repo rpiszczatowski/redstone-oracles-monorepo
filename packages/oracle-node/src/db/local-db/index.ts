@@ -14,7 +14,7 @@ const MAX_PRICE_IN_DB_TIME_DIFF = 1000 * 60 * 3;
 
 export interface PriceValueInLocalDB {
   timestamp: number;
-  value: number;
+  value: string;
 }
 
 export interface PriceValuesInLocalDB {
@@ -33,7 +33,7 @@ let pricesSublevel: AbstractSublevel<
   PriceValueInLocalDB[]
 >;
 
-/* 
+/*
   In order to use any function from this module you need
   to run function setupLocalDb at least once before
 */
@@ -83,7 +83,7 @@ export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
 
   for (const price of prices) {
     const priceForSymbolToAdd: PriceValueInLocalDB = {
-      value: price.value,
+      value: price.value.toString(),
       timestamp: price.timestamp,
     };
 
@@ -117,13 +117,37 @@ const lastPrices: LastPrices = {};
 const setLastPrices = (prices: PriceDataAfterAggregation[]) => {
   for (const price of prices) {
     const { symbol, value, timestamp } = price;
-    lastPrices[symbol] = { value, timestamp };
+    lastPrices[symbol] = { value: value.toString(), timestamp };
   }
 };
 
+type PriceValueInLocalDBAsNumber =
+  | {
+      timestamp: number;
+      value: number;
+    }
+  | undefined;
+
 export const getLastPrice = (
   symbol: string
-): PriceValueInLocalDB | undefined => {
+): PriceValueInLocalDBAsNumber | undefined => {
+  const price = getRawPrice(symbol);
+  if (!price) {
+    return undefined;
+  }
+  return {
+    value: Number(price.value),
+    timestamp: price.timestamp,
+  };
+};
+
+export const clearLastPricesCache = () => {
+  for (const symbol of Object.keys(lastPrices)) {
+    delete lastPrices[symbol];
+  }
+};
+
+const getRawPrice = (symbol: string): PriceValueInLocalDB | undefined => {
   const currentTimestamp = Date.now();
   const lastPrice = lastPrices[symbol];
 
@@ -144,4 +168,5 @@ export default {
   clearPricesSublevel,
   closeLocalLevelDB,
   getLastPrice,
+  clearLastPricesCache,
 };

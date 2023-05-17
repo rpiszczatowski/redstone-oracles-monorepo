@@ -1,3 +1,5 @@
+import { ISafeNumber } from "./numbers/ISafeNumber";
+
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
   interval: number; // It is ignored if the `useCustomScheduler` is not set to `interval`
@@ -52,10 +54,13 @@ export interface Fetcher {
   ) => Promise<PriceDataFetched[]>;
 }
 
+export type SanitizedPriceDataBeforeAggregation =
+  PriceDataBeforeAggregation<ISafeNumber>;
+
 export interface Aggregator {
   getAggregatedValue: (
-    price: PriceDataBeforeAggregation,
-    allPrices?: PriceDataBeforeAggregation[]
+    price: SanitizedPriceDataBeforeAggregation,
+    allPrices?: PriceDataBeforeAggregation<number>[]
   ) => PriceDataAfterAggregation;
 }
 
@@ -76,21 +81,22 @@ export interface PriceDataFetched {
   value: any; // usually it is a positive number, but it may also be 0, null, undefined or "error"
 }
 
-export interface PriceDataBeforeAggregation {
+export interface PriceDataBeforeAggregation<T = number> {
   id: string;
   symbol: string;
-  source: Source;
+  source: PriceSource<T>;
   timestamp: number;
   blockNumber?: number;
   version: string;
 }
 
-export interface Source {
-  [sourceName: string]: any;
+export interface PriceSource<T> {
+  [sourceName: string]: T;
 }
 
-export interface PriceDataAfterAggregation extends PriceDataBeforeAggregation {
-  value: number;
+export interface PriceDataAfterAggregation
+  extends SanitizedPriceDataBeforeAggregation {
+  value: ISafeNumber;
 }
 
 export interface PriceDataBeforeSigning extends PriceDataAfterAggregation {
@@ -154,7 +160,7 @@ export interface NodeConfig {
   arbitrumRpcUrl: string;
   enableStreamrBroadcasting: boolean;
   mockPricesUrlOrPath: string;
-  twelveDataRapidApiKey?: string;
+  twelveDataApiKey?: string;
   coinmarketcapApiKey?: string;
   kaikoApiKey?: string;
   stlouisfedApiKey?: string;

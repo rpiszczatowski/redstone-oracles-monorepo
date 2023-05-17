@@ -12,9 +12,9 @@ export const timeout = (ms: number): Promise<any> => {
   );
 };
 
-export const promiseTimeout = async (
-  promise: () => Promise<any>,
+export const promiseTimeout = async <T>(
+  promise: () => Promise<T>,
   timeoutInMilliseconds: number
-) => {
+): Promise<T> => {
   return await Promise.race([promise(), timeout(timeoutInMilliseconds)]);
 };

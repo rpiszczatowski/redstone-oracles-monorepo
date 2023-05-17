@@ -1,4 +1,9 @@
 {
+  "permaswap": {
+    "logoURI": "https://avatars.githubusercontent.com/u/104478862",
+    "url": "https://permaswap.network",
+    "color": "#000000"
+  },
   "api-dojo-rapid": {
     "logoURI": "https://rapidapi.com/cdn/images?url=https://rapidapi-prod-apis.s3.amazonaws.com/f1/efaf50769f4fe1914234b035c3ff12/04b2a24093095ca016e1d83107aff2b9.png",
     "url": "https://rapidapi.com/apidojo/api/yahoo-finance1",

@@ -19,4 +19,14 @@ describe("newyorkfed fetcher", () => {
       },
     ]);
   });
+
+  it("should properly fetch data", async () => {
+    const result = await sut.fetchAll(["SOFRAI"]);
+    expect(result).toEqual([
+      {
+        symbol: "SOFRAI",
+        value: 1.06870893,
+      },
+    ]);
+  });
 });
