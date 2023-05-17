@@ -3,6 +3,7 @@ import { getLastPrice } from "../../db/local-db";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { PoolsConfig } from "./curve-fetchers-config";
 import abi from "./CurveFactory.abi.json";
+import { appendFileSync } from "fs";
 
 const DEFAULT_DECIMALS = 8;
 const DEFAULT_RATIO_QUANTITY = 10 ** DEFAULT_DECIMALS;
@@ -35,6 +36,13 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
       (DEFAULT_RATIO_QUANTITY * ratioMultiplier).toString(),
       { blockTag }
     );
+
+    if (!blockTag) {
+      appendFileSync(
+        "curverFetcher.log",
+        `${id} ${new Date().toUTCString()} ${ratio} \n`
+      );
+    }
 
     return {
       ratio,

@@ -20,17 +20,19 @@ export interface PoolsConfig {
 // 144 blocks = 30 min
 // 72 blocks = 15 min
 // 48 blocks = 10 min
+// 20 blocks = ~ 4min
 const ETH_MULTI_BLOCK_CONFIG = {
   sequenceStep: 1,
-  sequenceLength: 48,
+  sequenceLength: 20,
 };
 
 // 7200 blocks = 30 min
 // 3600 blocks = 15 min
 // 2400 blocks = 10 min
+// 1000 blocks = ~4 min
 const ARBITRUM_MULTI_BLOCK_CONFIG = {
   sequenceStep: 50,
-  sequenceLength: 2400,
+  sequenceLength: 1000,
 };
 
 export const curveFetchersConfig: Record<string, PoolsConfig> = {

@@ -1,3 +1,4 @@
+import { appendFileSync } from "fs";
 import { terminateWithManifestConfigError } from "../../Terminator";
 import { getMedianBigNumber } from "../../utils/numbers";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
@@ -32,6 +33,13 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     );
 
     const ratios = responsesPerBlock.map((response) => response.ratio);
+
+    appendFileSync(
+      "multiBlockCurveFetcher.log",
+      `${assetId} ${new Date().toUTCString()} ${getMedianBigNumber(
+        ratios
+      ).toString()} ${blockSequence.length} \n`
+    );
 
     return {
       ratio: getMedianBigNumber(ratios),
