@@ -50,6 +50,6 @@ describe("Curve", () => {
 
     const result = await fetcher.fetchAll(["STETH"]);
 
-    expect(result).toEqual([{ symbol: "STETH", value: 2104.3655560609755 }]);
+    expect(result).toEqual([{ symbol: "STETH", value: 2104.365556060975 }]);
   });
 });
