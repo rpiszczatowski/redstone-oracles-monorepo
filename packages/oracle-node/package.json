@@ -16,6 +16,7 @@
     "test:main-dry-run": "DRY_RUN_TEST_TYPE=main yarn test:dry-run",
     "test:stocks-dry-run": "DRY_RUN_TEST_TYPE=stocks yarn test:dry-run",
     "test:avalanche-dry-run": "DRY_RUN_TEST_TYPE=avalanche yarn test:dry-run",
+    "test:rapid-dry-run": "DRY_RUN_TEST_TYPE=rapid yarn test:dry-run",
     "test:dry-run": "jest --runInBand --config=jest.config.dry-run.ts --forceExit test/dry-run/dry-run-test.spec.ts",
     "prepublishOnly": "yarn test && yarn build",
     "version": "git add -A src",

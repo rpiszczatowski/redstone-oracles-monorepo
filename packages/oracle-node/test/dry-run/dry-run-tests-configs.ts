@@ -3,6 +3,7 @@ import mainManifest from "../../manifests/data-services/main.json";
 import wideSupportTokensManifest from "../../manifests/dev/main-wide-support.json";
 import stocksManifest from "../../manifests/data-services/stocks.json";
 import avalancheManifest from "../../manifests/data-services/avalanche.json";
+import rapidManifest from "../../manifests/data-services/rapid.json";
 import { Manifest } from "../../src/types";
 
 interface DryRunTestConfig {
@@ -15,6 +16,7 @@ enum DryRunTestType {
   "main" = "main",
   "stocks" = "stocks",
   "avalanche" = "avalanche",
+  "rapid" = "rapid",
 }
 
 const config: Record<DryRunTestType, DryRunTestConfig> = {
@@ -34,6 +36,10 @@ const config: Record<DryRunTestType, DryRunTestConfig> = {
     nodeIterations: 4,
     additionalCheck:
       assertAllRequiredTokensAreProperlyFetched(avalancheManifest),
+  },
+  [DryRunTestType.rapid]: {
+    manifest: rapidManifest,
+    nodeIterations: 3,
   },
 };
 

@@ -9,6 +9,7 @@ interface NewyorkfedResponse {
 
 interface NewyorkfedRefRate {
   type: string;
+  effectiveDate: string;
   percentRate?: number;
   index?: number;
 }
@@ -18,6 +19,10 @@ type NewyorkfedRefRateFunctionNames = "percentRate" | "index";
 
 const NEWYORKFED_RATES_URL =
   "https://markets.newyorkfed.org/api/rates/all/latest.json";
+
+const EXPECTED_UTC_HOUR_FOR_EFFECTIVE_DATE = 12;
+
+const RATE_TYPE_REGEX = new RegExp("^([^_]+)_EFFECTIVE_DATE");
 
 export class NewyorkfedFetcher extends BaseFetcher {
   constructor() {
@@ -32,22 +37,63 @@ export class NewyorkfedFetcher extends BaseFetcher {
     response: AxiosResponse<NewyorkfedResponse>,
     ids: NewyorkFedDataFeedsIds[]
   ): PricesObj {
-    return this.extractPricesSafely(ids, (id) =>
-      this.extractPricePair(response, id)
-    );
+    return this.extractPricesSafely(ids, (id) => {
+      if (id.includes("EFFECTIVE_DATE")) {
+        return this.extractEffectiveDateTimestamp(response, id);
+      }
+      return this.extractPricePair(response, id);
+    });
   }
 
   private extractPricePair(
     response: AxiosResponse<NewyorkfedResponse>,
     id: NewyorkFedDataFeedsIds
   ) {
-    const rateFound = response.data.refRates.find((rate) => rate.type === id);
-    if (rateFound) {
-      const functionName = dataFeedsFunctionNames[id];
-      const value = rateFound[functionName as NewyorkfedRefRateFunctionNames];
-      return { value, id };
-    } else {
-      throw new Error(`Rate ${id} not found`);
+    const rate = this.getRateFromResponse(response, id);
+    const functionName = dataFeedsFunctionNames[id];
+    const value = rate[functionName as NewyorkfedRefRateFunctionNames];
+    return { value, id };
+  }
+
+  private extractEffectiveDateTimestamp(
+    response: AxiosResponse<NewyorkfedResponse>,
+    id: NewyorkFedDataFeedsIds
+  ) {
+    const rateType = this.getRateTypeFromEffectiveDateDataFeedId(id);
+    const rate = this.getRateFromResponse(response, rateType);
+    const effectiveDate = rate.effectiveDate;
+    const effectiveDateAsTimestamp =
+      this.parseEffectiveDateToTimestamp(effectiveDate);
+    return { value: effectiveDateAsTimestamp, id };
+  }
+
+  private getRateFromResponse(
+    response: AxiosResponse<NewyorkfedResponse>,
+    rateType: string
+  ) {
+    const rateFound = response.data.refRates.find(
+      (rate) => rate.type === rateType
+    );
+    if (!rateFound) {
+      throw new Error(`Rate ${rateType} not found in New York Fed response`);
     }
+    return rateFound;
+  }
+
+  private getRateTypeFromEffectiveDateDataFeedId(id: NewyorkFedDataFeedsIds) {
+    const rateTypeRegexResult = id.match(RATE_TYPE_REGEX);
+    if (!rateTypeRegexResult || rateTypeRegexResult?.length < 2) {
+      throw new Error(
+        "Cannot extract rate type from effective date data feed id"
+      );
+    }
+    return rateTypeRegexResult[1];
+  }
+
+  // We want effective date as timestamp with hour set to 8:00am EDT (New York timezone)
+  private parseEffectiveDateToTimestamp(effectiveDate: string) {
+    return new Date(effectiveDate).setUTCHours(
+      EXPECTED_UTC_HOUR_FOR_EFFECTIVE_DATE
+    );
   }
 }

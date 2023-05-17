@@ -8,7 +8,6 @@ import { CoingeckoFetcher } from "./coingecko/CoingeckoFetcher";
 import { SushiswapFetcher } from "./sushiswap/SushiswapFetcher";
 import { UniswapFetcher } from "./uniswap/UniswapFetcher";
 import { KyberFetcher } from "./kyber/KyberFetcher";
-import { VertoFetcher } from "./verto/VertoFetcher";
 import { EcbFetcher } from "./ecb/EcbFetcher";
 import { DrandFetcher } from "./drand/DrandFetcher";
 import { DiaFetcher } from "./dia/DiaFetcher";
@@ -53,7 +52,6 @@ export default {
   deribit: new DeribitFetcher(),
   dia: new DiaFetcher(),
   kyber: new KyberFetcher(),
-  verto: new VertoFetcher(),
   ecb: new EcbFetcher(),
   band: new BandFetcher(),
   "avalanche-evm-fetcher": avalancheEvmFetcher,
