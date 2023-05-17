@@ -3,7 +3,7 @@ import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice } from "../../db/local-db";
 import abi from "./CurveFactory.abi.json";
 
-const CURVE_PRECISION_RATIO = 10 ** 18;
+const CURVE_PRECISION = 10 ** 18;
 
 export interface PoolsConfig {
   [symbol: string]: {
@@ -46,16 +46,15 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
       pairedTokenIndex,
       // as default value we should use 10 ** 18 this the PRECISION on Curve StableSwap contract
       // if we provide value lower then 10 ** 18 we start loosing PRECISION
-      // if we provide value bigger then 10 ** 18  for example 100 * 10**18 we are saying how much pairedTokenIndex i wil receive for tokenIndex
+      // if we provide value bigger then 10 ** 18  for example 100 * 10**18 we are saying how much 100 x  pairedTokenIndex i wil receive for tokenIndex
       // thus there is higher chance that slippage will occur and will affect price
       // same in examples https://curve.readthedocs.io/factory-pools.html#StableSwap.get_dy and on Curve frontend
       // in case of LPs (with big volume) it shouldn't be a problem, however this just not correct
-      CURVE_PRECISION_RATIO.toString()
+      CURVE_PRECISION.toString()
     )) as BigNumber;
 
     return {
-      ratio:
-        Number(ratio.toString()) / (CURVE_PRECISION_RATIO / ratioMultiplier),
+      ratio: Number(ratio.toString()) / (CURVE_PRECISION / ratioMultiplier),
       assetId,
     };
   }
@@ -68,7 +67,9 @@ export class CurveFetcher extends DexOnChainFetcher<Response> {
   }
 
   calculateLiquidity(_assetId: string, _response: Response): number {
-    return 0;
+    throw new Error(
+      `calculateLiquidity is not implemented for ${this.getName()}`
+    );
   }
 
   getPairedTokenPrice(assetId: string) {
