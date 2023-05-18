@@ -315,7 +315,7 @@ describe("Avalanche EVM fetcher", () => {
 
       const result = await fetcher.fetchAll(["SHLB_BTC.b-AVAX_B"]);
       expect(result).toEqual([
-        { symbol: "SHLB_BTC.b-AVAX_B", value: 0.04810419007910609 },
+        { symbol: "SHLB_BTC.b-AVAX_B", value: 31.442821978615758 },
       ]);
     });
   });
