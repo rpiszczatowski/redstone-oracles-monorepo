@@ -53,10 +53,10 @@ the data follow the steps:
 ### Using the contract
 
 1. run `make deploy`/`make SIGNING_KEY=... deploy` and save the value of "contract id" hex returned by the function
-   1. if you have changed the sway-code, which also changes the contract identifier, it's needed to fill
-      the `CONTRACT_ID` variable in the [Makefile](../Makefile) and in the following configuration files:
-      1. [For contract initializer](contract_initializer/Forc.toml)
-      1. [For contract invoker](contract_invoker/Forc.toml)
+   1. if you have changed the sway-code, which also changes the contract identifier, the `CONTRACT_ID` variables will be changed 
+   in the [Makefile](Makefile) and in the following script invocation files:
+      1. [For contract initializer](contract_initializer/src/main.sw)
+      1. [For contract invoker](contract_invoker/src/main.sw)
    1. NOTE:
       1. all time the `make deploy` is invoked for the unchanged code the contract gets the same contract id.
       1. the contract cannot be re-deployed, so it's needed to change the value of `SALT`

@@ -2,7 +2,6 @@
 DATA_NAME=fuel
 IS_LOCAL=1
 
-CONTRACT_ID=0x84fa13c0a836b11642e02f3abb411769f4dcf221748597731e640534a5646ced
 SALT=0x0000000000000000000000000000000000000000000000000000000000000001
 
 ifeq ($(IS_LOCAL), 0)
@@ -22,6 +21,8 @@ INITIALIZER=contract_initializer
 LIBRARY=redstone
 DATA_GENERATOR=../../../packages/protocol/scripts/payload-generator
 DATA_DIR=$(DATA_GENERATOR)/data
+CONTRACT_ID_FILE=CONTRACT_ID
+CONTRACT_ID=$(shell cat $(CONTRACT)/$(CONTRACT_ID_FILE))
 
 format:
 	cd $(DEMO) && forc-fmt
@@ -53,6 +54,11 @@ deploy: format
 	--salt $(SALT) \
 	--node-url $(NODE_URL) \
 	--gas-price $(GAS_PRICE) $(SIGNING_KEY)
+	cd $(CONTRACT) && forc contract-id --terse  | grep "Contract id:" | cut -c 20- > $(CONTRACT_ID_FILE)
+	cat $(INITIALIZER)/src/main.sw | sed -E "s|CONTRACT_ID: b256 = 0x([0-9a-f])+,|CONTRACT_ID: b256 = $(shell cat $(CONTRACT)/$(CONTRACT_ID_FILE)),|g" > tmp.sw;
+	mv tmp.sw $(INITIALIZER)/src/main.sw
+	cat $(INVOKER)/src/main.sw | sed -E "s|CONTRACT_ID: b256 = 0x([0-9a-f])+,|CONTRACT_ID: b256 = $(shell cat $(CONTRACT)/$(CONTRACT_ID_FILE)),|g" > tmp.sw
+	mv tmp.sw $(INVOKER)/src/main.sw
 
 init: format
 	cd $(INITIALIZER) && forc run -r \
