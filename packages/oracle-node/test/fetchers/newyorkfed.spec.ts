@@ -38,11 +38,11 @@ describe("newyorkfed fetcher", () => {
     expect(result).toEqual([
       {
         symbol: "SOFR_EFFECTIVE_DATE",
-        value: 1678276800000,
+        value: 1678280400,
       },
       {
         symbol: "SOFRAI_EFFECTIVE_DATE",
-        value: 1678363200000,
+        value: 1678366800,
       },
     ]);
   });

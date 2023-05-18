@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from "axios";
-import { PricesObj } from "../../types";
+import { DateTime } from "luxon";
 import { BaseFetcher } from "../BaseFetcher";
+import { PricesObj } from "../../types";
 import dataFeedsFunctionNames from "./data-feeds-function-names.json";
 
 interface NewyorkfedResponse {
@@ -19,8 +20,6 @@ type NewyorkfedRefRateFunctionNames = "percentRate" | "index";
 
 const NEWYORKFED_RATES_URL =
   "https://markets.newyorkfed.org/api/rates/all/latest.json";
-
-const EXPECTED_UTC_HOUR_FOR_EFFECTIVE_DATE = 12;
 
 const RATE_TYPE_REGEX = new RegExp("^([^_]+)_EFFECTIVE_DATE");
 
@@ -92,8 +91,8 @@ export class NewyorkfedFetcher extends BaseFetcher {
 
   // We want effective date as timestamp with hour set to 8:00am EDT (New York timezone)
   private parseEffectiveDateToTimestamp(effectiveDate: string) {
-    return new Date(effectiveDate).setUTCHours(
-      EXPECTED_UTC_HOUR_FOR_EFFECTIVE_DATE
-    );
+    return DateTime.fromISO(`${effectiveDate}T08:00:00.000`, {
+      zone: "America/New_York",
+    }).toSeconds();
   }
 }
