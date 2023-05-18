@@ -157,38 +157,35 @@ export const describeCommonPriceFeedTests = ({
       );
     });
 
-    it("should properly upgrade the contract (change data feed adapter)", async () => {
-      const updateContractFactory = await ethers.getContractFactory(
-        "PriceFeedsUpdatedMock"
-      );
+    describe("should properly upgrade the contract", () => {
+      let updatedContract: PriceFeedBase;
 
-      const updatedContract = (await upgrades.upgradeProxy(
-        contractV1,
-        updateContractFactory
-      )) as PriceFeedBase;
+      before(async () => {
+        const updateContractFactory = await ethers.getContractFactory(
+          "PriceFeedUpdatedMock"
+        );
 
-      const dataFeed = await updatedContract.getDataFeedId();
+        updatedContract = (await upgrades.upgradeProxy(
+          contractV1,
+          updateContractFactory
+        )) as PriceFeedBase;
+      });
 
-      expect(dataFeed).to.eq(
-        "0x4554480000000000000000000000000000000000000000000000000000000000"
-      );
-    });
+      it("should change data feed adapter", async () => {
+        const dataFeed = await updatedContract.getDataFeedId();
 
-    it("should properly upgrade the contract (change data feed id)", async () => {
-      const updateContractFactory = await ethers.getContractFactory(
-        "PriceFeedsUpdatedMock"
-      );
+        expect(dataFeed).to.eq(
+          "0x4554480000000000000000000000000000000000000000000000000000000000"
+        );
+      });
 
-      const updatedContract = (await upgrades.upgradeProxy(
-        contractV1,
-        updateContractFactory
-      )) as PriceFeedBase;
+      it("should change data feed id", async () => {
+        const adapterAddress = await updatedContract.getPriceFeedAdapter();
 
-      const adapterAddress = await updatedContract.getPriceFeedAdapter();
-
-      expect(adapterAddress).to.eq(
-        "0x2C31d00C1AE878F28c58B3aC0672007aECb4A124"
-      );
+        expect(adapterAddress).to.eq(
+          "0x2C31d00C1AE878F28c58B3aC0672007aECb4A124"
+        );
+      });
     });
   });
 };

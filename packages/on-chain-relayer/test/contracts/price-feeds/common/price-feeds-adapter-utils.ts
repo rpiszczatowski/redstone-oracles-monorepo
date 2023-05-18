@@ -111,6 +111,7 @@ export const describeCommonPriceFeedsAdapterTests = ({
       const adapterContractFactory = await ethers.getContractFactory(
         adapterContractName
       );
+
       contractV1 = (await upgrades.deployProxy(
         adapterContractFactory
       )) as IRedstoneAdapter;
@@ -121,56 +122,56 @@ export const describeCommonPriceFeedsAdapterTests = ({
       await expect((contractV1 as any).initialize()).to.rejectedWith(
         "Initializable: contract is already initialized"
       );
-    });
 
-    it("should return default DataFeedId", async () => {
       const dataFeeds = await contractV1.getDataFeedIds();
       expect(dataFeeds.length).to.eq(1);
       expect(dataFeeds[0]).to.eq(
         "0x4254430000000000000000000000000000000000000000000000000000000000"
       );
-    });
-
-    it("should properly upgrade the contract (change data feeds)", async () => {
-      const updatedContractFactory = await ethers.getContractFactory(
-        "PriceFeedsAdapterUpdatedMock"
-      );
-
-      const updatedContract = (await upgrades.upgradeProxy(
-        contractV1,
-        updatedContractFactory
-      )) as IRedstoneAdapter;
-
-      const dataFeeds = await updatedContract.getDataFeedIds();
-
-      expect(dataFeeds.length).to.eq(2);
-      expect(dataFeeds).to.deep.eq([
-        "0x4554480000000000000000000000000000000000000000000000000000000000",
-        "0x4254430000000000000000000000000000000000000000000000000000000000",
-      ]);
-    });
-
-    it("should properly upgrade the contract (change authorized updaters)", async () => {
-      const updatedContractFactory = await ethers.getContractFactory(
-        "PriceFeedsAdapterUpdatedMock"
-      );
-
-      const updatedContract = (await upgrades.upgradeProxy(
-        contractV1,
-        updatedContractFactory
-      )) as IRedstoneAdapter;
 
       expect(
-        await (updatedContract as any).getAuthorisedSignerIndex(
-          "0xb323240B8185C1918A338Bd76A6473E20A25fa62"
+        await (contractV1 as any).getAuthorisedSignerIndex(
+          "0x70997970c51812dc3a010c7d01b50e0d17dc79c8"
         )
-      ).to.eq(0);
+      ).to.eq(1);
+    });
+
+    describe("should properly upgrade the contract ", () => {
+      let updatedContract: IRedstoneAdapter;
+
+      before(async () => {
+        const updatedContractFactory = await ethers.getContractFactory(
+          "PriceFeedsAdapterUpdatedMock"
+        );
+
+        updatedContract = (await upgrades.upgradeProxy(
+          contractV1,
+          updatedContractFactory
+        )) as IRedstoneAdapter;
+      });
+
+      it("should change data feeds", async () => {
+        const dataFeeds = await updatedContract.getDataFeedIds();
+
+        expect(dataFeeds.length).to.eq(2);
+        expect(dataFeeds).to.deep.eq([
+          "0x4554480000000000000000000000000000000000000000000000000000000000",
+          "0x4254430000000000000000000000000000000000000000000000000000000000",
+        ]);
+      });
+
+      it("should change authorized updaters", async () => {
+        expect(
+          await (updatedContract as any).getAuthorisedSignerIndex(
+            "0xb323240B8185C1918A338Bd76A6473E20A25fa62"
+          )
+        ).to.eq(0);
+      });
     });
   });
 
   it("should properly get indexes for data feeds", async () => {
     // TODO: implement more tests here
-
     const btcDataFeedIndex = await adapterContract.getDataFeedIndex(
       formatBytes32String("BTC")
     );
