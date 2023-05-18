@@ -78,7 +78,7 @@ declare: $(CNC)
 	starknet declare $(STARKNET_PARAMS) \
 	--contract $(CNC) --max_fee=$(MAX_FEE) \
 	--compiler_dir=$(BIN) \
- 	--compiler_args="--allowed-libfuncs-list-name=experimental_v0.1.0 --add-pythonic-hints"
+ 	--compiler_args="--allowed-libfuncs-list-name experimental_v0.1.0 --add-pythonic-hints"
 
 $(CNC): contract
 $(ABI): contract

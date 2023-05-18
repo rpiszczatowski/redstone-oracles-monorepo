@@ -4,6 +4,7 @@ use array::SpanTrait;
 use integer::Into;
 use integer::TryInto;
 use integer::u64_try_from_felt252;
+use integer::u64_to_felt252;
 use option::OptionTrait;
 
 #[derive(Drop)]
@@ -15,11 +16,11 @@ struct RoundData {
 }
 
 impl RoundDataSerde of Serde<RoundData> {
-    fn serialize(ref serialized: Array<felt252>, input: RoundData) {
-        serialized.append(input.round_number.into());
-        serialized.append(input.payload_timestamp.into());
-        serialized.append(input.block_number.into());
-        serialized.append(input.block_timestamp.into());
+    fn serialize(self: @RoundData, ref output: Array<felt252>, ) {
+        output.append((*self.round_number).into());
+        output.append((*self.payload_timestamp).into());
+        output.append((*self.block_number).into());
+        output.append((*self.block_timestamp).into());
     }
 
     fn deserialize(ref serialized: Span<felt252>) -> Option<RoundData> {

@@ -39,7 +39,7 @@ impl TWrappedSerde: WrappedSerde<T>> of StorageAccess<T> {
     #[inline(always)]
     fn write(address_domain: u32, base: StorageBaseAddress, value: T) -> SyscallResult<()> {
         let mut arr: Array<felt252> = ArrayTrait::new();
-        Serde::<T>::serialize(ref arr, value);
+        Serde::<T>::serialize(@value, ref arr);
 
         StorageAccess::<felt252>::write(address_domain, base, arr.len().into());
 
@@ -55,7 +55,7 @@ fn _read(
         Option::None(_) => panic(out_of_gas_array()),
     };
 
-    if index.into() == size.into() {
+    if index.into() == size {
         return ();
     }
 
@@ -76,14 +76,14 @@ fn _write(
         Option::None(_) => panic(out_of_gas_array()),
     };
 
-    if index.into() == value.len().into() {
+    if index.into() == value.len() {
         return Result::Ok(());
     }
 
     storage_write_syscall(
         address_domain,
         storage_address_from_base_and_offset(base, index + 1_u8),
-        *value.at(index.into().try_into().unwrap())
+        *value[index.into()]
     );
 
     _write(:address_domain, :base, :value, index: index + 1_u8)

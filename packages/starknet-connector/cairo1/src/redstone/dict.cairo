@@ -33,7 +33,7 @@ impl OptionalDictFelt252 of OptionalDictTrait<felt252> {
     }
 }
 
-fn dict_fill<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>>(
+fn dict_fill<T, impl TCopy: Copy<T>, impl TDrop: Drop<T>, impl TDefault: Felt252DictValue<T>>(
     ref dict: Felt252Dict<T>, value: T, count: felt252, index: felt252
 ) {
     match gas::withdraw_gas_all(get_builtin_costs()) {

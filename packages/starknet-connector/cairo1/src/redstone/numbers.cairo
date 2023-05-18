@@ -4,26 +4,26 @@ use integer::u128_from_felt252;
 
 impl Felt252PartialOrd of PartialOrd<felt252> {
     #[inline(always)]
-    fn le(a: felt252, b: felt252) -> bool {
-        !(b < a)
+    fn le(lhs: felt252, rhs: felt252) -> bool {
+        !(rhs < lhs)
     }
     #[inline(always)]
-    fn ge(a: felt252, b: felt252) -> bool {
-        !(a < b)
+    fn ge(lhs: felt252, rhs: felt252) -> bool {
+        !(lhs < rhs)
     }
     #[inline(always)]
-    fn lt(a: felt252, b: felt252) -> bool {
-        u256_from_felt252(a) < u256_from_felt252(b)
+    fn lt(lhs: felt252, rhs: felt252) -> bool {
+        u256_from_felt252(lhs) < u256_from_felt252(rhs)
     }
     #[inline(always)]
-    fn gt(a: felt252, b: felt252) -> bool {
-        b < a
+    fn gt(lhs: felt252, rhs: felt252) -> bool {
+        rhs < lhs
     }
 }
 
 impl Felt252Div of Div<core::felt252> {
     //TODO: change to u256
-    fn div(a: felt252, b: felt252) -> felt252 {
-        u128_to_felt252(u128_from_felt252(a) / u128_from_felt252(b))
+    fn div(lhs: felt252, rhs: felt252) -> felt252 {
+        u128_to_felt252(u128_from_felt252(lhs) / u128_from_felt252(rhs))
     }
 }

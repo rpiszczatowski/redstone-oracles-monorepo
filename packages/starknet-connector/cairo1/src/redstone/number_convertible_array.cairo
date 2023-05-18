@@ -24,12 +24,12 @@ trait NumberConvertibleArrayTrait {
 }
 
 impl NumberConvertibleArray of NumberConvertibleArrayTrait {
-    fn slice_number(self: @Array<u8>, len: usize) -> NumberArraySlice {
-        self.slice_number_offset(len, 0_usize)
+    fn slice_number(self: @Array<u8>, length: usize) -> NumberArraySlice {
+        self.slice_number_offset(length, 0_usize)
     }
 
-    fn slice_number_offset(self: @Array<u8>, len: usize, offset: usize) -> NumberArraySlice {
-        let slice = self.slice_tail_offset(len, offset);
+    fn slice_number_offset(self: @Array<u8>, length: usize, offset: usize) -> NumberArraySlice {
+        let slice = self.slice_tail_offset(length, offset);
 
         NumberArraySlice { head: slice.head, number: slice.tail.to_felt252() }
     }
