@@ -13,4 +13,10 @@ export const pools: PermaswapPoolsConfig = {
     pairedToken: "USDC",
     direction: "currentPriceUp",
   },
+  ANS: {
+    poolAddress:
+      "0x6e80137a5bbb6ae6b683fcd8a20978d6b4632dddc78aa61945adbcc5a197ca0f",
+    pairedToken: "AR",
+    direction: "currentPriceUp",
+  },
 };

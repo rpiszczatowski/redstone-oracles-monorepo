@@ -837,6 +837,9 @@
     "AUD": {
       "source": ["binance", "currencycom", "ecb", "kraken"]
     },
+    "ANS": {
+      "source": ["permaswap"]
+    },
     "GBP": {
       "source": ["binance", "currencycom", "ecb", "kraken"]
     },
