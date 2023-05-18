@@ -29,6 +29,8 @@ const DEFAULT_COINGECKO_API_URL =
 const DEFAULT_COINGECKO_API_KEY = "";
 const DEFAULT_ENABLE_HTTP_SERVER = "false";
 const DEFAULT_PRICES_HARD_LIMITS_URL = "";
+const DEFAULT_NEWYORKFED_RATES_URL =
+  "https://markets.newyorkfed.org/api/rates/all/latest.json";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -182,5 +184,9 @@ export const config: NodeConfig = Object.freeze({
   pricesHardLimitsUrl: getFromEnv(
     "PRICES_HARD_LIMITS_URL",
     DEFAULT_PRICES_HARD_LIMITS_URL
+  ),
+  newyorkfedRatesUrl: getFromEnv(
+    "NEWYORKFED_RATES_URL",
+    DEFAULT_NEWYORKFED_RATES_URL
   ),
 });

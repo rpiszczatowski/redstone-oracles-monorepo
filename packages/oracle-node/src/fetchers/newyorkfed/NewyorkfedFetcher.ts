@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import { BaseFetcher } from "../BaseFetcher";
 import { PricesObj } from "../../types";
 import dataFeedsFunctionNames from "./data-feeds-function-names.json";
+import { config } from "../../config";
 
 interface NewyorkfedResponse {
   refRates: NewyorkfedRefRate[];
@@ -18,9 +19,6 @@ interface NewyorkfedRefRate {
 type NewyorkFedDataFeedsIds = keyof typeof dataFeedsFunctionNames;
 type NewyorkfedRefRateFunctionNames = "percentRate" | "index";
 
-const NEWYORKFED_RATES_URL =
-  "https://markets.newyorkfed.org/api/rates/all/latest.json";
-
 const RATE_TYPE_REGEX = new RegExp("^([^_]+)_EFFECTIVE_DATE");
 
 export class NewyorkfedFetcher extends BaseFetcher {
@@ -29,7 +27,7 @@ export class NewyorkfedFetcher extends BaseFetcher {
   }
 
   fetchData(_ids: NewyorkFedDataFeedsIds[]) {
-    return axios.get<NewyorkfedResponse>(NEWYORKFED_RATES_URL);
+    return axios.get<NewyorkfedResponse>(config.newyorkfedRatesUrl);
   }
 
   extractPrices(
