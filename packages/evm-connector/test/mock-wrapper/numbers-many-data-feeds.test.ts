@@ -21,12 +21,14 @@ import { wrapContractUsingMockDataPackages } from "../../src/helpers/test-utils"
 
 interface NumbersManyDataFeedsTestParams {
   mockDataPackagesSuite: IMockDataPackagesSuite;
+  testSuiteDescription: string;
 }
 
 const describeConsumerNumericTestsManyDataFeeds = ({
   mockDataPackagesSuite,
+  testSuiteDescription,
 }: NumbersManyDataFeedsTestParams) => {
-  describe("SampleRedstoneConsumerNumericMockManyDataFeeds", function () {
+  describe(testSuiteDescription, function () {
     let contract: SampleRedstoneConsumerNumericMockManyDataFeeds;
 
     const testShouldPass = async (
@@ -193,14 +195,14 @@ const describeConsumerNumericTestsManyDataFeeds = ({
   });
 };
 
-describe("SampleRedstoneConsumerNumericMockManyDataFeedsSingleSign", () => {
-  describeConsumerNumericTestsManyDataFeeds({
-    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
-  });
+describeConsumerNumericTestsManyDataFeeds({
+  mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  testSuiteDescription:
+    "SampleRedstoneConsumerNumericMockManyDataFeedsSingleSign",
 });
 
-describe("SampleRedstoneConsumerNumericMockManyDataFeedsMultiSign", () => {
-  describeConsumerNumericTestsManyDataFeeds({
-    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
-  });
+describeConsumerNumericTestsManyDataFeeds({
+  mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
+  testSuiteDescription:
+    "SampleRedstoneConsumerNumericMockManyDataFeedsMultiSign",
 });

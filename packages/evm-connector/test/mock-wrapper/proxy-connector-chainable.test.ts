@@ -17,12 +17,14 @@ import { MockDataPackageConfig } from "../../src/wrappers/MockWrapper";
 import { MockMultiSignDataPackageConfig } from "../../src/wrappers/MockWrapperMultiSign";
 interface ProxyConnectorChainableTestParams {
   mockDataPackagesSuite: IMockDataPackagesSuite;
+  testSuiteDescription: string;
 }
 
 const describeProxyConnectorChainableTests = ({
   mockDataPackagesSuite,
+  testSuiteDescription,
 }: ProxyConnectorChainableTestParams) => {
-  describe("SampleChainableProxyConnector", function () {
+  describe(testSuiteDescription, function () {
     let contract: SampleChainableProxyConnector;
     let consumerContract: SampleProxyConnectorConsumer;
 
@@ -112,14 +114,12 @@ const describeProxyConnectorChainableTests = ({
   });
 };
 
-describe("SampleChainableProxyConnectorSingleSign", () => {
-  describeProxyConnectorChainableTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
-  });
+describeProxyConnectorChainableTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  testSuiteDescription: "SampleChainableProxyConnectorSingleSign",
 });
 
-describe("SampleChainableProxyConnectorMultiSign", () => {
-  describeProxyConnectorChainableTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
-  });
+describeProxyConnectorChainableTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
+  testSuiteDescription: "SampleChainableProxyConnectorMultiSign",
 });

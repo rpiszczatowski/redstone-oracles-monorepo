@@ -18,12 +18,14 @@ import { MockMultiSignDataPackageConfig } from "../../src/wrappers/MockWrapperMu
 
 interface StorageProxyChainableTestParams {
   mockDataPackagesSuite: IMockDataPackagesSuite;
+  testSuiteDescription: string;
 }
 
 const describeStorageProxyChainableTests = ({
   mockDataPackagesSuite,
+  testSuiteDescription,
 }: StorageProxyChainableTestParams) => {
-  describe("SampleChainableStorageProxy", function () {
+  describe(testSuiteDescription, function () {
     let contract: SampleChainableStorageProxy;
     let consumerContract: SampleChainableStorageProxyConsumer;
 
@@ -116,14 +118,12 @@ const describeStorageProxyChainableTests = ({
   });
 };
 
-describe("SampleChainableStorageProxySingleSign", () => {
-  describeStorageProxyChainableTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
-  });
+describeStorageProxyChainableTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  testSuiteDescription: "SampleChainableStorageProxySingleSign",
 });
 
-describe("SampleChainableStorageProxyMultiSign", () => {
-  describeStorageProxyChainableTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
-  });
+describeStorageProxyChainableTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
+  testSuiteDescription: "SampleChainableStorageProxyMultiSign",
 });

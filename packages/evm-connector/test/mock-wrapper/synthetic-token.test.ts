@@ -22,12 +22,14 @@ import { MockMultiSignDataPackageConfig } from "../../src/wrappers/MockWrapperMu
 
 interface SyntheticTokenTestParams {
   mockDataPackagesSuite: IMockDataPackagesSuite;
+  testSuiteDescription: string;
 }
 
 const describeSyntheticTokenTests = ({
   mockDataPackagesSuite,
+  testSuiteDescription,
 }: SyntheticTokenTestParams) => {
-  describe("SampleSyntheticToken", function () {
+  describe(testSuiteDescription, function () {
     let sampleContract: SampleSyntheticToken,
       wrappedContract: any,
       signer: Signer,
@@ -125,14 +127,12 @@ const describeSyntheticTokenTests = ({
   });
 };
 
-describe("SampleSyntheticTokenSingleSign", () => {
-  describeSyntheticTokenTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
-  });
+describeSyntheticTokenTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  testSuiteDescription: "SampleSyntheticTokenSingleSign",
 });
 
-describe("SampleSyntheticTokenMultiSign", () => {
-  describeSyntheticTokenTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
-  });
+describeSyntheticTokenTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
+  testSuiteDescription: "SampleSyntheticTokenMultiSign",
 });

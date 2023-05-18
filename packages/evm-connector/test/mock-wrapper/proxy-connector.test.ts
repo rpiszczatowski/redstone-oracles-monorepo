@@ -15,12 +15,14 @@ import { wrapContractUsingMockDataPackages } from "../../src/helpers/test-utils"
 
 interface ProxyConnectorTestParams {
   mockDataPackagesSuite: IMockDataPackagesSuite;
+  testSuiteDescription: string;
 }
 
 const describeProxyConnectorTests = ({
   mockDataPackagesSuite,
+  testSuiteDescription,
 }: ProxyConnectorTestParams) => {
-  describe("SampleProxyConnector", function () {
+  describe(testSuiteDescription, function () {
     let contract: SampleProxyConnector;
     const ethDataFeedId = convertStringToBytes32("ETH");
 
@@ -149,14 +151,12 @@ const describeProxyConnectorTests = ({
   });
 };
 
-describe("SampleProxyConnectorSingleSign", () => {
-  describeProxyConnectorTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
-  });
+describeProxyConnectorTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  testSuiteDescription: "SampleProxyConnectorSingleSign",
 });
 
-describe("SampleProxyConnectorMultiSign", () => {
-  describeProxyConnectorTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
-  });
+describeProxyConnectorTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
+  testSuiteDescription: "SampleProxyConnectorMultiSign",
 });

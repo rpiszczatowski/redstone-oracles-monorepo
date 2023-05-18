@@ -11,10 +11,14 @@ import { wrapContractUsingMockDataPackages } from "../../src/helpers/test-utils"
 
 interface EventsTestParams {
   mockDataPackagesSuite: IMockDataPackagesSuite;
+  testSuiteDescription: string;
 }
 
-const describeEventsTests = ({ mockDataPackagesSuite }: EventsTestParams) => {
-  describe("SampleWithEvents", function () {
+const describeEventsTests = ({
+  mockDataPackagesSuite,
+  testSuiteDescription,
+}: EventsTestParams) => {
+  describe(testSuiteDescription, function () {
     let sampleContract: SampleWithEvents;
 
     beforeEach(async () => {
@@ -44,14 +48,12 @@ const describeEventsTests = ({ mockDataPackagesSuite }: EventsTestParams) => {
   });
 };
 
-describe("SampleWithEventsSingleSign", () => {
-  describeEventsTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
-  });
+describeEventsTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  testSuiteDescription: "SampleWithEventsSingleSign",
 });
 
-describe("SampleWithEventsMultiSign", () => {
-  describeEventsTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
-  });
+describeEventsTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
+  testSuiteDescription: "SampleWithEventsMultiSign",
 });

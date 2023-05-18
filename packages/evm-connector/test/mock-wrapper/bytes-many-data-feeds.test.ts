@@ -1,15 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { utils } from "redstone-protocol";
-import {
-  wrapContractUsingMockDataPackages,
-} from "../../src/helpers/test-utils";
+import { wrapContractUsingMockDataPackages } from "../../src/helpers/test-utils";
 
 import { MockDataPackageConfig } from "../../src/wrappers/MockWrapper";
 import { SampleRedstoneConsumerBytesMockManyDataFeeds } from "../../typechain-types";
-import {
-  expectedBytesValues,
-} from "../tests-common";
+import { expectedBytesValues } from "../tests-common";
 import {
   IMockDataPackagesSuite,
   MockBytesDataPackagesMultiSignSuite,
@@ -19,12 +15,14 @@ import { MockMultiSignDataPackageConfig } from "../../src/wrappers/MockWrapperMu
 
 interface BytesManyDataFeedsTestParams {
   mockDataPackagesSuite: IMockDataPackagesSuite;
+  testSuiteDescription: string;
 }
 
 const describeConsumerBytesTestsManyDataFeeds = ({
   mockDataPackagesSuite,
+  testSuiteDescription,
 }: BytesManyDataFeedsTestParams) => {
-  describe("SampleRedstoneConsumerBytesMockManyDataFeeds", function () {
+  describe(testSuiteDescription, function () {
     let contract: SampleRedstoneConsumerBytesMockManyDataFeeds;
 
     const testShouldPass = async (
@@ -144,14 +142,13 @@ const describeConsumerBytesTestsManyDataFeeds = ({
   });
 };
 
-describe("SampleRedstoneConsumerBytesMockManyDataFeedsSingleSign", () => {
-  describeConsumerBytesTestsManyDataFeeds({
-    mockDataPackagesSuite: new MockBytesDataPackagesSingleSignSuite(),
-  });
+describeConsumerBytesTestsManyDataFeeds({
+  mockDataPackagesSuite: new MockBytesDataPackagesSingleSignSuite(),
+  testSuiteDescription:
+    "SampleRedstoneConsumerBytesMockManyDataFeedsSingleSign",
 });
 
-describe("SampleRedstoneConsumerBytesMockManyDataFeedsMultiSign", () => {
-  describeConsumerBytesTestsManyDataFeeds({
-    mockDataPackagesSuite: new MockBytesDataPackagesMultiSignSuite(),
-  });
+describeConsumerBytesTestsManyDataFeeds({
+  mockDataPackagesSuite: new MockBytesDataPackagesMultiSignSuite(),
+  testSuiteDescription: "SampleRedstoneConsumerBytesMockManyDataFeedsMultiSign",
 });

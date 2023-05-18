@@ -14,12 +14,14 @@ import { wrapContractUsingMockDataPackages } from "../../src/helpers/test-utils"
 
 interface NumbersTestParams {
   mockDataPackagesSuite: IMockDataPackagesSuite;
+  testSuiteDescription: string;
 }
 
 const describeConsumerNumericTests = ({
   mockDataPackagesSuite,
+  testSuiteDescription,
 }: NumbersTestParams) => {
-  describe("SampleRedstoneConsumerNumericMock", function () {
+  describe(testSuiteDescription, function () {
     let contract: SampleRedstoneConsumerNumericMock;
 
     const testShouldPass = async (
@@ -129,14 +131,12 @@ const describeConsumerNumericTests = ({
   });
 };
 
-describe("SampleRedstoneConsumerNumericMockSingleSign", () => {
-  describeConsumerNumericTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
-  });
+describeConsumerNumericTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  testSuiteDescription: "SampleRedstoneConsumerNumericMockSingleSign",
 });
 
-describe("SampleRedstoneConsumerNumericMockMultiSign", () => {
-  describeConsumerNumericTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
-  });
+describeConsumerNumericTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
+  testSuiteDescription: "SampleRedstoneConsumerNumericMockMultiSign",
 });

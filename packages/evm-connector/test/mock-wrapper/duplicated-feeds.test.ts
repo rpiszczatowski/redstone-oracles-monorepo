@@ -12,12 +12,14 @@ import {
 import { wrapContractUsingMockDataPackages } from "../../src/helpers/test-utils";
 interface DuplicatedDataFeedsTestParams {
   mockDataPackagesSuite: IMockDataPackagesSuite;
+  testSuiteDescription: string;
 }
 
 const describeDuplicatedDataFeedsTests = ({
   mockDataPackagesSuite,
+  testSuiteDescription,
 }: DuplicatedDataFeedsTestParams) => {
-  describe("DuplicatedDataFeeds", function () {
+  describe(testSuiteDescription, function () {
     let contract: SampleDuplicatedDataFeeds;
 
     this.beforeEach(async () => {
@@ -109,14 +111,12 @@ const describeDuplicatedDataFeedsTests = ({
   });
 };
 
-describe("DuplicatedDataFeedsSingleSign", () => {
-  describeDuplicatedDataFeedsTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
-  });
+describeDuplicatedDataFeedsTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  testSuiteDescription: "SampleDuplicatedDataFeedsSingleSign",
 });
 
-describe("DuplicatedDataFeedsMultiSign", () => {
-  describeDuplicatedDataFeedsTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
-  });
+describeDuplicatedDataFeedsTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
+  testSuiteDescription: "SampleDuplicatedDataFeedsMultiSign",
 });

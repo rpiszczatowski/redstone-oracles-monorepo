@@ -13,10 +13,12 @@ import { wrapContractUsingMockDataPackages } from "../../src/helpers/test-utils"
 
 interface CorruptedPayloadTestParams {
   mockDataPackagesSuite: IMockDataPackagesSuite;
+  testSuiteDescription: string;
 }
 
 const describeConsumerNumericTestsManyDataFeeds = ({
   mockDataPackagesSuite,
+  testSuiteDescription,
 }: CorruptedPayloadTestParams) => {
   class CustomPayloadWrapper extends BaseWrapper {
     constructor(private customRedstonePayload: string) {
@@ -28,7 +30,7 @@ const describeConsumerNumericTestsManyDataFeeds = ({
     }
   }
 
-  describe("Corrupted payload", function () {
+  describe(testSuiteDescription, function () {
     let contract: SampleRedstoneConsumerNumericMockManyDataFeeds;
 
     const correctRedstonePayload =
@@ -116,14 +118,12 @@ const describeConsumerNumericTestsManyDataFeeds = ({
   });
 };
 
-describe("Corrupted payload single sign", () => {
-  describeConsumerNumericTestsManyDataFeeds({
-    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
-  });
+describeConsumerNumericTestsManyDataFeeds({
+  mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  testSuiteDescription: "CorruputedPayloadSingleSign",
 });
 
-describe("Corrupted payload multi sign", () => {
-  describeConsumerNumericTestsManyDataFeeds({
-    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
-  });
+describeConsumerNumericTestsManyDataFeeds({
+  mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
+  testSuiteDescription: "CorruputedPayloadMultiSign",
 });

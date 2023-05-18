@@ -21,12 +21,14 @@ const dataFeedIdsBytes = manyAssetsDataPoints.map((dataPoint) => {
 
 interface ProxyStorageTestParams {
   mockDataPackagesSuite: IMockDataPackagesSuite;
+  testSuiteDescription: string;
 }
 
 const describeStorageProxyTests = ({
   mockDataPackagesSuite,
+  testSuiteDescription,
 }: ProxyStorageTestParams) => {
-  describe("SampleStorageProxy", function () {
+  describe(testSuiteDescription, function () {
     let contract: SampleStorageProxy;
     let consumerContract: SampleStorageProxyConsumer;
     let wrappedContract: Contract;
@@ -153,14 +155,12 @@ const describeStorageProxyTests = ({
   });
 };
 
-describe("SampleStorageProxySingleSign", () => {
-  describeStorageProxyTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
-  });
+describeStorageProxyTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesSingleSignSuite(),
+  testSuiteDescription: "SampleStorageProxySingleSign",
 });
 
-describe("SampleStorageProxyMultiSign", () => {
-  describeStorageProxyTests({
-    mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
-  });
+describeStorageProxyTests({
+  mockDataPackagesSuite: new MockNumericDataPackagesMultiSignSuite(),
+  testSuiteDescription: "SampleStorageProxyMultiSign",
 });
