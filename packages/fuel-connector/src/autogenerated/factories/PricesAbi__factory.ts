@@ -4,9 +4,9 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.41.0
-  Forc version: 0.35.5
-  Fuel-Core version: 0.17.3
+  Fuels version: 0.44.2
+  Forc version: 0.40.1
+  Fuel-Core version: 0.18.1
 */
 
 import type { AbstractAddress, Account, Provider } from "fuels";
@@ -335,7 +335,7 @@ const _abi = {
       logId: 6,
       loggedType: {
         name: "",
-        type: 2,
+        type: 8,
         typeArguments: null,
       },
     },
@@ -381,6 +381,14 @@ const _abi = {
     },
     {
       logId: 12,
+      loggedType: {
+        name: "",
+        type: 8,
+        typeArguments: null,
+      },
+    },
+    {
+      logId: 13,
       loggedType: {
         name: "",
         type: 8,

@@ -18,7 +18,6 @@ DEMO=demo
 CONTRACT=contract
 INVOKER=contract_invoker
 INITIALIZER=contract_initializer
-LIBRARY=redstone
 DATA_GENERATOR=../../../packages/protocol/scripts/payload-generator
 DATA_DIR=$(DATA_GENERATOR)/data
 CONTRACT_ID_FILE=CONTRACT_ID
@@ -29,7 +28,6 @@ format:
 	cd $(CONTRACT) && forc-fmt
 	cd $(INVOKER) && forc-fmt
 	cd $(INITIALIZER) && forc-fmt
-	cd $(LIBRARY) && forc-fmt
 
 run: format
 	cd $(DEMO) && forc run -r --unsigned \
@@ -48,17 +46,21 @@ contract: format
 	cd $(CONTRACT) && forc build
 
 # make SIGNING_KEY=5b4 invoke
-deploy: format
+perform_deploy: format
 	echo "For the beta-2 node the 'forc' version must not be greater than 0.34.0"
 	cd $(CONTRACT) && forc deploy --terse \
 	--salt $(SALT) \
 	--node-url $(NODE_URL) \
 	--gas-price $(GAS_PRICE) $(SIGNING_KEY)
-	cd $(CONTRACT) && forc contract-id --terse  | grep "Contract id:" | cut -c 20- > $(CONTRACT_ID_FILE)
+	cd $(CONTRACT) && forc contract-id --terse --salt=$(SALT)  | grep "Contract id:" | cut -c 20- > $(CONTRACT_ID_FILE)
+
+contract_id:
 	cat $(INITIALIZER)/src/main.sw | sed -E "s|CONTRACT_ID: b256 = 0x([0-9a-f])+,|CONTRACT_ID: b256 = $(shell cat $(CONTRACT)/$(CONTRACT_ID_FILE)),|g" > tmp.sw;
 	mv tmp.sw $(INITIALIZER)/src/main.sw
 	cat $(INVOKER)/src/main.sw | sed -E "s|CONTRACT_ID: b256 = 0x([0-9a-f])+,|CONTRACT_ID: b256 = $(shell cat $(CONTRACT)/$(CONTRACT_ID_FILE)),|g" > tmp.sw
 	mv tmp.sw $(INVOKER)/src/main.sw
+
+deploy: perform_deploy contract_id
 
 init: format
 	cd $(INITIALIZER) && forc run -r \

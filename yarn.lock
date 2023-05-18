@@ -2111,10 +2111,10 @@
   dependencies:
     "@floating-ui/core" "^1.0.1"
 
-"@fuel-ts/abi-coder@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/abi-coder/-/abi-coder-0.41.0.tgz#bc47813b71875a7518c031b2ac04ca515eede1a1"
-  integrity sha512-buPbvRiLtDNi9070/Lx2gNgqPRlJBgTFjVHZkMwCzsv9fMq3C0hQ7wvldG7UnFRKz9KgQ/as2yrKM1F5olbneQ==
+"@fuel-ts/abi-coder@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/abi-coder/-/abi-coder-0.0.0-pr-986-20230616125036.tgz#568b8326345830f710fd4957efc44fd064e69aee"
+  integrity sha512-fZwHRkqRpBseipAEnAflXGCo9JRHJy4DRt3zgwAOdZAUUOWPv+ty6HZzUJW+z6zrim56RBvhsIHE0rHpnHj/Ow==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/bignumber" "^5.7.0"
@@ -2123,286 +2123,273 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/sha2" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
-    "@fuel-ts/keystore" "0.41.0"
-    "@fuel-ts/math" "0.41.0"
-    "@fuel-ts/versions" "0.41.0"
+    "@fuel-ts/keystore" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/math" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/versions" "0.0.0-pr-986-20230616125036"
     type-fest "^3.1.0"
 
-"@fuel-ts/abi-typegen@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/abi-typegen/-/abi-typegen-0.41.0.tgz#e4b44c5067d8e4171e9136393361d83c09e3c2fc"
-  integrity sha512-dxlWSgegcwXTMydcLpeXKpqRW70X7Do4k95X33QESgKkR97mCxDTZmd34ZN2+8rKPg8sLBZ4vpej3nLVM/Vf5A==
+"@fuel-ts/abi-typegen@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/abi-typegen/-/abi-typegen-0.0.0-pr-986-20230616125036.tgz#02a3e1a8a97ce0c887b326b2e69e6687cabfc907"
+  integrity sha512-pHoSlOS0DPgKJfCfLX8rhp7FVjJ8FBeA66R9Obqm+a8coVBeZWX4W0cxY1/gekRjQWQFKRHMlI06JRORBNQmMw==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
-    "@fuel-ts/versions" "0.41.0"
+    "@fuel-ts/utils" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/versions" "0.0.0-pr-986-20230616125036"
     commander "^9.4.1"
-    glob "^8.0.3"
+    glob "^10.2.6"
     handlebars "^4.7.7"
     lodash.uniq "^4.5.0"
     lodash.upperfirst "^4.3.1"
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
 
-"@fuel-ts/address@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/address/-/address-0.41.0.tgz#92ac84df0d5026587e580b82d8fd20cc91e8dfcd"
-  integrity sha512-RpF70hYpxoIwsxqjNB/RyacBYh07gc71kWxWIuO0FwfV2H6mFnx1V7KHzWRziD3pVk6sCqntJ9U0UxecSb90gw==
+"@fuel-ts/address@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/address/-/address-0.0.0-pr-986-20230616125036.tgz#7201f7184fde3db35e485e2dcdf7935b0fee2179"
+  integrity sha512-O0iIP1ClawDjL1clC25B3nZRnivltNpok/HJ6XhIQWficNRj2sk869OigpwW2c6y51Z2nmKMd3bmo07ZDNLh9Q==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/logger" "^5.7.0"
     "@ethersproject/sha2" "^5.7.0"
-    "@fuel-ts/interfaces" "0.41.0"
-    "@fuel-ts/keystore" "0.41.0"
-    "@fuel-ts/versions" "0.41.0"
+    "@fuel-ts/interfaces" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/keystore" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/versions" "0.0.0-pr-986-20230616125036"
     bech32 "^2.0.0"
 
-"@fuel-ts/contract@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/contract/-/contract-0.41.0.tgz#40d1a54d8d1be46feb38abd62f53bd49c7ab9ab5"
-  integrity sha512-mPmAytePNtjreZUABIT1xwPXj2B+TorYw16Xvd/IECxNJtybLds9L00QuOxQW6+eArq6c8O8pUzx/0zzQlDFng==
+"@fuel-ts/contract@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/contract/-/contract-0.0.0-pr-986-20230616125036.tgz#1b14a0f437df7e6003f83cda61c7bdc9e0dce00a"
+  integrity sha512-uG8HgXwtyYyUNz6esKqA1ZNLcAywGuHebM9XA2TLPP0c+cOxuI8mc8sxFIHrV9sGUepKR0Ydr1+QlykNoIj/UA==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/logger" "^5.7.0"
     "@ethersproject/sha2" "^5.7.0"
-    "@fuel-ts/abi-coder" "0.41.0"
-    "@fuel-ts/keystore" "0.41.0"
-    "@fuel-ts/merkle" "0.41.0"
-    "@fuel-ts/program" "0.41.0"
-    "@fuel-ts/providers" "0.41.0"
-    "@fuel-ts/sparsemerkle" "0.41.0"
-    "@fuel-ts/transactions" "0.41.0"
-    "@fuel-ts/versions" "0.41.0"
-    "@fuel-ts/wallet" "0.41.0"
+    "@fuel-ts/abi-coder" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/keystore" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/merkle" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/program" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/providers" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/transactions" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/versions" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/wallet" "0.0.0-pr-986-20230616125036"
 
-"@fuel-ts/hasher@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/hasher/-/hasher-0.41.0.tgz#e3978eba74124a9bee8d65beb3dbb673c86a9273"
-  integrity sha512-uzvaG9yV3bHUhbugyispHZzEDyqYzJZnZTkA0rFxegJ7xv01XViR5AMUqlyNFoXmNzXvbBx6s1VULBRTQLQX4w==
+"@fuel-ts/hasher@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/hasher/-/hasher-0.0.0-pr-986-20230616125036.tgz#d4e55e76b626cba492d43688db74d29d1814a0f7"
+  integrity sha512-VRiW84lvpYOKgJ1ZlypKFDHNpdMIP7bey04ERWSPRCSyOQir1NA0dAhvEe0XbtN+BaaZ1kmyrU7DQmIRhaZKBw==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/sha2" "^5.7.0"
-    "@fuel-ts/address" "0.41.0"
-    "@fuel-ts/keystore" "0.41.0"
-    "@fuel-ts/math" "0.41.0"
-    "@fuel-ts/providers" "0.41.0"
-    "@fuel-ts/transactions" "0.41.0"
+    "@fuel-ts/address" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/keystore" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/math" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/providers" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/transactions" "0.0.0-pr-986-20230616125036"
     lodash.clonedeep "^4.5.0"
 
-"@fuel-ts/hdwallet@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/hdwallet/-/hdwallet-0.41.0.tgz#51d8026111494fbc4e09fbedd5580ee399c51cc6"
-  integrity sha512-BnXurWkgO7JNfU//UkVQj00MzxSqTJLnXrRidGo9hnje23kHJk9NyPslm2eDNhDvjI8mddzRVnTtNxltimfEqw==
+"@fuel-ts/hdwallet@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/hdwallet/-/hdwallet-0.0.0-pr-986-20230616125036.tgz#ee10b0baa121941f87b7a1b7e88a66bb4c5d37f2"
+  integrity sha512-tWVGoyschskKOt7ZW6wLngVus2eTZN1rE7/wkT2Chg6ifQ/ljie4WNlJrdwrsLQxtKYOrbz+kMIQNr+hNV/1Aw==
   dependencies:
     "@ethersproject/basex" "^5.7.0"
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/sha2" "^5.7.0"
-    "@fuel-ts/math" "0.41.0"
-    "@fuel-ts/mnemonic" "0.41.0"
-    "@fuel-ts/signer" "0.41.0"
+    "@fuel-ts/math" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/mnemonic" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/signer" "0.0.0-pr-986-20230616125036"
 
-"@fuel-ts/interfaces@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/interfaces/-/interfaces-0.41.0.tgz#7006ad9bf291df74ec2f57a3df936c9f4367d190"
-  integrity sha512-Jr03uN9pTxDoUP/wKyvk6Q6LcQ2v616MUibhWU4CGkIOqmcB9CDGoTvfeynN6KK4kCObOp0VafVgfuLnso1ddA==
+"@fuel-ts/interfaces@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/interfaces/-/interfaces-0.0.0-pr-986-20230616125036.tgz#b7a18830d32fce4b6810066d9c8289f5cfe5e3fa"
+  integrity sha512-vTUacPCjiMDwi+KGs0MPf3eF10u5Q92corJc4BlasZEwv6M8dj9oI8kUMvoCCk2mLMHyS2mfVCPMFJLu1r5kAA==
 
-"@fuel-ts/keystore@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/keystore/-/keystore-0.41.0.tgz#b7647a6bb40773f56971ba997015b021a9de2dbb"
-  integrity sha512-u8RxMzzwPX+QaYqYrfsUNFp4lo905a+a48emcyLC0DckSIdlULkORelLI/nNxHVnsoxr5FVcQXorE23U+7QW8A==
+"@fuel-ts/keystore@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/keystore/-/keystore-0.0.0-pr-986-20230616125036.tgz#abbab57438e3148f3f3bb004cf56fbbbf7ac0a33"
+  integrity sha512-u3Oqx92PHwUJJbACg3JD+jFyR/xrKJI9yxo0qhGRQpndtzXHwKfMI/E7cKHLmOmWUI2PQje5RS+VJL7Sz3Vrtw==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/pbkdf2" "^5.7.0"
 
-"@fuel-ts/math@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/math/-/math-0.41.0.tgz#f54d4c2652cb3346fa174f66550edb2e7b7f49e7"
-  integrity sha512-9leE/DIhvF2Dt6eAwjuohoHBG4IzjydDH4tbGPBuhAkB5sYywer2iaEbBluSJE+T67JQgoYjrbwKXjlNvkTsFg==
+"@fuel-ts/math@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/math/-/math-0.0.0-pr-986-20230616125036.tgz#fd247b71f1ca2c06dca4013f6146bdf059b64f63"
+  integrity sha512-xvuiUrLoR7mN9kr/hXgPefa+8L9YUUDyXH2aUlKhIDlSajkMpMNIldzxbqcT9gjm3Lj0NguFr0jcB3V6TND1WA==
   dependencies:
     "@types/bn.js" "^5.1.1"
     bn.js "^5.2.1"
 
-"@fuel-ts/merkle-shared@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/merkle-shared/-/merkle-shared-0.41.0.tgz#b46872f695f8c6cd508f1dac333af8f4da83a509"
-  integrity sha512-pB5lMftBg4S4gEVWmaUxCHC9bPY4sGSc5zQBua2iAE2FwoSa1KcsOzutMxbCIrfVPx/r+8MIVROv+EszXSUsCg==
+"@fuel-ts/merkle@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/merkle/-/merkle-0.0.0-pr-986-20230616125036.tgz#b183b61644d4c99f15df827eb4d9148fee3a5ae4"
+  integrity sha512-zZy0eAFfHcz7/F7Ay6FKMInbFIP31YNQQwpO998knAjkwmxsHhREwGNmX+r2afE+XvY/Z2jtMo0JoCWumVdFNw==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/sha2" "^5.7.0"
+    "@fuel-ts/math" "0.0.0-pr-986-20230616125036"
 
-"@fuel-ts/merkle@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/merkle/-/merkle-0.41.0.tgz#1713c79c402a90d89e2fb18b8bad97f48621d4b3"
-  integrity sha512-X76IpgjBjYNjPhNA+UzapUAtCujl7Gi3oQuTbVePDXcdDmu/SZIl5+EzpqPp6AlFp0A8VEpTSniZnW/HaEQxUQ==
-  dependencies:
-    "@fuel-ts/math" "0.41.0"
-    "@fuel-ts/merkle-shared" "0.41.0"
-
-"@fuel-ts/merklesum@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/merklesum/-/merklesum-0.41.0.tgz#6aef69add211036e4e9b7035f4c2adbacce83f83"
-  integrity sha512-g2SpyznYF/VlhnXms1CX4KezNfD05Nm3YpIZG4i5kfMP7jwmhhC7Mc9Xd2upidHNrH/v+PmR+RTxUXS2HRjxag==
-  dependencies:
-    "@fuel-ts/math" "0.41.0"
-    "@fuel-ts/merkle-shared" "0.41.0"
-
-"@fuel-ts/mnemonic@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/mnemonic/-/mnemonic-0.41.0.tgz#11fd39f0aabd974ac6ad660d83614485d25cae11"
-  integrity sha512-GtvP6rJ2x7g4b4NrxWWR1VRPDCGLlbYR/irOcez45ekEpzbY9KmTcBO/rbgj+MVikbdVqb3i6lTU0wvDyBU3Gw==
+"@fuel-ts/mnemonic@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/mnemonic/-/mnemonic-0.0.0-pr-986-20230616125036.tgz#26e1709240a0d7e0a5ad9ac81b0f108251943240"
+  integrity sha512-6f6tZOrsH43MU1rJ5yikznNq5oz37SFulfinuvu1hrlMyvGMFBHaYie15lWSouixW1lvyvKQ8W329JVsKHGf8Q==
   dependencies:
     "@ethersproject/basex" "^5.7.0"
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/pbkdf2" "^5.7.0"
     "@ethersproject/sha2" "^5.7.0"
-    "@fuel-ts/keystore" "0.41.0"
-    "@fuel-ts/wordlists" "0.41.0"
+    "@fuel-ts/keystore" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/wordlists" "0.0.0-pr-986-20230616125036"
 
-"@fuel-ts/predicate@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/predicate/-/predicate-0.41.0.tgz#4a4e3d3f228e1f3087dec8d367f2df3b36e98c15"
-  integrity sha512-z3smrzJ+w8AUTK+qxBVRGUyk75wN4zdJ8Db+E8KbrqryrrEnwvD3rrcbWUjus863PKeXmZ7Lr7zoD0Af2Xsy8Q==
+"@fuel-ts/predicate@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/predicate/-/predicate-0.0.0-pr-986-20230616125036.tgz#45f13cdcd2da123e8ed11d1aee29df2c6b6a7bd7"
+  integrity sha512-N+1SmABb5ViGsmRwUiEJ6ve1nuUuDi1DRD2A5QdhADvXpTxxqQbxMed55tHrG9kfPw+sDGuAq6jaP/DiKXEXLg==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/logger" "^5.7.0"
-    "@fuel-ts/abi-coder" "0.41.0"
-    "@fuel-ts/address" "0.41.0"
-    "@fuel-ts/interfaces" "0.41.0"
-    "@fuel-ts/merkle" "0.41.0"
-    "@fuel-ts/providers" "0.41.0"
-    "@fuel-ts/transactions" "0.41.0"
-    "@fuel-ts/versions" "0.41.0"
-    "@fuel-ts/wallet" "0.41.0"
+    "@fuel-ts/abi-coder" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/address" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/hasher" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/interfaces" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/merkle" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/providers" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/transactions" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/versions" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/wallet" "0.0.0-pr-986-20230616125036"
 
-"@fuel-ts/program@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/program/-/program-0.41.0.tgz#ccc886798b42f427771df34d6780345f62c8d5b7"
-  integrity sha512-icgM1YV8d9AmgLRIOmJnYAsOYt+XUHhp7tN28nyenZnJoB0gGu1Nnb5qJtwmFhtHV1IuIAa9UhMDbWXPu/0EPg==
+"@fuel-ts/program@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/program/-/program-0.0.0-pr-986-20230616125036.tgz#ad874e00d7bbf923520c29adab1c43ad9f92eda2"
+  integrity sha512-qtk/y6uAiBT/ZHgs38I6FNx6Y3TdyUnKiyXUQc1PIVKDS64aUvN56XJUeyBtgZNkwlDx7N3JV9ZVokeY82OxIA==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/logger" "^5.7.0"
-    "@fuel-ts/abi-coder" "0.41.0"
-    "@fuel-ts/address" "0.41.0"
-    "@fuel-ts/interfaces" "0.41.0"
-    "@fuel-ts/math" "0.41.0"
-    "@fuel-ts/providers" "0.41.0"
-    "@fuel-ts/transactions" "0.41.0"
-    "@fuel-ts/versions" "0.41.0"
-    "@fuel-ts/wallet" "0.41.0"
+    "@fuel-ts/abi-coder" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/address" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/interfaces" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/math" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/providers" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/transactions" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/versions" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/wallet" "0.0.0-pr-986-20230616125036"
 
-"@fuel-ts/providers@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/providers/-/providers-0.41.0.tgz#85a0ca83c900b3aa082d35a2e2b863773c6d457c"
-  integrity sha512-FaB/72gFtlrjW1urnagipv/Yse+DQ+iGx9cGZkRPC8In+TspoAKsrawLSSFSpXI4Bv1WLfdMsNIUVywGUfXByA==
+"@fuel-ts/providers@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/providers/-/providers-0.0.0-pr-986-20230616125036.tgz#2dae96b5123a22fea2f5c95ea6ddee28382981a9"
+  integrity sha512-Y8ZNqCLDLJMRDDWvKNtU2uloif4H2PJU3DNFr7V/OnPj1b5K3yhsqj/y6D6I8nfBHbYaiBCTx3qKcOTWFxRIDA==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/networks" "^5.7.1"
     "@ethersproject/sha2" "^5.7.0"
-    "@fuel-ts/abi-coder" "0.41.0"
-    "@fuel-ts/address" "0.41.0"
-    "@fuel-ts/interfaces" "0.41.0"
-    "@fuel-ts/keystore" "0.41.0"
-    "@fuel-ts/math" "0.41.0"
-    "@fuel-ts/transactions" "0.41.0"
+    "@fuel-ts/abi-coder" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/address" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/interfaces" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/keystore" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/math" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/transactions" "0.0.0-pr-986-20230616125036"
     graphql "^16.6.0"
     graphql-request "^5.0.0"
     graphql-tag "^2.12.6"
     lodash.clonedeep "^4.5.0"
 
-"@fuel-ts/script@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/script/-/script-0.41.0.tgz#fee05bc9a41157702406b11f3579cc0c5ffb9a39"
-  integrity sha512-hr3RCIJyCAZXQEuED+YhDYRJMPW1zDSnZXfPuQLPKJswn3emk77h9zdbZ+N67aI7o8Ob9MOGLLNd67si+lhI8A==
+"@fuel-ts/script@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/script/-/script-0.0.0-pr-986-20230616125036.tgz#f3c87e8a2b87b6d684f328fda05209ed4780b11f"
+  integrity sha512-Ii3HrSiBns6zTFoRFJOCG1Syv5Wfb/j2SJs72/TLX08LjfT1K5C6iuW87l+DNTW7O/UWyvJZGZ4kZjFnEYpQTA==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
-    "@fuel-ts/abi-coder" "0.41.0"
-    "@fuel-ts/abi-typegen" "0.41.0"
-    "@fuel-ts/address" "0.41.0"
-    "@fuel-ts/interfaces" "0.41.0"
-    "@fuel-ts/math" "0.41.0"
-    "@fuel-ts/program" "0.41.0"
-    "@fuel-ts/providers" "0.41.0"
-    "@fuel-ts/transactions" "0.41.0"
-    "@fuel-ts/wallet" "0.41.0"
+    "@fuel-ts/abi-coder" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/abi-typegen" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/address" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/interfaces" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/math" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/program" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/providers" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/transactions" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/utils" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/wallet" "0.0.0-pr-986-20230616125036"
 
-"@fuel-ts/signer@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/signer/-/signer-0.41.0.tgz#b41337d6d0b91a9e2997d9d50d82d81b8612b5b6"
-  integrity sha512-URxZUdmaB017IpUCbI3tJjGAN2xkj5fUWOB6t1i/TTPnqzFfUVLt+irJzgAGtYiUrmdwXM8SFYwi7/08lwfziw==
+"@fuel-ts/signer@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/signer/-/signer-0.0.0-pr-986-20230616125036.tgz#d1cfe5f5b746a4a5de89bf20060230753f57fb58"
+  integrity sha512-XrGlZt6cW161QwCcsiF8WdWOqGw2LAqzUBFzDvWq2Laa26k0gfeB3VkYn9JG1PqfCznYSDzqpi9Ium4u2YYmbw==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/sha2" "^5.7.0"
-    "@fuel-ts/address" "0.41.0"
-    "@fuel-ts/hasher" "0.41.0"
-    "@fuel-ts/keystore" "0.41.0"
-    "@fuel-ts/math" "0.41.0"
+    "@fuel-ts/address" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/hasher" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/keystore" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/math" "0.0.0-pr-986-20230616125036"
     elliptic "^6.5.4"
 
-"@fuel-ts/sparsemerkle@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/sparsemerkle/-/sparsemerkle-0.41.0.tgz#096e76b528f2289413427a87c7f489c2400ce31d"
-  integrity sha512-p4ed1izjQPoJ12Z9Vuw22bqbaHICn02pD/CTGenCko3SOAv6P5Lvw588HsRlqaF4VHDFSxNtsfNbe71JSXjC0g==
-  dependencies:
-    "@fuel-ts/math" "0.41.0"
-    "@fuel-ts/merkle-shared" "0.41.0"
+"@fuel-ts/testcases@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/testcases/-/testcases-0.0.0-pr-986-20230616125036.tgz#3eadc4683faf1bcac853b9842bb93c73d680f0bf"
+  integrity sha512-4350OgatIi97nQtG3iDv1/b/7D7QFeuVh0M+9FHOMwMS57qWTGRYqOaJlM9J7BAsq/p3L6jkOdx6Vc+cKKRTMA==
 
-"@fuel-ts/testcases@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/testcases/-/testcases-0.41.0.tgz#55d6183e893aab259f0dbf33855c7df8c032ab5b"
-  integrity sha512-Bgd3Sn1lWmwdl/PhRL7qqmXhK+g0wDZ9jsfWVzSOwtugMdXmfmb2VO38xSq49eB6ahOJmgRT1lM72DOnbSSHfQ==
-
-"@fuel-ts/transactions@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/transactions/-/transactions-0.41.0.tgz#31acce009fea04715cb5ccf36495a641f4e47cca"
-  integrity sha512-lCVv6904bwpmjwUFXlGWW9C3wR6YF7ye/FKgW6nCR9XY9xqAd1+Oz8LpoG50vx6Hdbnq8OHZBkpJrklhunfzWw==
+"@fuel-ts/transactions@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/transactions/-/transactions-0.0.0-pr-986-20230616125036.tgz#0a0222594871db472748726b46606244af5b5938"
+  integrity sha512-nteCSd7JfXJBGA2xMkvcGdWKRyIso4y3ii+0JlvxUozgsEIPvM4tSptCaV4172hwLy8PzTGI0+jDXt3Mq2faKQ==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
     "@ethersproject/sha2" "^5.7.0"
-    "@fuel-ts/abi-coder" "0.41.0"
-    "@fuel-ts/address" "0.41.0"
-    "@fuel-ts/math" "0.41.0"
+    "@fuel-ts/abi-coder" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/address" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/math" "0.0.0-pr-986-20230616125036"
 
-"@fuel-ts/versions@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/versions/-/versions-0.41.0.tgz#4c59b9c655ca8ce93fd1cb510db6002e12b3b628"
-  integrity sha512-2y2mww8pvYcT9v+xABVcH6/nV41aeq7S134fgeud/xHaD6FxEKCe4vMGXTB1hpuGxLbl3ZSUbolaucZjQVabbQ==
+"@fuel-ts/utils@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/utils/-/utils-0.0.0-pr-986-20230616125036.tgz#015bec3d8b1a633b3d54a1f6571e3984385ff5e5"
+  integrity sha512-xObwnUaS1YSTpipuvKWrKspp+ZO4wTgaLOgdQQlmmuYq7nIv9biVgCCp3AuU9fS1NDaFNsA4hfvHWvIPpxXK4A==
+  dependencies:
+    lodash.upperfirst "^4.3.1"
+    rimraf "^3.0.2"
+
+"@fuel-ts/versions@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/versions/-/versions-0.0.0-pr-986-20230616125036.tgz#f66f78f9dd6d4413c8862f70f33f7191fc629632"
+  integrity sha512-3xutvL+tLsY6ouhXTwb1WSYflQIcQrAJb/bOaqiQDBc5jJSGfawImaAp0AZ3vcuCz7dUs8V1cYMErhHRRDclpQ==
   dependencies:
     chalk "4"
     cli-table "^0.3.11"
     semver "^7.3.8"
 
-"@fuel-ts/wallet-manager@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/wallet-manager/-/wallet-manager-0.41.0.tgz#48850253b166ccf543f634333f07816bc3806ebd"
-  integrity sha512-czxtNG5LufED79UiO1+GFso3qARor4QTP/bbfn77pY+/k5J3MtNXBDqGKjQr0B4NsPGLFfqwUFTIYEolX7AK6w==
+"@fuel-ts/wallet-manager@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/wallet-manager/-/wallet-manager-0.0.0-pr-986-20230616125036.tgz#eb1f8d44812eccfaefdde88bf78388e66fd90fc4"
+  integrity sha512-h92wpDDyiuqb8my+Yyq6i8REbd6abQvuX2b0fPwlE64XH0NTDBwEPAyR0gCoSa28SEK/y6dc7vIV/WAsSF/q6w==
   dependencies:
-    "@fuel-ts/address" "0.41.0"
-    "@fuel-ts/interfaces" "0.41.0"
-    "@fuel-ts/keystore" "0.41.0"
-    "@fuel-ts/mnemonic" "0.41.0"
-    "@fuel-ts/wallet" "0.41.0"
+    "@fuel-ts/address" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/interfaces" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/keystore" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/mnemonic" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/wallet" "0.0.0-pr-986-20230616125036"
     events "^3.3.0"
 
-"@fuel-ts/wallet@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/wallet/-/wallet-0.41.0.tgz#3e0cbb515c7c79336bf5b1310f343c9362f58870"
-  integrity sha512-EwE9rMJFaIT9UqDlV9IY7XTeQHZaMHrSI9cXkh+nnm1x04Q8YjzzLYHH0nf+IiLy0A9Bi4HRtw+iWSz17CMn/A==
+"@fuel-ts/wallet@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/wallet/-/wallet-0.0.0-pr-986-20230616125036.tgz#0440d32115b23aadb25f72e90a3114a10258885b"
+  integrity sha512-T8BOAQ+sLJS45tIQlU7endUaXT9Ce6lFFSotOfJYZp/ZqrHyKMqXcuRraLLVeDtCyCcpWdoBuQiHTUCEGLDCHQ==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
-    "@fuel-ts/abi-coder" "0.41.0"
-    "@fuel-ts/address" "0.41.0"
-    "@fuel-ts/hasher" "0.41.0"
-    "@fuel-ts/hdwallet" "0.41.0"
-    "@fuel-ts/interfaces" "0.41.0"
-    "@fuel-ts/math" "0.41.0"
-    "@fuel-ts/mnemonic" "0.41.0"
-    "@fuel-ts/providers" "0.41.0"
-    "@fuel-ts/signer" "0.41.0"
-    "@fuel-ts/transactions" "0.41.0"
+    "@fuel-ts/abi-coder" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/address" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/hasher" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/hdwallet" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/interfaces" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/math" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/mnemonic" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/providers" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/signer" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/transactions" "0.0.0-pr-986-20230616125036"
 
-"@fuel-ts/wordlists@0.41.0":
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/@fuel-ts/wordlists/-/wordlists-0.41.0.tgz#62a6641721a8b16e008ee2d818eefe102cd791ea"
-  integrity sha512-4aQgAq/k9rP0c9FaWSt7YhK6cxVGqclghClWHL74HRAIVkqyzd+9AtGcj99kz5Q+4TW5+0jWsPy10GIOAFielQ==
+"@fuel-ts/wordlists@0.0.0-pr-986-20230616125036":
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/@fuel-ts/wordlists/-/wordlists-0.0.0-pr-986-20230616125036.tgz#d892c290f20fc5e2e9e3a083ffe1f90ac8becc6c"
+  integrity sha512-rZ0L6kckVnoId2GdfxwwhtaIRjrGdvWLtjfTAvajFdYlHGoKm8EWvG5DCPGOYiKmgZeK9Jo515L3eiMFEVqvGg==
 
 "@gar/promisify@^1.0.1":
   version "1.1.3"
@@ -2517,6 +2504,18 @@
     js-sha256 "^0.9.0"
     js-sha512 "^0.8.0"
     mocha "^8.1.2"
+
+"@isaacs/cliui@^8.0.2":
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/@isaacs/cliui/-/cliui-8.0.2.tgz#b37667b7bc181c168782259bab42474fbf52b550"
+  integrity sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==
+  dependencies:
+    string-width "^5.1.2"
+    string-width-cjs "npm:string-width@^4.2.0"
+    strip-ansi "^7.0.1"
+    strip-ansi-cjs "npm:strip-ansi@^6.0.1"
+    wrap-ansi "^8.1.0"
+    wrap-ansi-cjs "npm:wrap-ansi@^7.0.0"
 
 "@istanbuljs/load-nyc-config@^1.0.0":
   version "1.1.0"
@@ -4561,6 +4560,11 @@
     chrome-trace-event "^1.0.2"
     nullthrows "^1.1.1"
 
+"@pkgjs/parseargs@^0.11.0":
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
+  integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
+
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
@@ -5223,6 +5227,13 @@
   integrity sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==
   dependencies:
     "@types/ms" "*"
+
+"@types/elliptic@^6.4.14":
+  version "6.4.14"
+  resolved "https://registry.yarnpkg.com/@types/elliptic/-/elliptic-6.4.14.tgz#7bbaad60567a588c1f08b10893453e6b9b4de48e"
+  integrity sha512-z4OBcDAU0GVwDTuwJzQCiL6188QvZMkvoERgcVjq0/mPM8jCfdwZ3x5zQEVoL9WCAru3aG5wl3Z5Ww5wBWn7ZQ==
+  dependencies:
+    "@types/bn.js" "*"
 
 "@types/eslint-scope@^3.7.3":
   version "3.7.4"
@@ -6428,6 +6439,11 @@ ansi-regex@^5.0.0, ansi-regex@^5.0.1:
   resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-5.0.1.tgz#082cb2c89c9fe8659a311a53bd6a4dc5301db304"
   integrity sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==
 
+ansi-regex@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/ansi-regex/-/ansi-regex-6.0.1.tgz#3183e38fae9a65d7cb5e53945cd5897d0260a06a"
+  integrity sha512-n5M855fKb2SsfMIiFFoVrABHJC8QtHwVx+mHWP3QcEqBHYienj5dHSgjbxtC0WEZXYt4wcD6zrQElDPhFuZgfA==
+
 ansi-styles@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-2.2.1.tgz#b432dd3358b634cf75e1e4664368240533c1ddbe"
@@ -6451,6 +6467,11 @@ ansi-styles@^5.0.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-5.2.0.tgz#07449690ad45777d1924ac2abb2fc8895dba836b"
   integrity sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==
+
+ansi-styles@^6.1.0:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-6.2.1.tgz#0e62320cf99c21afff3b3012192546aacbfb05c5"
+  integrity sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==
 
 antlr4ts@^0.5.0-alpha.4:
   version "0.5.0-alpha.4"
@@ -10000,6 +10021,11 @@ duplexer@~0.1.1:
   resolved "https://registry.yarnpkg.com/duplexer/-/duplexer-0.1.2.tgz#3abe43aef3835f8ae077d136ddce0f276b0400e6"
   integrity sha512-jtD6YG370ZCIi/9GTaJKQxWTZD045+4R4hTk/x1UyoqadyJ9x9CgSi1RlVDQF8U2sxLLSnFkCaMihqljHIWgMg==
 
+eastasianwidth@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/eastasianwidth/-/eastasianwidth-0.2.0.tgz#696ce2ec0aa0e6ea93a397ffcf24aa7840c827cb"
+  integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
+
 ecb-euro-exchange-rates@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/ecb-euro-exchange-rates/-/ecb-euro-exchange-rates-2.0.2.tgz#fd40e10accbc792f7f5533f0698d251bcd33bab3"
@@ -10068,6 +10094,11 @@ emoji-regex@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
   integrity sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==
+
+emoji-regex@^9.2.2:
+  version "9.2.2"
+  resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-9.2.2.tgz#840c8803b0d8047f4ff0cf963176b32d4ef3ed72"
+  integrity sha512-L18DaJsXSUk2+42pv8mLs5jJT2hqFkFE4j21wOmgbUqsZ2hL72NsUU785g9RXgo3s0ZNgVl42TiHp3ZtOv/Vyg==
 
 encodeurl@^1.0.2, encodeurl@~1.0.2:
   version "1.0.2"
@@ -11707,6 +11738,14 @@ for-in@^1.0.2:
   resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
   integrity sha512-7EwmXrOjyL+ChxMhmG5lnW9MPt1aIeZEwKhQzoBUdTV0N3zuwWDZYVJatDvZ2OyzPUvdIAZDsCetk3coyMfcnQ==
 
+foreground-child@^3.1.0:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/foreground-child/-/foreground-child-3.1.1.tgz#1d173e776d75d2772fed08efe4a0de1ea1b12d0d"
+  integrity sha512-TMKDUnIte6bfb5nWv7V/caI169OHgvwjb7V4WkeUvbQQdjr5rWKqHFiKWb/fcOwB+CzBT+qbWjvj+DVwRskpIg==
+  dependencies:
+    cross-spawn "^7.0.0"
+    signal-exit "^4.0.1"
+
 forever-agent@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/forever-agent/-/forever-agent-0.6.1.tgz#fbc71f0c41adeb37f96c577ad1ed42d8fdacca91"
@@ -11927,37 +11966,34 @@ fsevents@~2.1.1:
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.1.3.tgz#fb738703ae8d2f9fe900c33836ddebee8b97f23e"
   integrity sha512-Auw9a4AxqWpa9GUfj370BMPzzyncfBABW8Mab7BGWBYDj4Isgq+cDKtx0i6u9jcX9pQDnswsaaOTgTmA5pEjuQ==
 
-fuels@^0.41.0:
-  version "0.41.0"
-  resolved "https://registry.yarnpkg.com/fuels/-/fuels-0.41.0.tgz#5c586edb5779ebafe10e0defbf42870def5c6fa8"
-  integrity sha512-D06448Q0LpZEm2QgnztdhmmsbRoYPtyhW1S63ng5A7ATDGRICE1NmXOvxPT7vey2xdPf/tgmT/foDvP6Hy0C+w==
+fuels@0.0.0-pr-986-20230616125036:
+  version "0.0.0-pr-986-20230616125036"
+  resolved "https://registry.yarnpkg.com/fuels/-/fuels-0.0.0-pr-986-20230616125036.tgz#b238019efecab480357d26f3271df66e2cc59620"
+  integrity sha512-teqccSrU72yTwg/2FTn3gS80q7C414DPT2gAA+MdADgdZ8twbPx/3pjLrgcHQ2vHEv2eWlb7iBagowQSIbrwmQ==
   dependencies:
     "@ethersproject/bytes" "^5.7.0"
-    "@fuel-ts/abi-coder" "0.41.0"
-    "@fuel-ts/abi-typegen" "0.41.0"
-    "@fuel-ts/address" "0.41.0"
-    "@fuel-ts/contract" "0.41.0"
-    "@fuel-ts/hasher" "0.41.0"
-    "@fuel-ts/hdwallet" "0.41.0"
-    "@fuel-ts/interfaces" "0.41.0"
-    "@fuel-ts/keystore" "0.41.0"
-    "@fuel-ts/math" "0.41.0"
-    "@fuel-ts/merkle" "0.41.0"
-    "@fuel-ts/merkle-shared" "0.41.0"
-    "@fuel-ts/merklesum" "0.41.0"
-    "@fuel-ts/mnemonic" "0.41.0"
-    "@fuel-ts/predicate" "0.41.0"
-    "@fuel-ts/program" "0.41.0"
-    "@fuel-ts/providers" "0.41.0"
-    "@fuel-ts/script" "0.41.0"
-    "@fuel-ts/signer" "0.41.0"
-    "@fuel-ts/sparsemerkle" "0.41.0"
-    "@fuel-ts/testcases" "0.41.0"
-    "@fuel-ts/transactions" "0.41.0"
-    "@fuel-ts/versions" "0.41.0"
-    "@fuel-ts/wallet" "0.41.0"
-    "@fuel-ts/wallet-manager" "0.41.0"
-    "@fuel-ts/wordlists" "0.41.0"
+    "@fuel-ts/abi-coder" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/abi-typegen" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/address" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/contract" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/hasher" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/hdwallet" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/interfaces" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/keystore" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/math" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/merkle" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/mnemonic" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/predicate" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/program" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/providers" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/script" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/signer" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/testcases" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/transactions" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/versions" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/wallet" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/wallet-manager" "0.0.0-pr-986-20230616125036"
+    "@fuel-ts/wordlists" "0.0.0-pr-986-20230616125036"
     commander "^9.4.1"
 
 function-bind@^1.1.1:
@@ -12242,6 +12278,17 @@ glob@7.2.0:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
+glob@^10.2.6:
+  version "10.2.7"
+  resolved "https://registry.yarnpkg.com/glob/-/glob-10.2.7.tgz#9dd2828cd5bc7bd861e7738d91e7113dda41d7d8"
+  integrity sha512-jTKehsravOJo8IJxUGfZILnkvVJM/MOfHRs8QcXolVef2zNI9Tqyy5+SeuOAZd3upViEZQLyFpQhYiHLrMUNmA==
+  dependencies:
+    foreground-child "^3.1.0"
+    jackspeak "^2.0.3"
+    minimatch "^9.0.1"
+    minipass "^5.0.0 || ^6.0.2"
+    path-scurry "^1.7.0"
+
 glob@^5.0.15:
   version "5.0.15"
   resolved "https://registry.yarnpkg.com/glob/-/glob-5.0.15.tgz#1bc936b9e02f4a603fcc222ecf7633d30b8b93b1"
@@ -12264,17 +12311,6 @@ glob@^7.0.0, glob@^7.0.5, glob@^7.1.1, glob@^7.1.2, glob@^7.1.3, glob@^7.1.4, gl
     minimatch "^3.1.1"
     once "^1.3.0"
     path-is-absolute "^1.0.0"
-
-glob@^8.0.3:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/glob/-/glob-8.1.0.tgz#d388f656593ef708ee3e34640fdfb99a9fd1c33e"
-  integrity sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==
-  dependencies:
-    fs.realpath "^1.0.0"
-    inflight "^1.0.4"
-    inherits "2"
-    minimatch "^5.0.1"
-    once "^1.3.0"
 
 global-modules@^2.0.0:
   version "2.0.0"
@@ -12410,6 +12446,16 @@ grapheme-splitter@^1.0.4:
   resolved "https://registry.yarnpkg.com/grapheme-splitter/-/grapheme-splitter-1.0.4.tgz#9cf3a665c6247479896834af35cf1dbb4400767e"
   integrity sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==
 
+graphql-request@5.1.0, graphql-request@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-5.1.0.tgz#dbc8feee27d21b993cd5da2d3af67821827b240a"
+  integrity sha512-0OeRVYigVwIiXhNmqnPDt+JhMzsjinxHE7TVy3Lm6jUzav0guVcL0lfSbi6jVTRAxcbwgyr6yrZioSHxf9gHzw==
+  dependencies:
+    "@graphql-typed-document-node/core" "^3.1.1"
+    cross-fetch "^3.1.5"
+    extract-files "^9.0.0"
+    form-data "^3.0.0"
+
 graphql-request@^3.5.0:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-3.7.0.tgz#c7406e537084f8b9788541e3e6704340ca13055b"
@@ -12423,16 +12469,6 @@ graphql-request@^5.0.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-5.2.0.tgz#a05fb54a517d91bb2d7aefa17ade4523dc5ebdca"
   integrity sha512-pLhKIvnMyBERL0dtFI3medKqWOz/RhHdcgbZ+hMMIb32mEPa5MJSzS4AuXxfI4sRAu6JVVk5tvXuGfCWl9JYWQ==
-  dependencies:
-    "@graphql-typed-document-node/core" "^3.1.1"
-    cross-fetch "^3.1.5"
-    extract-files "^9.0.0"
-    form-data "^3.0.0"
-
-graphql-request@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/graphql-request/-/graphql-request-5.1.0.tgz#dbc8feee27d21b993cd5da2d3af67821827b240a"
-  integrity sha512-0OeRVYigVwIiXhNmqnPDt+JhMzsjinxHE7TVy3Lm6jUzav0guVcL0lfSbi6jVTRAxcbwgyr6yrZioSHxf9gHzw==
   dependencies:
     "@graphql-typed-document-node/core" "^3.1.1"
     cross-fetch "^3.1.5"
@@ -13677,6 +13713,15 @@ iterare@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/iterare/-/iterare-1.2.1.tgz#139c400ff7363690e33abffa33cbba8920f00042"
   integrity sha512-RKYVTCjAnRthyJes037NX/IiqeidgN1xc3j1RjFfECFp28A1GVwK9nA+i0rJPaHqSZwygLzRnFlzUuHFoWWy+Q==
+
+jackspeak@^2.0.3:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/jackspeak/-/jackspeak-2.2.1.tgz#655e8cf025d872c9c03d3eb63e8f0c024fef16a6"
+  integrity sha512-MXbxovZ/Pm42f6cDIDkl3xpwv1AGwObKwfmjs2nQePiy85tP3fatofl3FC1aBsOtP/6fq5SbtgHwWcMsLP+bDw==
+  dependencies:
+    "@isaacs/cliui" "^8.0.2"
+  optionalDependencies:
+    "@pkgjs/parseargs" "^0.11.0"
 
 jayson@^3.4.4:
   version "3.7.0"
@@ -16256,6 +16301,11 @@ lru-cache@^7.14.0:
   resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-7.14.1.tgz#8da8d2f5f59827edb388e63e459ac23d6d408fea"
   integrity sha512-ysxwsnTKdAx96aTRdhDOCQfDgbHnt8SK0KY8SEjO0wHinhWOFTESbjVCMPbU1uGXg/ch4lifqx0wfjOawU2+WA==
 
+lru-cache@^9.1.1:
+  version "9.1.2"
+  resolved "https://registry.yarnpkg.com/lru-cache/-/lru-cache-9.1.2.tgz#255fdbc14b75589d6d0e73644ca167a8db506835"
+  integrity sha512-ERJq3FOzJTxBbFjZ7iDs+NiK4VI9Wz+RdrrAB8dio1oV+YvdPzUEE4QNiT2VD51DkIbCYRUUzCRkssXCHqSnKQ==
+
 lru-queue@0.1:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/lru-queue/-/lru-queue-0.1.0.tgz#2738bd9f0d3cf4f84490c5736c48699ac632cda3"
@@ -16665,17 +16715,17 @@ minimatch@5.0.1:
   dependencies:
     brace-expansion "^2.0.1"
 
-minimatch@^5.0.1:
-  version "5.1.6"
-  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.6.tgz#1cfcb8cf5522ea69952cd2af95ae09477f122a96"
-  integrity sha512-lKwV/1brpG6mBUFHtb7NUmtABCb2WZZmm2wNiOA5hAb8VdCS4B3dtMWyvcoViccwAW/COERjXLt0zP1zXUN26g==
-  dependencies:
-    brace-expansion "^2.0.1"
-
 minimatch@^5.1.0:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-5.1.0.tgz#1717b464f4971b144f6aabe8f2d0b8e4511e09c7"
   integrity sha512-9TPBGGak4nHfGZsPBohm9AWg6NoT7QTCehS3BIJABslyZbzxfV78QM2Y6+i741OPZIafFAaiiEMh5OyIrJPgtg==
+  dependencies:
+    brace-expansion "^2.0.1"
+
+minimatch@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-9.0.1.tgz#8a555f541cf976c622daf078bb28f29fb927c253"
+  integrity sha512-0jWhJpD/MdhPXwPuiRkCbfYfSKp2qnn2eOc279qI7f+osl/l+prKSrvhg157zSYvx/1nmgn2NqdT6k2Z7zSH9w==
   dependencies:
     brace-expansion "^2.0.1"
 
@@ -16737,6 +16787,11 @@ minipass@^3.0.0, minipass@^3.1.0, minipass@^3.1.1, minipass@^3.1.3:
   integrity sha512-I9WPbWHCGu8W+6k1ZiGpPu0GkoKBeorkfKNuAFBNS1HNFJvke82sxvI5bzcCNpWPorkOO5QQ+zomzzwRxejXiw==
   dependencies:
     yallist "^4.0.0"
+
+"minipass@^5.0.0 || ^6.0.2":
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/minipass/-/minipass-6.0.2.tgz#542844b6c4ce95b202c0995b0a471f1229de4c81"
+  integrity sha512-MzWSV5nYVT7mVyWCwn2o7JH13w2TBRmmSqSRCKzTw+lmft9X4z+3wjvs06Tzijo5z4W/kahUCDpRXTF+ZrmF/w==
 
 minizlib@^1.3.3:
   version "1.3.3"
@@ -18142,6 +18197,14 @@ path-parse@^1.0.6, path-parse@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.7.tgz#fbc114b60ca42b30d9daf5858e4bd68bbedb6735"
   integrity sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==
+
+path-scurry@^1.7.0:
+  version "1.9.2"
+  resolved "https://registry.yarnpkg.com/path-scurry/-/path-scurry-1.9.2.tgz#90f9d296ac5e37e608028e28a447b11d385b3f63"
+  integrity sha512-qSDLy2aGFPm8i4rsbHd4MNyTcrzHFsLQykrtbuGRknZZCBBVXSv2tSCDN2Cg6Rt/GFRw8GoW9y9Ecw5rIPG1sg==
+  dependencies:
+    lru-cache "^9.1.1"
+    minipass "^5.0.0 || ^6.0.2"
 
 path-to-regexp@0.1.7:
   version "0.1.7"
@@ -20019,6 +20082,11 @@ signal-exit@^3.0.0, signal-exit@^3.0.2, signal-exit@^3.0.3, signal-exit@^3.0.7:
   resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-3.0.7.tgz#a9a1767f8af84155114eaabd73f99273c8f59ad9"
   integrity sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==
 
+signal-exit@^4.0.1:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/signal-exit/-/signal-exit-4.0.2.tgz#ff55bb1d9ff2114c13b400688fa544ac63c36967"
+  integrity sha512-MY2/qGx4enyjprQnFaZsHib3Yadh3IXyV2C321GY0pjGfVBu4un0uDJkwgdxqO+Rdx8JMT8IfJIRwbYVz3Ob3Q==
+
 simple-concat@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/simple-concat/-/simple-concat-1.0.1.tgz#f46976082ba35c2263f1c8ab5edfe26c41c9552f"
@@ -20646,6 +20714,15 @@ string-length@^4.0.1:
     char-regex "^1.0.2"
     strip-ansi "^6.0.0"
 
+"string-width-cjs@npm:string-width@^4.2.0", "string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
+  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
+  dependencies:
+    emoji-regex "^8.0.0"
+    is-fullwidth-code-point "^3.0.0"
+    strip-ansi "^6.0.1"
+
 string-width@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-1.0.2.tgz#118bdf5b8cdc51a2a7e70d211e07e2b0b9b107d3"
@@ -20663,15 +20740,6 @@ string-width@^1.0.1:
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^4.0.0"
 
-"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
-  integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
-  dependencies:
-    emoji-regex "^8.0.0"
-    is-fullwidth-code-point "^3.0.0"
-    strip-ansi "^6.0.1"
-
 string-width@^3.0.0, string-width@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-3.1.0.tgz#22767be21b62af1081574306f69ac51b62203961"
@@ -20680,6 +20748,15 @@ string-width@^3.0.0, string-width@^3.1.0:
     emoji-regex "^7.0.1"
     is-fullwidth-code-point "^2.0.0"
     strip-ansi "^5.1.0"
+
+string-width@^5.0.1, string-width@^5.1.2:
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/string-width/-/string-width-5.1.2.tgz#14f8daec6d81e7221d2a357e668cab73bdbca794"
+  integrity sha512-HnLOCR3vjcY8beoNLtcjZ5/nxn2afmME6lhrDrebokqMap+XbeW8n9TXpPDOqdGK5qcI3oT0GKTW6wC7EMiVqA==
+  dependencies:
+    eastasianwidth "^0.2.0"
+    emoji-regex "^9.2.2"
+    strip-ansi "^7.0.1"
 
 string.prototype.trim@~1.2.6:
   version "1.2.6"
@@ -20732,6 +20809,13 @@ string_decoder@~1.1.1:
   dependencies:
     safe-buffer "~5.1.0"
 
+"strip-ansi-cjs@npm:strip-ansi@^6.0.1", strip-ansi@^6.0.0, strip-ansi@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
+  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+  dependencies:
+    ansi-regex "^5.0.1"
+
 strip-ansi@^3.0.0, strip-ansi@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-3.0.1.tgz#6a385fb8853d952d5ff05d0e8aaf94278dc63dcf"
@@ -20753,12 +20837,12 @@ strip-ansi@^5.0.0, strip-ansi@^5.1.0, strip-ansi@^5.2.0:
   dependencies:
     ansi-regex "^4.1.0"
 
-strip-ansi@^6.0.0, strip-ansi@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-6.0.1.tgz#9e26c63d30f53443e9489495b2105d37b67a85d9"
-  integrity sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==
+strip-ansi@^7.0.1:
+  version "7.1.0"
+  resolved "https://registry.yarnpkg.com/strip-ansi/-/strip-ansi-7.1.0.tgz#d5b6568ca689d8561370b0707685d22434faff45"
+  integrity sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ==
   dependencies:
-    ansi-regex "^5.0.1"
+    ansi-regex "^6.0.1"
 
 strip-bom@^2.0.0:
   version "2.0.0"
@@ -21700,9 +21784,9 @@ type-fest@^2.19.0:
   integrity sha512-RAH822pAdBgcNMAfWnCBU3CFZcfZ/i1eZjwFU/dsLKumyuuP3niueg2UAukXYF0E2AAoc82ZSSf9J0WQBinzHA==
 
 type-fest@^3.1.0:
-  version "3.6.1"
-  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-3.6.1.tgz#cf8025edeebfd6cf48de73573a5e1423350b9993"
-  integrity sha512-htXWckxlT6U4+ilVgweNliPqlsVSSucbxVexRYllyMVJDtf5rTjv6kF/s+qAd4QSL1BZcnJPEJavYBPQiWuZDA==
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-3.12.0.tgz#4ce26edc1ccc59fc171e495887ef391fe1f5280e"
+  integrity sha512-qj9wWsnFvVEMUDbESiilKeXeHL7FwwiFcogfhfyjmvT968RXSvnl23f1JOClTHYItsi7o501C/7qVllscUP3oA==
 
 type-is@^1.6.14, type-is@^1.6.16, type-is@^1.6.4, type-is@~1.6.18:
   version "1.6.18"
@@ -22816,6 +22900,15 @@ workerpool@6.2.1:
   resolved "https://registry.yarnpkg.com/workerpool/-/workerpool-6.2.1.tgz#46fc150c17d826b86a008e5a4508656777e9c343"
   integrity sha512-ILEIE97kDZvF9Wb9f6h5aXK4swSlKGUcOEGiIYb2OOu/IrDU9iwj0fD//SsA6E5ibwJxpEvhullJY4Sl4GcpAw==
 
+"wrap-ansi-cjs@npm:wrap-ansi@^7.0.0", wrap-ansi@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
+  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
+  dependencies:
+    ansi-styles "^4.0.0"
+    string-width "^4.1.0"
+    strip-ansi "^6.0.0"
+
 wrap-ansi@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-2.1.0.tgz#d8fc3d284dd05794fe84973caecdd1cf824fdd85"
@@ -22833,14 +22926,14 @@ wrap-ansi@^5.1.0:
     string-width "^3.0.0"
     strip-ansi "^5.0.0"
 
-wrap-ansi@^7.0.0:
-  version "7.0.0"
-  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-7.0.0.tgz#67e145cff510a6a6984bdf1152911d69d2eb9e43"
-  integrity sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==
+wrap-ansi@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/wrap-ansi/-/wrap-ansi-8.1.0.tgz#56dc22368ee570face1b49819975d9b9a5ead214"
+  integrity sha512-si7QWI6zUMq56bESFvagtmzMdGOtoxfR+Sez11Mobfc7tm+VkUckk9bW2UeffTGVUbOksxmSw0AA2gs8g71NCQ==
   dependencies:
-    ansi-styles "^4.0.0"
-    string-width "^4.1.0"
-    strip-ansi "^6.0.0"
+    ansi-styles "^6.1.0"
+    string-width "^5.0.1"
+    strip-ansi "^7.0.1"
 
 wrappy@1:
   version "1.0.2"

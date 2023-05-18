@@ -38,9 +38,9 @@ impl Prices for Contract {
         signer_count_threshold: u64,
         skip_setting_owner: u64,
     ) {
-        let storage_owner = storage.owner.read();
+        let storage_owner = storage.owner.try_read();
 
-        assert(storage_owner.is_none() || storage_owner.unwrap() == msg_sender().unwrap());
+        assert(storage_owner.is_none() || storage_owner.unwrap().unwrap() == msg_sender().unwrap());
         if (skip_setting_owner == 0) {
             storage.owner.write(Option::Some(msg_sender().unwrap()));
         }
@@ -62,7 +62,7 @@ impl Prices for Contract {
 
     #[storage(read)]
     fn read_timestamp() -> u64 {
-        return storage.timestamp.read();
+        return storage.timestamp.try_read().unwrap_or(0);
     }
 
     #[storage(read)]
@@ -72,7 +72,7 @@ impl Prices for Contract {
         let mut i = 0;
         while (i < feed_ids.len) {
             let feed_id = feed_ids.get(i).unwrap();
-            let price = storage.prices.get(feed_id).read();
+            let price = storage.prices.get(feed_id).try_read().unwrap_or(U256::new());
             result[i] = price;
 
             i += 1;

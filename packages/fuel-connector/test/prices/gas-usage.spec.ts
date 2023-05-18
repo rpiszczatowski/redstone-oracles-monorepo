@@ -4,7 +4,7 @@ import { connectPricesContract } from "./prices-contract-test-utils";
 
 jest.setTimeout(10 * 60000);
 
-const IS_LOCAL = 1;
+const IS_LOCAL = 0;
 
 const provider = IS_LOCAL
   ? undefined
