@@ -1,0 +1,27 @@
+name: Oracle avalanche dry run test
+on:
+  push:
+    paths:
+      - packages/oracle-node/**
+      - .github/workflows/oracle-avalanche-dry-run-test.yaml
+
+jobs:
+  avalanche-dry-run-test:
+    runs-on: LargeRunner
+    defaults:
+      run:
+        working-directory: packages/oracle-node
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install modules
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Run dry run test
+        run: yarn test:avalanche-dry-run
+        env:
+          NODE_ENV: test
+          COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
+          KAIKO_API_KEY: ${{ secrets.KAIKO_API_KEY }}
