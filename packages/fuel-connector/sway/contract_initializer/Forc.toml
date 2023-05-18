@@ -1,7 +1,7 @@
 [project]
 authors = ["Łukasz Kalbarczyk"]
 entry = "main.sw"
-forc-version = "0.38.0"
+forc-version = "0.39.0"
 license = "Apache-2.0"
 name = "redstone"
 organization = "RedStone"

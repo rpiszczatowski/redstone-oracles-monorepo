@@ -2,7 +2,7 @@
 DATA_NAME=fuel
 IS_LOCAL=1
 
-CONTRACT_ID=0x401cc4cabc60765d9f1f4bff3f41aa2c14cfb1ab542fc355f9bc7726cc6db0bb
+CONTRACT_ID=0x84fa13c0a836b11642e02f3abb411769f4dcf221748597731e640534a5646ced
 SALT=0x0000000000000000000000000000000000000000000000000000000000000001
 
 ifeq ($(IS_LOCAL), 0)
@@ -15,12 +15,12 @@ else
 	GAS_PRICE=0
 endif
 
-DEMO=sway/demo
-CONTRACT=sway/contract
-INVOKER=sway/contract_invoker
-INITIALIZER=sway/contract_initializer
-LIBRARY=sway/redstone
-DATA_GENERATOR=../../packages/protocol/scripts/payload-generator
+DEMO=demo
+CONTRACT=contract
+INVOKER=contract_invoker
+INITIALIZER=contract_initializer
+LIBRARY=redstone
+DATA_GENERATOR=../../../packages/protocol/scripts/payload-generator
 DATA_DIR=$(DATA_GENERATOR)/data
 
 format:
