@@ -209,7 +209,7 @@ export default class PricesService {
           prices
         );
 
-        // Define decimals for the token if defined in manifest
+        // Add decimals for the token if defined in manifest
         this.defineDecimalsIfRequired(priceAfterAggregation, price.symbol);
 
         // Throwing an error if price < 0 is invalid or too deviated
