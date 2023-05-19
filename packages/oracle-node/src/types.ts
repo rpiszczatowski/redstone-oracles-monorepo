@@ -29,6 +29,7 @@ export interface TokenConfig {
   comment?: string;
   skipSigning?: boolean;
   priceAggregator?: string;
+  decimals?: number;
 }
 
 export interface DeviationCheckConfig {
@@ -97,6 +98,7 @@ export interface PriceSource<T> {
 export interface PriceDataAfterAggregation
   extends SanitizedPriceDataBeforeAggregation {
   value: ISafeNumber;
+  decimals?: number;
 }
 
 export interface PriceDataBeforeSigning extends PriceDataAfterAggregation {

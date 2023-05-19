@@ -142,5 +142,6 @@ function priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
   return new NumericDataPoint({
     dataFeedId: price.symbol,
     value: price.value.unsafeToNumber(),
+    decimals: price.decimals,
   });
 }

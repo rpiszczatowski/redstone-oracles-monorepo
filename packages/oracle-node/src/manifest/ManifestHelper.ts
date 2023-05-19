@@ -101,4 +101,8 @@ export default class ManifestHelper {
 
     return schedulerGetters[schedulerName](manifest);
   }
+
+  static getTokenDecimals(manifest: Manifest, symbol: string) {
+    return manifest.tokens[symbol]?.decimals;
+  }
 }
