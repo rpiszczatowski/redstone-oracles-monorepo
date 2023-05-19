@@ -209,9 +209,6 @@ export default class PricesService {
           prices
         );
 
-        // Add decimals for the token if defined in manifest
-        this.defineDecimalsIfRequired(priceAfterAggregation, price.symbol);
-
         // Throwing an error if price < 0 is invalid or too deviated
         priceAfterAggregation.value.assertNonNegative();
         this.assertInHardLimits(
@@ -384,18 +381,5 @@ export default class PricesService {
     }
     const response = await axios.get<PricesLimits>(config.pricesHardLimitsUrl);
     return response.data;
-  }
-
-  defineDecimalsIfRequired(
-    priceAfterAggregation: PriceDataAfterAggregation,
-    symbol: string
-  ) {
-    const tokenDecimals = ManifestHelper.getTokenDecimals(
-      this.manifest,
-      symbol
-    );
-    if (tokenDecimals || tokenDecimals === 0) {
-      priceAfterAggregation.decimals = tokenDecimals;
-    }
   }
 }

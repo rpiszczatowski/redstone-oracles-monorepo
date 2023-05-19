@@ -98,7 +98,6 @@ export interface PriceSource<T> {
 export interface PriceDataAfterAggregation
   extends SanitizedPriceDataBeforeAggregation {
   value: ISafeNumber;
-  decimals?: number;
 }
 
 export interface PriceDataBeforeSigning extends PriceDataAfterAggregation {

@@ -51,7 +51,7 @@ export default class ManifestHelper {
     manifest: Manifest
   ): number | null {
     if (!source.length) {
-      throw "Source for timeout not defined";
+      throw new Error("Source for timeout not defined");
     }
     const timeoutConfiguration = manifest.sourceTimeout;
     if (!timeoutConfiguration || typeof timeoutConfiguration !== "number") {
@@ -102,7 +102,13 @@ export default class ManifestHelper {
     return schedulerGetters[schedulerName](manifest);
   }
 
-  static getTokenDecimals(manifest: Manifest, symbol: string) {
-    return manifest.tokens[symbol]?.decimals;
+  static getDataFeedDecimals(manifest: Manifest, symbol: string) {
+    const dataFeedDetails = manifest?.tokens?.[symbol];
+    if (!dataFeedDetails) {
+      throw new Error(
+        `Missing token ${symbol} in the manifest, cannot get decimals`
+      );
+    }
+    return dataFeedDetails?.decimals;
   }
 }
