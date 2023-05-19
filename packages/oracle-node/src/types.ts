@@ -29,6 +29,7 @@ export interface TokenConfig {
   comment?: string;
   skipSigning?: boolean;
   priceAggregator?: string;
+  decimals?: number;
 }
 
 export interface DeviationCheckConfig {
