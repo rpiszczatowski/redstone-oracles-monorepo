@@ -21,22 +21,22 @@ yarn test ./benchmarks/multi-sign-packages-benchmark.ts
 Some of the benchmark results are presented below.
 ```js
   "1 signers, 1 symbols, 1 points": {
-    "forAttachingDataToCalldata": 1856,
-    "forDataExtractionAndVerification": 12534,
-    "forAttachingDataToCalldataMultiSign": 1856,
-    "forDataExtractionAndVerificationMultiSign": 11160
+    "forAttachingDataToCalldata": 1876,
+    "forDataExtractionAndVerification": 13338,
+    "forAttachingDataToCalldataMultiSign": 1876,
+    "forDataExtractionAndVerificationMultiSign": 11595
   },
   "10 signers, 1 symbols, 1 points": {
-    "forAttachingDataToCalldata": 15812,
-    "forDataExtractionAndVerification": 85618,
-    "forAttachingDataToCalldataMultiSign": 11204,
-    "forDataExtractionAndVerificationMultiSign": 50248
+    "forAttachingDataToCalldata": 15832,
+    "forDataExtractionAndVerification": 87898,
+    "forAttachingDataToCalldataMultiSign": 11224,
+    "forDataExtractionAndVerificationMultiSign": 48172
   },
   "10 signers, 20 symbols, 20 points": {
-    "forAttachingDataToCalldata": 88320,
-    "forDataExtractionAndVerification": 892127,
-    "forAttachingDataToCalldataMultiSign": 18444,
-    "forDataExtractionAndVerificationMultiSign": 152897
+    "forAttachingDataToCalldata": 88340,
+    "forDataExtractionAndVerification": 925567,
+    "forAttachingDataToCalldataMultiSign": 18464,
+    "forDataExtractionAndVerificationMultiSign": 108603
   }
 ```
 
