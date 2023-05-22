@@ -17,16 +17,16 @@ export const valueDeviationCondition = (
     for (const { dataPackage } of dataPackages[dataFeedId]) {
       for (const dataPoint of dataPackage.dataPoints) {
         const valueFromContract = valuesFromContract[dataFeedId];
-        const fetchedDataPackage = dataPoint.toObj() as INumericDataPoint;
+        const dataPointObj = dataPoint.toObj() as INumericDataPoint;
         const valueFromContractAsDecimal = Number(
           formatUnits(
             valueFromContract.toString(),
-            fetchedDataPackage.decimals ?? DEFAULT_DECIMALS
+            dataPointObj.decimals ?? DEFAULT_DECIMALS
           )
         );
 
         const currentDeviation = calculateDeviation(
-          fetchedDataPackage.value,
+          dataPointObj.value,
           valueFromContractAsDecimal
         );
         maxDeviation = Math.max(currentDeviation, maxDeviation);
