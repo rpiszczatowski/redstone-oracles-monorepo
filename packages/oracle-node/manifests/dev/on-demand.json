@@ -8,10 +8,6 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
-  "httpBroadcasterURLs": [],
-  "enableStreamrBroadcaster": false,
-  "enableArweaveBackup": false,
   "tokens": {
     "ETH": {
       "source": [
@@ -22,7 +18,6 @@
         "binanceus",
         "binanceusdm",
         "bitcoincom",
-        "bitfinex",
         "bitfinex2",
         "bittrex",
         "btcturk",
@@ -38,12 +33,46 @@
         "kraken",
         "kucoin",
         "lbank",
-        "liquid",
         "oceanex",
         "okx",
         "poloniex",
         "probit",
         "stex"
+      ]
+    },
+    "USDT": {
+      "source": [
+        "binanceus",
+        "bitfinex2",
+        "bittrex",
+        "cex",
+        "coinbaseprime",
+        "coinbasepro",
+        "coingecko",
+        "currencycom",
+        "kaiko",
+        "kraken",
+        "uniswap"
+      ]
+    },
+    "USDC": {
+      "source": [
+        "binanceus",
+        "bitfinex2",
+        "bittrex",
+        "btcturk",
+        "cex",
+        "coingecko",
+        "currencycom",
+        "huobipro",
+        "kaiko",
+        "kraken",
+        "kucoin",
+        "lbank",
+        "okx",
+        "probit",
+        "sushiswap",
+        "uniswap"
       ]
     }
   }

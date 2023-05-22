@@ -1,5 +1,11 @@
 import { intervalMsToCronFormat } from "../../src/utils/intervals";
 
+jest.mock("../../src/Terminator", () => ({
+  terminateWithManifestConfigError: (details: string) => {
+    throw new Error(`Terminate mock manifest config error: ${details}`);
+  },
+}));
+
 describe("interval", () => {
   describe("intervalToCronFormat", () => {
     it("should convert to CronFormat when interval equals 1 second", () => {
@@ -15,7 +21,7 @@ describe("interval", () => {
     it("should throw if interval not divisble by 1000 and interval smaller than 1 minute", () => {
       const interval = 5500;
       expect(() => intervalMsToCronFormat(interval)).toThrowError(
-        "Interval needs to be divisible by 1000"
+        "Terminate mock manifest config error: Interval needs to be divisible by 1000"
       );
     });
 
@@ -32,7 +38,7 @@ describe("interval", () => {
     it("should throw if interval not divisble by 60000 and interval smaller than 1 hour", () => {
       const interval = 60000 * 30 + 1000;
       expect(() => intervalMsToCronFormat(interval)).toThrowError(
-        "If interval is greater than 60 seconds it must to be multiple of 1 minute"
+        "Terminate mock manifest config error: If interval is greater than 60 seconds it must to be multiple of 1 minute"
       );
     });
 
@@ -44,7 +50,7 @@ describe("interval", () => {
     it("should throw if interval greater than 1 hour", () => {
       const interval = 1000 * 60 * 60 + 60000;
       expect(() => intervalMsToCronFormat(interval)).toThrowError(
-        "Intervals greater than 1 hour are not supported"
+        "Terminate mock manifest config error: Intervals greater than 1 hour are not supported"
       );
     });
   });

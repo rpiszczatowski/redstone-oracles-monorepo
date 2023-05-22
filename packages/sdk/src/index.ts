@@ -6,11 +6,7 @@ import {
   SignedDataPackage,
   SignedDataPackagePlainObj,
 } from "redstone-protocol";
-
-export const DEFAULT_CACHE_SERVICE_URLS = [
-  "https://oracle-gateway-1.a.redstone.finance",
-  "https://oracle-gateway-2.a.redstone.finance",
-];
+import { resolveDataServiceUrls } from "./data-services-urls";
 
 const ALL_FEEDS_KEY = "___ALL_FEEDS___";
 
@@ -19,6 +15,7 @@ export interface DataPackagesRequestParams {
   uniqueSignersCount: number;
   dataFeeds?: string[];
   disablePayloadsDryRun?: boolean;
+  urls?: string[];
 }
 
 export interface DataPackagesResponse {
@@ -94,25 +91,21 @@ const errToString = (e: any): string => {
 };
 
 export const requestDataPackages = async (
-  reqParams: DataPackagesRequestParams,
-  urls: string[] = DEFAULT_CACHE_SERVICE_URLS
+  reqParams: DataPackagesRequestParams
 ): Promise<DataPackagesResponse> => {
-  const promises = prepareDataPackagePromises(reqParams, urls);
+  const promises = prepareDataPackagePromises(reqParams);
   try {
     return await Promise.any(promises);
   } catch (e: any) {
     const errMessage = `Request failed ${JSON.stringify({
       reqParams,
-      urls,
     })}, Original error: ${errToString(e)}`;
     throw new Error(errMessage);
   }
 };
 
-const prepareDataPackagePromises = (
-  reqParams: DataPackagesRequestParams,
-  urls: string[]
-) => {
+const prepareDataPackagePromises = (reqParams: DataPackagesRequestParams) => {
+  const urls = getUrlsForDataServiceId(reqParams);
   return urls.map((url) =>
     axios
       .get(`${url}/data-packages/latest/${reqParams.dataServiceId}`)
@@ -122,13 +115,21 @@ const prepareDataPackagePromises = (
 
 export const requestRedstonePayload = async (
   reqParams: DataPackagesRequestParams,
-  urls: string[] = DEFAULT_CACHE_SERVICE_URLS,
   unsignedMetadataMsg?: string
 ): Promise<string> => {
-  const signedDataPackagesResponse = await requestDataPackages(reqParams, urls);
+  const signedDataPackagesResponse = await requestDataPackages(reqParams);
   const signedDataPackages = Object.values(signedDataPackagesResponse).flat();
 
   return RedstonePayloadSingleSign.prepare(signedDataPackages, unsignedMetadataMsg || "");
+};
+
+export const getUrlsForDataServiceId = (
+  reqParams: DataPackagesRequestParams
+): string[] => {
+  if (reqParams.urls) {
+    return reqParams.urls;
+  }
+  return resolveDataServiceUrls(reqParams.dataServiceId);
 };
 
 export default {
@@ -136,5 +137,5 @@ export default {
   requestDataPackages,
   getDataServiceIdForSigner,
   requestRedstonePayload,
-  parseDataPackagesResponse,
 };
+export * from "./data-services-urls";

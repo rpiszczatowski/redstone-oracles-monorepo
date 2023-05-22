@@ -4,12 +4,9 @@ import { PriceDataAfterAggregation, PriceDataSigned } from "../types";
 import PricesService from "../fetchers/PricesService";
 import { BroadcastPerformer } from "./BroadcastPerformer";
 import PriceSignerService from "../signers/PriceSignerService";
+import { config } from "../config";
 
-const DEFAULT_PRICE_BROADCASTER_URLS = [
-  "https://api.redstone.finance",
-  "https://vwx3eni8c7.eu-west-1.awsapprunner.com",
-  "https://container-service-1.dv9sai71f4rsq.eu-central-1.cs.amazonlightsail.com",
-];
+const DEFAULT_PRICE_BROADCASTER_URLS = ["https://api.redstone.finance"];
 
 export class PriceDataBroadcastPerformer
   extends BroadcastPerformer
@@ -37,7 +34,7 @@ export class PriceDataBroadcastPerformer
     const pricesReadyForSigning = pricesService.preparePricesForSigning(
       aggregatedPrices,
       "",
-      this.providerAddress
+      config.providerIdForPriceBroadcasting || this.providerAddress
     );
 
     // Signing

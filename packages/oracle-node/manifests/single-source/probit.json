@@ -9,7 +9,6 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
   "tokens": {
     "DOGE": {},
     "BTC": {},
@@ -87,7 +86,6 @@
     "REP": {},
     "DGB": {},
     "SXP": {},
-    "DAI": {},
     "BAL": {},
     "JST": {},
     "NMR": {},

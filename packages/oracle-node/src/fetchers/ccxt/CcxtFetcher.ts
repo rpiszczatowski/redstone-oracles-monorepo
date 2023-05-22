@@ -1,10 +1,12 @@
 import _ from "lodash";
-import ccxt, { Exchange, Ticker } from "ccxt";
+import ccxt, { Exchange, exchanges, Ticker } from "ccxt";
 import { BaseFetcher } from "../BaseFetcher";
 import { getLastPrice } from "../../db/local-db";
 import { getRequiredPropValue } from "../../utils/objects";
 import symbolToIdForExchanges from "./symbol-to-id/index";
 import { PricesObj } from "../../types";
+
+type Exchanges = keyof typeof exchanges;
 
 const CCXT_FETCHER_MAX_REQUEST_TIMEOUT_MS = 120000;
 
@@ -16,7 +18,7 @@ export class CcxtFetcher extends BaseFetcher {
   // CCXT-based fetchers must have names that are exactly equal to
   // the appropriate exchange id in CCXT
   // List of ccxt exchanges: https://github.com/ccxt/ccxt/wiki/Exchange-Markets
-  constructor(name: ccxt.ExchangeId) {
+  constructor(name: Exchanges) {
     super(name);
     const exchangeClass = ccxt[name];
     if (!exchangeClass) {
@@ -26,7 +28,7 @@ export class CcxtFetcher extends BaseFetcher {
       timeout: CCXT_FETCHER_MAX_REQUEST_TIMEOUT_MS,
       enableRateLimit: false, // This config option is required to avoid problems with requests timeout
     }) as Exchange;
-    this.symbolToId = symbolToIdForExchanges[this.name as ccxt.ExchangeId]!;
+    this.symbolToId = symbolToIdForExchanges[this.name as Exchanges]!;
     this.idToSymbol = _.invert(this.symbolToId);
   }
 
@@ -39,7 +41,7 @@ export class CcxtFetcher extends BaseFetcher {
   }
 
   async fetchData(ids: string[]): Promise<any> {
-    if (!this.exchange.has["fetchTickers"]) {
+    if (!this.exchange.fetchTickers) {
       throw new Error(
         `Exchange ${this.name} doesn't support fetchTickers method`
       );
@@ -50,36 +52,29 @@ export class CcxtFetcher extends BaseFetcher {
     return await this.exchange.fetchTickers(ids);
   }
 
-  async extractPrices(response: any): Promise<PricesObj> {
-    const pricesObj: PricesObj = {};
+  extractPrices(response: any): PricesObj {
+    return this.extractPricesSafely(
+      Object.values(response) as Ticker[],
+      this.extractPricePair.bind(this)
+    );
+  }
 
-    for (const ticker of Object.values(response) as Ticker[]) {
-      let pairSymbol = ticker.symbol;
-      pairSymbol = this.serializePairSymbol(pairSymbol);
-      const lastPrice = ticker.last as number;
-      if (pairSymbol.endsWith("/USD")) {
-        pricesObj[pairSymbol] = lastPrice;
-      } else {
-        if (!pricesObj[pairSymbol]) {
-          const lastUsdInStablePrice = this.getStableCoinPrice(pairSymbol);
-          if (lastUsdInStablePrice) {
-            pricesObj[pairSymbol] = lastPrice * lastUsdInStablePrice;
-          }
-        }
+  private extractPricePair(ticker: Ticker) {
+    const pairSymbol = ticker.symbol;
+    const lastPrice = ticker.last as number;
+    if (pairSymbol.endsWith("/USD")) {
+      return { value: lastPrice, id: pairSymbol };
+    } else {
+      const lastUsdInStablePrice = this.getStableCoinPrice(pairSymbol);
+      if (lastUsdInStablePrice) {
+        return { value: lastPrice * lastUsdInStablePrice, id: pairSymbol };
       }
     }
-    return pricesObj;
+    throw new Error(`Pair symbol not supported: ${pairSymbol}`);
   }
 
   getStableCoinPrice(pairSymbol: string) {
-    let stableCoinSymbol = pairSymbol.slice(-4);
+    const stableCoinSymbol = pairSymbol.slice(-4);
     return getLastPrice(stableCoinSymbol)?.value;
-  }
-
-  serializePairSymbol(pairSymbol: string) {
-    if (pairSymbol.endsWith("/USDT:USDT")) {
-      return pairSymbol.replace("/USDT:USDT", "USDT");
-    }
-    return pairSymbol;
   }
 }

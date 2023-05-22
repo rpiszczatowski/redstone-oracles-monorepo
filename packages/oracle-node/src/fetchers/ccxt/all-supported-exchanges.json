@@ -6,7 +6,6 @@
   "binanceus",
   "binanceusdm",
   "bitcoincom",
-  "bitfinex",
   "bitfinex2",
   "bittrex",
   "bkex",
@@ -24,7 +23,6 @@
   "kraken",
   "kucoin",
   "lbank",
-  "liquid",
   "oceanex",
   "okx",
   "poloniex",
@@ -35,5 +33,6 @@
   "wazirx",
   "btcex",
   "bitrue",
-  "bitget"
+  "bitget",
+  "phemex"
 ]

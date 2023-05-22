@@ -38,21 +38,12 @@ export class CoinMarketCapFetcher extends BaseFetcher {
     return response.data;
   }
 
-  async extractPrices(response: any, ids: string[]): Promise<PricesObj> {
-    const pricesObj: PricesObj = {};
+  extractPrices(response: any, ids: string[]): PricesObj {
     const tokenData = response.data;
 
-    for (const id of ids) {
-      const price = tokenData?.[id]?.quote?.USD?.price;
-      if (price) {
-        pricesObj[id] = price;
-      } else {
-        this.logger.warn(
-          `CoinMarketCap fetcher: Id ${id} not included in response`
-        );
-      }
-    }
-
-    return pricesObj;
+    return this.extractPricesSafely(ids, (id) => ({
+      value: tokenData?.[id]?.quote?.USD?.price,
+      id,
+    }));
   }
 }

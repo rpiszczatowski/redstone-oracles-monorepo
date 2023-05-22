@@ -1,4 +1,3 @@
-import axios from "axios";
 import fetchers from "../../src/fetchers/index";
 import { mockFetcherResponse } from "./_helpers";
 
@@ -12,33 +11,7 @@ describe("twelve-data fetcher", () => {
   });
 
   it("should properly fetch data", async () => {
-    // Given
-
-    // When
-    const result = await sut.fetchAll(["CHF", "GBP", "EUR", "JPY", "AUD"], {
-      manifest: {
-        interval: 10000,
-        priceAggregator: "median",
-        defaultSource: ["twelve-data"],
-        evmChainId: 1,
-        sourceTimeout: 8000,
-        deviationCheck: {
-          deviationWithRecentValues: {
-            maxPercent: 25,
-            maxDelayMilliseconds: 300000,
-          },
-        },
-        tokens: {
-          CHF: {},
-          BGP: {},
-          EUR: {},
-          JPY: {},
-          AUD: {},
-        },
-      },
-    });
-
-    // Then
+    const result = await sut.fetchAll(["CHF", "GBP", "EUR", "JPY", "AUD"]);
     expect(result).toEqual([
       {
         symbol: "CHF",

@@ -1,9 +1,13 @@
 import aggregators from "../aggregators";
+import { CronScheduler } from "../schedulers/CronScheduler";
+import { OnBlockScheduler } from "../schedulers/OnBlockScheduler";
 import { Manifest } from "../types";
+import { arbitrumProvider } from "../utils/blockchain-providers";
 
 export type TokensBySource = { [source: string]: string[] };
 
 const DEFAULT_MIN_VALID_SOURCE_PERCENTAGE = 50;
+const DEFAULT_SCHEDULER_NAME = "interval";
 
 export default class ManifestHelper {
   // This function converts tokens from manifest to object with the following
@@ -47,7 +51,7 @@ export default class ManifestHelper {
     manifest: Manifest
   ): number | null {
     if (!source.length) {
-      throw "Source for timeout not defined";
+      throw new Error("Source for timeout not defined");
     }
     const timeoutConfiguration = manifest.sourceTimeout;
     if (!timeoutConfiguration || typeof timeoutConfiguration !== "number") {
@@ -82,8 +86,29 @@ export default class ManifestHelper {
   }
 
   static getAggregatorForToken(manifest: Manifest, symbol: string) {
-    const priceAggregator =
+    const aggregatorName =
       manifest.tokens[symbol]?.priceAggregator ?? manifest.priceAggregator;
-    return aggregators[priceAggregator];
+    return aggregators[aggregatorName];
+  }
+
+  static getScheduler(manifest: Manifest) {
+    const schedulerName = manifest.useCustomScheduler ?? DEFAULT_SCHEDULER_NAME;
+
+    const schedulerGetters = {
+      "on-each-arbitrum-block": () => new OnBlockScheduler(arbitrumProvider),
+      interval: (manifest: Manifest) => new CronScheduler(manifest.interval!),
+    };
+
+    return schedulerGetters[schedulerName](manifest);
+  }
+
+  static getDataFeedDecimals(manifest: Manifest, symbol: string) {
+    const dataFeedDetails = manifest?.tokens?.[symbol];
+    if (!dataFeedDetails) {
+      throw new Error(
+        `Missing token ${symbol} in the manifest, cannot get decimals`
+      );
+    }
+    return dataFeedDetails?.decimals;
   }
 }

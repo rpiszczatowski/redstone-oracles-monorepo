@@ -11,7 +11,6 @@ import {
   StringDataPoint,
   utils,
 } from "redstone-protocol";
-import { ConvertibleToBytes32 } from "redstone-protocol/src/common/utils";
 import { MockDataPackageConfig } from "../wrappers/MockWrapper";
 import { MockMultiSignDataPackageConfig } from "../wrappers/MockWrapperMultiSign";
 import { WrapperBuilder } from "../WrapperBuilder";
@@ -95,7 +94,7 @@ export interface MockPackageWithOneNumericDataPointArgs
     INumericDataPoint {}
 
 export interface MockPackageWithOneBytesDataPointArgs extends MockPackageArgs {
-  dataFeedId?: ConvertibleToBytes32;
+  dataFeedId?: utils.ConvertibleToBytes32;
   hexValue: string;
 }
 

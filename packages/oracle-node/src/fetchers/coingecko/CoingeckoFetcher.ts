@@ -1,18 +1,22 @@
+import axios from "axios";
 import _ from "lodash";
-import { PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
-import CoingeckoProxy from "./CoingeckoProxy";
 import { getRequiredPropValue } from "../../utils/objects";
 import symbolToId from "./coingecko-symbol-to-id.json";
+import { config } from "../../config";
+import { PricesObj } from "../../types";
 
 const idToSymbol = _.invert(symbolToId);
 
-export class CoingeckoFetcher extends BaseFetcher {
-  private coingeckoProxy: CoingeckoProxy;
+const COINGECKO_TOKENS_LIMIT = 500;
 
+interface SimplePrices {
+  [id: string]: { usd: number };
+}
+
+export class CoingeckoFetcher extends BaseFetcher {
   constructor() {
     super("coingecko");
-    this.coingeckoProxy = new CoingeckoProxy();
   }
 
   override convertIdToSymbol(id: string) {
@@ -23,18 +27,29 @@ export class CoingeckoFetcher extends BaseFetcher {
     return getRequiredPropValue(symbolToId, symbol);
   }
 
-  async fetchData(ids: string[]): Promise<any> {
-    return await this.coingeckoProxy.getExchangeRates(ids);
-  }
+  async fetchData(ids: string[]): Promise<SimplePrices> {
+    const { coingeckoApiUrl, coingeckoApiKey } = config;
+    const idsChunks = _.chunk(ids, COINGECKO_TOKENS_LIMIT);
 
-  async extractPrices(response: any): Promise<PricesObj> {
-    const pricesObj: PricesObj = {};
-
-    const rates = response.data;
-    for (const id of Object.keys(rates)) {
-      pricesObj[id] = rates[id].usd;
+    let mergedPrices: SimplePrices = {};
+    for (const idsChunk of idsChunks) {
+      const response = await axios.get<SimplePrices>(coingeckoApiUrl, {
+        params: {
+          ids: idsChunk.join(","),
+          vs_currencies: "usd",
+          ...(coingeckoApiKey && { x_cg_pro_api_key: coingeckoApiKey }),
+        },
+      });
+      mergedPrices = { ...mergedPrices, ...response.data };
     }
 
-    return pricesObj;
+    return mergedPrices;
+  }
+
+  extractPrices(prices: SimplePrices): PricesObj {
+    return this.extractPricesSafely(Object.keys(prices), (id) => ({
+      value: prices[id].usd,
+      id,
+    }));
   }
 }

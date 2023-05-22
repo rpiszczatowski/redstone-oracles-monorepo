@@ -7,13 +7,13 @@ on:
       - .github/workflows/deploy-to-ecr-public.yaml
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  tests:
+    runs-on: LargeRunner
     defaults:
       run:
         working-directory: packages/oracle-node
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install modules
         run: yarn
       - name: Build

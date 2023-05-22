@@ -4,7 +4,7 @@ import {
   SampleChainableStorageProxyConsumer,
   SampleChainableStorageProxy,
 } from "../../typechain-types";
-import { convertStringToBytes32 } from "redstone-protocol/src/common/utils";
+import { utils } from "redstone-protocol";
 import {
   expectedNumericValues,
   MockNumericDataPackagesMultiSignSuite,
@@ -41,7 +41,7 @@ const describeStorageProxyChainableTests = ({
         mockNumericPackages
       );
 
-      const dataFeedIdsBytes = dataFeedIds.map(convertStringToBytes32);
+      const dataFeedIdsBytes = dataFeedIds.map(utils.convertStringToBytes32);
 
       await wrappedContract.processOracleValues(dataFeedIdsBytes);
 
@@ -95,7 +95,7 @@ const describeStorageProxyChainableTests = ({
 
       for (const dataPoint of manyAssetsDataPoints) {
         await wrappedContract.processOracleValue(
-          convertStringToBytes32(dataPoint.dataFeedId)
+          utils.convertStringToBytes32(dataPoint.dataFeedId)
         );
       }
 

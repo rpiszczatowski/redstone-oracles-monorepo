@@ -1,5 +1,7 @@
-import { MultiRequestFetcher } from "../MultiRequestFetcher";
-import { PricesObj } from "../../types";
+import {
+  MultiRequestFetcher,
+  RequestIdToResponse,
+} from "../MultiRequestFetcher";
 import { config } from "../../config";
 import axios from "axios";
 
@@ -10,13 +12,10 @@ const KAIKO_REQUEST_HEADERS = {
   Accept: "application/json",
 };
 const KAIKO_REQUEST_PARAMS = {
-  page_size: 1,
-  interval: "1m",
+  page_size: 10,
+  interval: "5m",
   sort: "desc",
-};
-const KAIKO_CONFIG = {
-  headers: KAIKO_REQUEST_HEADERS,
-  params: KAIKO_REQUEST_PARAMS,
+  extrapolate_missing_values: true,
 };
 
 export class KaikoFetcher extends MultiRequestFetcher {
@@ -28,17 +27,20 @@ export class KaikoFetcher extends MultiRequestFetcher {
     return `${KAIKO_PRICES_URL}/${id.toLowerCase()}/usd`;
   };
 
-  makeRequest(id: string): Promise<any> {
-    return axios.get(this.buildKaikoApiUrl(id), KAIKO_CONFIG);
+  override makeRequest(id: string): Promise<any> {
+    return axios.get(this.buildKaikoApiUrl(id), {
+      headers: KAIKO_REQUEST_HEADERS,
+      params: KAIKO_REQUEST_PARAMS,
+    });
   }
 
-  processData(data: any, pricesObj: PricesObj): PricesObj {
-    if (data.result === "error") {
-      return pricesObj;
+  override extractPrice(
+    dataFeedId: string,
+    responses: RequestIdToResponse
+  ): number | undefined {
+    if (responses[dataFeedId]) {
+      const price = responses[dataFeedId]?.data?.data[0].price;
+      return price ? Number(price) : undefined;
     }
-    const id = data.query.base_asset.toUpperCase();
-    const price = data.data[0].price;
-    pricesObj[id] = Number(price);
-    return pricesObj;
   }
 }

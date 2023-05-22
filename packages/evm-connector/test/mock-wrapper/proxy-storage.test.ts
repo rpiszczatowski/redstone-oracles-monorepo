@@ -4,7 +4,7 @@ import {
   SampleStorageProxyConsumer,
   SampleStorageProxy,
 } from "../../typechain-types";
-import { convertStringToBytes32 } from "redstone-protocol/src/common/utils";
+import { utils } from "redstone-protocol";
 import {
   expectedNumericValues,
   MockNumericDataPackagesMultiSignSuite,
@@ -16,7 +16,7 @@ import { wrapContractUsingMockDataPackages } from "../../src/helpers/test-utils"
 import { Contract } from "ethers";
 
 const dataFeedIdsBytes = manyAssetsDataPoints.map((dataPoint) => {
-  return convertStringToBytes32(dataPoint.dataFeedId);
+  return utils.convertStringToBytes32(dataPoint.dataFeedId);
 });
 
 interface ProxyStorageTestParams {
@@ -32,7 +32,7 @@ const describeStorageProxyTests = ({
     let contract: SampleStorageProxy;
     let consumerContract: SampleStorageProxyConsumer;
     let wrappedContract: Contract;
-    const ethDataFeedId = convertStringToBytes32("ETH");
+    const ethDataFeedId = utils.convertStringToBytes32("ETH");
 
     this.beforeEach(async () => {
       const SampleStorageFactory = await ethers.getContractFactory(
@@ -131,11 +131,11 @@ const describeStorageProxyTests = ({
     it("Should return correct oracle values for 10 assets", async () => {
       for (const dataPoint of manyAssetsDataPoints) {
         await wrappedContract.saveOracleValueInContractStorage(
-          convertStringToBytes32(dataPoint.dataFeedId)
+          utils.convertStringToBytes32(dataPoint.dataFeedId)
         );
         await expect(
           consumerContract.checkOracleValue(
-            convertStringToBytes32(dataPoint.dataFeedId),
+            utils.convertStringToBytes32(dataPoint.dataFeedId),
             Math.round(dataPoint.value * 10 ** 8)
           )
         ).not.to.be.reverted;

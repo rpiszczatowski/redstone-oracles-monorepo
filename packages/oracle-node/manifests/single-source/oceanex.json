@@ -9,7 +9,6 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
   "tokens": {
     "DOGE": {},
     "BTC": {},
@@ -39,7 +38,6 @@
     "HOT": {},
     "MKR": {},
     "YFI": {},
-    "USDC": {},
     "BUSD": {},
     "VTHO": {},
     "KSM": {}

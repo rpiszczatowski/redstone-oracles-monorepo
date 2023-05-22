@@ -1,43 +1,57 @@
-import axios from "axios";
+import _ from "lodash";
+import axios, { AxiosResponse } from "axios";
 import { PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
 import { config } from "../../config";
+import { getRequiredPropValue } from "../../utils/objects";
 
-const TWELVE_DATA_RATE_URL =
-  "https://twelve-data1.p.rapidapi.com/exchange_rate";
+export interface TwelveDataResponse {
+  [symbol: string]: {
+    price: number;
+  };
+}
+
+export const TWELVE_DATA_PRICE_URL = "https://api.twelvedata.com/price";
 
 export class TwelveDataFetcher extends BaseFetcher {
-  constructor() {
-    super("twelve-data");
+  symbolToId: Record<string, string>;
+  requestParams?: Record<string, any>;
+
+  constructor(
+    name: string,
+    symbolToId: Record<string, string>,
+    requestParams?: Record<string, any>
+  ) {
+    super(name);
+    this.symbolToId = symbolToId;
+    this.requestParams = requestParams;
   }
 
   override convertIdToSymbol(id: string): string {
-    const [symbol] = id.split("/");
-    return symbol;
+    const idToSymbol = _.invert(this.symbolToId);
+    return getRequiredPropValue(idToSymbol, id);
   }
 
   override convertSymbolToId(symbol: string): string {
-    return `${symbol}/USD`;
+    return getRequiredPropValue(this.symbolToId, symbol);
   }
 
-  async fetchData(ids: string[]): Promise<any> {
-    const symbolString = ids.join(",");
-    return await axios.get(`${TWELVE_DATA_RATE_URL}?symbol=${symbolString}`, {
-      headers: {
-        "RapidAPI-Key": config.twelveDataRapidApiKey,
+  async fetchData(ids: string[]): Promise<AxiosResponse<TwelveDataResponse>> {
+    return await axios.get(TWELVE_DATA_PRICE_URL, {
+      params: {
+        symbol: ids.join(","),
+        ...this.requestParams,
+        apikey: config.twelveDataApiKey,
       },
     });
   }
 
-  async extractPrices(result: any): Promise<PricesObj> {
-    const pricesObj: PricesObj = {};
+  extractPrices(response: AxiosResponse<TwelveDataResponse>): PricesObj {
+    const twelveDataResponse = response.data;
 
-    const rates = result.data;
-    for (const symbol of Object.keys(rates)) {
-      const id = rates[symbol].symbol;
-      pricesObj[id] = rates[symbol].rate;
-    }
-
-    return pricesObj;
+    return this.extractPricesSafely(Object.keys(twelveDataResponse), (id) => ({
+      value: twelveDataResponse[id].price,
+      id,
+    }));
   }
 }

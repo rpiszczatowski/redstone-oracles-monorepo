@@ -1,0 +1,68 @@
+{
+  "trader-joe-on-chain-wavax": {
+    "PNG": {
+      "address": "0x3daf1c6268362214ebb064647555438c6f365f96",
+      "symbol0": "PNG",
+      "symbol0Decimals": 18,
+      "symbol1": "WAVAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    },
+    "QI": {
+      "address": "0x2774516897ac629ad3ed9dcac7e375dda78412b9",
+      "symbol0": "QI",
+      "symbol0Decimals": 18,
+      "symbol1": "WAVAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    },
+    "PTP": {
+      "address": "0xcdfd91eea657cc2701117fe9711c9a4f61feed23",
+      "symbol0": "PTP",
+      "symbol0Decimals": 18,
+      "symbol1": "WAVAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    },
+    "XAVA": {
+      "address": "0x72c3438cf1c915ecf5d9f17a6ed346b273d5bf71",
+      "symbol0": "WAVAX",
+      "symbol0Decimals": 18,
+      "symbol1": "XAVA",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    },
+    "YAK": {
+      "address": "0xb5c9e891af3063004a441ba4fab4ca3d6deb5626",
+      "symbol0": "YAK",
+      "symbol0Decimals": 18,
+      "symbol1": "WAVAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    },
+    "GMX": {
+      "address": "0x0c91a070f862666bbcce281346be45766d874d98",
+      "symbol0": "GMX",
+      "symbol0Decimals": 18,
+      "symbol1": "WAVAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    },
+    "JOE": {
+      "address": "0x454e67025631c065d3cfad6d71e6892f74487a15",
+      "symbol0": "JOE",
+      "symbol0Decimals": 18,
+      "symbol1": "WAVAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "AVAX"
+    },
+    "USDT.e": {
+      "address": "0xeD8CBD9F0cE3C6986b22002F03c6475CEb7a6256",
+      "symbol0": "WAVAX",
+      "symbol0Decimals": 18,
+      "symbol1": "USDT.e",
+      "symbol1Decimals": 6,
+      "pairedToken": "AVAX"
+    }
+  }
+}

@@ -3,20 +3,13 @@
   "priceAggregator": "median",
   "defaultSource": ["coingecko"],
   "sourceTimeout": 7000,
+  "minValidSourcesPercentage": 40,
   "deviationCheck": {
     "deviationWithRecentValues": {
       "maxPercent": 30,
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
-  "httpBroadcasterURLs": [
-    "https://api.redstone.finance",
-    "https://vwx3eni8c7.eu-west-1.awsapprunner.com",
-    "https://container-service-1.dv9sai71f4rsq.eu-central-1.cs.amazonlightsail.com"
-  ],
-  "enableStreamrBroadcaster": true,
-  "enableArweaveBackup": false,
   "tokens": {
     "ETH": {
       "source": [
@@ -27,7 +20,6 @@
         "binanceus",
         "binanceusdm",
         "bitcoincom",
-        "bitfinex",
         "bitfinex2",
         "bittrex",
         "btcturk",
@@ -43,7 +35,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "liquid",
         "oceanex",
         "okx",
         "poloniex",
@@ -54,7 +45,6 @@
     "USDT": {
       "source": [
         "binanceus",
-        "bitfinex",
         "bitfinex2",
         "bittrex",
         "cex",
@@ -78,15 +68,14 @@
         "coingecko",
         "coinmarketcap",
         "gate",
-        "pangolin-wavax",
-        "trader-joe"
+        "pangolin-on-chain-wavax",
+        "trader-joe-on-chain-wavax"
       ]
     },
     "AVAX": {
       "source": [
         "binance",
         "binanceusdm",
-        "bitfinex",
         "bitfinex2",
         "bittrex",
         "btcturk",
@@ -110,7 +99,6 @@
         "binanceus",
         "binanceusdm",
         "bitcoincom",
-        "bitfinex",
         "bitfinex2",
         "bittrex",
         "btcturk",
@@ -129,8 +117,8 @@
         "okx",
         "poloniex",
         "probit",
-        "sushiswap",
-        "uniswap"
+        "sushiswap-on-chain-weth",
+        "uniswap-v2-on-chain-weth"
       ]
     },
     "BTC": {
@@ -142,7 +130,6 @@
         "binanceus",
         "binanceusdm",
         "bitcoincom",
-        "bitfinex",
         "bitfinex2",
         "bittrex",
         "btcturk",
@@ -158,7 +145,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "liquid",
         "oceanex",
         "okx",
         "poloniex",
@@ -172,15 +158,14 @@
         "coingecko",
         "coinmarketcap",
         "kucoin",
-        "pangolin-wavax",
-        "trader-joe",
+        "pangolin-on-chain-wavax",
+        "trader-joe-on-chain-wavax",
         "xt"
       ]
     },
     "USDC": {
       "source": [
         "binanceus",
-        "bitfinex",
         "bitfinex2",
         "bittrex",
         "btcturk",
@@ -192,8 +177,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "liquid",
-        "oceanex",
         "okx",
         "probit",
         "sushiswap",
@@ -214,8 +197,8 @@
         "coingecko",
         "coinmarketcap",
         "mexc",
-        "pangolin-wavax",
-        "trader-joe"
+        "pangolin-on-chain-wavax",
+        "trader-joe-on-chain-wavax"
       ]
     },
     "YY_AAVE_AVAX": {
@@ -274,17 +257,8 @@
         "kucoin",
         "latoken",
         "mexc",
-        "pangolin-wavax",
-        "trader-joe"
-      ]
-    },
-    "YAK": {
-      "source": [
-        "coingecko",
-        "coinmarketcap",
-        "pangolin-usdc",
-        "pangolin-wavax",
-        "trader-joe"
+        "pangolin-on-chain-wavax",
+        "trader-joe-on-chain-wavax"
       ]
     },
     "YYAV3SA1": {
@@ -302,7 +276,7 @@
         "huobipro",
         "kucoin",
         "mexc",
-        "trader-joe"
+        "trader-joe-on-chain-wavax"
       ]
     },
     "GLP": {
@@ -318,7 +292,7 @@
         "coinmarketcap",
         "gate",
         "mexc",
-        "trader-joe"
+        "trader-joe-on-chain-wavax"
       ]
     },
     "BUSD": {
@@ -326,18 +300,69 @@
         "binance",
         "binanceus",
         "bitcoincom",
-        "cex",
-        "coinbaseprime",
-        "coinbasepro",
         "coingecko",
         "hitbtc",
         "lbank",
-        "oceanex",
-        "poloniex"
+        "oceanex"
       ]
     },
     "YY_GLP": {
       "source": ["avalanche-evm-fetcher"]
+    },
+    "DAI": {
+      "source": [
+        "binanceus",
+        "coinbaseprime",
+        "coinbasepro",
+        "coingecko",
+        "curve-usdc",
+        "curve-usdt",
+        "huobipro",
+        "kraken",
+        "okx",
+        "sushiswap-on-chain-weth",
+        "uniswap-v2-on-chain-weth",
+        "xt"
+      ],
+      "deviationWithRecentValues": {
+        "maxPercent": 5,
+        "maxDelayMilliseconds": 300000
+      }
+    },
+    "STETH": {
+      "source": [
+        "kaiko",
+        "coinmarketcap",
+        "curve-eth",
+        "curve-weth",
+        "uniswap-v2-on-chain-weth"
+      ]
+    },
+    "SHLB_AVAX-USDC_B": {
+      "source": ["avalanche-evm-fetcher"]
+    },
+    "SHLB_BTC.b-AVAX_B": {
+      "source": ["avalanche-evm-fetcher"]
+    },
+    "SHLB_USDT.e-USDt_C": {
+      "source": ["avalanche-evm-fetcher"]
+    },
+    "USDT.e": {
+      "source": ["trader-joe-on-chain-wavax", "pangolin-on-chain-wavax"]
+    },
+    "SOFR": {
+      "source": ["newyorkfed"]
+    },
+    "SOFR_EFFECTIVE_DATE": {
+      "source": ["newyorkfed"],
+      "decimals": 0
+    },
+    "SOFRAI": {
+      "source": ["newyorkfed"]
+    },
+    "SOFRAI_EFFECTIVE_DATE": {
+      "source": ["newyorkfed"],
+      "decimals": 0
     }
   }
 }

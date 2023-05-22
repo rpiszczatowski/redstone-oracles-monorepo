@@ -9,7 +9,6 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
   "tokens": {
     "DOGE": {},
     "BTC": {},
@@ -30,12 +29,10 @@
     "BAT": {},
     "YFI": {},
     "USDC": {},
-    "REN": {},
     "EUR": {},
     "BNT": {},
     "KNC": {},
     "GBP": {},
-    "DAI": {},
     "AUD": {},
     "ANT": {},
     "OCEAN": {},

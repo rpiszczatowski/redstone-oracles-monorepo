@@ -9,6 +9,7 @@ const idToSymbol = _.invert(symbolToId);
 
 export class YfUnofficialFetcher extends BaseFetcher {
   private yahooFinanceProxy: YahooFinanceProxy;
+  protected retryForInvalidResponse: boolean = true;
 
   constructor() {
     super("yf-unofficial");
@@ -27,26 +28,26 @@ export class YfUnofficialFetcher extends BaseFetcher {
     return await this.yahooFinanceProxy.getExchangeRates(ids);
   }
 
-  async extractPrices(response: any): Promise<PricesObj> {
-    const pricesObj: PricesObj = {};
+  extractPrices(response: any): PricesObj {
+    return this.extractPricesSafely(Object.keys(response), (symbol) =>
+      this.extractPricePair(response, symbol)
+    );
+  }
 
-    for (const symbol of Object.keys(response)) {
-      const details = response[symbol];
+  private extractPricePair(response: any, symbol: string) {
+    const details = response[symbol];
+    let value: any = details.price.regularMarketPrice;
 
-      let value: any = details.price.regularMarketPrice;
-      if (isNaN(value)) {
-        if (!!value && value.raw) {
-          value = value.raw;
-        } else {
-          this.logger.warn(
-            `Empty regular market price: ${JSON.stringify(details.price)}`
-          );
-        }
+    if (isNaN(value)) {
+      if (!!value && value.raw) {
+        value = value.raw;
+      } else {
+        this.logger.warn(
+          `Empty regular market price: ${JSON.stringify(details.price)}`
+        );
       }
-
-      pricesObj[symbol] = value;
     }
 
-    return pricesObj;
+    return { id: symbol, value };
   }
 }

@@ -11,19 +11,20 @@ export class EcbFetcher extends BaseFetcher {
     return await exchangeRates.fetch();
   }
 
-  async extractPrices(response: any, ids: string[]): Promise<PricesObj> {
-    const pricesObj: PricesObj = {};
-
+  extractPrices(response: any, ids: string[]): PricesObj {
     const { rates } = response;
     const usdRate = rates.USD;
-    for (const id of ids) {
-      if (id === "EUR") {
-        pricesObj[id] = usdRate;
-      } else {
-        pricesObj[id] = (1 / rates[id]) * usdRate;
-      }
-    }
 
-    return pricesObj;
+    return this.extractPricesSafely(ids, (id) =>
+      this.extractPricePair(id, usdRate, rates)
+    );
+  }
+
+  private extractPricePair(id: string, usdRate: any, rates: any) {
+    if (id === "EUR") {
+      return { value: usdRate, id };
+    } else {
+      return { value: (1 / rates[id]) * usdRate, id };
+    }
   }
 }

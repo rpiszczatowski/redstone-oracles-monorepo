@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
 import { SampleProxyConnector } from "../../typechain-types";
-import { convertStringToBytes32 } from "redstone-protocol/src/common/utils";
+import { utils } from "redstone-protocol";
 import {
   expectedNumericValues,
   IMockDataPackagesSuite,
@@ -24,7 +24,7 @@ const describeProxyConnectorTests = ({
 }: ProxyConnectorTestParams) => {
   describe(testSuiteDescription, function () {
     let contract: SampleProxyConnector;
-    const ethDataFeedId = convertStringToBytes32("ETH");
+    const ethDataFeedId = utils.convertStringToBytes32("ETH");
 
     const testShouldRevertWith = async (
       mockPackages: MockDataPackageConfig[] | MockMultiSignDataPackageConfig,
@@ -69,7 +69,7 @@ const describeProxyConnectorTests = ({
       for (const dataPoint of manyAssetsDataPoints) {
         await expect(
           wrappedContract.checkOracleValue(
-            convertStringToBytes32(dataPoint.dataFeedId),
+            utils.convertStringToBytes32(dataPoint.dataFeedId),
             Math.round(dataPoint.value * 10 ** 8)
           )
         ).not.to.be.reverted;

@@ -7,7 +7,11 @@ const config: Config.InitialOptions = {
     "^.+\\.(ts|js)$": "ts-jest",
   },
   testEnvironment: "node",
-  setupFiles: ["<rootDir>/.jest/set-env-vars.js"],
+  setupFiles: [
+    "<rootDir>/.jest/set-env-vars.js",
+    "<rootDir>/.jest/set-redstone-number-config.ts",
+  ],
+  testPathIgnorePatterns: ["<rootDir>/test/dry-run/*"],
 };
 
 export default config;

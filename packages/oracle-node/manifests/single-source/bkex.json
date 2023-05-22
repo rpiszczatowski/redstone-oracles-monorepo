@@ -9,10 +9,12 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
   "tokens": {
     "PTP": {},
     "GMX": {},
-    "JOE": {}
+    "JOE": {},
+    "CANTO": {},
+    "PLS": {},
+    "FXS": {}
   }
 }

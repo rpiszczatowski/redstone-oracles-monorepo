@@ -1,5 +1,5 @@
-import graphProxy from "../utils/graph-proxy";
 import { PricesObj } from "../types";
+import graphProxy from "../utils/graph-proxy";
 import { BaseFetcher } from "./BaseFetcher";
 
 export interface DexFetcherResponse {
@@ -17,6 +17,13 @@ export interface Pair {
   reserveUSD: string;
 }
 
+export interface Pool {
+  id: string;
+  token0: Token;
+  token1: Token;
+  liquidity: string;
+}
+
 interface Token {
   symbol: string;
 }
@@ -30,8 +37,8 @@ export class DexFetcher extends BaseFetcher {
 
   constructor(
     name: string,
-    private readonly subgraphUrl: string,
-    private readonly symbolToPairIdObj: SymbolToPairId
+    protected readonly subgraphUrl: string,
+    protected readonly symbolToPairIdObj: SymbolToPairId
   ) {
     super(name);
   }
@@ -61,39 +68,42 @@ export class DexFetcher extends BaseFetcher {
     return response !== undefined && response.data !== undefined;
   }
 
-  async extractPrices(
-    response: DexFetcherResponse,
-    assetIds: string[]
-  ): Promise<PricesObj> {
-    const pricesObj: PricesObj = {};
-
-    for (const currentAssetId of assetIds) {
-      const pairId = this.symbolToPairIdObj[currentAssetId];
-      const pair = response.data.pairs.find((pair) => pair.id === pairId);
-
-      if (!pair) {
-        this.logger.warn(
-          `Pair is not in response. Id: ${pairId}. Symbol: ${currentAssetId}. Source: ${this.name}`
-        );
-      } else {
-        const symbol0 = pair.token0.symbol;
-        const symbol1 = pair.token1.symbol;
-        const reserve0 = parseFloat(pair.reserve0);
-        const reserve1 = parseFloat(pair.reserve1);
-        const reserveUSD = parseFloat(pair.reserveUSD);
-
-        if (symbol0 === currentAssetId) {
-          pricesObj[currentAssetId] = reserveUSD / (2 * reserve0);
-        } else if (symbol1 === currentAssetId) {
-          pricesObj[currentAssetId] = reserveUSD / (2 * reserve1);
-        }
-      }
-    }
-
-    return pricesObj;
+  extractPrices(response: DexFetcherResponse, assetIds: string[]): PricesObj {
+    return this.extractPricesSafely(assetIds, (assetId) =>
+      this.extractPricePair(assetId, response)
+    );
   }
 
-  private convertSymbolsToPairIds(
+  private extractPricePair(
+    currentAssetId: string,
+    response: DexFetcherResponse
+  ) {
+    const pairId = this.symbolToPairIdObj[currentAssetId];
+    const pair = response.data.pairs.find((pair) => pair.id === pairId);
+
+    if (!pair) {
+      this.logger.warn(
+        `Pair is not in response. Id: ${pairId}. Symbol: ${currentAssetId}. Source: ${this.name}`
+      );
+    } else {
+      const symbol0 = pair.token0.symbol;
+      const symbol1 = pair.token1.symbol;
+      const reserve0 = parseFloat(pair.reserve0);
+      const reserve1 = parseFloat(pair.reserve1);
+      const reserveUSD = parseFloat(pair.reserveUSD);
+
+      if (symbol0 === currentAssetId) {
+        return { id: symbol0, value: reserveUSD / (2 * reserve0) };
+      } else if (symbol1 === currentAssetId) {
+        return { id: symbol1, value: reserveUSD / (2 * reserve1) };
+      } else {
+        throw new Error("Couldn't find matching symbol");
+      }
+    }
+    throw new Error(`Pair ${pairId} not found in response`);
+  }
+
+  protected convertSymbolsToPairIds(
     symbols: string[],
     symbolToPairId: SymbolToPairId
   ): string[] {

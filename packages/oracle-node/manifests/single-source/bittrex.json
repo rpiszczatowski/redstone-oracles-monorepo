@@ -9,7 +9,6 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
   "tokens": {
     "DOGE": {},
     "BTC": {},
@@ -49,7 +48,6 @@
     "REVV": {},
     "XTZ": {},
     "ZRX": {},
-    "BAND": {},
     "VET": {},
     "CRV": {},
     "USDT": {},
@@ -77,7 +75,6 @@
     "SC": {},
     "ZEN": {},
     "DGB": {},
-    "DAI": {},
     "DCR": {},
     "STORJ": {},
     "BAL": {},

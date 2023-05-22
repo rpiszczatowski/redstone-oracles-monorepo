@@ -9,7 +9,6 @@
       "maxDelayMilliseconds": 300000
     }
   },
-  "evmChainId": 1,
   "tokens": {
     "DOGE": {},
     "BTC": {},
@@ -29,7 +28,6 @@
     "MANA": {},
     "OMG": {},
     "BNB": {},
-    "SRM": {},
     "LINK": {},
     "1INCH": {},
     "XLM": {},
@@ -45,7 +43,6 @@
     "AKRO": {},
     "COTI": {},
     "XTZ": {},
-    "HAPI": {},
     "ZRX": {},
     "BAND": {},
     "CRV": {},
@@ -58,15 +55,12 @@
     "USDC": {},
     "FUN": {},
     "CVC": {},
-    "BUSD": {},
     "REN": {},
     "BNT": {},
     "KNC": {},
-    "DAI": {},
     "STORJ": {},
     "BAL": {},
     "OCEAN": {},
-    "RSR": {},
     "PAXG": {},
     "YFII": {},
     "KSM": {},
@@ -74,12 +68,6 @@
     "UTK": {},
     "DNT": {},
     "GLM": {},
-    "RENBTC": {},
-    "MHC": {},
-    "GAS": {},
-    "GUSD": {},
-    "LAMB": {},
-    "AWG": {},
-    "AWX": {}
+    "GAS": {}
   }
 }

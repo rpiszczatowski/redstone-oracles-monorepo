@@ -1,17 +1,16 @@
-import { JWKInterface } from "arweave/node/lib/wallet";
+import { ISafeNumber } from "./numbers/ISafeNumber";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
-  interval: number;
+  interval: number; // It is ignored if the `useCustomScheduler` is not set to `interval`
+  useCustomScheduler?: "on-each-arbitrum-block" | "interval";
   priceAggregator: string;
   defaultSource?: string[];
   sourceTimeout: number;
   deviationCheck: DeviationCheckConfig;
-  evmChainId: number;
   tokens: TokensConfig;
-  httpBroadcasterURLs?: string[];
-  enableStreamrBroadcaster?: boolean;
   minValidSourcesPercentage?: number;
+  signBlockNumbersInsteadOfTimestamps?: boolean;
 }
 
 export interface TokensConfig {
@@ -30,6 +29,7 @@ export interface TokenConfig {
   comment?: string;
   skipSigning?: boolean;
   priceAggregator?: string;
+  decimals?: number;
 }
 
 export interface DeviationCheckConfig {
@@ -55,9 +55,13 @@ export interface Fetcher {
   ) => Promise<PriceDataFetched[]>;
 }
 
+export type SanitizedPriceDataBeforeAggregation =
+  PriceDataBeforeAggregation<ISafeNumber>;
+
 export interface Aggregator {
   getAggregatedValue: (
-    price: PriceDataBeforeAggregation
+    price: SanitizedPriceDataBeforeAggregation,
+    allPrices?: PriceDataBeforeAggregation<number>[]
   ) => PriceDataAfterAggregation;
 }
 
@@ -78,20 +82,22 @@ export interface PriceDataFetched {
   value: any; // usually it is a positive number, but it may also be 0, null, undefined or "error"
 }
 
-export interface PriceDataBeforeAggregation {
+export interface PriceDataBeforeAggregation<T = number> {
   id: string;
   symbol: string;
-  source: Source;
+  source: PriceSource<T>;
   timestamp: number;
+  blockNumber?: number;
   version: string;
 }
 
-export interface Source {
-  [sourceName: string]: any;
+export interface PriceSource<T> {
+  [sourceName: string]: T;
 }
 
-export interface PriceDataAfterAggregation extends PriceDataBeforeAggregation {
-  value: number;
+export interface PriceDataAfterAggregation
+  extends SanitizedPriceDataBeforeAggregation {
+  value: ISafeNumber;
 }
 
 export interface PriceDataBeforeSigning extends PriceDataAfterAggregation {
@@ -131,7 +137,6 @@ export interface ArweaveTransactionTags {
 }
 
 export interface PrivateKeys {
-  arweaveJwk: JWKInterface;
   ethereumPrivateKey: string;
 }
 
@@ -152,12 +157,21 @@ export interface NodeConfig {
   etherscanApiKey?: string;
   ttlForPricesInLocalDBInMilliseconds: number;
   avalancheRpcUrl: string;
+  fallbackAvalancheRpcUrl?: string;
+  arbitrumRpcUrl: string;
   enableStreamrBroadcasting: boolean;
   mockPricesUrlOrPath: string;
-  twelveDataRapidApiKey?: string;
+  twelveDataApiKey?: string;
   coinmarketcapApiKey?: string;
   kaikoApiKey?: string;
+  stlouisfedApiKey?: string;
   minDataFeedsPercentageForBigPackage: number;
+  providerIdForPriceBroadcasting?: string;
+  coingeckoApiUrl: string;
+  coingeckoApiKey?: string;
+  enableHttpServer: boolean;
+  pricesHardLimitsUrl: string;
+  newyorkfedRatesUrl: string;
 }
 
 export interface MulticallRequest {
@@ -166,8 +180,9 @@ export interface MulticallRequest {
   name: string;
 }
 
+// If value is undefined it means that request failed
 export type MulticallParsedResponses = {
   [address in string]: {
-    [functionName in string]: { success: boolean; value: string };
+    [functionName in string]?: string;
   };
 };

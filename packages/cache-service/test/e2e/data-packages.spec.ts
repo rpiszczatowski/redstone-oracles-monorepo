@@ -13,7 +13,10 @@ import {
   mockSigner,
 } from "../common/mock-values";
 import { connectToTestDB, dropTestDatabase } from "../common/test-db";
-import { DataPackage } from "../../src/data-packages/data-packages.model";
+import {
+  CachedDataPackage,
+  DataPackage,
+} from "../../src/data-packages/data-packages.model";
 import { BundlrService } from "../../src/bundlr/bundlr.service";
 import { ALL_FEEDS_KEY } from "../../src/data-packages/data-packages.service";
 import { RedstoneSingleSignPayloadParser } from "redstone-protocol/dist/src/redstone-payload/RedstonePayloadParserSingleSign";
@@ -26,7 +29,6 @@ jest.mock("redstone-sdk", () => ({
   ...jest.requireActual("redstone-sdk"),
   getOracleRegistryState: jest.fn(() => mockOracleRegistryState),
 }));
-jest.mock("../../src/bundlr/bundlr.service");
 
 const dataFeedIds = [ALL_FEEDS_KEY, "ETH", "AAVE", "BTC"];
 
@@ -38,8 +40,14 @@ const expectedDataPackages = mockDataPackages.map((dataPackage) => ({
   dataFeedId: ALL_FEEDS_KEY,
 }));
 
+const mockSigners = [MOCK_SIGNER_ADDRESS, "0x2", "0x3", "0x4", "0x5"];
+
 describe("Data packages (e2e)", () => {
   let app: INestApplication, httpServer: any;
+  let bundlrSaveDataPackagesSpy: jest.SpyInstance<
+    Promise<void>,
+    [dataPackages: CachedDataPackage[]]
+  >;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -50,34 +58,38 @@ describe("Data packages (e2e)", () => {
     await app.init();
     httpServer = app.getHttpServer();
 
-    (BundlrService.prototype.safelySaveDataPackages as any).mockClear();
+    const bundlrService = app.get(BundlrService);
+    bundlrSaveDataPackagesSpy = jest.spyOn(bundlrService, "saveDataPackages");
+    bundlrSaveDataPackagesSpy.mockImplementation(() => Promise.resolve());
+    bundlrSaveDataPackagesSpy.mockClear();
 
     // Connect to mongoDB in memory
     await connectToTestDB();
 
     // Adding test data to DB
     const dataPackagesToInsert = [];
+    const mockDataPackage = mockDataPackages[0];
     for (const dataServiceId of [
       "service-1",
       "service-2",
       "service-3",
       "mock-data-service-1",
     ]) {
-      for (const dataFeedId of dataFeedIds) {
-        for (const signerAddress of [
-          MOCK_SIGNER_ADDRESS, // address of mock-signer
-          "0x2",
-          "0x3",
-          "0x4",
-          "0x5",
-        ]) {
-          dataPackagesToInsert.push({
-            ...mockDataPackages[0],
-            isSignatureValid: true,
-            dataFeedId,
-            dataServiceId,
-            signerAddress,
-          });
+      for (const timestampMilliseconds of [
+        mockDataPackage.timestampMilliseconds - 1000,
+        mockDataPackage.timestampMilliseconds,
+      ]) {
+        for (const dataFeedId of dataFeedIds) {
+          for (const signerAddress of mockSigners) {
+            dataPackagesToInsert.push({
+              ...mockDataPackage,
+              timestampMilliseconds,
+              isSignatureValid: true,
+              dataFeedId,
+              dataServiceId,
+              signerAddress,
+            });
+          }
         }
       }
     }
@@ -86,7 +98,7 @@ describe("Data packages (e2e)", () => {
 
   afterEach(async () => await dropTestDatabase());
 
-  it("/data-packages/bulk (POST)", async () => {
+  it("/data-packages/bulk (POST) - should save data to DB", async () => {
     const requestSignature = signByMockSigner(mockDataPackages);
     await request(httpServer)
       .post("/data-packages/bulk")
@@ -120,11 +132,100 @@ describe("Data packages (e2e)", () => {
       .expect(201);
 
     // Should have been saved in Arweave
-    expect(
-      BundlrService.prototype.safelySaveDataPackages
-    ).toHaveBeenCalledTimes(1);
-    expect(BundlrService.prototype.safelySaveDataPackages).toHaveBeenCalledWith(
+    expect(bundlrSaveDataPackagesSpy).toHaveBeenCalledTimes(1);
+    expect(bundlrSaveDataPackagesSpy).toHaveBeenCalledWith(
       expectedDataPackages
+    );
+  });
+
+  it("/data-packages/bulk (POST) - should post data using DB, even if bundlr fails", async () => {
+    const requestSignature = signByMockSigner(mockDataPackages);
+    // mock bundlr failure
+    bundlrSaveDataPackagesSpy.mockImplementationOnce(() => Promise.reject());
+
+    await request(httpServer)
+      .post("/data-packages/bulk")
+      .send({
+        requestSignature,
+        dataPackages: mockDataPackages,
+      })
+      .expect(201);
+
+    const dataPackagesInDB = await DataPackage.find().sort({
+      dataFeedId: 1,
+    });
+    const dataPackagesInDBCleaned = dataPackagesInDB.map((dp) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _id, __v, ...rest } = dp.toJSON() as any;
+      return rest;
+    });
+    expect(dataPackagesInDBCleaned).toEqual(
+      expect.arrayContaining(expectedDataPackages)
+    );
+  });
+
+  it("/data-packages/bulk (POST) - should post data using bundlr, even if DB fails", async () => {
+    const requestSignature = signByMockSigner(mockDataPackages);
+    // mock bundlr DB failure
+    const dataPackageSaveManySpy = jest.spyOn(DataPackage, "insertMany");
+    dataPackageSaveManySpy.mockImplementationOnce(() => Promise.reject());
+
+    await request(httpServer)
+      .post("/data-packages/bulk")
+      .send({
+        requestSignature,
+        dataPackages: mockDataPackages,
+      })
+      .expect(201);
+
+    expect(bundlrSaveDataPackagesSpy).toHaveBeenCalledTimes(1);
+    expect(bundlrSaveDataPackagesSpy).toHaveBeenCalledWith(
+      expectedDataPackages
+    );
+  });
+
+  it("/data-packages/latest (GET) return same result as /data-packages/latest (GET), when same number of dataPackages", async () => {
+    const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
+    Date.now = jest.fn(() => dpTimestamp);
+    const responseLatest = await request(httpServer)
+      .get("/data-packages/latest/mock-data-service-1")
+      .expect(200);
+
+    const responseMostRecent = await request(httpServer)
+      .get("/data-packages/latest-not-aligned-by-time/mock-data-service-1")
+      .expect(200);
+
+    expect(
+      responseLatest.body[ALL_FEEDS_KEY].sort(
+        (a: any, b: any) => a.signerAddress - b.signerAddress
+      )
+    ).toEqual(
+      responseMostRecent.body[ALL_FEEDS_KEY].sort(
+        (a: any, b: any) => a.signerAddress - b.signerAddress
+      )
+    );
+  });
+
+  it("/data-packages/latest (GET) return package which contain more data-packages (in this case older one) ", async () => {
+    const mockDataPackage = mockDataPackages[0];
+    await DataPackage.insertMany([
+      {
+        ...mockDataPackage,
+        timestampMilliseconds: mockDataPackage.timestampMilliseconds - 1000,
+        isSignatureValid: true,
+        dataFeedId: "BTC",
+        dataServiceId: "mock-data-service-1",
+        signerAddress: "0x1",
+      },
+    ]);
+    const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
+    Date.now = jest.fn(() => dpTimestamp);
+    const responseLatest = await request(httpServer)
+      .get("/data-packages/latest/mock-data-service-1")
+      .expect(200);
+
+    expect(responseLatest.body[ALL_FEEDS_KEY][0].timestampMilliseconds).toBe(
+      dpTimestamp - 1000
     );
   });
 
@@ -180,6 +281,13 @@ describe("Data packages (e2e)", () => {
     const parsedDataPoints = JSON.parse(allFeedsDataPackages[0]).dataPoints;
     expect(allFeedsDataPackages.length).toBe(4);
     expect(parsedDataPoints.length).toBe(2);
+    for (const [_, dataPackages] of Object.entries<any>(testResponse2.body)) {
+      for (let i = 0; i++; i < dataPackages.length) {
+        const dataPackage = JSON.parse(dataPackages[i]);
+        expect(dataPackage).toMatchObject(mockDataPackages[0]);
+        expect(dataPackage.signerAddress).toEqual(mockSigners[i]);
+      }
+    }
   });
 
   it("/data-packages/latest/mock-data-service-1 (GET)", async () => {
@@ -194,12 +302,27 @@ describe("Data packages (e2e)", () => {
       const signers = [];
       for (const dataPackage of testResponse.body[dataFeedId]) {
         expect(dataPackage).toHaveProperty("dataFeedId", dataFeedId);
-        expect(dataPackage).toHaveProperty("sources", null);
         expect(dataPackage).toHaveProperty("signature", MOCK_SIGNATURE);
         signers.push(dataPackage.signerAddress);
       }
       expect(signers.length).toBe(5);
       expect(new Set(signers).size).toBe(5);
+    }
+  });
+
+  it("/data-packages/historical/mock-data-service-1 (GET)", async () => {
+    const historicalTimestamp =
+      mockDataPackages[0].timestampMilliseconds - 1000;
+    const testResponse = await request(httpServer)
+      .get(
+        `/data-packages/historical/mock-data-service-1/${historicalTimestamp}`
+      )
+      .expect(200);
+
+    for (const dataFeedId of dataFeedIds) {
+      expect(testResponse.body[dataFeedId][0].timestampMilliseconds).toBe(
+        historicalTimestamp
+      );
     }
   });
 
@@ -287,6 +410,12 @@ describe("Data packages (e2e)", () => {
     }, "raw");
   });
 
+  it("/data-packages/payload (GET) - should return payload in bytes format", async () => {
+    await performPayloadTests((response) => {
+      return response.body;
+    }, "bytes");
+  });
+
   it("/data-packages/payload (GET) - should return payload in raw format when no format is specified", async () => {
     await performPayloadTests((response) => {
       return response.body;
@@ -309,15 +438,15 @@ describe("Data packages (e2e)", () => {
     expect(response.body).toEqual(
       expect.objectContaining({
         "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266": {
-          dataPackagesCount: 16,
-          verifiedDataPackagesCount: 16,
+          dataPackagesCount: 32,
+          verifiedDataPackagesCount: 32,
           verifiedDataPackagesPercentage: 100,
           nodeName: "Mock node 1",
           dataServiceId: MOCK_DATA_SERVICE_ID,
         },
         "0x2": {
-          dataPackagesCount: 16,
-          verifiedDataPackagesCount: 16,
+          dataPackagesCount: 32,
+          verifiedDataPackagesCount: 32,
           verifiedDataPackagesPercentage: 100,
           nodeName: "unknown",
           dataServiceId: "unknown",

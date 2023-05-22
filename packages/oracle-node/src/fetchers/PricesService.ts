@@ -1,7 +1,12 @@
+import axios from "axios";
 import { Consola } from "consola";
 import { v4 as uuidv4 } from "uuid";
-import fetchers from "./index";
+import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import ManifestHelper, { TokensBySource } from "../manifest/ManifestHelper";
+import { ISafeNumber } from "../numbers/ISafeNumber";
+import { createSafeNumber } from "../numbers/SafeNumberFactory";
+import { IterationContext } from "../schedulers/IScheduler";
+import { terminateWithManifestConfigError } from "../Terminator";
 import {
   DeviationCheckConfig,
   Manifest,
@@ -9,17 +14,17 @@ import {
   PriceDataBeforeAggregation,
   PriceDataBeforeSigning,
   PriceDataFetched,
-  Source,
+  SanitizedPriceDataBeforeAggregation,
 } from "../types";
-import { trackEnd, trackStart } from "../utils/performance-tracker";
-import ManifestConfigError from "../manifest/ManifestConfigError";
-import { promiseTimeout } from "../utils/promise-timeout";
-import { getPrices, PriceValueInLocalDB } from "../db/local-db";
+import { stringifyError } from "../utils/error-stringifier";
 import {
   calculateAverageValue,
-  safelyConvertAnyValueToNumber,
   calculateDeviationPercent,
 } from "../utils/numbers";
+import { trackEnd, trackStart } from "../utils/performance-tracker";
+import { promiseTimeout } from "../utils/promise-timeout";
+import fetchers from "./index";
+import { config } from "../config";
 
 const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -31,15 +36,20 @@ export type PricesBeforeAggregation = {
 };
 
 export interface PriceValidationArgs {
-  value: number;
+  value: ISafeNumber;
   timestamp: number;
   deviationConfig: DeviationCheckConfig;
   recentPrices: PriceValueInLocalDB[];
+  priceLimits?: PriceLimits;
 }
 
-interface PriceValidationResult {
-  isValid: boolean;
-  reason: string;
+interface PriceLimits {
+  lower: number;
+  upper: number;
+}
+
+interface PricesLimits {
+  [symbol: string]: PriceLimits;
 }
 
 export default class PricesService {
@@ -69,27 +79,22 @@ export default class PricesService {
         [source]: pricesFromSource,
       };
     } catch (e: any) {
-      //not sure why instanceof is not working, crap.
-      if (e.name == "ManifestConfigError") {
-        throw e;
-      } else {
-        // We don't throw an error because we want to continue with
-        // other fetchers even if some fetchers failed
-        const resData = e.response ? e.response.data : "";
+      // We don't throw an error because we want to continue with
+      // other fetchers even if some fetchers failed
+      const resData = e.response ? e.response.data : "";
 
-        // We use warn level instead of error because
-        // price fetching errors occur quite often
-        logger.warn(
-          `Fetching failed for source: ${source}: ${resData}`,
-          e.stack
-        );
-        return {
-          [source]: tokens.map((symbol) => ({
-            symbol,
-            value: VALUE_FOR_FAILED_FETCHER,
-          })),
-        };
-      }
+      // We use warn level instead of error because
+      // price fetching errors occur quite often
+      logger.warn(
+        `Fetching failed for source: ${source}: ${resData}`,
+        stringifyError(e)
+      );
+      return {
+        [source]: tokens.map((symbol) => ({
+          symbol,
+          value: VALUE_FOR_FAILED_FETCHER,
+        })),
+      };
     }
   }
 
@@ -98,8 +103,14 @@ export default class PricesService {
     tokens: string[]
   ): Promise<PriceDataFetched[]> {
     if (tokens.length === 0) {
-      throw new ManifestConfigError(
+      terminateWithManifestConfigError(
         `${source} fetcher received an empty array of symbols`
+      );
+    }
+
+    if (!fetchers[source]) {
+      terminateWithManifestConfigError(
+        `Fetcher for source ${source} doesn't exist`
       );
     }
 
@@ -113,7 +124,7 @@ export default class PricesService {
       this.manifest
     );
     if (sourceTimeout === null) {
-      throw new ManifestConfigError(
+      terminateWithManifestConfigError(
         `No timeout configured for ${source}. Did you forget to add "sourceTimeout" field in manifest file?`
       );
     }
@@ -134,7 +145,7 @@ export default class PricesService {
   }
 
   static groupPricesByToken(
-    fetchTimestamp: number,
+    iterationContext: IterationContext,
     pricesData: PricesDataFetched,
     nodeVersion: string
   ): PricesBeforeAggregation {
@@ -147,7 +158,8 @@ export default class PricesService {
             id: uuidv4(), // Generating unique id for each price
             source: {},
             symbol: price.symbol,
-            timestamp: fetchTimestamp,
+            timestamp: iterationContext.timestamp,
+            blockNumber: iterationContext.blockNumber,
             version: nodeVersion,
           };
         }
@@ -159,17 +171,19 @@ export default class PricesService {
     return result;
   }
 
-  /* 
+  /*
     This function calculates aggregated price values based on
       - recent deviations check
       - invalid values excluding
       - aggregation across different sources
       - valid sources number
+      - aggregated prices hard limits
   */
   async calculateAggregatedValues(
     prices: PriceDataBeforeAggregation[]
   ): Promise<PriceDataAfterAggregation[]> {
     const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
+    const pricesLimits = await this.fetchPricesLimits();
 
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
     for (const price of prices) {
@@ -191,15 +205,22 @@ export default class PricesService {
 
         // Calculating final aggregated value based on the values from the "valid" sources
         const priceAfterAggregation = aggregator.getAggregatedValue(
-          sanitizedPriceBeforeAggregation
+          sanitizedPriceBeforeAggregation,
+          prices
         );
 
-        // Throwing an error if price is invalid or too deviated
-        this.assertValidPrice(
-          priceAfterAggregation,
-          pricesInLocalDBForSymbol,
-          deviationCheckConfig
+        // Throwing an error if price < 0 is invalid or too deviated
+        priceAfterAggregation.value.assertNonNegative();
+        this.assertInHardLimits(
+          priceAfterAggregation.value,
+          pricesLimits[price.symbol]
         );
+        this.assertStableDeviation({
+          value: priceAfterAggregation.value,
+          timestamp: priceAfterAggregation.timestamp,
+          deviationConfig: deviationCheckConfig,
+          recentPrices: pricesInLocalDBForSymbol,
+        });
 
         // Throwing an error if not enough sources for symbol
         this.assertSourcesNumber(priceAfterAggregation, this.manifest);
@@ -213,29 +234,34 @@ export default class PricesService {
     return aggregatedPrices;
   }
 
-  // This function converts all source values to numbers
-  // and excludes sources with invalid values
+  /**
+   * This function converts all source values to Redstone Numbers
+   * and excludes sources with invalid values
+   * */
   sanitizeSourceValues(
     price: PriceDataBeforeAggregation,
     recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
     deviationCheckConfig: DeviationCheckConfig
-  ): PriceDataBeforeAggregation {
-    const newSources: { [symbol: string]: number } = {};
+  ): SanitizedPriceDataBeforeAggregation {
+    const newSources: { [symbol: string]: ISafeNumber } = {};
 
     for (const [sourceName, valueFromSource] of Object.entries(price.source)) {
-      const valueFromSourceNum = safelyConvertAnyValueToNumber(valueFromSource);
-      const { isValid, reason } = this.validatePrice({
-        value: valueFromSourceNum,
-        timestamp: price.timestamp,
-        deviationConfig: deviationCheckConfig,
-        recentPrices: recentPricesInLocalDBForSymbol,
-      });
+      try {
+        const valueFromSourceNum = createSafeNumber(valueFromSource);
 
-      if (isValid) {
+        valueFromSourceNum.assertNonNegative();
+
+        this.assertStableDeviation({
+          value: valueFromSourceNum,
+          timestamp: price.timestamp,
+          deviationConfig: deviationCheckConfig,
+          recentPrices: recentPricesInLocalDBForSymbol,
+        });
+
         newSources[sourceName] = valueFromSourceNum;
-      } else {
+      } catch (e: any) {
         logger.warn(
-          `Excluding ${price.symbol} value ${valueFromSourceNum} for source: ${sourceName}. Reason: ${reason}`
+          `Excluding ${price.symbol} value ${valueFromSource} for source: ${sourceName}. Reason: ${e.message}`
         );
       }
     }
@@ -243,54 +269,31 @@ export default class PricesService {
     return { ...price, source: newSources };
   }
 
-  assertValidPrice(
-    price: PriceDataAfterAggregation,
-    recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
-    deviationCheckConfig: DeviationCheckConfig
-  ) {
-    const { isValid, reason } = this.validatePrice({
-      value: price.value,
-      timestamp: price.timestamp,
-      deviationConfig: deviationCheckConfig,
-      recentPrices: recentPricesInLocalDBForSymbol,
-    });
-
-    if (!isValid) {
+  assertInHardLimits(value: ISafeNumber, priceLimits?: PriceLimits) {
+    if (
+      priceLimits &&
+      (value.gt(priceLimits.upper) || value.lt(priceLimits.lower))
+    ) {
+      const { lower, upper } = priceLimits;
       throw new Error(
-        `Invalid price for symbol ${price.symbol}. Reason: ${reason}`
+        `Value is out of hard limits (value: ${value}, limits: ${lower}-${upper})`
       );
     }
   }
 
-  validatePrice(args: PriceValidationArgs): PriceValidationResult {
-    const { value, deviationConfig } = args;
+  assertStableDeviation(args: PriceValidationArgs) {
+    const { deviationConfig } = args;
     const { deviationWithRecentValues } = deviationConfig;
 
-    let isValid = false;
-    let reason = "";
+    const deviationPercent = this.getDeviationWithRecentValuesAverage(args);
 
-    if (isNaN(value)) {
-      reason = `Value is not a number. Received: ${value}`;
-    } else if (value < 0) {
-      reason = "Value is less than 0";
-    } else {
-      const deviationPercent = this.getDeviationWithRecentValuesAverage(args);
-
-      if (deviationPercent > deviationWithRecentValues.maxPercent) {
-        reason = `Value is too deviated (${deviationPercent}%)`;
-      } else {
-        isValid = true;
-      }
+    if (deviationPercent.gt(deviationWithRecentValues.maxPercent)) {
+      throw new Error(`Value is too deviated (${deviationPercent}%)`);
     }
-
-    return {
-      isValid,
-      reason,
-    };
   }
 
   // Calculates max deviation from average of recent values
-  getDeviationWithRecentValuesAverage(args: PriceValidationArgs): number {
+  getDeviationWithRecentValuesAverage(args: PriceValidationArgs): ISafeNumber {
     const { value, timestamp, deviationConfig, recentPrices } = args;
     const { deviationWithRecentValues } = deviationConfig;
 
@@ -300,10 +303,10 @@ export default class PricesService {
           timestamp - recentPrice.timestamp <=
           deviationWithRecentValues.maxDelayMilliseconds
       )
-      .map((recentPrice) => recentPrice.value);
+      .map((recentPrice) => createSafeNumber(recentPrice.value));
 
     if (priceValuesToCompareWith.length === 0) {
-      return 0;
+      return createSafeNumber(0);
     } else {
       const recentPricesAvg = calculateAverageValue(priceValuesToCompareWith);
       return calculateDeviationPercent({
@@ -344,7 +347,7 @@ export default class PricesService {
         this.manifest
       );
     if (!deviationCheckConfig) {
-      throw new ManifestConfigError(
+      terminateWithManifestConfigError(
         `Could not determine deviationCheckConfig for ${priceSymbol}. ` +
           `Did you forget to add deviationCheck parameter in the manifest file?`
       );
@@ -354,7 +357,8 @@ export default class PricesService {
 
   assertSourcesNumber(price: PriceDataAfterAggregation, manifest: Manifest) {
     const { symbol, source } = price;
-    const sourcesFetchedCount = Object.keys(source).length;
+    const sources = Object.keys(source);
+    const sourcesFetchedCount = sources.length;
     const minValidSourcesPercentage =
       ManifestHelper.getMinValidSourcesPercentage(manifest);
     const allSourcesCount = ManifestHelper.getAllSourceCount(symbol, manifest);
@@ -364,8 +368,18 @@ export default class PricesService {
       validSourcesPercentage >= minValidSourcesPercentage;
     if (!isSourcesNumberValid) {
       throw new Error(
-        `Invalid sources number for symbol ${symbol}, valid sources count: ${sourcesFetchedCount}`
+        `Invalid sources number for symbol ${symbol}. ` +
+          `Valid sources count: ${sourcesFetchedCount}. ` +
+          `Valid sources: ${sources.join(",")}`
       );
     }
+  }
+
+  async fetchPricesLimits(): Promise<PricesLimits> {
+    if (!config.pricesHardLimitsUrl) {
+      return {};
+    }
+    const response = await axios.get<PricesLimits>(config.pricesHardLimitsUrl);
+    return response.data;
   }
 }

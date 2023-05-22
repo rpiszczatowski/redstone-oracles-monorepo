@@ -1,16 +1,18 @@
-import ccxt from "ccxt";
-import exchanges from "../all-supported-exchanges.json";
+import { exchanges } from "ccxt";
+import supportedExchanges from "../all-supported-exchanges.json";
+
+type Exchanges = keyof typeof exchanges;
 
 type MappingsForCCXT = Partial<{
-  [exchangeId in ccxt.ExchangeId]: {
+  [exchangeId in keyof typeof exchanges]: {
     [symbolId in string]: string;
   };
 }>;
 
 const mappings: MappingsForCCXT = {};
 
-for (const exchangeId of exchanges) {
-  mappings[exchangeId as ccxt.ExchangeId] = require(`./${exchangeId}.json`);
+for (const exchangeId of supportedExchanges) {
+  mappings[exchangeId as Exchanges] = require(`./${exchangeId}.json`);
 }
 
 export default mappings;

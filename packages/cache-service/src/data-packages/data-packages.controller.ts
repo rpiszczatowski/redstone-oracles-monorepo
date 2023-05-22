@@ -1,34 +1,33 @@
 import {
   Body,
+  CACHE_MANAGER,
   Controller,
   Get,
+  Header,
   HttpException,
   HttpStatus,
+  Inject,
+  Param,
   Post,
   Query,
   Res,
-  Param,
-  CACHE_MANAGER,
-  Inject,
-  Header,
 } from "@nestjs/common";
+import { Cache } from "cache-manager";
+import type { Response } from "express";
+import { Serializable } from "redstone-protocol";
 import { DataPackagesRequestParams } from "redstone-sdk";
 import config from "../config";
-import { ReceivedDataPackage } from "./data-packages.interface";
-import { DataPackagesService } from "./data-packages.service";
-import { CachedDataPackage } from "./data-packages.model";
-import { BundlrService } from "../bundlr/bundlr.service";
-import type { Response } from "express";
 import { duplexStream } from "../utils/streams";
-import { Serializable } from "redstone-protocol";
-import { Cache } from "cache-manager";
+import { ReceivedDataPackage } from "./data-packages.interface";
+import { CachedDataPackage } from "./data-packages.model";
+import { DataPackagesService } from "./data-packages.service";
 
 export interface BulkPostRequestBody {
   requestSignature: string;
   dataPackages: ReceivedDataPackage[];
 }
 
-export type ResponseFormat = "raw" | "hex";
+export type ResponseFormat = "raw" | "hex" | "bytes" | "json";
 
 export interface GetLatestDataPackagesQuery {
   "data-service-id": string;
@@ -59,11 +58,10 @@ export interface DataPackagesStatsResponse {
 
 const CONTENT_TYPE_OCTET_STREAM = "application/octet-stream";
 const CONTENT_TYPE_TEXT = "text/html";
+const CONTENT_TYPE_JSON = "application/json";
 
 @Controller("data-packages")
 export class DataPackagesController {
-  private bundlrService = new BundlrService();
-
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private dataPackagesService: DataPackagesService
@@ -85,12 +83,7 @@ export class DataPackagesController {
     return requestParams;
   }
 
-  @Get("latest/:DATA_SERVICE_ID")
-  @Header("Cache-Control", "max-age=5")
-  async getAllLatest(
-    @Param("DATA_SERVICE_ID") dataServiceId: string
-  ): Promise<DataPackagesResponse> {
-    // Validate dataServiceId param
+  private async validateDataServiceId(dataServiceId: string) {
     const isDataServiceIdValid =
       await this.dataPackagesService.isDataServiceIdValid(dataServiceId);
     if (!isDataServiceIdValid) {
@@ -102,17 +95,49 @@ export class DataPackagesController {
         HttpStatus.BAD_REQUEST
       );
     }
+  }
 
-    return this.dataPackagesService.getAllLatestDataWithCache(
+  @Get("latest/:DATA_SERVICE_ID")
+  @Header("Cache-Control", "max-age=5")
+  async getAllLatest(
+    @Param("DATA_SERVICE_ID") dataServiceId: string
+  ): Promise<DataPackagesResponse> {
+    await this.validateDataServiceId(dataServiceId);
+    return this.dataPackagesService.getLatestDataPackagesWithSameTimestampWithCache(
       dataServiceId,
       this.cacheManager
+    );
+  }
+
+  @Get("latest-not-aligned-by-time/:DATA_SERVICE_ID")
+  @Header("Cache-Control", "max-age=5")
+  async getMostRecent(
+    @Param("DATA_SERVICE_ID") dataServiceId: string
+  ): Promise<DataPackagesResponse> {
+    await this.validateDataServiceId(dataServiceId);
+    return this.dataPackagesService.getMostRecentDataPackagesWithCache(
+      dataServiceId,
+      this.cacheManager
+    );
+  }
+
+  @Get("historical/:DATA_SERVICE_ID/:TIMESTAMP")
+  @Header("Cache-Control", "max-age=5")
+  async getByTimestamp(
+    @Param("DATA_SERVICE_ID") dataServiceId: string,
+    @Param("TIMESTAMP") timestamp: string
+  ): Promise<DataPackagesResponse> {
+    await this.validateDataServiceId(dataServiceId);
+    return this.dataPackagesService.getByTimestamp(
+      dataServiceId,
+      Number(timestamp)
     );
   }
 
   @Get("latest")
   @Header("Cache-Control", "max-age=5")
   async getLatest(@Query() query: GetLatestDataPackagesQuery) {
-    return await this.dataPackagesService.getDataPackages(
+    return await this.dataPackagesService.queryLatestDataPackages(
       this.prepareDataPackagesRequestParams(query),
       this.cacheManager
     );
@@ -173,11 +198,7 @@ export class DataPackagesController {
         signerAddress
       );
 
-    await this.dataPackagesService.saveManyDataPackagesInDB(dataPackagesToSave);
-
-    if (config.enableArchivingOnArweave) {
-      await this.bundlrService.safelySaveDataPackages(dataPackagesToSave);
-    }
+    await this.dataPackagesService.saveMany(dataPackagesToSave, signerAddress);
   }
 
   private sendSerializableResponse(
@@ -194,6 +215,16 @@ export class DataPackagesController {
       case "raw":
         res.contentType(CONTENT_TYPE_OCTET_STREAM);
         duplexStream(data.toBytes()).pipe(res);
+        return;
+
+      case "bytes":
+        res.contentType(CONTENT_TYPE_JSON);
+        res.send(Array.from(data.toBytes()));
+        return;
+
+      case "json":
+        res.contentType(CONTENT_TYPE_JSON);
+        res.send(data);
         return;
 
       default:

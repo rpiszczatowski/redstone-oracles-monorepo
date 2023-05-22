@@ -8,7 +8,7 @@ import {
   MockNumericDataPackagesSingleSignSuite,
   NUMBER_OF_MOCK_NUMERIC_SIGNERS,
 } from "../tests-common";
-import { convertStringToBytes32 } from "redstone-protocol/src/common/utils";
+import { utils } from "redstone-protocol";
 import {
   getMockNumericMultiSignPackage,
   getMockNumericPackage,
@@ -48,7 +48,7 @@ const describeSyntheticTokenTests = ({
       );
       sampleContract = await SampleSyntheticToken.deploy();
       await sampleContract.initialize(
-        convertStringToBytes32("REDSTONE"),
+        utils.convertStringToBytes32("REDSTONE"),
         "SYNTH-REDSTONE",
         "SREDSTONE"
       );

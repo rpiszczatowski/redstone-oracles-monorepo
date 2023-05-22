@@ -8,7 +8,6 @@ import {
   SignedDataPackage,
 } from "redstone-protocol";
 import { Consola } from "consola";
-
 import { config } from "../config";
 import {
   DataPackageBroadcaster,
@@ -16,8 +15,10 @@ import {
   StreamrBroadcaster,
 } from "../broadcasters";
 import { BroadcastPerformer } from "./BroadcastPerformer";
-import {validateDataPointsForBigPackage} from "../validators/validate-data-feed-for-big-package";
-import {ManifestDataProvider} from "./ManifestDataProvider";
+import { validateDataPointsForBigPackage } from "../validators/validate-data-feed-for-big-package";
+import { ManifestDataProvider } from "./ManifestDataProvider";
+import { IterationContext } from "../schedulers/IScheduler";
+import ManifestHelper from "../manifest/ManifestHelper";
 const logger = require("./../utils/logger")("runner") as Consola;
 
 const DEFAULT_HTTP_BROADCASTER_URLS = [
@@ -36,7 +37,7 @@ export class DataPackageBroadcastPerformer
   constructor(
     broadcasterURLs: string[] | undefined,
     private readonly ethereumPrivateKey: string,
-    private readonly manifestDataProvider: ManifestDataProvider,
+    private readonly manifestDataProvider: ManifestDataProvider
   ) {
     super();
     this.httpBroadcaster = new HttpBroadcaster(
@@ -49,17 +50,24 @@ export class DataPackageBroadcastPerformer
 
   async handle(
     aggregatedPrices: PriceDataAfterAggregation[],
-    pricesService: PricesService
+    pricesService: PricesService,
+    iterationContext: IterationContext
   ): Promise<void> {
     // Excluding "helpful" prices, which should not be signed
     // "Helpful" prices (e.g. AVAX_SPOT) can be used to calculate TWAP values
     const pricesForSigning =
       pricesService.filterPricesForSigning(aggregatedPrices);
 
+    // When nothing to broadcast
+    if (pricesForSigning.length === 0) {
+      logger.warn("No prices to broadcast, skipping broadcasting.");
+      return;
+    }
+
     // Signing
     const signedDataPackages = this.signPrices(
       pricesForSigning,
-      pricesForSigning[0].timestamp
+      iterationContext
     );
 
     // Broadcasting
@@ -68,13 +76,13 @@ export class DataPackageBroadcastPerformer
 
   private signPrices(
     prices: PriceDataAfterAggregation[],
-    timestamp: number
+    iterationContext: IterationContext
   ): SignedDataPackage[] {
     // Prepare data points
     const dataPoints: DataPoint[] = [];
     for (const price of prices) {
       try {
-        const dataPoint = priceToDataPoint(price);
+        const dataPoint = this.priceToDataPoint(price);
         dataPoints.push(dataPoint);
       } catch (e) {
         logger.error(
@@ -83,9 +91,22 @@ export class DataPackageBroadcastPerformer
       }
     }
 
+    const useBlockNumbers =
+      this.manifestDataProvider.latestManifest!
+        .signBlockNumbersInsteadOfTimestamps;
+    if (useBlockNumbers && !iterationContext.blockNumber) {
+      throw new Error("Can not sign empty block number");
+    }
+    const timeIdentifierForSigning = useBlockNumbers
+      ? iterationContext.blockNumber!
+      : iterationContext.timestamp;
+
     // Prepare signed data packages with single data point
     const signedDataPackages = dataPoints.map((dataPoint) => {
-      const dataPackage = new DataPackage([dataPoint], timestamp);
+      const dataPackage = new DataPackage(
+        [dataPoint],
+        timeIdentifierForSigning
+      );
       return dataPackage.sign(this.ethereumPrivateKey);
     });
 
@@ -95,7 +116,10 @@ export class DataPackageBroadcastPerformer
       this.manifestDataProvider.allTokenCount
     );
     if (areEnoughDataPoint) {
-      const bigDataPackage = new DataPackage(dataPoints, timestamp);
+      const bigDataPackage = new DataPackage(
+        dataPoints,
+        timeIdentifierForSigning
+      );
       const signedBigDataPackage = bigDataPackage.sign(this.ethereumPrivateKey);
       signedDataPackages.push(signedBigDataPackage);
     }
@@ -103,7 +127,7 @@ export class DataPackageBroadcastPerformer
     return signedDataPackages;
   }
 
-  private async broadcastDataPackages(signedDataPackages: SignedDataPackage[]) {
+  public async broadcastDataPackages(signedDataPackages: SignedDataPackage[]) {
     const promises = [];
     promises.push(this.httpBroadcaster.broadcast(signedDataPackages));
     if (config.enableStreamrBroadcasting) {
@@ -112,11 +136,15 @@ export class DataPackageBroadcastPerformer
 
     await this.performBroadcast(promises, "data package");
   }
-}
 
-function priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
-  return new NumericDataPoint({
-    dataFeedId: price.symbol,
-    value: price.value,
-  });
+  private priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
+    return new NumericDataPoint({
+      dataFeedId: price.symbol,
+      value: price.value.unsafeToNumber(),
+      decimals: ManifestHelper.getDataFeedDecimals(
+        this.manifestDataProvider.latestManifest!,
+        price.symbol
+      ),
+    });
+  }
 }

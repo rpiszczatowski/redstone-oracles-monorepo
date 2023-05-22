@@ -64,29 +64,29 @@ export class LensFetcher extends BaseFetcher {
     return profiles !== undefined && profiles.length > 0;
   }
 
-  async extractPrices(profiles: LensProfile[]): Promise<ReputationObject> {
-    const reputationObject: ReputationObject = {};
+  extractPrices(profiles: LensProfile[]): ReputationObject {
+    return this.extractPricesSafely(profiles, (profile) =>
+      this.extractReputation(profile)
+    );
+  }
 
-    for (const profile of profiles) {
-      const symbol = profile.handle;
-      const {
-        totalFollowers,
-        totalPosts,
-        totalComments,
-        totalMirrors,
-        totalPublications,
-        totalCollects,
-      } = profile.stats;
-      const reputation =
-        totalFollowers * 0.75 +
-        totalPosts * 0.5 +
-        totalComments * 0.25 +
-        totalMirrors * 1 +
-        totalPublications * 0.5 +
-        totalCollects * 1;
-      reputationObject[symbol] = reputation;
-    }
-
-    return reputationObject;
+  private extractReputation(profile: LensProfile) {
+    const symbol = profile.handle;
+    const {
+      totalFollowers,
+      totalPosts,
+      totalComments,
+      totalMirrors,
+      totalPublications,
+      totalCollects,
+    } = profile.stats;
+    const reputation =
+      totalFollowers * 0.75 +
+      totalPosts * 0.5 +
+      totalComments * 0.25 +
+      totalMirrors * 1 +
+      totalPublications * 0.5 +
+      totalCollects * 1;
+    return { value: reputation, id: symbol };
   }
 }

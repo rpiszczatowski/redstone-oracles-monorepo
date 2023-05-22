@@ -1,56 +1,61 @@
+import { ISafeNumber } from "../../numbers/ISafeNumber";
+import { createSafeNumber } from "../../numbers/SafeNumberFactory";
 import {
   Aggregator,
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
+  SanitizedPriceDataBeforeAggregation,
 } from "../../types";
 import { getTickLiquidities } from "./get-liquidities";
 
 export interface PricesWithLiquidity {
-  price: number;
-  liquidity: number;
+  price: ISafeNumber;
+  liquidity: ISafeNumber;
 }
 
 export const lwapAggregator: Aggregator = {
   getAggregatedValue(
-    price: PriceDataBeforeAggregation
+    price: SanitizedPriceDataBeforeAggregation,
+    allPrices?: PriceDataBeforeAggregation[]
   ): PriceDataAfterAggregation {
     return {
       ...price,
-      value: getLwapValue(price),
+      value: getLwapValue(price, allPrices),
     };
   },
 };
 
-const getLwapValue = (price: PriceDataBeforeAggregation): number => {
+const getLwapValue = (
+  price: SanitizedPriceDataBeforeAggregation,
+  allPrices?: PriceDataBeforeAggregation[]
+): ISafeNumber => {
+  if (!allPrices) {
+    throw new Error(
+      `Cannot calculate LWAP, missing all prices for ${price.symbol}`
+    );
+  }
   const { symbol, source } = price;
-  const valuesWithLiquidity = getTickLiquidities(symbol, source);
+  const valuesWithLiquidity = getTickLiquidities(symbol, source, allPrices);
   return calculateLwap(valuesWithLiquidity);
 };
 
-const calculateLwap = (valuesWithLiquidity: PricesWithLiquidity[]) => {
+const calculateLwap = (
+  valuesWithLiquidity: PricesWithLiquidity[]
+): ISafeNumber => {
   const liquiditySum = calculateLiquiditySum(valuesWithLiquidity);
-  let lwapValue = 0;
+  let lwapValue = createSafeNumber(0);
   for (const { price, liquidity } of valuesWithLiquidity) {
-    validatePricesAndLiquidities(price, liquidity);
-    const liquidityNormalized = liquidity / liquiditySum;
-    lwapValue += price * liquidityNormalized;
+    const liquidityNormalized = liquidity.div(liquiditySum);
+    const amount = price.mul(liquidityNormalized);
+    lwapValue = lwapValue.add(amount);
   }
   return lwapValue;
 };
 
-const validatePricesAndLiquidities = (price: number, liquidity: number) => {
-  if (isNaN(price)) {
-    throw new Error("Cannot get LWAP value if price is NaN value");
-  }
-  if (isNaN(liquidity)) {
-    throw new Error("Cannot get LWAP value if liquidity is NaN value");
-  }
-};
-
 const calculateLiquiditySum = (valuesWithLiquidity: PricesWithLiquidity[]) => {
   return valuesWithLiquidity.reduce(
-    (sum, { liquidity }) => (sum += liquidity),
-    0
+    (sum, { liquidity }) => sum.add(liquidity),
+    createSafeNumber(0)
   );
 };
 

@@ -1,0 +1,22 @@
+{
+  "fraxswap-on-chain-fxs": {
+    "FRAX": {
+      "address": "0x03B59Bd1c8B9F6C265bA0c3421923B93f15036Fa",
+      "symbol0": "FXS",
+      "symbol0Decimals": 18,
+      "symbol1": "FRAX",
+      "symbol1Decimals": 18,
+      "pairedToken": "FXS"
+    }
+  },
+  "fraxswap-on-chain-weth": {
+    "FRAX": {
+      "address": "0x31351bf3fba544863fbff44ddc27ba880916a199",
+      "symbol0": "FRAX",
+      "symbol0Decimals": 18,
+      "symbol1": "WETH",
+      "symbol1Decimals": 18,
+      "pairedToken": "ETH"
+    }
+  }
+}
