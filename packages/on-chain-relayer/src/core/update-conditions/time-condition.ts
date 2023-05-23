@@ -5,6 +5,11 @@ export const timeUpdateCondition = (lastUpdateTimestamp: number) => {
   const currentTimestamp = Date.now();
   const timeDiff = currentTimestamp - lastUpdateTimestamp;
   const shouldUpdatePrices = timeDiff >= updatePriceInterval;
+
+  console.log(
+    `Checking time update condition current: ${currentTimestamp} lastUpdateTimestamp: ${lastUpdateTimestamp}`
+  );
+
   return {
     shouldUpdatePrices,
     warningMessage: shouldUpdatePrices

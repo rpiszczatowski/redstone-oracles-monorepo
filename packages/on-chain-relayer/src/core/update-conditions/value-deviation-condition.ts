@@ -37,6 +37,10 @@ export const valueDeviationCondition = (
   const { minDeviationPercentage } = config;
   const shouldUpdatePrices = maxDeviation >= minDeviationPercentage;
 
+  console.log(
+    `Checking value deviation condition maxDeviation ${maxDeviation}% minDeviation ${minDeviationPercentage}%`
+  );
+
   return {
     shouldUpdatePrices,
     warningMessage: shouldUpdatePrices

@@ -14,9 +14,15 @@ console.log(
   `Starting contract prices updater with interval ${relayerIterationInterval}`
 );
 
+const { dataServiceId, uniqueSignersCount, dataFeeds, cacheServiceUrls } =
+  config;
+
+/** If the contract is only checking value-deviation it will always fail before sending first transaction
+ * because this is how getDataFeedValues is implemented. So we have to send first transaction before normal iteration starts.
+ */
+let needsBootstrapping = config.updateConditions.includes("value-deviation");
+
 const runIteration = async () => {
-  const { dataServiceId, uniqueSignersCount, dataFeeds, cacheServiceUrls } =
-    config;
   const adapterContract = getAdapterContract();
   const dataPackages = await requestDataPackages(
     {
@@ -27,11 +33,18 @@ const runIteration = async () => {
     cacheServiceUrls
   );
 
-  const { lastUpdateTimestamp } =
-    await getLastRoundParamsFromContract(adapterContract);
-  
+  const { lastUpdateTimestamp } = await getLastRoundParamsFromContract(
+    adapterContract
+  );
+
+  if (needsBootstrapping) {
+    await updatePrices(dataPackages, adapterContract, lastUpdateTimestamp);
+    needsBootstrapping = false;
+  }
+
   // We fetch latest values from contract only if we want to check value deviation
   let valuesFromContract = {};
+
   if (config.updateConditions.includes("value-deviation")) {
     valuesFromContract = await getValuesForDataFeeds(
       adapterContract,
@@ -45,14 +58,10 @@ const runIteration = async () => {
     lastUpdateTimestamp,
   });
 
-  if (!shouldUpdatePrices) {
-    console.log(`All conditions are not fulfilled: ${warningMessage}`);
+  if (shouldUpdatePrices) {
+    await updatePrices(dataPackages, adapterContract, lastUpdateTimestamp);
   } else {
-    await updatePrices(
-      dataPackages,
-      adapterContract,
-      lastUpdateTimestamp
-    );
+    console.log(`All conditions are not fulfilled: ${warningMessage}`);
   }
 
   await sendHealthcheckPing();
