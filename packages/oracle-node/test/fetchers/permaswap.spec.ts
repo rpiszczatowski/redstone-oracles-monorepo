@@ -17,6 +17,9 @@ const ardriveToArPriceResponse =
 const acnhToUsdcPriceResponse =
   "../../src/fetchers/permaswap/example-acnh-usdc-response.json";
 
+const ansToArPriceResponse =
+  "../../src/fetchers/permaswap/example-ans-ar-response.json";
+
 jest.mock("axios");
 
 describe("permaswap fetcher", () => {
@@ -58,6 +61,20 @@ describe("permaswap fetcher", () => {
       {
         symbol: "ACNH",
         value: 0.14664,
+      },
+    ]);
+  });
+
+  it("should properly fetch ANS price", async () => {
+    await saveMockPricesInLocalDb([6.9], ["AR"]);
+    mockFetcherResponse(ansToArPriceResponse);
+
+    const result = await sut.fetchAll(["ANS"]);
+
+    expect(result).toEqual([
+      {
+        symbol: "ANS",
+        value: 2.3401329288270003,
       },
     ]);
   });
