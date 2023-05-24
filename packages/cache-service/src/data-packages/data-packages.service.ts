@@ -224,7 +224,7 @@ export class DataPackagesService {
       const dataFeedId = dataPackagesWithSameTimestamp.dataFeedIds[i];
       const signerAddress = dataPackagesWithSameTimestamp.signerAddress[i];
       if (
-        this.isSignerAddressAlreadyInDbResponseForDataFeed(
+        DataPackagesService.isSignerAddressAlreadyInDbResponseForDataFeed(
           signerAddress,
           fetchedPackagesPerDataFeed[dataFeedId]
         )
@@ -257,7 +257,7 @@ export class DataPackagesService {
   }
 
   // Filtering unique signers addresses
-  isSignerAddressAlreadyInDbResponseForDataFeed(
+  static isSignerAddressAlreadyInDbResponseForDataFeed(
     signerAddress: string,
     fetchedPackagesForDataFeed: CachedDataPackage[]
   ) {
