@@ -11,7 +11,6 @@ import { IEvmRequestHandlers } from "./IEvmRequestHandlers";
 
 interface Providers {
   mainProvider: providers.Provider;
-  fallbackProvider?: providers.Provider;
 }
 
 const MUTLICALL_CONTRACT_ADDRESS = "0x8755b94F88D120AB2Cc13b1f6582329b067C760d";
@@ -36,12 +35,6 @@ export class EvmFetcher extends BaseFetcher {
       providers.mainProvider,
       multicallContractAddress
     );
-    if (providers.fallbackProvider) {
-      this.fallbackMulticallService = new EvmMulticallService(
-        providers.fallbackProvider,
-        this.multicallContractAddress
-      );
-    }
     this.requestHandlers = requestHandlers;
   }
 
@@ -59,21 +52,7 @@ export class EvmFetcher extends BaseFetcher {
       const requestsPerId = requestHandlersForId.prepareMulticallRequest(id);
       requests.push(...requestsPerId);
     }
-    try {
-      return await this.evmMulticallService.performMulticall(requests);
-    } catch (error) {
-      this.logger.warn(
-        `[${this.name}]: multicall request failed, trying to use fallback provider`
-      );
-      return await this.tryToRunFallback(error, requests);
-    }
-  }
-
-  async tryToRunFallback(error: any, requests: MulticallRequest[]) {
-    if (!this.fallbackMulticallService) {
-      throw error;
-    }
-    return await this.fallbackMulticallService.performMulticall(requests);
+    return await this.evmMulticallService.performMulticall(requests);
   }
 
   extractPrices(response: MulticallParsedResponses, ids: string[]): PricesObj {
