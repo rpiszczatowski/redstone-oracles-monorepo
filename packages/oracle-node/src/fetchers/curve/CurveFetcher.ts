@@ -49,7 +49,7 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
       { blockTag }
     )) as BigNumber;
 
-    const precisionDivider = CURVE_PRECISION_DECIMAL.mul(ratioMultiplier);
+    const precisionDivider = CURVE_PRECISION_DECIMAL.div(ratioMultiplier);
     const ratioFloat = new Decimal(ratioBigNumber.toString()).div(
       precisionDivider
     );
