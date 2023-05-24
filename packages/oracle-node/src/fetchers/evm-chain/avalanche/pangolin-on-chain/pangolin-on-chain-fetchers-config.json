@@ -39,6 +39,14 @@
       "symbol1": "WAVAX",
       "symbol1Decimals": 18,
       "pairedToken": "AVAX"
+    },
+    "USDT.e": {
+      "address": "0xe28984e1EE8D431346D32BeC9Ec800Efb643eef4",
+      "symbol0": "WAVAX",
+      "symbol0Decimals": 18,
+      "symbol1": "USDT.e",
+      "symbol1Decimals": 6,
+      "pairedToken": "AVAX"
     }
   },
   "pangolin-on-chain-usdc": {

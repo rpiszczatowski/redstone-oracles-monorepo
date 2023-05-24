@@ -42,7 +42,7 @@ export default class PriceSignerService {
     logger.info(`Signing price with evm signer: ${price.id}`);
     const packageWithSinglePrice = this.evmSigner.signPricePackage(
       {
-        prices: [_.pick(price, ["symbol", "value"])],
+        prices: [{ symbol: price.symbol, value: price.value }],
         timestamp: price.timestamp,
       },
       this.ethereumPrivateKey
@@ -62,7 +62,7 @@ export default class PriceSignerService {
 
     const pricePackage = {
       timestamp: prices[0].timestamp,
-      prices: prices.map((p) => _.pick(p, ["symbol", "value"])),
+      prices: prices.map((p) => ({ symbol: p.symbol, value: p.value })),
     };
 
     return this.evmSigner.signPricePackage(

@@ -10,6 +10,13 @@
     }
   },
   "tokens": {
-    "SOFR": {}
+    "SOFR": {},
+    "SOFR_EFFECTIVE_DATE": {
+      "decimals": 0
+    },
+    "SOFRAI": {},
+    "SOFRAI_EFFECTIVE_DATE": {
+      "decimals": 0
+    }
   }
 }

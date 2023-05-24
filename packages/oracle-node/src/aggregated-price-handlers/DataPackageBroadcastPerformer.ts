@@ -8,7 +8,6 @@ import {
   SignedDataPackage,
 } from "redstone-protocol";
 import { Consola } from "consola";
-
 import { config } from "../config";
 import {
   DataPackageBroadcaster,
@@ -19,6 +18,7 @@ import { BroadcastPerformer } from "./BroadcastPerformer";
 import { validateDataPointsForBigPackage } from "../validators/validate-data-feed-for-big-package";
 import { ManifestDataProvider } from "./ManifestDataProvider";
 import { IterationContext } from "../schedulers/IScheduler";
+import ManifestHelper from "../manifest/ManifestHelper";
 const logger = require("./../utils/logger")("runner") as Consola;
 
 const DEFAULT_HTTP_BROADCASTER_URLS = [
@@ -82,7 +82,7 @@ export class DataPackageBroadcastPerformer
     const dataPoints: DataPoint[] = [];
     for (const price of prices) {
       try {
-        const dataPoint = priceToDataPoint(price);
+        const dataPoint = this.priceToDataPoint(price);
         dataPoints.push(dataPoint);
       } catch (e) {
         logger.error(
@@ -136,11 +136,15 @@ export class DataPackageBroadcastPerformer
 
     await this.performBroadcast(promises, "data package");
   }
-}
 
-function priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
-  return new NumericDataPoint({
-    dataFeedId: price.symbol,
-    value: price.value,
-  });
+  private priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
+    return new NumericDataPoint({
+      dataFeedId: price.symbol,
+      value: price.value.unsafeToNumber(),
+      decimals: ManifestHelper.getDataFeedDecimals(
+        this.manifestDataProvider.latestManifest!,
+        price.symbol
+      ),
+    });
+  }
 }

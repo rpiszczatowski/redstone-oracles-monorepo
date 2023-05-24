@@ -1,4 +1,5 @@
 import { savePrices } from "../../src/db/local-db";
+import { createSafeNumber } from "../../src/numbers/SafeNumberFactory";
 import axios from "axios";
 import {
   PriceDataAfterAggregation,
@@ -11,7 +12,7 @@ export const saveMockPriceInLocalDb = async (
 ) => {
   const priceToSave = preparePrice({
     symbol,
-    value,
+    value: createSafeNumber(value),
   });
   await savePrices([priceToSave]);
 };
@@ -23,7 +24,7 @@ export const saveMockPricesInLocalDb = async (
   const pricesToPrepare = symbols.map((symbol, index) =>
     preparePrice({
       symbol,
-      value: values[index],
+      value: createSafeNumber(values[index]),
     })
   );
   const pricesToSave = preparePrices(pricesToPrepare);

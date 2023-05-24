@@ -1,7 +1,9 @@
 import { getTokensFromManifest } from "./helpers";
 import mainManifest from "../../manifests/data-services/main.json";
-import stocksManifest from "../../manifests/data-services/stocks.json";
 import wideSupportTokensManifest from "../../manifests/dev/main-wide-support.json";
+import stocksManifest from "../../manifests/data-services/stocks.json";
+import avalancheManifest from "../../manifests/data-services/avalanche.json";
+import rapidManifest from "../../manifests/data-services/rapid.json";
 import { Manifest } from "../../src/types";
 
 interface DryRunTestConfig {
@@ -13,17 +15,31 @@ interface DryRunTestConfig {
 enum DryRunTestType {
   "main" = "main",
   "stocks" = "stocks",
+  "avalanche" = "avalanche",
+  "rapid" = "rapid",
 }
 
 const config: Record<DryRunTestType, DryRunTestConfig> = {
   [DryRunTestType.main]: {
     manifest: mainManifest,
     nodeIterations: 4,
-    additionalCheck: assertMainRequiredTokensAreProperlyFetched,
+    additionalCheck: assertAllRequiredTokensAreProperlyFetched(
+      wideSupportTokensManifest
+    ),
   },
   [DryRunTestType.stocks]: {
     manifest: stocksManifest,
     nodeIterations: 1,
+  },
+  [DryRunTestType.avalanche]: {
+    manifest: avalancheManifest,
+    nodeIterations: 4,
+    additionalCheck:
+      assertAllRequiredTokensAreProperlyFetched(avalancheManifest),
+  },
+  [DryRunTestType.rapid]: {
+    manifest: rapidManifest,
+    nodeIterations: 3,
   },
 };
 
@@ -35,12 +51,11 @@ export const getDryRunTestConfig = (): DryRunTestConfig => {
   return config[dryRunTestType as DryRunTestType];
 };
 
-function assertMainRequiredTokensAreProperlyFetched(
-  token: string,
-  currentDataFeedPrice: number
-) {
-  const wideSupportTokens = getTokensFromManifest(wideSupportTokensManifest);
-  if (wideSupportTokens.includes(token)) {
-    expect(currentDataFeedPrice).toBeGreaterThan(0);
-  }
+function assertAllRequiredTokensAreProperlyFetched(manifest: Manifest) {
+  return function (token: string, currentDataFeedPrice: number) {
+    const avalancheTokens = getTokensFromManifest(manifest);
+    if (avalancheTokens.includes(token)) {
+      expect(currentDataFeedPrice).toBeGreaterThan(0);
+    }
+  };
 }
