@@ -32,6 +32,7 @@ export const getDryRunTestNodeConfig = (manifest: Manifest): NodeConfig => ({
   coingeckoApiUrl: "",
   enableHttpServer: false,
   pricesHardLimitsUrl: "",
+  newyorkfedRatesUrl: "",
 });
 
 export const MockScheduler = {

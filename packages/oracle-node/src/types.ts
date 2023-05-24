@@ -29,6 +29,7 @@ export interface TokenConfig {
   comment?: string;
   skipSigning?: boolean;
   priceAggregator?: string;
+  decimals?: number;
 }
 
 export interface DeviationCheckConfig {
@@ -170,6 +171,7 @@ export interface NodeConfig {
   coingeckoApiKey?: string;
   enableHttpServer: boolean;
   pricesHardLimitsUrl: string;
+  newyorkfedRatesUrl: string;
 }
 
 export interface MulticallRequest {

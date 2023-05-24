@@ -51,6 +51,7 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   coingeckoApiUrl: "",
   enableHttpServer: false,
   pricesHardLimitsUrl: "mock-hard-prices-limits-url",
+  newyorkfedRatesUrl: "",
 };
 
 export const mockHardLimits = {

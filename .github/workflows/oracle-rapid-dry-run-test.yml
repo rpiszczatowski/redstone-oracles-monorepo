@@ -1,0 +1,25 @@
+name: Oracle rapid dry run test
+on:
+  push:
+    paths:
+      - packages/oracle-node/**
+      - .github/workflows/oracle-rapid-dry-run-test.yaml
+
+jobs:
+  rapid-dry-run-test:
+    runs-on: LargeRunner
+    defaults:
+      run:
+        working-directory: packages/oracle-node
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install modules
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Run dry run test
+        run: yarn test:rapid-dry-run
+        env:
+          NODE_ENV: test
+          COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
