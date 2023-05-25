@@ -157,7 +157,7 @@ export class ProviderWithFallback
   }
 
   private async doExecuteWithFallback(
-    retryNumber = 0,
+    alreadyRetriedCount = 0,
     lastProviderUsedIndex: number,
     fnName: string,
     ...args: any[]
@@ -165,9 +165,13 @@ export class ProviderWithFallback
     try {
       return await (this.currentProvider as any)[fnName](...[...args]);
     } catch (error: any) {
-      this.electNewProviderOrFail(error, retryNumber, lastProviderUsedIndex);
+      this.electNewProviderOrFail(
+        error,
+        alreadyRetriedCount,
+        lastProviderUsedIndex
+      );
       return await this.doExecuteWithFallback(
-        retryNumber + 1,
+        alreadyRetriedCount + 1,
         this.providerIndex,
         fnName,
         ...args
@@ -220,9 +224,7 @@ export class ProviderWithFallback
       throw error;
     }
 
-    // we want to avoid situation were 2 calls fail in very short period
-    // if this happens we would choose effectively as new provider this.providerIndex + 2 % this.providers.length
-    // if first request already has changed provider we do nothing
+    // if another concurrent request already has changed provider we do nothing
     if (lastUsedProviderIndex !== this.providerIndex) {
       return;
     }

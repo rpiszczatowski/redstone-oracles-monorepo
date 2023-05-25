@@ -175,6 +175,18 @@ describe("ProviderWithAgreement", () => {
       await testCallResolutionAlgo(["1", "2", "2"], "2");
     });
 
+    describe("when 3 providers have to agree", () => {
+      it("should should return 2 when results from providers are [2,2,2]", async () => {
+        await testCallResolutionAlgo(["2", "2", "2"], "2", 3);
+      });
+
+      it("should should return 2 when results from providers are [2,2,1]", async () => {
+        await expect(
+          testCallResolutionAlgo(["2", "2", "1"], "2", 3)
+        ).rejectedWith("Failed to find at least 3 agreeing providers.");
+      });
+    });
+
     it("should should return 2 when results from providers are [2,2,1]", async () => {
       await testCallResolutionAlgo(["2", "2", "1"], "2");
     });
@@ -212,7 +224,8 @@ describe("ProviderWithAgreement", () => {
 
 const testCallResolutionAlgo = async (
   providerResponses: string[],
-  expected: string
+  expected: string,
+  requiredNumberOfProvidersToAgree = 2
 ) => {
   const mockProvider = new providers.StaticJsonRpcProvider("http://blabla.xd");
   const stubCall = sinon.stub(mockProvider, "call");
@@ -221,7 +234,8 @@ const testCallResolutionAlgo = async (
   stubBlockNumber.resolves(1);
 
   const agreementProvider = new ProviderWithAgreement(
-    new Array(providerResponses.length).fill(mockProvider)
+    new Array(providerResponses.length).fill(mockProvider),
+    { numberOfProvidersWhichHaveToAgree: requiredNumberOfProvidersToAgree }
   );
 
   for (let i = 0; i < providerResponses.length; i++) {

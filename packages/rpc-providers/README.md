@@ -12,8 +12,13 @@
 ## ProviderWithAgreement
 
 1. Works like `ProviderWithFallback, with an exception for two methods.
-2. `getBlockNumber` asks all providers for blockNumber and then picks `blockNumber.sort(ASC)[1]`
+2. `getBlockNumber` asks all providers for blockNumber and then picks (default)
+
+```js
+blockNumbers.sort((a, b) => a - b).at(Math.floor(numberOfProviders / 3));
+```
+
 3. `call` ask all providers for result
    - if at least `N` answers are the same, it return call result
    - ignore all errors
-   - as soon as it will receive two matching responses returns. (doesn't wait for the rest of the providers to finish)
+   - as soon as it will receive `N` matching responses returns. (doesn't wait for the rest of the providers to finish)

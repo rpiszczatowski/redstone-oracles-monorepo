@@ -10,7 +10,7 @@ import {
 
 export interface ProviderWithAgreementConfig
   extends ProviderWithFallbackConfig {
-  numberOfNodesWhichHaveToAgree: number;
+  numberOfProvidersWhichHaveToAgree: number;
   getBlockNumberTimeoutMS: number;
   electBlockFn: (blocks: number[], numberOfAgreeingNodes: number) => number;
 }
@@ -32,7 +32,7 @@ const defaultConfig: Omit<
   ProviderWithAgreementConfig,
   keyof ProviderWithFallbackConfig
 > = {
-  numberOfNodesWhichHaveToAgree: 2,
+  numberOfProvidersWhichHaveToAgree: 2,
   getBlockNumberTimeoutMS: 5_000,
   electBlockFn: DEFAULT_ELECT_BLOCK_FN,
 };
@@ -50,11 +50,12 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       ...this.getProviderWithFallbackConfig(),
     };
     if (
-      this.agreementConfig.numberOfNodesWhichHaveToAgree < 2 ||
-      this.agreementConfig.numberOfNodesWhichHaveToAgree > this.providers.length
+      this.agreementConfig.numberOfProvidersWhichHaveToAgree < 2 ||
+      this.agreementConfig.numberOfProvidersWhichHaveToAgree >
+        this.providers.length
     ) {
       throw new Error(
-        "numberOfNodesWhichHaveToAgree should be >= 2 and > then supplied providers count"
+        "numberOfProvidersWhichHaveToAgree should be >= 2 and > then supplied providers count"
       );
     }
   }
@@ -121,13 +122,13 @@ export class ProviderWithAgreement extends ProviderWithFallback {
               results.set(currentResult, currentResultCount + 1);
               if (
                 currentResultCount + 1 ===
-                this.agreementConfig.numberOfNodesWhichHaveToAgree
+                this.agreementConfig.numberOfProvidersWhichHaveToAgree
               ) {
                 resolve(currentResult);
               }
+            } else {
+              results.set(currentResult, 1);
             }
-
-            results.set(currentResult, 1);
           })
           .catch((e) => errors.push(e))
           .finally(() => {
@@ -136,7 +137,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
               reject(
                 new AggregateError(
                   errors,
-                  `Failed to find at least ${this.agreementConfig.numberOfNodesWhichHaveToAgree} agreeing providers.`
+                  `Failed to find at least ${this.agreementConfig.numberOfProvidersWhichHaveToAgree} agreeing providers.`
                 )
               );
             }
