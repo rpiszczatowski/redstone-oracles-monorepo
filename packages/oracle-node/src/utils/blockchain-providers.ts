@@ -9,10 +9,10 @@ const produceProvider = (
   if (rpcUrls.length === 1) {
     return new providers.StaticJsonRpcProvider(rpcUrls[0], network);
   } else if (rpcUrls.length > 1) {
-    const provides = rpcUrls.map(
+    const rpcProviders = rpcUrls.map(
       (rpcUrl) => new providers.StaticJsonRpcProvider(rpcUrl, network)
     );
-    return new ProviderWithAgreement(provides);
+    return new ProviderWithAgreement(rpcProviders);
   }
 
   throw new Error(
