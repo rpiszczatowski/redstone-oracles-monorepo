@@ -1,3 +1,4 @@
+import { BigNumberish } from "ethers";
 import { ISafeNumber } from "./numbers/ISafeNumber";
 
 export interface Manifest {
@@ -61,7 +62,7 @@ export type SanitizedPriceDataBeforeAggregation =
 export interface Aggregator {
   getAggregatedValue: (
     price: SanitizedPriceDataBeforeAggregation,
-    allPrices?: PriceDataBeforeAggregation<number>[]
+    allPrices?: PriceDataBeforeAggregation[]
   ) => PriceDataAfterAggregation;
 }
 
@@ -74,7 +75,7 @@ export interface Broadcaster {
 }
 
 export interface PricesObj {
-  [symbol: string]: number;
+  [symbol: string]: BigNumberish;
 }
 
 export interface PriceDataFetched {
@@ -82,7 +83,7 @@ export interface PriceDataFetched {
   value: any; // usually it is a positive number, but it may also be 0, null, undefined or "error"
 }
 
-export interface PriceDataBeforeAggregation<T = number> {
+export interface PriceDataBeforeAggregation<T = BigNumberish> {
   id: string;
   symbol: string;
   source: PriceSource<T>;

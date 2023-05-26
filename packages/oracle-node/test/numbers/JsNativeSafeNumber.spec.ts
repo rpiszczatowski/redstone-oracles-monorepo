@@ -4,7 +4,7 @@ import {
 } from "../../src/numbers/JsNativeSafeNumber";
 import { NumberArg } from "../../src/numbers/ISafeNumber";
 
-describe.only("JsNativePreciseNumber", () => {
+describe("JsNativePreciseNumber", () => {
   describe("from", () => {
     it.each([
       ["0", 0],

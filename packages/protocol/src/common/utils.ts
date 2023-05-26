@@ -34,15 +34,19 @@ export const convertStringToBytes32 = (str: string): Uint8Array => {
   return arrayify(bytes32Str);
 };
 
+// We assume that if value is passed as string it is stringified big number
 export const convertNumberToBytes = (
-  value: NumberLike,
+  value: number | string,
   decimals: number,
   byteSize: number,
   roundFractionalComponentIfExceedsDecimals: boolean = true
 ): Uint8Array => {
-  let stringifiedNumber = roundFractionalComponentIfExceedsDecimals
-    ? Number(value).toFixed(decimals)
-    : String(value);
+  let stringifiedNumber = value.toString();
+  if (typeof value === "number") {
+    stringifiedNumber = roundFractionalComponentIfExceedsDecimals
+      ? Number(value).toFixed(decimals)
+      : stringifiedNumber;
+  }
 
   // js for numbers >1e20 uses scientific notation,
   // which is not supported by BigNumber.js

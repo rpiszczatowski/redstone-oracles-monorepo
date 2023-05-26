@@ -19,6 +19,7 @@ import { validateDataPointsForBigPackage } from "../validators/validate-data-fee
 import { ManifestDataProvider } from "./ManifestDataProvider";
 import { IterationContext } from "../schedulers/IScheduler";
 import ManifestHelper from "../manifest/ManifestHelper";
+import { parseSafeNumberValueForBroadcasting } from "../numbers/SafeNumberFactory";
 const logger = require("./../utils/logger")("runner") as Consola;
 
 const DEFAULT_HTTP_BROADCASTER_URLS = [
@@ -140,7 +141,7 @@ export class DataPackageBroadcastPerformer
   private priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
     return new NumericDataPoint({
       dataFeedId: price.symbol,
-      value: price.value.unsafeToNumber(),
+      value: parseSafeNumberValueForBroadcasting(price.value),
       decimals: ManifestHelper.getDataFeedDecimals(
         this.manifestDataProvider.latestManifest!,
         price.symbol

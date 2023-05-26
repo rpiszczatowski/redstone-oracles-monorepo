@@ -1,4 +1,4 @@
-import { utils } from "redstone-protocol";
+import { BigNumberish } from "ethers";
 
 export interface ISafeNumber {
   add(numberLike: NumberArg): ISafeNumber;
@@ -18,4 +18,4 @@ export interface ISafeNumber {
   unsafeToNumber(): number;
 }
 
-export type NumberArg = utils.NumberLike | ISafeNumber;
+export type NumberArg = BigNumberish | ISafeNumber;

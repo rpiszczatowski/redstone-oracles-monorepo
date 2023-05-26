@@ -11,7 +11,7 @@ import { DataPoint } from "./DataPoint";
 
 export interface INumericDataPoint {
   dataFeedId: ConvertibleToBytes32;
-  value: number;
+  value: number | string;
   decimals?: number;
   valueByteSize?: number;
 }
