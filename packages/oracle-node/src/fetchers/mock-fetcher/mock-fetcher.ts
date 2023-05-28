@@ -1,4 +1,5 @@
 import axios from "axios";
+import { BigNumber } from "ethers";
 import { BaseFetcher } from "../BaseFetcher";
 import { config } from "../../config";
 import { PricesObj } from "../../types";
@@ -21,7 +22,12 @@ export class MockFetcher extends BaseFetcher {
     const result: PricesObj = {};
 
     for (const id of ids) {
-      result[id] = response[id] ?? response.__DEFAULT__;
+      const price = response[id] ?? response.__DEFAULT__;
+      if (id === "MOCK_BIG_NUMBER_VALUE") {
+        result[id] = BigNumber.from(price);
+      } else {
+        result[id] = price;
+      }
     }
     return result;
   }

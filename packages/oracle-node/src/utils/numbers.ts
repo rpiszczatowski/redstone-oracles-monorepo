@@ -2,6 +2,7 @@ import { Consola } from "consola";
 import { BigNumber } from "ethers";
 import { ISafeNumber } from "../numbers/ISafeNumber";
 import { createSafeNumber } from "../numbers/SafeNumberFactory";
+import { SafeBigNumber } from "../numbers/SafeBigNumber";
 
 const logger = require("./logger")("utils/numbers") as Consola;
 
@@ -16,8 +17,13 @@ export const safelyConvertAnyValueToNumber = (value: any): number => {
   }
 };
 
-export const calculateSum = (numbers: ISafeNumber[]) =>
-  numbers.reduce((prev, curr) => prev.add(curr), createSafeNumber(0));
+export const calculateSum = (numbers: ISafeNumber[]) => {
+  let initialValue = createSafeNumber(0);
+  if (numbers[0] instanceof SafeBigNumber) {
+    initialValue = createSafeNumber(BigNumber.from(0));
+  }
+  return numbers.reduce((prev, curr) => prev.add(curr), initialValue);
+};
 
 export const calculateAverageValue = (nums: ISafeNumber[]): ISafeNumber => {
   if (nums.length === 0) {

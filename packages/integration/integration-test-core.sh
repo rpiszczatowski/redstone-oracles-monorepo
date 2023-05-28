@@ -110,6 +110,7 @@ main() {
   waitForDataPackages 1 ETH
   waitForDataPackages 1 BTC
   waitForDataPackages 1 AAVE  
+  waitForDataPackages 1 MOCK_BIG_NUMBER_VALUE  
 
   # Querying data packages from cache service
   curl http://localhost:3000/data-packages/latest/mock-data-service

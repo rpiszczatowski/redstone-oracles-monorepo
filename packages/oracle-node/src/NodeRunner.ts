@@ -254,7 +254,9 @@ export default class NodeRunner {
     for (const price of prices) {
       const sourcesData = JSON.stringify(price.source);
       logger.info(
-        `Fetched price : ${price.symbol} : ${price.value} | ${sourcesData}`
+        `Fetched price: ${
+          price.symbol
+        } : ${price.value.toString()} | ${sourcesData}`
       );
     }
   }

@@ -22,7 +22,7 @@ export function getMedianValue(arr: ISafeNumber[]): ISafeNumber {
     throw new Error("Cannot get median value of an empty array");
   }
 
-  arr = arr.sort((a, b) => createSafeNumber(a).sub(b).unsafeToNumber());
+  arr = arr.sort((a, b) => createSafeNumber(Number(a)).sub(b).unsafeToNumber());
 
   const middle = Math.floor(arr.length / 2);
 

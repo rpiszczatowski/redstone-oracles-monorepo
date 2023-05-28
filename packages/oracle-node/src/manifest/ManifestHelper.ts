@@ -104,11 +104,6 @@ export default class ManifestHelper {
 
   static getDataFeedDecimals(manifest: Manifest, symbol: string) {
     const dataFeedDetails = manifest?.tokens?.[symbol];
-    if (!dataFeedDetails) {
-      throw new Error(
-        `Missing token ${symbol} in the manifest, cannot get decimals`
-      );
-    }
     return dataFeedDetails?.decimals;
   }
 }

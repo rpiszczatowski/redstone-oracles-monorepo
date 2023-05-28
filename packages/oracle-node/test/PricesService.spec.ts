@@ -238,6 +238,7 @@ describe("PricesService", () => {
 
       const pricesAfterAggregation =
         await pricesService.calculateAggregatedValues(prices);
+      console.log(pricesAfterAggregation);
 
       expect(pricesAfterAggregation.map((p) => p.value.toString())).toEqual([
         "42",
@@ -361,7 +362,7 @@ describe("PricesService", () => {
       return pricesService
         .getDeviationWithRecentValuesAverage({
           ...defaultPriceValidationArgs,
-          ...partialPriceValidationArgs,
+          ...(partialPriceValidationArgs as PriceValidationArgs),
         })
         .unsafeToNumber();
     };

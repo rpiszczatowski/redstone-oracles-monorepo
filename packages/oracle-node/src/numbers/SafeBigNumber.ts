@@ -89,4 +89,8 @@ export class SafeBigNumber implements ISafeNumber {
   decimals(): number {
     return this._decimals;
   }
+
+  toString(): string {
+    return this._value.toString();
+  }
 }

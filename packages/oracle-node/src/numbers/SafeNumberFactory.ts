@@ -8,14 +8,15 @@ export const createSafeNumber = (
   numberLike: NumberArg,
   decimals: number = 0
 ) => {
-  if (
+  if (numberLike instanceof BigNumber || numberLike instanceof SafeBigNumber) {
+    return SafeBigNumber.from(numberLike, decimals);
+  } else if (
     typeof numberLike === "number" ||
-    typeof numberLike === "string" ||
     numberLike instanceof JsNativeSafeNumber
   ) {
     return JsNativeSafeNumber.from(numberLike);
-  } else if (numberLike instanceof BigNumber) {
-    return SafeBigNumber.from(numberLike, decimals);
+  } else if (typeof numberLike === "string") {
+    return createNumberOrBigNumber(numberLike, decimals);
   }
   throw new Error("Error while creating safe number, invalid number like type");
 };
@@ -29,4 +30,22 @@ export const parseSafeNumberValueForBroadcasting = (value: ISafeNumber) => {
   throw new Error(
     "Error while parsing for broadcasting, invalid number like type"
   );
+};
+
+export const createNumberOrBigNumber = (
+  numberLike: number | string,
+  decimals: number = 0
+) => {
+  try {
+    const isNumberLikeBiggerThanMax = BigNumber.from(numberLike).gte(
+      BigNumber.from(Number.MAX_SAFE_INTEGER.toString())
+    );
+    if (isNumberLikeBiggerThanMax) {
+      return SafeBigNumber.from(numberLike, decimals);
+    } else {
+      return JsNativeSafeNumber.from(numberLike);
+    }
+  } catch {
+    return JsNativeSafeNumber.from(numberLike);
+  }
 };

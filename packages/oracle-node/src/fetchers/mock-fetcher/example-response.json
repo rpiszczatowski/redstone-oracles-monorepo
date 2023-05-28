@@ -2,5 +2,6 @@
   "BTC": 16000,
   "ETH": 1500,
   "UNI": 6.2,
-  "__DEFAULT__": 42
+  "__DEFAULT__": 42,
+  "MOCK_BIG_NUMBER_VALUE": "9007199254740991000"
 }

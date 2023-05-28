@@ -96,6 +96,10 @@ describe("Utils", () => {
     expect(hexlify(convertNumberToBytes(1e50, 2, 50))).toBe(
       "0x000000000000000000000000000000000000000000000000000000001aba4714957d300d0e549208b31adb10000000000000"
     );
+
+    expect(hexlify(convertNumberToBytes("9007199254740991000000", 2, 50))).toBe(
+      "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000bebc1ffffffffa0a1f00"
+    );
   });
 
   test("Should throw on NaN", () => {

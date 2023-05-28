@@ -40,6 +40,7 @@ export interface PriceValidationArgs {
   timestamp: number;
   deviationConfig: DeviationCheckConfig;
   recentPrices: PriceValueInLocalDB[];
+  symbol: string;
   priceLimits?: PriceLimits;
 }
 
@@ -220,11 +221,11 @@ export default class PricesService {
           timestamp: priceAfterAggregation.timestamp,
           deviationConfig: deviationCheckConfig,
           recentPrices: pricesInLocalDBForSymbol,
+          symbol: priceAfterAggregation.symbol,
         });
 
         // Throwing an error if not enough sources for symbol
         this.assertSourcesNumber(priceAfterAggregation, this.manifest);
-
         aggregatedPrices.push(priceAfterAggregation);
       } catch (e: any) {
         logger.error(`Symbol ${price.symbol}, ${e.stack}`);
@@ -247,8 +248,10 @@ export default class PricesService {
 
     for (const [sourceName, valueFromSource] of Object.entries(price.source)) {
       try {
-        const valueFromSourceNum = createSafeNumber(valueFromSource);
-
+        const valueFromSourceNum = createSafeNumber(
+          valueFromSource,
+          ManifestHelper.getDataFeedDecimals(this.manifest, price.symbol)
+        );
         valueFromSourceNum.assertNonNegative();
 
         this.assertStableDeviation({
@@ -256,6 +259,7 @@ export default class PricesService {
           timestamp: price.timestamp,
           deviationConfig: deviationCheckConfig,
           recentPrices: recentPricesInLocalDBForSymbol,
+          symbol: price.symbol,
         });
 
         newSources[sourceName] = valueFromSourceNum;
@@ -294,7 +298,7 @@ export default class PricesService {
 
   // Calculates max deviation from average of recent values
   getDeviationWithRecentValuesAverage(args: PriceValidationArgs): ISafeNumber {
-    const { value, timestamp, deviationConfig, recentPrices } = args;
+    const { value, timestamp, deviationConfig, recentPrices, symbol } = args;
     const { deviationWithRecentValues } = deviationConfig;
 
     const priceValuesToCompareWith = recentPrices
@@ -303,7 +307,12 @@ export default class PricesService {
           timestamp - recentPrice.timestamp <=
           deviationWithRecentValues.maxDelayMilliseconds
       )
-      .map((recentPrice) => createSafeNumber(recentPrice.value));
+      .map((recentPrice) =>
+        createSafeNumber(
+          recentPrice.value,
+          ManifestHelper.getDataFeedDecimals(this.manifest, symbol)
+        )
+      );
 
     if (priceValuesToCompareWith.length === 0) {
       return createSafeNumber(0);

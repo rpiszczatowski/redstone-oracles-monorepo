@@ -12,6 +12,9 @@
   "tokens": {
     "ETH": {},
     "BTC": {},
-    "AAVE": {}
+    "AAVE": {},
+    "MOCK_BIG_NUMBER_VALUE": {
+      "priceAggregator": "empty"
+    }
   }
 }
