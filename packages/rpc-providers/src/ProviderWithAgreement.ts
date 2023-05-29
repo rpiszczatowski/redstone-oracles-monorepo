@@ -13,24 +13,30 @@ export interface ProviderWithAgreementConfig
   numberOfProvidersWhichHaveToAgree: number;
   getBlockNumberTimeoutMS: number;
   sleepBetweenBlockSynReq: number;
-  electBlockFn: (
-    blocks: number[],
-    numberOfAgreeingNodes: number
-  ) => number | undefined;
+  blockNumberCacheTTLInMS: number;
+  electBlockFn: (blocks: number[], numberOfAgreeingNodes: number) => number;
 }
 
 const DEFAULT_ELECT_BLOCK_FN = (
   blockNumbers: number[],
   numberOfProviders: number
-): number | undefined => {
+): number => {
   if (blockNumbers.length === 1) {
     return blockNumbers[0];
   }
-  // TODO: allow for 80% for example
+  const mid = Math.floor(blockNumbers.length / 2);
 
-  return blockNumbers
-    .sort((a, b) => a - b)
-    .at(Math.floor(numberOfProviders / 3)) as number;
+  if (blockNumbers.length / numberOfProviders < 0.5) {
+    throw new Error(
+      "Failed to elect block number more then 50% of providers didn't respond"
+    );
+  }
+
+  blockNumbers.sort((a, b) => a - b);
+
+  return blockNumbers.length % 2 !== 0
+    ? blockNumbers[mid]
+    : Math.round((blockNumbers[mid - 1] + blockNumbers[mid]) / 2);
 };
 
 const defaultConfig: Omit<
@@ -38,13 +44,15 @@ const defaultConfig: Omit<
   keyof ProviderWithFallbackConfig
 > = {
   numberOfProvidersWhichHaveToAgree: 2,
-  getBlockNumberTimeoutMS: 1_500,
+  getBlockNumberTimeoutMS: 1_000,
   sleepBetweenBlockSynReq: 100,
+  blockNumberCacheTTLInMS: 50000,
   electBlockFn: DEFAULT_ELECT_BLOCK_FN,
 };
 
 export class ProviderWithAgreement extends ProviderWithFallback {
   private readonly agreementConfig: ProviderWithAgreementConfig;
+  private blockNumberCache = { value: 0, lastUpdate: 0n };
 
   constructor(
     providers: JsonRpcProvider[],
@@ -74,12 +82,25 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     transaction: Deferrable<TransactionRequest>,
     blockTag?: BlockTag
   ): Promise<string> {
-    const callResult = this.executeCallWithAgreement(transaction, blockTag);
+    const electedBlockTag = utils.hexlify(
+      blockTag ?? (await this.electBlockNumber())
+    );
+    const callResult = this.executeCallWithAgreement(
+      transaction,
+      electedBlockTag
+    );
 
     return callResult;
   }
 
   private async electBlockNumber(): Promise<number> {
+    if (
+      process.hrtime.bigint() - this.blockNumberCache.lastUpdate <
+      BigInt(this.agreementConfig.blockNumberCacheTTLInMS * 1e6)
+    ) {
+      return this.blockNumberCache.value;
+    }
+
     // collect block numbers
     const blockNumbersResults = await Promise.allSettled(
       this.providers.map((provider) =>
@@ -100,28 +121,35 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       );
     }
 
-    return this.agreementConfig.electBlockFn(
+    const electedBlockNumber = this.agreementConfig.electBlockFn(
       blockNumbers,
       this.providers.length
     );
+
+    this.blockNumberCache = {
+      value: electedBlockNumber,
+      lastUpdate: process.hrtime.bigint(),
+    };
+
+    return electedBlockNumber;
   }
 
   private executeCallWithAgreement(
     transaction: Deferrable<TransactionRequest>,
-    blockTag?: BlockTag
+    electedBlockTag: BlockTag
   ) {
     return new Promise<string>((resolve, reject) => {
+      const electedBlockNumber = convertBlockTagToNumber(electedBlockTag);
       const errors: Error[] = [];
       const results = new Map<string, number>();
       const blockPerProvider: Record<number, number> = {};
       let stop = false;
       let handledResults = 0;
-      let electedBlockTag = blockTag;
 
       const sync = async (providerIndex: number) => {
         if (stop) return;
 
-        while (blockPerProvider[providerIndex] !== electedBlockTag) {
+        while (blockPerProvider[providerIndex] < electedBlockNumber) {
           try {
             blockPerProvider[providerIndex] = await this.providers[
               providerIndex
@@ -143,9 +171,9 @@ export class ProviderWithAgreement extends ProviderWithFallback {
           );
           const currentResultCount = results.get(currentResult);
 
-          // we have found satisfying number of same responses
           if (currentResultCount) {
             results.set(currentResult, currentResultCount + 1);
+            // we have found satisfying number of same responses
             if (
               currentResultCount + 1 ===
               this.agreementConfig.numberOfProvidersWhichHaveToAgree
@@ -161,6 +189,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         }
         handledResults += 1;
         if (handledResults === this.providers.length) {
+          stop = true;
           reject(
             new AggregateError(
               errors,
@@ -170,30 +199,10 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         }
       };
 
-      const electBlock = () => {
-        const currentBlocks = Object.values(blockPerProvider);
-        electedBlockTag = this.agreementConfig.electBlockFn(
-          currentBlocks,
-          this.providers.length
-        );
-      };
-
-      const process = async () => {
-        for (
-          let providerIndex = 0;
-          providerIndex < this.providers.length;
-          providerIndex++
-        ) {
-          syncThenCall(providerIndex);
-        }
-
-        while (!electedBlockTag) {
-          electBlock();
-          await sleepMS(this.agreementConfig.sleepBetweenBlockSynReq + 10);
-        }
-      };
-
-      process();
+      this.providers.forEach((_, providerIndex) => syncThenCall(providerIndex));
     });
   }
 }
+
+const convertBlockTagToNumber = (blockTag: BlockTag): number =>
+  typeof blockTag === "string" ? parseInt(blockTag, 16) : blockTag;

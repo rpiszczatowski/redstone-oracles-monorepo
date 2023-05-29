@@ -49,16 +49,46 @@ describe("ProviderWithAgreement", () => {
     });
   });
 
+  describe("elected block number cache", () => {
+    it("should omit cache when TTL passed", async () => {
+      const providerWithAgreement = new ProviderWithAgreement(
+        [hardhat.ethers.provider, hardhat.ethers.provider],
+        { blockNumberCacheTTLInMS: 0 }
+      );
+
+      const first = await providerWithAgreement.getBlockNumber();
+      await hardhat.ethers.provider.send("evm_mine", []);
+      const second = await providerWithAgreement.getBlockNumber();
+
+      expect(first + 1).to.eq(second);
+    });
+    it("should NOT omit cache when TTL NOT passed", async () => {
+      const providerWithAgreement = new ProviderWithAgreement(
+        [hardhat.ethers.provider, hardhat.ethers.provider],
+        { blockNumberCacheTTLInMS: 5000 }
+      );
+
+      const first = await providerWithAgreement.getBlockNumber();
+      await hardhat.ethers.provider.send("evm_mine", []);
+      const second = await providerWithAgreement.getBlockNumber();
+
+      expect(first).to.eq(second);
+    });
+  });
+
   describe("with 2 same providers and 1 always failing", () => {
     let providerWithAgreement: ProviderWithAgreement;
     let counter: Counter;
 
     beforeEach(async () => {
-      providerWithAgreement = new ProviderWithAgreement([
-        new providers.StaticJsonRpcProvider("http://blabla.xd"),
-        hardhat.ethers.provider,
-        hardhat.ethers.provider,
-      ]);
+      providerWithAgreement = new ProviderWithAgreement(
+        [
+          new providers.StaticJsonRpcProvider("http://blabla.xd"),
+          hardhat.ethers.provider,
+          hardhat.ethers.provider,
+        ],
+        { blockNumberCacheTTLInMS: 0 }
+      );
       counter = contract.connect(signer.connect(providerWithAgreement));
     });
 
