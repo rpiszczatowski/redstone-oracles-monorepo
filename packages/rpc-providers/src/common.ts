@@ -5,3 +5,6 @@ export const timeout = <T>(prom: Promise<T>, timeoutMS: number): Promise<T> => {
     new Promise((_r, rej) => (timer = setTimeout(rej, timeoutMS))),
   ]).finally(() => clearTimeout(timer));
 };
+
+export const sleepMS = (ms: number) =>
+  new Promise((resolve, reject) => setTimeout(resolve, ms));

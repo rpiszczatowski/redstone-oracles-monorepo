@@ -2,7 +2,7 @@ import { BlockTag, TransactionRequest } from "@ethersproject/abstract-provider";
 import { Deferrable } from "@ethersproject/properties";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { utils } from "ethers";
-import { timeout } from "./common";
+import { sleepMS, timeout } from "./common";
 import {
   ProviderWithFallback,
   ProviderWithFallbackConfig,
@@ -12,16 +12,21 @@ export interface ProviderWithAgreementConfig
   extends ProviderWithFallbackConfig {
   numberOfProvidersWhichHaveToAgree: number;
   getBlockNumberTimeoutMS: number;
-  electBlockFn: (blocks: number[], numberOfAgreeingNodes: number) => number;
+  sleepBetweenBlockSynReq: number;
+  electBlockFn: (
+    blocks: number[],
+    numberOfAgreeingNodes: number
+  ) => number | undefined;
 }
 
 const DEFAULT_ELECT_BLOCK_FN = (
   blockNumbers: number[],
   numberOfProviders: number
-): number => {
+): number | undefined => {
   if (blockNumbers.length === 1) {
     return blockNumbers[0];
   }
+  // TODO: allow for 80% for example
 
   return blockNumbers
     .sort((a, b) => a - b)
@@ -33,7 +38,8 @@ const defaultConfig: Omit<
   keyof ProviderWithFallbackConfig
 > = {
   numberOfProvidersWhichHaveToAgree: 2,
-  getBlockNumberTimeoutMS: 5_000,
+  getBlockNumberTimeoutMS: 1_500,
+  sleepBetweenBlockSynReq: 100,
   electBlockFn: DEFAULT_ELECT_BLOCK_FN,
 };
 
@@ -68,15 +74,9 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     transaction: Deferrable<TransactionRequest>,
     blockTag?: BlockTag
   ): Promise<string> {
-    const electedBlockTag = utils.hexlify(
-      blockTag ?? (await this.electBlockNumber())
-    ) as BlockTag;
+    const callResult = this.executeCallWithAgreement(transaction, blockTag);
 
-    const promises = this.providers.map((provider) =>
-      provider.call(transaction, electedBlockTag)
-    );
-
-    return this.resolveCallPromises(promises);
+    return callResult;
   }
 
   private async electBlockNumber(): Promise<number> {
@@ -106,43 +106,94 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     );
   }
 
-  private resolveCallPromises(callPromises: Promise<string>[]) {
+  private executeCallWithAgreement(
+    transaction: Deferrable<TransactionRequest>,
+    blockTag?: BlockTag
+  ) {
     return new Promise<string>((resolve, reject) => {
       const errors: Error[] = [];
       const results = new Map<string, number>();
+      const blockPerProvider: Record<number, number> = {};
+      let stop = false;
       let handledResults = 0;
+      let electedBlockTag = blockTag;
 
-      for (const callPromise of callPromises) {
-        callPromise
-          .then((currentResult) => {
-            const currentResultCount = results.get(currentResult);
+      const sync = async (providerIndex: number) => {
+        if (stop) return;
 
-            // we have found satisfying number of same responses
-            if (currentResultCount) {
-              results.set(currentResult, currentResultCount + 1);
-              if (
-                currentResultCount + 1 ===
-                this.agreementConfig.numberOfProvidersWhichHaveToAgree
-              ) {
-                resolve(currentResult);
-              }
-            } else {
-              results.set(currentResult, 1);
+        while (blockPerProvider[providerIndex] !== electedBlockTag) {
+          try {
+            blockPerProvider[providerIndex] = await this.providers[
+              providerIndex
+            ].getBlockNumber();
+          } catch (e) {}
+          await sleepMS(this.agreementConfig.sleepBetweenBlockSynReq);
+        }
+      };
+
+      const syncThenCall = async (providerIndex: number) => {
+        await sync(providerIndex);
+        if (stop) {
+          return;
+        }
+        try {
+          const currentResult = await this.providers[providerIndex].call(
+            transaction,
+            electedBlockTag
+          );
+          const currentResultCount = results.get(currentResult);
+
+          // we have found satisfying number of same responses
+          if (currentResultCount) {
+            results.set(currentResult, currentResultCount + 1);
+            if (
+              currentResultCount + 1 ===
+              this.agreementConfig.numberOfProvidersWhichHaveToAgree
+            ) {
+              stop = true;
+              resolve(currentResult);
             }
-          })
-          .catch((e) => errors.push(e))
-          .finally(() => {
-            handledResults += 1;
-            if (handledResults === callPromises.length) {
-              reject(
-                new AggregateError(
-                  errors,
-                  `Failed to find at least ${this.agreementConfig.numberOfProvidersWhichHaveToAgree} agreeing providers.`
-                )
-              );
-            }
-          });
-      }
+          } else {
+            results.set(currentResult, 1);
+          }
+        } catch (e: any) {
+          errors.push(e);
+        }
+        handledResults += 1;
+        if (handledResults === this.providers.length) {
+          reject(
+            new AggregateError(
+              errors,
+              `Failed to find at least ${this.agreementConfig.numberOfProvidersWhichHaveToAgree} agreeing providers.`
+            )
+          );
+        }
+      };
+
+      const electBlock = () => {
+        const currentBlocks = Object.values(blockPerProvider);
+        electedBlockTag = this.agreementConfig.electBlockFn(
+          currentBlocks,
+          this.providers.length
+        );
+      };
+
+      const process = async () => {
+        for (
+          let providerIndex = 0;
+          providerIndex < this.providers.length;
+          providerIndex++
+        ) {
+          syncThenCall(providerIndex);
+        }
+
+        while (!electedBlockTag) {
+          electBlock();
+          await sleepMS(this.agreementConfig.sleepBetweenBlockSynReq + 10);
+        }
+      };
+
+      process();
     });
   }
 }
