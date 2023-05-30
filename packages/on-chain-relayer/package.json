@@ -4,7 +4,7 @@
   "types": "dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && tsc --build",
+    "build": "rm -rf dist && tsc -build",
     "start": "node dist/src/run-relayer.js",
     "start:dev": "ts-node src/run-relayer.ts",
     "compile": "hardhat compile",
@@ -14,8 +14,7 @@
   "dependencies": {
     "@redstone-finance/evm-connector": "^0.0.19",
     "dotenv": "^16.0.3",
-    "ethers": "^5.7.2",
-    "redstone-rpc-providers": "*",
+    "ethers": "^5.6.8",
     "toad-scheduler": "^2.2.0"
   },
   "devDependencies": {
@@ -30,12 +29,10 @@
     "@types/chai": "^4.2.0",
     "@types/mocha": ">=9.1.0",
     "@types/node": "^18.14.6",
-    "@types/sinon": "^10.0.14",
     "chai": "^4.2.0",
     "hardhat": "^2.9.7",
     "hardhat-gas-reporter": "^1.0.9",
     "msw": "^1.1.0",
-    "sinon": "^15.0.3",
     "solidity-coverage": "^0.8.0",
     "ts-node": ">=8.0.0",
     "typechain": "^8.1.0",

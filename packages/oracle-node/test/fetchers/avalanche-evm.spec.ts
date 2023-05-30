@@ -319,6 +319,31 @@ describe("Avalanche EVM fetcher", () => {
       ]);
     });
   });
+
+  test("Should use fallback if first provider failed", async () => {
+    const fallbackProvider = new MockProvider();
+    const [wallet] = fallbackProvider.getWallets();
+
+    const oracleTokenContract = await deployMockContract(
+      wallet,
+      oracleAdapterContractsDetails.sAVAX.abi
+    );
+    await oracleTokenContract.mock.latestAnswer.returns("2221594395");
+
+    multicallContract = await deployMulticallContract(wallet);
+
+    oracleAdapterContractsDetails.sAVAX.address = oracleTokenContract.address;
+
+    const fetcher = new EvmFetcher(
+      "avalanche-evm-test-fetcher",
+      { mainProvider: {} as any, fallbackProvider },
+      multicallContract.address,
+      requestHandlers
+    );
+
+    const result = await fetcher.fetchAll(["sAVAX"]);
+    expect(result).toEqual([{ symbol: "sAVAX", value: 22.21594395 }]);
+  });
 });
 
 async function deployMulticallContract(wallet: Wallet) {

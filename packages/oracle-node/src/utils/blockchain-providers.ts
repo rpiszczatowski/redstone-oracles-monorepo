@@ -1,41 +1,20 @@
 import { providers } from "ethers";
 import { config } from "../config";
-import { ProviderWithAgreement } from "redstone-rpc-providers";
 
-const produceProvider = (
-  rpcUrls: string[],
-  network: { name: string; chainId: number }
-): providers.Provider => {
-  if (rpcUrls.length === 1) {
-    return new providers.StaticJsonRpcProvider(rpcUrls[0], network);
-  } else if (rpcUrls.length > 1) {
-    const rpcProviders = rpcUrls.map(
-      (rpcUrl) => new providers.StaticJsonRpcProvider(rpcUrl, network)
-    );
-    return new ProviderWithAgreement(rpcProviders);
+export const ethereumProvider = new providers.StaticJsonRpcProvider(
+  config.ethMainRpcUrl,
+  {
+    name: "Ethereum Mainnet",
+    chainId: 1,
   }
-
-  throw new Error(
-    `At least one rpc url has to be specified for network ${network.name}`
-  );
-};
-
-const ethereumNetworkConfig = {
-  name: "Ethereum Mainnet",
-  chainId: 1,
-};
-export const ethereumProvider = produceProvider(
-  config.ethMainRpcUrls,
-  ethereumNetworkConfig
 );
 
-const arbitrumNetworkConfig = {
-  name: "Arbitrum One",
-  chainId: 42161,
-};
-export const arbitrumProvider = produceProvider(
-  config.arbitrumRpcUrls,
-  arbitrumNetworkConfig
+export const arbitrumProvider = new providers.StaticJsonRpcProvider(
+  config.arbitrumRpcUrl,
+  {
+    name: "Arbitrum One",
+    chainId: 42161,
+  }
 );
 
 const avalancheNetworkConfig = {
@@ -43,7 +22,12 @@ const avalancheNetworkConfig = {
   chainId: 43114,
 };
 
-export const avalancheProvider = produceProvider(
-  config.avalancheRpcUrls,
+export const avalancheProvider = new providers.StaticJsonRpcProvider(
+  config.avalancheRpcUrl,
+  avalancheNetworkConfig
+);
+
+export const fallbackProvider = new providers.StaticJsonRpcProvider(
+  config.fallbackAvalancheRpcUrl,
   avalancheNetworkConfig
 );

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2021",
+    "target": "es2020",
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": true,
@@ -31,9 +31,6 @@
     },
     {
       "path": "../sdk"
-    },
-    {
-      "path": "../rpc-providers/tsconfig.build.json"
     }
   ]
 }

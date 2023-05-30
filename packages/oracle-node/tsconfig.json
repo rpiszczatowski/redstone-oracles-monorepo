@@ -30,9 +30,6 @@
       "path": "../protocol"
     },
     {
-      "path": "../rpc-providers/tsconfig.build.json"
-    },
-    {
       "path": "../sdk"
     },
     {

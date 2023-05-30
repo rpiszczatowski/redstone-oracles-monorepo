@@ -11,7 +11,7 @@ import { config } from "../../config";
 
 const balancerConfig: BalancerSdkConfig = {
   network: Network.MAINNET,
-  rpcUrl: config.ethMainRpcUrls[0],
+  rpcUrl: config.ethMainRpcUrl as string,
 };
 
 export interface BalancerResponse {

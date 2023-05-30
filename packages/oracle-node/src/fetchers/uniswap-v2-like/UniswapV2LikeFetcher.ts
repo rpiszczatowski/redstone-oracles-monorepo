@@ -30,7 +30,7 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<Reserves> {
   constructor(
     name: string,
     protected readonly poolsConfig: PoolsConfig,
-    private readonly provider: providers.Provider
+    private readonly provider: providers.JsonRpcProvider
   ) {
     super(name);
   }

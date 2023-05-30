@@ -19,7 +19,7 @@ export const config = Object.freeze({
     getFromEnv("RELAYER_ITERATION_INTERVAL")
   ) as number,
   updatePriceInterval: Number(getFromEnv("UPDATE_PRICE_INTERVAL")) as number,
-  rpcUrls: JSON.parse(getFromEnv("RPC_URLS") || "[]") as string[],
+  rpcUrl: getFromEnv("RPC_URL") as string,
   chainName: getFromEnv("CHAIN_NAME") as string,
   chainId: getFromEnv("CHAIN_ID") as string,
   privateKey: getFromEnv("PRIVATE_KEY") as string,

@@ -25,7 +25,7 @@ type MessageDetails =
   | { type: "other" };
 
 const ERROR_CUT_LENGTH = 100;
-const LOGS_FILE = process.argv[2];
+const LOGS_FILE = "./tmp.out";
 const FETCHNIG_FAILED_REGEX = /Fetching failed for source: (.*):/;
 const NOT_IN_RESPONSE_REGEX = /Id (.*) is not included in response for: (.*)/;
 const NO_VALID_VALUES_REGEX = /No valid values for symbol: (.*)\n/;

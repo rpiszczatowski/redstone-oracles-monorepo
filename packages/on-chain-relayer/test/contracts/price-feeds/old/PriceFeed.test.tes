@@ -82,9 +82,7 @@ describe("PriceFeed", () => {
       const roundData = await contract.getRoundData(roundId);
       expect(roundData.answer).to.be.equal(167099000000);
       expect(roundData.roundId).to.be.equal(roundId);
-      expect(
-        Math.abs(roundData.updatedAt.toNumber() - expectedTimestamp)
-      ).to.be.lessThanOrEqual(1); // 1 second epsilon
+      expect(roundData.updatedAt).to.be.equal(expectedTimestamp);
     }
   });
 });

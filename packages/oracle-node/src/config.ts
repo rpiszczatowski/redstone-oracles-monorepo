@@ -9,37 +9,19 @@ const DEFAULT_PRINT_DIAGNOSTIC_INFO = "true";
 const DEFAULT_ENABLE_STREAMR_BROADCASTING = "false";
 const DEFAULT_MANIFEST_REFRESH_INTERVAL = "120000";
 const DEFAULT_TWELVE_DATA_API_KEY = "";
+const DEFAULT_ETH_MAIN_RPC_URL = "https://rpc.ankr.com/eth";
 const DEFAULT_LEVEL_DB_LOCATION = "oracle-node-level-db";
 const DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS = "900000";
 const DEFAULT_ETHERSCAN_API_URL = "";
 const DEFAULT_ETHERSCAN_API_KEY = "";
-const DEFAULT_AVALANCHE_RPC_URLS = [
-  "https://api.avax.network/ext/bc/C/rpc",
-  "https://avalanche.blockpi.network/v1/rpc/public",
-  "https://avax.meowrpc.com",
-  "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc",
-  "https://avalanche-c-chain.publicnode.com",
-];
-const DEFAULT_ARBITRUM_RPC_URLS = [
-  "https://arb1.arbitrum.io/rpc",
-  "https://arb1.croswap.com/rpc",
-  "https://arbitrum-one.public.blastapi.io",
-  "https://arb-mainnet.g.alchemy.com/v2/demo",
-  "https://1rpc.io/arb",
-];
-const DEFAULT_ETH_MAIN_RPC_URLS = [
-  "https://rpc.ankr.com/eth",
-  "https://eth.llamarpc.com",
-  "https://virginia.rpc.blxrbdn.com",
-  "https://core.gashawk.io/rpc",
-  "https://ethereum.publicnode.com",
-];
+const DEFAULT_AVALANCHE_RPC_URL = "https://api.avax.network/ext/bc/C/rpc";
 const DEFAULT_MOCK_PRICES_URL_OR_PATH =
   "https://raw.githubusercontent.com/redstone-finance/redstone-mock-prices/main/mock-prices.json";
 const DEFAULT_COINBASE_INDEXER_MONGODB_URL = "";
 const DEFAULT_COINMARKETCAP_API_KEY = "";
 const DEFAULT_KAIKO_API_KEY = "";
 const DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE = "90";
+const DEFAULT_ARBITRUM_RPC_URL = "https://arb1.arbitrum.io/rpc";
 const DEFAULT_PROVIDER_ID_FOR_PRICE_BROADCASTING = "";
 const DEFAULT_STLOUISFED_API_KEY = "";
 const DEFAULT_COINGECKO_API_URL =
@@ -104,16 +86,6 @@ const getOptionallyCacheServiceUrls = () => {
   }
 };
 
-const getRpcUrls = (name: string, defaultValue: string[]): string[] => {
-  const rpcUrls = JSON.parse(getFromEnv(name, JSON.stringify(defaultValue)));
-
-  if (rpcUrls.length < 1) {
-    throw new Error(`At least one RPC URL ${name} required`);
-  }
-
-  return rpcUrls;
-};
-
 const getOptionallyPriceDataServiceUrls = () => {
   const overridePriceCacheServiceUrls = getFromEnv(
     "OVERRIDE_PRICE_CACHE_SERVICE_URLS",
@@ -168,7 +140,7 @@ export const config: NodeConfig = Object.freeze({
     "COINBASE_INDEXER_MONGODB_URL",
     DEFAULT_COINBASE_INDEXER_MONGODB_URL
   ),
-  ethMainRpcUrls: getRpcUrls("ETH_MAIN_RPC_URLS", DEFAULT_ETH_MAIN_RPC_URLS),
+  ethMainRpcUrl: getFromEnv("ETH_MAIN_RPC_URL", DEFAULT_ETH_MAIN_RPC_URL),
   levelDbLocation: getFromEnv("LEVEL_DB_LOCATION", DEFAULT_LEVEL_DB_LOCATION),
   etherscanApiUrl: getFromEnv("ETHERSCAN_API_URL", DEFAULT_ETHERSCAN_API_URL),
   etherscanApiKey: getFromEnv("ETHERSCAN_API_KEY", DEFAULT_ETHERSCAN_API_KEY),
@@ -178,11 +150,12 @@ export const config: NodeConfig = Object.freeze({
       DEFAULT_TTL_FOR_PRICES_IN_LOCAL_DB_IN_MILLISECONDS
     )
   ),
-  avalancheRpcUrls: getRpcUrls(
-    "AVALANCHE_RPC_URLS",
-    DEFAULT_AVALANCHE_RPC_URLS
+  avalancheRpcUrl: getFromEnv("AVALANCHE_RPC_URL", DEFAULT_AVALANCHE_RPC_URL),
+  fallbackAvalancheRpcUrl: getFromEnv(
+    "FALLBACK_AVALANCHE_RPC_URL",
+    DEFAULT_AVALANCHE_RPC_URL
   ),
-  arbitrumRpcUrls: getRpcUrls("ARBITRUM_RPC_URLS", DEFAULT_ARBITRUM_RPC_URLS),
+  arbitrumRpcUrl: getFromEnv("ARBITRUM_RPC_URL", DEFAULT_ARBITRUM_RPC_URL),
   enableStreamrBroadcasting: parserFromString.boolean(
     getFromEnv(
       "ENABLE_STREAMR_BROADCASTING",

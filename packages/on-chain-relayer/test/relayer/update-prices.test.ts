@@ -13,10 +13,6 @@ import {
   mockEnvVariables,
 } from "../helpers";
 import { parseUnits } from "ethers/lib/utils";
-import * as sinon from "sinon";
-import * as hardhat from "hardhat";
-import { StaticJsonRpcProvider } from "@ethersproject/providers";
-import { ProviderWithFallback } from "redstone-rpc-providers";
 import * as getProviderOrSigner from "../../src/core/contract-interactions/get-provider-or-signer";
 
 chai.use(chaiAsPromised);
@@ -24,24 +20,14 @@ chai.use(chaiAsPromised);
 const mockToken1Address = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9"; // CELO token address
 const mockToken2Address = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"; // cUSD token address
 
-describe("updatePrices", () => {
-  let getProviderStub: sinon.SinonStub<
-    [],
-    ProviderWithFallback | StaticJsonRpcProvider
-  >;
+describe("update-prices", () => {
   before(() => {
     mockEnvVariables();
     server.listen();
-    getProviderStub = sinon.stub(getProviderOrSigner, "getProvider");
-    getProviderStub.returns(hardhat.ethers.provider);
   });
 
   afterEach(() => server.resetHandlers());
-
-  after(() => {
-    server.close();
-    getProviderStub.restore();
-  });
+  after(() => server.close());
 
   it("should update price in price-feeds adapter", async () => {
     // Deploy contract
@@ -53,16 +39,19 @@ describe("updatePrices", () => {
     await priceFeedsAdapter.deployed();
 
     // Update prices
-    const { lastUpdateTimestamp } = await getLastRoundParamsFromContract(
-      priceFeedsAdapter
-    );
+    const { lastUpdateTimestamp } =
+      await getLastRoundParamsFromContract(priceFeedsAdapter);
     const dataPackages = await getDataPackagesResponse();
-    await updatePrices(dataPackages, priceFeedsAdapter, lastUpdateTimestamp);
+    await updatePrices(
+      dataPackages,
+      priceFeedsAdapter,
+      lastUpdateTimestamp
+    );
 
     // Check updated values
-    const dataFeedsValues = await priceFeedsAdapter.getValuesForDataFeeds([
-      btcDataFeed,
-    ]);
+    const dataFeedsValues = await priceFeedsAdapter.getValuesForDataFeeds(
+      [btcDataFeed]
+    );
     expect(dataFeedsValues[0]).to.be.equal(2307768000000);
   });
 
@@ -90,11 +79,14 @@ describe("updatePrices", () => {
     mockEnvVariables(overrideMockConfig);
 
     // Update prices
-    const { lastUpdateTimestamp } = await getLastRoundParamsFromContract(
-      mentoAdapter
-    );
+    const { lastUpdateTimestamp } =
+      await getLastRoundParamsFromContract(mentoAdapter);
     const dataPackages = await getDataPackagesResponse();
-    await updatePrices(dataPackages, mentoAdapter, lastUpdateTimestamp);
+    await updatePrices(
+      dataPackages,
+      mentoAdapter,
+      lastUpdateTimestamp
+    );
 
     // Check updated values in SortedOracles
     const normalizeValue = (num: number) => parseUnits(num.toString(), 24);
