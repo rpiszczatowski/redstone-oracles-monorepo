@@ -20,6 +20,7 @@
     "@nomiclabs/hardhat-etherscan": "^3.0.0",
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.1",
+    "@types/sinon": "^10.0.15",
     "chai": "^4.3.7",
     "ethers": "5.7.2",
     "hardhat": "^2.13.0",
