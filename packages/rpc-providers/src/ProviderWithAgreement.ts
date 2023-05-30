@@ -26,12 +26,6 @@ const DEFAULT_ELECT_BLOCK_FN = (
   }
   const mid = Math.floor(blockNumbers.length / 2);
 
-  if (blockNumbers.length / numberOfProviders < 0.5) {
-    throw new Error(
-      "Failed to elect block number more then 50% of providers didn't respond"
-    );
-  }
-
   blockNumbers.sort((a, b) => a - b);
 
   return blockNumbers.length % 2 !== 0
@@ -46,7 +40,7 @@ const defaultConfig: Omit<
   numberOfProvidersWhichHaveToAgree: 2,
   getBlockNumberTimeoutMS: 1_000,
   sleepBetweenBlockSynReq: 100,
-  blockNumberCacheTTLInMS: 50000,
+  blockNumberCacheTTLInMS: 50,
   electBlockFn: DEFAULT_ELECT_BLOCK_FN,
 };
 
@@ -150,20 +144,18 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         if (stop) return;
 
         while (blockPerProvider[providerIndex] < electedBlockNumber) {
-          try {
-            blockPerProvider[providerIndex] = await this.providers[
-              providerIndex
-            ].getBlockNumber();
-          } catch (e) {}
+          blockPerProvider[providerIndex] = await this.providers[providerIndex]
+            .getBlockNumber()
+            // ignore errors try again later
+            .catch();
+          if (stop) {
+            return;
+          }
           await sleepMS(this.agreementConfig.sleepBetweenBlockSynReq);
         }
       };
 
-      const syncThenCall = async (providerIndex: number) => {
-        await sync(providerIndex);
-        if (stop) {
-          return;
-        }
+      const call = async (providerIndex: number) => {
         try {
           const currentResult = await this.providers[providerIndex].call(
             transaction,
@@ -187,6 +179,11 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         } catch (e: any) {
           errors.push(e);
         }
+      };
+
+      const syncThenCall = async (providerIndex: number) => {
+        await sync(providerIndex);
+        await call(providerIndex);
         handledResults += 1;
         if (handledResults === this.providers.length) {
           stop = true;

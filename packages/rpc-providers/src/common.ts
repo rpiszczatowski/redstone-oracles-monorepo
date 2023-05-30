@@ -2,7 +2,13 @@ export const timeout = <T>(prom: Promise<T>, timeoutMS: number): Promise<T> => {
   let timer: NodeJS.Timeout;
   return Promise.race<T>([
     prom,
-    new Promise((_r, rej) => (timer = setTimeout(rej, timeoutMS))),
+    new Promise(
+      (_r, reject) =>
+        (timer = setTimeout(
+          () => reject(`Timeout error ${timeoutMS} [MS]`),
+          timeoutMS
+        ))
+    ),
   ]).finally(() => clearTimeout(timer));
 };
 
