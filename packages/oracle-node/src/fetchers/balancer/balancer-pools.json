@@ -30,5 +30,31 @@
         "balance": "15694161.705201585926153961"
       }
     ]
+  },
+  {
+    "id": "0x02d928e68d8f10c0358566152677db51e1e2dc8c00000000000000000000051e",
+    "tokens": [
+      {
+        "symbol": "swETH-bb-a-WETH-BPT",
+        "name": "Balancer Boosted swETH-WETH",
+        "decimals": 18,
+        "balance": "2596148429266438.1916059063508278",
+        "priceRate": "1"
+      },
+      {
+        "symbol": "bb-a-WETH",
+        "name": "Balancer Aave v3 Boosted Pool (WETH)",
+        "decimals": 18,
+        "balance": "2173.57948540546325029",
+        "priceRate": "1.001504642601917431"
+      },
+      {
+        "symbol": "swETH",
+        "name": "swETH",
+        "decimals": 18,
+        "balance": "3723.917775769671160473",
+        "priceRate": "1.027790092574517855"
+      }
+    ]
   }
 ]
