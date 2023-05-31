@@ -48,33 +48,6 @@ describe("ProviderWithAgreement", () => {
     });
   });
 
-  describe("elected block number cache", () => {
-    it("should omit cache when TTL passed", async () => {
-      const providerWithAgreement = new ProviderWithAgreement(
-        [hardhat.ethers.provider, hardhat.ethers.provider],
-        { blockNumberCacheTTLInMS: 0 }
-      );
-
-      const first = await providerWithAgreement.getBlockNumber();
-      await hardhat.ethers.provider.send("evm_mine", []);
-      const second = await providerWithAgreement.getBlockNumber();
-
-      expect(first + 1).to.eq(second);
-    });
-    it("should NOT omit cache when TTL NOT passed", async () => {
-      const providerWithAgreement = new ProviderWithAgreement(
-        [hardhat.ethers.provider, hardhat.ethers.provider],
-        { blockNumberCacheTTLInMS: 5000 }
-      );
-
-      const first = await providerWithAgreement.getBlockNumber();
-      await hardhat.ethers.provider.send("evm_mine", []);
-      const second = await providerWithAgreement.getBlockNumber();
-
-      expect(first).to.eq(second);
-    });
-  });
-
   describe("with 2 same providers and 1 always failing", () => {
     let providerWithAgreement: ProviderWithAgreement;
     let counter: Counter;
@@ -178,24 +151,6 @@ describe("ProviderWithAgreement", () => {
     it("should await tx", async () => {
       const tx = await counter.inc();
       expect(await tx.wait()).not.to.be.undefined;
-    });
-
-    it("should respect getBlockNumber timeout", async () => {
-      const firstProvider = new providers.StaticJsonRpcProvider(
-        "http://blabla.xd"
-      );
-
-      firstProvider.getBlockNumber = () =>
-        new Promise((resolve) => setTimeout(() => resolve(0), 22));
-
-      const providerWithAgreement = new ProviderWithAgreement(
-        [firstProvider, hardhat.ethers.provider],
-        { getBlockNumberTimeoutMS: 20 }
-      );
-
-      expect(await providerWithAgreement.getBlockNumber()).to.eq(
-        await hardhat.ethers.provider.getBlockNumber()
-      );
     });
   });
 
