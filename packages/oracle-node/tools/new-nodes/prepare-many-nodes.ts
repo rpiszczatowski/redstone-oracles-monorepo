@@ -1,25 +1,25 @@
-import { JWKInterface } from "arweave/node/lib/wallet";
 import prompts from "prompts";
 import fs from "fs";
 import Arweave from "arweave/node";
 import { ethers } from "ethers";
-import { SmartWeaveNodeFactory } from "redstone-smartweave";
-import {
-  RedstoneOraclesInput,
-  RegisterNodeInputData,
-} from "../../src/contracts/redstone-oracle-registry/types";
-import contractAddresses from "../../src/config/contracts.json";
+import { RegisterNodeInputData } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
+import path from "path";
 
 const DEFAULT_LOGO_URL =
   "https://redstone.finance/assets/img/redstone-logo-full.svg";
 const DEFAULT_NODE_URL = "https://redstone.finance";
 const DEFAULT_IP_ADDRESS = "0.0.0.0";
-const SECRETS_FOLDER = `./.secrets/tmp-${Date.now()}`;
-const DEFAULT_NAME_PREFIX = "redstone-avalanche-prod-node-";
+const DEFAULT_NAME_PREFIX = "redstone-primary-prod-node-";
 const DEFAULT_DESCRIPTION_PREFIX =
-  "Most popular tokens from the Avalanche ecosystem - prod node ";
-const DEFAULT_DATA_FEED_ID = "redstone-avalanche-prod";
-const NODES_CONFIG_FILE = "./src/config/nodes.json";
+  "Data feeds from primary redstone nodes - prod node ";
+const DEFAULT_DATA_SERVICE_ID = "redstone-primary-prod";
+const ORACLE_REGISTRY_STATE_FILE = path.resolve(
+  __dirname,
+  "../../../oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/initial-state.json"
+);
+const JWK_ENV_PREFIX = "ARWEAVE_KEY_";
+const ECDSA_ENV_PREFIX = "ECDSA_KEY_";
+const SECRETS_ENV_FILE_PATH = ".env-secrets";
 
 interface InitialParamsForNewNodes {
   namePrefixForNodes: string;
@@ -41,8 +41,6 @@ async function main() {
   const initialParams = await getInitialParams();
   const { startNodeIndex, newNodesCount } = initialParams;
 
-  createFolderIfNotCreated(SECRETS_FOLDER);
-
   for (
     let nodeIndex = startNodeIndex;
     nodeIndex < newNodesCount + startNodeIndex;
@@ -62,7 +60,7 @@ async function registerNewNode(
   const description = nodesParams.descriptionPrefixForNodes + nodeIndex;
 
   // Generate arweave wallet
-  console.log(`Generating Arweve and EVM wallets`);
+  console.log(`Generating Arweave and EVM wallets`);
   const jwk = await arweave.wallets.generate();
   const arweaveAddress = await arweave.wallets.jwkToAddress(jwk);
   const arweavePublicKey = jwk.n;
@@ -73,65 +71,37 @@ async function registerNewNode(
   const evmPublicKey = evmWallet.publicKey;
   const evmAddress = evmWallet.address;
 
-  // Creating config
-  const config = prepareNewConfig(jwk, evmPrivateKey);
-
-  // Save secrets in files
-  saveJSONInFile(`${SECRETS_FOLDER}/${nodeIndex}.json`, config);
-
-  // Update nodes config
-  const nodesConfig = readJSONFromFile(NODES_CONFIG_FILE);
-  nodesConfig[name] = {
-    address: arweaveAddress,
-    publicKey: arweavePublicKey,
-    evmAddress: evmAddress,
-    ecdsaPublicKey: evmPublicKey,
-  };
-  saveJSONInFile(NODES_CONFIG_FILE, nodesConfig, {
-    prettifyJSON: true,
-  });
-
   // Register node in oracle registry
-  await registerNewNodeInOracleRegistry(
+  registerNewNodeInOracleRegistry(
     {
       name,
       description,
       logo: DEFAULT_LOGO_URL,
-      dataFeedId: nodesParams.dataFeedId,
+      dataServiceId: nodesParams.dataFeedId,
       evmAddress,
       url: DEFAULT_NODE_URL,
       ipAddress: DEFAULT_IP_ADDRESS,
       ecdsaPublicKey: evmPublicKey,
       arweavePublicKey: arweavePublicKey,
     },
-    jwk
+    arweaveAddress
   );
+
+  // Save private keys in .env-secrets
+  updateEnvFile(JWK_ENV_PREFIX + nodeIndex, JSON.stringify(jwk));
+  updateEnvFile(ECDSA_ENV_PREFIX + nodeIndex, evmPrivateKey);
 }
 
-async function registerNewNodeInOracleRegistry(
+function registerNewNodeInOracleRegistry(
   nodeOpts: RegisterNodeInputData,
-  jwk: JWKInterface
+  arweaveAddress: string
 ) {
-  console.log(`Registering new node in oracle registry`);
-  const oracleRegistryContractAddress = contractAddresses["oracle-registry"];
-  const contract = SmartWeaveNodeFactory.memCached(arweave, 1)
-    .contract(oracleRegistryContractAddress)
-    .connect(jwk);
-  const tx = await contract.bundleInteraction<RedstoneOraclesInput>({
-    function: "registerNode",
-    data: nodeOpts,
+  const currentState = readJSONFromFile(ORACLE_REGISTRY_STATE_FILE);
+  const newState = { ...currentState };
+  newState.nodes[arweaveAddress] = nodeOpts;
+  saveJSONInFile(ORACLE_REGISTRY_STATE_FILE, newState, {
+    prettifyJSON: true,
   });
-  console.log(JSON.stringify(tx));
-  console.log("Tx sent to smartweave contract");
-}
-
-function prepareNewConfig(jwk: JWKInterface, ethereumPrivateKey: string) {
-  return {
-    arweaveKeysJWK: jwk,
-    credentials: {
-      ethereumPrivateKey,
-    },
-  };
 }
 
 function readJSONFromFile(path: string): any {
@@ -144,15 +114,6 @@ function saveJSONInFile(path: string, data: any, opts?: any) {
   const strData =
     JSON.stringify(data, undefined, opts?.prettifyJSON ? 2 : undefined) + "\n";
   fs.writeFileSync(path, strData);
-}
-
-function createFolderIfNotCreated(path: string) {
-  if (!fs.existsSync(path)) {
-    console.log(`Creating new folder: ${path}`);
-    fs.mkdirSync(path);
-  } else {
-    console.log(`Folder already exists: ${path}`);
-  }
 }
 
 async function getInitialParams(): Promise<InitialParamsForNewNodes> {
@@ -174,8 +135,8 @@ async function getInitialParams(): Promise<InitialParamsForNewNodes> {
     {
       type: "text",
       name: "dataFeedId",
-      message: "Provide data feed id for the new nodes",
-      initial: DEFAULT_DATA_FEED_ID,
+      message: "Provide data service id for the new nodes",
+      initial: DEFAULT_DATA_SERVICE_ID,
       validate: (value) => (!value ? "Required" : true),
     },
     {
@@ -193,4 +154,9 @@ async function getInitialParams(): Promise<InitialParamsForNewNodes> {
       validate: (value) => (Number(value) < 1 ? "Must be >= 1" : true),
     },
   ]);
+}
+
+function updateEnvFile(envVarName: string, value: string) {
+  console.log(`Updating file: ${SECRETS_ENV_FILE_PATH}`);
+  fs.appendFileSync(SECRETS_ENV_FILE_PATH, `${envVarName}='${value}'\n`);
 }
