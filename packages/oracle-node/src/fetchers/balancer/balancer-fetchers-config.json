@@ -4,8 +4,5 @@
   },
   "balancer-weth": {
     "baseToken": "WETH"
-  },
-  "balancer-bb-a-weth": {
-    "baseToken": "BB-A-WETH"
   }
 }

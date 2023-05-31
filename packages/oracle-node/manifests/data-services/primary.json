@@ -12,16 +12,12 @@
   },
   "tokens": {
     "SWETH": {
-      "source": ["coingecko", "coinmarketcap", "balancer-bb-a-weth"]
+      "source": ["coingecko", "coinmarketcap"]
     },
     "VST": {
       "source": ["curve-frax-multi-block"]
     },
 
-    "BB-A-WETH": {
-      "source": ["coingecko", "coinmarketcap"],
-      "skipSigning": true
-    },
     "USDC": {
       "source": [
         "binanceus",
