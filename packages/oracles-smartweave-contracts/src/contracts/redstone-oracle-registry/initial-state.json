@@ -195,11 +195,6 @@
       "logo": "https://redstone.finance/assets/img/redstone-logo-full.svg",
       "description": "Time-weighted average prices for most popular tokens",
       "admin": "aw9F_2R2ogYPnM66TDsW1qtiiRflRcgZQG6OLySOSZE"
-    },
-    "redstone-arbitrum-prod": {
-      "name": "RedStone Arbitrum Prod",
-      "logo": "https://redstone.finance/assets/img/redstone-logo-full.svg",
-      "description": "VST token for Vesta finance"
     }
   },
   "contractAdmins": [

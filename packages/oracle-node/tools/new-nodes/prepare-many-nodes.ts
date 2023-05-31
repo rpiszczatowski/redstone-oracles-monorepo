@@ -3,11 +3,6 @@ import prompts from "prompts";
 import fs from "fs";
 import Arweave from "arweave/node";
 import { ethers } from "ethers";
-import { SmartWeaveNodeFactory } from "redstone-smartweave";
-import {
-  RedstoneOraclesInput,
-  RegisterNodeInputData,
-} from "../../src/contracts/redstone-oracle-registry/types";
 import contractAddresses from "../../src/config/contracts.json";
 
 const DEFAULT_LOGO_URL =
@@ -15,11 +10,10 @@ const DEFAULT_LOGO_URL =
 const DEFAULT_NODE_URL = "https://redstone.finance";
 const DEFAULT_IP_ADDRESS = "0.0.0.0";
 const SECRETS_FOLDER = `./.secrets/tmp-${Date.now()}`;
-const DEFAULT_NAME_PREFIX = "redstone-avalanche-prod-node-";
+const DEFAULT_NAME_PREFIX = "redstone-primary-prod-node-";
 const DEFAULT_DESCRIPTION_PREFIX =
-  "Most popular tokens from the Avalanche ecosystem - prod node ";
-const DEFAULT_DATA_FEED_ID = "redstone-avalanche-prod";
-const NODES_CONFIG_FILE = "./src/config/nodes.json";
+  "Data feeds from primary redstone nodes - prod node ";
+const DEFAULT_DATA_FEED_ID = "redstone-primary-prod";
 
 interface InitialParamsForNewNodes {
   namePrefixForNodes: string;
@@ -78,18 +72,6 @@ async function registerNewNode(
 
   // Save secrets in files
   saveJSONInFile(`${SECRETS_FOLDER}/${nodeIndex}.json`, config);
-
-  // Update nodes config
-  const nodesConfig = readJSONFromFile(NODES_CONFIG_FILE);
-  nodesConfig[name] = {
-    address: arweaveAddress,
-    publicKey: arweavePublicKey,
-    evmAddress: evmAddress,
-    ecdsaPublicKey: evmPublicKey,
-  };
-  saveJSONInFile(NODES_CONFIG_FILE, nodesConfig, {
-    prettifyJSON: true,
-  });
 
   // Register node in oracle registry
   await registerNewNodeInOracleRegistry(
