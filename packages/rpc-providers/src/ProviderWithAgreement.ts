@@ -8,24 +8,18 @@ import {
   ProviderWithFallbackConfig,
 } from "./ProviderWithFallback";
 
-export interface ProviderWithAgreementConfig
-  extends ProviderWithFallbackConfig {
-  numberOfProvidersWhichHaveToAgree: number;
+export interface ProviderWithAgreementConfig {
+  numberOfProvidersThatHaveToAgree: number;
   getBlockNumberTimeoutMS: number;
   sleepBetweenBlockSynReq: number;
   blockNumberCacheTTLInMS: number;
   electBlockFn: (blocks: number[], numberOfAgreeingNodes: number) => number;
 }
 
-const DEFAULT_ELECT_BLOCK_FN = (
-  blockNumbers: number[],
-  numberOfProviders: number
-): number => {
-  if (blockNumbers.length === 1) {
-    return blockNumbers[0];
-  }
-  const mid = Math.floor(blockNumbers.length / 2);
+const convertMsToNanoseconds = (ms: number) => BigInt(ms * 1e6);
 
+const DEFAULT_ELECT_BLOCK_FN = (blockNumbers: number[]): number => {
+  const mid = Math.floor(blockNumbers.length / 2);
   blockNumbers.sort((a, b) => a - b);
 
   return blockNumbers.length % 2 !== 0
@@ -37,7 +31,7 @@ const defaultConfig: Omit<
   ProviderWithAgreementConfig,
   keyof ProviderWithFallbackConfig
 > = {
-  numberOfProvidersWhichHaveToAgree: 2,
+  numberOfProvidersThatHaveToAgree: 2,
   getBlockNumberTimeoutMS: 1_000,
   sleepBetweenBlockSynReq: 100,
   blockNumberCacheTTLInMS: 50,
@@ -50,17 +44,20 @@ export class ProviderWithAgreement extends ProviderWithFallback {
 
   constructor(
     providers: JsonRpcProvider[],
-    config: Partial<ProviderWithAgreementConfig> = {}
+    config: Partial<
+      ProviderWithAgreementConfig & ProviderWithFallbackConfig
+    > = {}
   ) {
     super(providers, config);
     this.agreementConfig = {
       ...defaultConfig,
-      ...this.getProviderWithFallbackConfig(),
+      ...config,
     };
+    const numberOfProvidersThatHaveToAgree =
+      this.agreementConfig.numberOfProvidersThatHaveToAgree;
     if (
-      this.agreementConfig.numberOfProvidersWhichHaveToAgree < 2 ||
-      this.agreementConfig.numberOfProvidersWhichHaveToAgree >
-        this.providers.length
+      numberOfProvidersThatHaveToAgree < 2 ||
+      numberOfProvidersThatHaveToAgree > this.providers.length
     ) {
       throw new Error(
         "numberOfProvidersWhichHaveToAgree should be >= 2 and > then supplied providers count"
@@ -90,7 +87,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
   private async electBlockNumber(): Promise<number> {
     if (
       process.hrtime.bigint() - this.blockNumberCache.lastUpdate <
-      BigInt(this.agreementConfig.blockNumberCacheTTLInMS * 1e6)
+      convertMsToNanoseconds(this.agreementConfig.blockNumberCacheTTLInMS)
     ) {
       return this.blockNumberCache.value;
     }
@@ -140,17 +137,12 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       let stop = false;
       let handledResults = 0;
 
-      const sync = async (providerIndex: number) => {
-        if (stop) return;
-
-        while (blockPerProvider[providerIndex] < electedBlockNumber) {
+      const syncProvider = async (providerIndex: number) => {
+        while (!stop && blockPerProvider[providerIndex] < electedBlockNumber) {
           blockPerProvider[providerIndex] = await this.providers[providerIndex]
             .getBlockNumber()
             // ignore errors try again later
-            .catch();
-          if (stop) {
-            return;
-          }
+            .catch(() => -1);
           await sleepMS(this.agreementConfig.sleepBetweenBlockSynReq);
         }
       };
@@ -167,8 +159,8 @@ export class ProviderWithAgreement extends ProviderWithFallback {
             results.set(currentResult, currentResultCount + 1);
             // we have found satisfying number of same responses
             if (
-              currentResultCount + 1 ===
-              this.agreementConfig.numberOfProvidersWhichHaveToAgree
+              currentResultCount + 1 >=
+              this.agreementConfig.numberOfProvidersThatHaveToAgree
             ) {
               stop = true;
               resolve(currentResult);
@@ -182,15 +174,15 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       };
 
       const syncThenCall = async (providerIndex: number) => {
-        await sync(providerIndex);
+        await syncProvider(providerIndex);
         await call(providerIndex);
-        handledResults += 1;
+        handledResults++;
         if (handledResults === this.providers.length) {
           stop = true;
           reject(
             new AggregateError(
               errors,
-              `Failed to find at least ${this.agreementConfig.numberOfProvidersWhichHaveToAgree} agreeing providers.`
+              `Failed to find at least ${this.agreementConfig.numberOfProvidersThatHaveToAgree} agreeing providers.`
             )
           );
         }

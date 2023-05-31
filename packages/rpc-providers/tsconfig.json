@@ -15,17 +15,13 @@
     "composite": true
   },
   "include": [
-    "./src",
-    "./test",
+    "./src/**/*.ts",
+    "./test/**/*.ts",
     "./typechain-types",
     "package.json",
     "./contracts",
     "src/**/*.json",
-    "./artifacts/**/*.json"
-  ],
-  "files": [
-    "./hardhat.config.ts",
-    "./src/ProviderWithFallback.ts",
-    "./src/ProviderWithFallbackBase.ts"
+    "./artifacts/**/*.json",
+    "./hardhat.config.ts"
   ]
 }

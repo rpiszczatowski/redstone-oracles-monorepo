@@ -163,7 +163,7 @@ export class ProviderWithFallback
     ...args: any[]
   ): Promise<any> {
     try {
-      return await (this.currentProvider as any)[fnName](...[...args]);
+      return await (this.currentProvider as any)[fnName](...args);
     } catch (error: any) {
       this.electNewProviderOrFail(
         error,
@@ -232,7 +232,9 @@ export class ProviderWithFallback
     const nextProviderIndex = (this.providerIndex + 1) % this.providers.length;
     const nextProviderName = this.extractProviderName(nextProviderIndex);
 
-    logger.info(`Fallback in to next provider ${nextProviderName}.`);
+    logger.info(
+      `Fallback in to next provider ${nextProviderName} (${nextProviderIndex}/${this.providers.length}).`
+    );
 
     this.useProvider(nextProviderIndex);
   }

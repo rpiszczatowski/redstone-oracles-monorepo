@@ -5,7 +5,7 @@ export const timeout = <T>(prom: Promise<T>, timeoutMS: number): Promise<T> => {
     new Promise(
       (_r, reject) =>
         (timer = setTimeout(
-          () => reject(`Timeout error ${timeoutMS} [MS]`),
+          () => reject(new Error(`Timeout error ${timeoutMS} [MS]`)),
           timeoutMS
         ))
     ),

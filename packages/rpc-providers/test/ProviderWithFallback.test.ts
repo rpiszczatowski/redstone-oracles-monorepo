@@ -5,6 +5,7 @@ import chaiAsPromised from "chai-as-promised";
 import { providers, Signer, Wallet } from "ethers";
 import { ProviderWithFallback } from "../src/ProviderWithFallback";
 import { Counter } from "../typechain-types";
+import { deployCounter } from "./helpers";
 
 chai.use(chaiAsPromised);
 
@@ -49,49 +50,52 @@ describe("ProviderWithFallback", () => {
   });
 
   it("should call second provider if first fails", async () => {
-    const stubProvider = new providers.StaticJsonRpcProvider();
-    const spy = sinon.stub(stubProvider, "getBlockNumber");
+    const [firstStub, secondStub] = getStubProviders(2);
 
     const fallbackProvider = new ProviderWithFallback([
-      stubProvider,
-      stubProvider,
+      firstStub.stubProvider,
+      secondStub.stubProvider,
     ]);
+    firstStub.spy.onFirstCall().rejects();
+    secondStub.spy.onFirstCall().resolves(10);
 
-    spy.onFirstCall().rejects().onSecondCall().resolves(10);
-
+    expect(fallbackProvider.getCurrentProviderIndex()).to.eq(0);
     expect(await fallbackProvider.getBlockNumber()).to.eq(10);
+    expect(fallbackProvider.getCurrentProviderIndex()).to.eq(1);
   });
 
-  it("should call first provider if second fails, and the second provider is currently used", async () => {
-    const stubProvider = new providers.StaticJsonRpcProvider();
-    const spy = sinon.stub(stubProvider, "getBlockNumber");
+  it("should call first provider if second is active but fails", async () => {
+    const [firstStub, secondStub] = getStubProviders(2);
 
     const fallbackProvider = new ProviderWithFallback([
-      stubProvider,
-      stubProvider,
+      firstStub.stubProvider,
+      secondStub.stubProvider,
     ]);
 
-    spy.onFirstCall().rejects().onSecondCall().resolves(10);
+    firstStub.spy.onFirstCall().rejects().onSecondCall().resolves(10);
+    secondStub.spy.onFirstCall().resolves(10).onSecondCall().rejects();
+
+    expect(fallbackProvider.getCurrentProviderIndex()).to.eq(0);
+    expect(await fallbackProvider.getBlockNumber()).to.eq(10);
+    expect(fallbackProvider.getCurrentProviderIndex()).to.eq(1);
 
     expect(await fallbackProvider.getBlockNumber()).to.eq(10);
-
-    spy.reset();
-    spy.onFirstCall().rejects().onSecondCall().resolves(10);
-    expect(await fallbackProvider.getBlockNumber()).to.eq(10);
+    expect(fallbackProvider.getCurrentProviderIndex()).to.eq(0);
   });
 
   it("should propagate if both fails", async () => {
-    const stubProvider = new providers.StaticJsonRpcProvider();
-    const spy = sinon.stub(stubProvider, "getBlockNumber");
+    const [firstStub, secondStub] = getStubProviders(2);
 
     const fallbackProvider = new ProviderWithFallback([
-      stubProvider,
-      stubProvider,
+      firstStub.stubProvider,
+      secondStub.stubProvider,
     ]);
 
-    spy.onFirstCall().rejects().onSecondCall().rejects();
+    firstStub.spy.onFirstCall().rejects();
+    secondStub.spy.onFirstCall().rejects();
 
     await expect(fallbackProvider.getBlockNumber()).rejected;
+    expect(fallbackProvider.getCurrentProviderIndex()).to.eq(1);
   });
 
   it("should react on events event if current provider is second one (and first doesn't work)", async () => {
@@ -161,17 +165,16 @@ describe("ProviderWithFallback", () => {
     await expect(contract.fail()).rejectedWith();
   });
 
-  it("should not increase provider index by 2 on two concurrent requests (rare case)", async () => {
-    const stubProvider = new providers.StaticJsonRpcProvider();
-    const spy = sinon.stub(stubProvider, "getBlockNumber");
+  it("should not increase provider index by 2 on 2 concurrent requests (rare case)", async () => {
+    const [firstStub, secondStub] = getStubProviders(2);
 
     const fallbackProvider = new ProviderWithFallback([
-      stubProvider,
-      stubProvider,
-      stubProvider,
+      firstStub.stubProvider,
+      secondStub.stubProvider,
     ]);
 
-    spy.onFirstCall().rejects().onSecondCall().rejects();
+    firstStub.spy.rejects();
+    secondStub.spy.rejects();
 
     await Promise.allSettled([
       fallbackProvider.getBlockNumber(),
@@ -182,9 +185,13 @@ describe("ProviderWithFallback", () => {
   });
 });
 
-async function deployCounter() {
-  const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
-  const contract = await ContractFactory.deploy();
-  await contract.deployed();
-  return contract;
-}
+const getStubProviders = (count: number) => {
+  const stubs = [];
+
+  for (let i = 0; i < count; i++) {
+    const stubProvider = new providers.StaticJsonRpcProvider();
+    const spy = sinon.stub(stubProvider, "getBlockNumber");
+    stubs.push({ stubProvider, spy });
+  }
+  return stubs;
+};

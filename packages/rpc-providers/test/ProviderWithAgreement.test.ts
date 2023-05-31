@@ -5,6 +5,7 @@ import chaiAsPromised from "chai-as-promised";
 import { providers, Signer, Wallet } from "ethers";
 import { Counter } from "../typechain-types";
 import { ProviderWithAgreement } from "../src/ProviderWithAgreement";
+import { deployCounter } from "./helpers";
 
 chai.use(chaiAsPromised);
 
@@ -15,9 +16,7 @@ describe("ProviderWithAgreement", () => {
   let signer: Signer = new Wallet(TEST_PRIV_KEY);
 
   beforeEach(async () => {
-    const ContractFactory = await hardhat.ethers.getContractFactory("Counter");
-    contract = await ContractFactory.deploy();
-    await contract.deployed();
+    contract = await deployCounter();
   });
 
   afterEach(() => {});
@@ -265,7 +264,7 @@ const testCallResolutionAlgo = async (
 
   const agreementProvider = new ProviderWithAgreement(
     new Array(providerResponses.length).fill(mockProvider),
-    { numberOfProvidersWhichHaveToAgree: requiredNumberOfProvidersToAgree }
+    { numberOfProvidersThatHaveToAgree: requiredNumberOfProvidersToAgree }
   );
 
   for (let i = 0; i < providerResponses.length; i++) {

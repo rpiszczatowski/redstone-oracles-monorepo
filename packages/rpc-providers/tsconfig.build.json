@@ -14,9 +14,5 @@
     "incremental": true,
     "composite": true
   },
-  "include": ["./src", "package.json", "./contracts", "src/**/*.json"],
-  "files": [
-    "./src/ProviderWithFallback.ts",
-    "./src/ProviderWithFallbackBase.ts"
-  ]
+  "include": ["./src/**/*.ts", "package.json", "./contracts", "src/**/*.json"]
 }
