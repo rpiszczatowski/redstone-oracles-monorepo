@@ -182,6 +182,20 @@
       "description": "Most popular tokens from the Avalanche ecosystem - prod",
       "manifestTxId": "y7ppr6m9MuP65Fiivd9CX84qcPLoYBMifUrFK3jXw2k"
     },
+    "redstone-primary-demo": {
+      "logo": "https://redstone.finance/assets/img/redstone-logo-full.svg",
+      "name": "RedStone Primary Demo",
+      "admin": "TEHhCDWy-vGmPSZsYJyM0aP_MM4xESgyIZdf5mVODzg",
+      "description": "Data feeds from primary RedStone nodes - demo",
+      "manifestTxId": ""
+    },
+    "redstone-primary-prod": {
+      "logo": "https://redstone.finance/assets/img/redstone-logo-full.svg",
+      "name": "RedStone Primary Prod",
+      "admin": "TEHhCDWy-vGmPSZsYJyM0aP_MM4xESgyIZdf5mVODzg",
+      "description": "Data feeds from primary RedStone nodes - prod",
+      "manifestTxId": ""
+    },
     "redstone-custom-urls-demo": {
       "name": "Redstone custom URLs demo",
       "manifestTxId": "vcxshh2A0m4SF16Y4_Xv0B-NHfdeEyn-9XbkHvmxckc",
