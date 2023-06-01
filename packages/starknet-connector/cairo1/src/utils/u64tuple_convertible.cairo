@@ -25,8 +25,9 @@ impl U64TupleU64TupleConvertible of U64TupleConvertible<(u64, u64, u64, u64, )> 
     }
 }
 
-impl U64TupleFelt252Convertible<T,
-impl TU64TupleConvertible: U64TupleConvertible<T>> of Felt252Convertible<T> {
+impl U64TupleFelt252Convertible<
+    T, impl TU64TupleConvertible: U64TupleConvertible<T>
+> of Felt252Convertible<T> {
     fn from_felt252(value: felt252) -> T {
         let value_u256 = u256_from_felt252(value);
 
@@ -53,9 +54,9 @@ impl TU64TupleConvertible: U64TupleConvertible<T>> of Felt252Convertible<T> {
     }
 }
 
-impl TupleSize4PartialEq<E0,
-impl E0PartialEq: PartialEq<E0>,
-impl E0Drop: Drop<E0>> of PartialEq<(E0, E0, E0, E0, )> {
+impl TupleSize4PartialEq<
+    E0, impl E0PartialEq: PartialEq<E0>, impl E0Drop: Drop<E0>
+> of PartialEq<(E0, E0, E0, E0, )> {
     #[inline(always)]
     fn eq(lhs: (E0, E0, E0, E0, ), rhs: (E0, E0, E0, E0, )) -> bool {
         let (a, b, c, d) = lhs;

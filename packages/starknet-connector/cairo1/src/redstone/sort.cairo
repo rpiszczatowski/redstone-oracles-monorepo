@@ -6,10 +6,9 @@ trait SortableTrait<T> {
     fn sorted(self: @T) -> @T;
 }
 
-impl SortableArray<U,
-impl PartialOrd: PartialOrd<U>,
-impl UCopy: Copy<U>,
-impl UDrop: Drop<U>> of SortableTrait<Array<U>> {
+impl SortableArray<
+    U, impl PartialOrd: PartialOrd<U>, impl UCopy: Copy<U>, impl UDrop: Drop<U>
+> of SortableTrait<Array<U>> {
     fn sorted(self: @Array<U>) -> @Array<U> {
         merge_sort(self)
     }

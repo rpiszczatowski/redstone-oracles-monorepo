@@ -51,9 +51,9 @@ impl SignaturePrintImpl of PrintTrait<Signature> {
     }
 }
 
-impl ValuesPrint<T,
-impl TPrint: PrintTrait<T>,
-impl TCopy: Copy<T>> of PrintTrait<Array<@Array<T>>> {
+impl ValuesPrint<
+    T, impl TPrint: PrintTrait<T>, impl TCopy: Copy<T>
+> of PrintTrait<Array<@Array<T>>> {
     fn print(self: Array<@Array<T>>) {
         print_index(@self, 0_usize);
     }
@@ -68,9 +68,9 @@ impl OptionPrintImpl<T, impl TPrint: PrintTrait<T>> of PrintTrait<Option<T>> {
     }
 }
 
-impl GenericArrayPrintImpl<T,
-impl TPrint: PrintTrait<T>,
-impl TCopy: Copy<T>> of PrintTrait<@Array<T>> {
+impl GenericArrayPrintImpl<
+    T, impl TPrint: PrintTrait<T>, impl TCopy: Copy<T>
+> of PrintTrait<@Array<T>> {
     fn print(self: @Array<T>) {
         print_index(self, 0_usize);
     }

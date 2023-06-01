@@ -47,9 +47,9 @@ struct DataPackage {
 fn get_payload_from_bytes(arr: Array<u8>, validator: Config) -> Payload {
     let marker_slice = arr.slice_number(REDSTONE_MARKER_BS);
 
-    let data_package_count_slice = marker_slice.head.slice_number_offset(
-        DATA_PACKAGES_COUNT_BS, UNSIGNED_METADATA_BYTE_SIZE_BS
-    );
+    let data_package_count_slice = marker_slice
+        .head
+        .slice_number_offset(DATA_PACKAGES_COUNT_BS, UNSIGNED_METADATA_BYTE_SIZE_BS);
 
     let mut data_packages: Array<DataPackage> = ArrayTrait::new();
 
@@ -90,9 +90,15 @@ fn slice_data_packages(
     let data_points_slice = timestamp_slice.head.slice_tail(data_points_array_size);
 
     let signature = get_signature_from_bytes(signature_slice.tail);
-    let signable_bytes = signature_slice.head.slice_tail(
-        data_points_array_size + DATA_POINTS_COUNT_BS + DATA_POINT_VALUE_BYTE_SIZE_BS + TIMESTAMP_BS
-    ).tail;
+    let signable_bytes = signature_slice
+        .head
+        .slice_tail(
+            data_points_array_size
+                + DATA_POINTS_COUNT_BS
+                + DATA_POINT_VALUE_BYTE_SIZE_BS
+                + TIMESTAMP_BS
+        )
+        .tail;
 
     let mut data_points: Array<DataPoint> = ArrayTrait::new();
     slice_data_points(timestamp_slice.head, value_size, data_point_count, ref data_points);

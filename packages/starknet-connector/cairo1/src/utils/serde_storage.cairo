@@ -18,17 +18,16 @@ use utils::gas::out_of_gas_array;
 trait WrappedSerde<T> {} // to avoid multiple implementations of Serde for primitive types
 impl ArrayWrappedSerde<U> of WrappedSerde<Array<U>> {}
 
-impl StorageAccessSerde<T,
-impl TSerde: Serde<T>,
-impl TDrop: Drop<T>,
-impl TWrappedSerde: WrappedSerde<T>> of StorageAccess<T> {
+impl StorageAccessSerde<
+    T, impl TSerde: Serde<T>, impl TDrop: Drop<T>, impl TWrappedSerde: WrappedSerde<T>
+> of StorageAccess<T> {
     #[inline(always)]
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<T> {
         let mut result = ArrayTrait::new();
 
-        let size: usize = StorageAccess::<felt252>::read(
-            address_domain, base
-        )?.try_into().expect('StorageAccessArray - non usize');
+        let size: usize = StorageAccess::<felt252>::read(address_domain, base)?
+            .try_into()
+            .expect('StorageAccessArray - non usize');
 
         _read(:address_domain, :base, :size, index: 0_u8, ref acc: result);
         let mut span = result.span();
@@ -61,7 +60,8 @@ fn _read(
 
     let value = storage_read_syscall(
         address_domain, storage_address_from_base_and_offset(base, index + 1_u8)
-    ).expect('StorageAccessArray - non felt');
+    )
+        .expect('StorageAccessArray - non felt');
 
     acc.append(value);
 

@@ -5,10 +5,9 @@ trait IndexOfTrait<T, U> {
     fn index_of(self: @T, element: U) -> Option<usize>;
 }
 
-impl IndexOfArray<T,
-impl UPartialEq: PartialEq<T>,
-impl TCopy: Copy<T>,
-impl TDrop: Drop<T>> of IndexOfTrait<Array<T>, T> {
+impl IndexOfArray<
+    T, impl UPartialEq: PartialEq<T>, impl TCopy: Copy<T>, impl TDrop: Drop<T>
+> of IndexOfTrait<Array<T>, T> {
     fn index_of(self: @Array<T>, element: T) -> Option<usize> {
         _array_index_of(self, element, 0_usize)
     }

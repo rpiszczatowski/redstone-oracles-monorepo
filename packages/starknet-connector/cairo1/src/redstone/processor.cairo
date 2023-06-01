@@ -70,9 +70,12 @@ fn make_values_matrix(
         return ();
     }
 
-    let price = dict.get_or_none(
-        u32_to_felt252(index_in_array(:feed_index, :signer_index, signer_count: tmp_signer_count))
-    );
+    let price = dict
+        .get_or_none(
+            u32_to_felt252(
+                index_in_array(:feed_index, :signer_index, signer_count: tmp_signer_count)
+            )
+        );
 
     match (price) {
         Option::Some(x) => tmp_arr.append(x),
@@ -130,9 +133,8 @@ fn insert_data_point_values(
     }
 
     let data_point = *data_points[index];
-    let index_in_array = config.index_in_array(
-        feed_id: data_point.feed_id, :signer_index, :tmp_signer_count
-    );
+    let index_in_array = config
+        .index_in_array(feed_id: data_point.feed_id, :signer_index, :tmp_signer_count);
 
     match index_in_array {
         Option::Some(x) => dict.insert(u32_to_felt252(x), data_point.value),

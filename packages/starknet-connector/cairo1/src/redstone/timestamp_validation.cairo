@@ -15,17 +15,15 @@ fn validate_timestamp(index: usize, timestamp: felt252, block_timestamp: u64) {
     let block_timestamp = u64_to_felt252(block_timestamp);
 
     if (block_timestamp > timestamp) {
-        if (block_timestamp
-            - timestamp > MAX_DATA_TIMESTAMP_DELAY_SECONDS) {
-                panic_timestamp(:block_timestamp, :timestamp, :index, is_too_old: true);
-            }
+        if (block_timestamp - timestamp > MAX_DATA_TIMESTAMP_DELAY_SECONDS) {
+            panic_timestamp(:block_timestamp, :timestamp, :index, is_too_old: true);
+        }
     }
 
     if (timestamp > block_timestamp) {
-        if (timestamp
-            - block_timestamp > MAX_DATA_TIMESTAMP_AHEAD_SECONDS) {
-                panic_timestamp(:block_timestamp, :timestamp, :index, is_too_old: false);
-            }
+        if (timestamp - block_timestamp > MAX_DATA_TIMESTAMP_AHEAD_SECONDS) {
+            panic_timestamp(:block_timestamp, :timestamp, :index, is_too_old: false);
+        }
     }
 }
 
