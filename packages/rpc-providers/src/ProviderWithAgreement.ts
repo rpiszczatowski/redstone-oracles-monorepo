@@ -8,10 +8,12 @@ import {
   ProviderWithFallbackConfig,
 } from "./ProviderWithFallback";
 
+const ERROR_GET_BLOCK_NUMBER_VALUE = -1;
+
 export interface ProviderWithAgreementConfig {
   numberOfProvidersThatHaveToAgree: number;
   getBlockNumberTimeoutMS: number;
-  sleepBetweenBlockSynReq: number;
+  sleepBetweenBlockSync: number;
   blockNumberCacheTTLInMS: number;
   electBlockFn: (blocks: number[], numberOfAgreeingNodes: number) => number;
 }
@@ -31,7 +33,7 @@ const defaultConfig: Omit<
 > = {
   numberOfProvidersThatHaveToAgree: 2,
   getBlockNumberTimeoutMS: 1_000,
-  sleepBetweenBlockSynReq: 100,
+  sleepBetweenBlockSync: 100,
   blockNumberCacheTTLInMS: 50,
   electBlockFn: DEFAULT_ELECT_BLOCK_FN,
 };
@@ -90,12 +92,16 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       let handledResults = 0;
 
       const syncProvider = async (providerIndex: number) => {
-        while (!stop && blockPerProvider[providerIndex] < electedBlockNumber) {
+        while (
+          blockPerProvider[providerIndex] !== ERROR_GET_BLOCK_NUMBER_VALUE &&
+          !stop &&
+          blockPerProvider[providerIndex] < electedBlockNumber
+        ) {
           blockPerProvider[providerIndex] = await this.providers[providerIndex]
             .getBlockNumber()
-            // ignore errors try again later
-            .catch(() => -1);
-          await sleepMS(this.agreementConfig.sleepBetweenBlockSynReq);
+            // if providers fails at least once we don't want to use it
+            .catch(() => ERROR_GET_BLOCK_NUMBER_VALUE);
+          await sleepMS(this.agreementConfig.sleepBetweenBlockSync);
         }
       };
 
