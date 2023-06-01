@@ -28,7 +28,7 @@ fn validate_timestamp(index: usize, timestamp: felt252, block_timestamp: u64) {
 }
 
 fn panic_timestamp(block_timestamp: felt252, timestamp: felt252, index: usize, is_too_old: bool) {
-    let mut arr: Array<felt252> = ArrayTrait::new();
+    let mut arr: Array<felt252> = Default::default();
     let add = if is_too_old {
         1000
     } else {

@@ -3,7 +3,7 @@ use array::ArrayTrait;
 const SAMPLE_BLOCK_TIMESTAMP: u64 = 1681982304_u64;
 
 fn sample_payload_bytes() -> Array<u8> {
-    let mut arr: Array<u8> = ArrayTrait::new();
+    let mut arr: Array<u8> = Default::default();
     arr.append(0x42_u8);
     arr.append(0x4e_u8);
     arr.append(0x42_u8);

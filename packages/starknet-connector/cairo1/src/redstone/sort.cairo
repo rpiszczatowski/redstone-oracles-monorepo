@@ -37,7 +37,7 @@ fn merge_sort<U, impl UPartialOrd: PartialOrd<U>, impl UCopy: Copy<U>, impl UDro
 fn merge<U, impl UPartialOrd: PartialOrd<U>, impl UCopy: Copy<U>, impl UDrop: Drop<U>>(
     first_arr: @Array<U>, second_arr: @Array<U>
 ) -> Array<U> {
-    let mut res: Array<U> = ArrayTrait::new();
+    let mut res: Array<U> = Default::default();
 
     _merge(:first_arr, :second_arr, first_index: 0_usize, second_index: 0_usize, ref :res);
 
@@ -81,7 +81,7 @@ fn _merge<U, impl UPartialOrd: PartialOrd<U>, impl UCopy: Copy<U>, impl UDrop: D
 
     _merge(:first_arr, :second_arr, :first_index, :second_index, ref :res);
 }
-// let mut numbers = ArrayTrait::new();
+// let mut numbers = Default::default();
 // numbers.append(13243);
 // numbers.append(23445);
 // numbers.append(123);

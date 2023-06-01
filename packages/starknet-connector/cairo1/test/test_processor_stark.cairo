@@ -9,10 +9,10 @@ use test::sample_stark::SAMPLE_BLOCK_TIMESTAMP;
 #[test]
 #[available_gas(2000000000)]
 fn test_simple_payload() {
-    let mut signers: Array<felt252> = ArrayTrait::new();
+    let mut signers: Array<felt252> = Default::default();
     signers.append(0x18f349a975878208678624cc989a5613c76980dc0fd995f5f31498dca168f9d);
 
-    let mut feed_ids = ArrayTrait::new();
+    let mut feed_ids = Default::default();
     feed_ids.append('ETH');
     feed_ids.append('BTC');
     // feed_ids.append('XXX');

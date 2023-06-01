@@ -27,13 +27,13 @@ fn process_payload(payload_bytes: Array<u8>, config: Config) -> Results {
     );
     make_values_dict(data_packages: payload.data_packages, :config, index: 0_usize, ref :dict);
 
-    let mut tmp_arr: Array<felt252> = ArrayTrait::new();
-    let mut matrix: Array<@Array<felt252>> = ArrayTrait::new();
+    let mut tmp_arr: Array<felt252> = Default::default();
+    let mut matrix: Array<@Array<felt252>> = Default::default();
     make_values_matrix(
         ref :dict, :config, :tmp_signer_count, index: 0_usize, ref :tmp_arr, ref :matrix
     );
 
-    let mut aggregated_values: Array<felt252> = ArrayTrait::new();
+    let mut aggregated_values: Array<felt252> = Default::default();
     aggregate_values(values: @matrix, index: 0_usize, ref res: aggregated_values);
 
     let min_timestamp = get_min_timestamp(
@@ -63,7 +63,7 @@ fn make_values_matrix(
             config.validate_signer_count(feed_index: feed_index - 1_usize, count: tmp_arr.len());
             matrix.append(@tmp_arr);
         }
-        tmp_arr = ArrayTrait::new();
+        tmp_arr = Default::default();
     }
 
     if (index == config.cap(tmp_signer_count)) {

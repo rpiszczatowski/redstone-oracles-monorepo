@@ -53,7 +53,7 @@ mod PriceManager {
 
         signer_count::write(signer_count_threshold.try_into().unwrap());
         signers::write(signer_addresses);
-        feed_ids::write(ArrayTrait::new());
+        feed_ids::write(Default::default());
         round_data::write(
             RoundData { round_number: 0, payload_timestamp: 0, block_number: 0, block_timestamp: 0 }
         )

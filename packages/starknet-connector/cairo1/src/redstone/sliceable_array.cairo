@@ -25,7 +25,7 @@ impl SliceableArray<T, impl TDrop: Drop<T>, impl TCopy: Copy<T>> of SliceableArr
 
         let head_size = self.len() - offset - length;
         if (head_size == 0_usize) {
-            return ArraySlice { head: @ArrayTrait::new(), tail: self };
+            return ArraySlice { head: @Default::default(), tail: self };
         }
 
         let span = self.span();
@@ -41,7 +41,7 @@ impl SliceableArray<T, impl TDrop: Drop<T>, impl TCopy: Copy<T>> of SliceableArr
     }
 
     fn copied(self: @Array<T>) -> Array<T> {
-        let mut arr = ArrayTrait::new();
+        let mut arr = Default::default();
         array_copy(self, 0, ref arr);
 
         arr

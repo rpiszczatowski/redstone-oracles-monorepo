@@ -12,7 +12,7 @@ trait OptionalDictTrait<T> {
 
 impl OptionalDictFelt252 of OptionalDictTrait<felt252> {
     fn new_of_size(size: usize) -> Felt252Dict<felt252> {
-        let mut dict: Felt252Dict<felt252> = Felt252DictTrait::new();
+        let mut dict: Felt252Dict<felt252> = Default::default();
 
         dict_fill(ref :dict, value: DICT_UNKNOWN_VALUE, count: u32_to_felt252(size), index: 0);
         dict.insert(DICT_UNKNOWN_VALUE, u32_to_felt252(size));

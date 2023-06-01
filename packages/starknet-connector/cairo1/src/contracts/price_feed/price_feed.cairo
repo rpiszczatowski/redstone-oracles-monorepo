@@ -43,7 +43,7 @@ mod PriceFeed {
 
     #[view]
     fn round_data(round_id: felt252) -> Round {
-        panic(ArrayTrait::new())
+        panic(Default::default())
     }
 
     #[view]

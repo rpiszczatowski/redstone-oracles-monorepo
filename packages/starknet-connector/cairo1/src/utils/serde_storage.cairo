@@ -23,7 +23,7 @@ impl StorageAccessSerde<
 > of StorageAccess<T> {
     #[inline(always)]
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<T> {
-        let mut result = ArrayTrait::new();
+        let mut result = Default::default();
 
         let size: usize = StorageAccess::<felt252>::read(address_domain, base)?
             .try_into()
@@ -37,7 +37,7 @@ impl StorageAccessSerde<
 
     #[inline(always)]
     fn write(address_domain: u32, base: StorageBaseAddress, value: T) -> SyscallResult<()> {
-        let mut arr: Array<felt252> = ArrayTrait::new();
+        let mut arr: Array<felt252> = Default::default();
         Serde::<T>::serialize(@value, ref arr);
 
         StorageAccess::<felt252>::write(address_domain, base, arr.len().into());

@@ -51,7 +51,7 @@ fn get_payload_from_bytes(arr: Array<u8>, validator: Config) -> Payload {
         .head
         .slice_number_offset(DATA_PACKAGES_COUNT_BS, UNSIGNED_METADATA_BYTE_SIZE_BS);
 
-    let mut data_packages: Array<DataPackage> = ArrayTrait::new();
+    let mut data_packages: Array<DataPackage> = Default::default();
 
     slice_data_packages(
         arr: data_package_count_slice.head,
@@ -100,7 +100,7 @@ fn slice_data_packages(
         )
         .tail;
 
-    let mut data_points: Array<DataPoint> = ArrayTrait::new();
+    let mut data_points: Array<DataPoint> = Default::default();
     slice_data_points(timestamp_slice.head, value_size, data_point_count, ref data_points);
 
     let data_package = DataPackage {

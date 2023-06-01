@@ -57,7 +57,7 @@ mod HelloStarknet {
 
     #[view]
     fn read_prices(feed_ids: Array<felt252>) -> Array<felt252> {
-        let mut result = ArrayTrait::new();
+        let mut result = Default::default();
 
         read_price_values(:feed_ids, index: 0, ref :result);
 
