@@ -1,4 +1,4 @@
-PAYLOAD_URL=http://localhost:3000/data-packages/payload?unique-signers-count=2&data-service-id=redstone-avalanche-prod&data-feeds=BTC,ETH,AVAX&format=
+PAYLOAD_URL=https://d33trozg86ya9x.cloudfront.net/data-packages/payload?unique-signers-count=1&data-service-id=redstone-rapid-demo&data-feeds=BTC,ETH,BNB,AR,AVAX,CELO&format=
 DATA_DIR=./data
 SHELL := /bin/bash
 
@@ -28,6 +28,6 @@ prepare_data: fetch_time
 	echo "" >  $(DATA_DIR)/${DATA_NAME}.cairo;
 	echo -e "use array::ArrayTrait;\n" >> $(DATA_DIR)/${DATA_NAME}.cairo
 	echo -e 'const SAMPLE_BLOCK_TIMESTAMP:u64 = ${BLOCK_TIMESTAMP}_u64;\n' >> $(DATA_DIR)/${DATA_NAME}.cairo
-	echo -e "fn sample_payload_bytes() -> Array<u8> {\n\tlet mut arr: Array<u8> = ArrayTrait::new();" >> $(DATA_DIR)/${DATA_NAME}.cairo
+	echo -e "fn sample_payload_bytes() -> Array<u8> {\n\tlet mut arr: Array<u8> = Default::default();" >> $(DATA_DIR)/${DATA_NAME}.cairo
 	cat $(DATA_DIR)/${DATA_NAME}.hex | fold -w2 | paste -sd' ' -  | sed -E 's/[[:space:]]+/_u8);\n\tarr.append(0x/g' | sed 1d >> $(DATA_DIR)/${DATA_NAME}.cairo
 	echo -e "_u8); \n\tarr\n }\n" >> $(DATA_DIR)/${DATA_NAME}.cairo

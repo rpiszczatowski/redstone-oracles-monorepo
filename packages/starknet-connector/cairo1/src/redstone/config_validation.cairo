@@ -47,7 +47,7 @@ impl ValidableConfig of ValidableTrait<Config> {
 
 
 fn _signer_index(
-    signers: @Array<felt252>, hash: felt252, signature: Signature, index: usize
+    signers: @Array<felt252>, hash: u256, signature: Signature, index: usize
 ) -> Option<usize> {
     match gas::withdraw_gas_all(get_builtin_costs()) {
         Option::Some(_) => {},
