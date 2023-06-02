@@ -1,14 +1,22 @@
-import { BigNumber, Contract, providers, utils } from "ethers";
-import { getLastPrice } from "../../db/local-db";
+import { Decimal } from "decimal.js";
+import { BigNumber, Contract } from "ethers";
+import { getRawPrice } from "../../db/local-db";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
-import { PoolsConfig } from "./curve-fetchers-config";
 import abi from "./CurveFactory.abi.json";
+import { PoolsConfig } from "./curve-fetchers-config";
 
-const DEFAULT_DECIMALS = 8;
-const DEFAULT_RATIO_QUANTITY = 10 ** DEFAULT_DECIMALS;
+/**
+ * as default value we should use 10 ** 18 this the PRECISION on Curve StableSwap contract
+ * if we provide value lower then 10 ** 18 we start loosing PRECISION
+ * if we provide value bigger then 10 ** 18  for example 100 * 10**18 we are saying how much 100 x  pairedTokenIndex i wil receive for tokenIndex
+ * thus there is higher chance that slippage will occur and will affect price
+ * same in examples https://curve.readthedocs.io/factory-pools.html#StableSwap.get_dy and on Curve frontend
+ * in case of LPs (with big volume) it shouldn't be a problem, however this just not correct
+ */
+const CURVE_PRECISION_DECIMAL = new Decimal("10").toPower(18);
 
 export interface CurveFetcherResponse {
-  ratio: BigNumber;
+  ratio: Decimal;
   assetId: string;
 }
 
@@ -20,52 +28,62 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
   }
 
   async makeRequest(
-    id: string,
+    assetId: string,
     blockTag?: string | number
   ): Promise<CurveFetcherResponse> {
-    const { address, provider, ratioMultiplier, functionName } =
-      this.poolsConfig[id];
-    const curveFactory = new Contract(address, abi, provider);
-
-    const { tokenIndex, pairedTokenIndex } = this.poolsConfig[id];
-
-    const ratio = await curveFactory[functionName](
+    const {
+      address,
+      provider,
+      ratioMultiplier,
+      functionName,
       tokenIndex,
       pairedTokenIndex,
-      (DEFAULT_RATIO_QUANTITY * ratioMultiplier).toString(),
+    } = this.poolsConfig[assetId];
+
+    const curveFactory = new Contract(address, abi, provider);
+
+    const ratioBigNumber = (await curveFactory[functionName](
+      tokenIndex,
+      pairedTokenIndex,
+      CURVE_PRECISION_DECIMAL.toString(),
       { blockTag }
+    )) as BigNumber;
+
+    const precisionDivider = CURVE_PRECISION_DECIMAL.div(ratioMultiplier);
+    const ratioFloat = new Decimal(ratioBigNumber.toString()).div(
+      precisionDivider
     );
 
     return {
-      ratio,
-      assetId: id,
+      ratio: ratioFloat,
+      assetId,
     };
   }
 
-  override calculateSpotPrice(
-    assetId: string,
-    response: CurveFetcherResponse
-  ): number {
-    const pairedTokenPrice = this.getPairedTokenPrice(assetId);
-    const { ratio } = response;
-    const ratioAsNumber = Number(utils.formatUnits(ratio, DEFAULT_DECIMALS));
-    return ratioAsNumber * pairedTokenPrice;
+  calculateSpotPrice(assetId: string, response: CurveFetcherResponse): number {
+    const pairedTokenPrice = new Decimal(this.getPairedTokenPrice(assetId));
+    const ratio = response.ratio;
+
+    return ratio.mul(pairedTokenPrice).toNumber();
   }
 
   calculateLiquidity(
     _assetId: string,
     _response: CurveFetcherResponse
   ): number {
-    return 0;
+    throw new Error(
+      `calculateLiquidity is not implemented for ${this.getName()}`
+    );
   }
 
-  getPairedTokenPrice(assetId: string) {
+  getPairedTokenPrice(assetId: string): string {
     const { pairedToken } = this.poolsConfig[assetId];
 
-    const lastPriceFromCache = getLastPrice(pairedToken);
+    const lastPriceFromCache = getRawPrice(pairedToken);
     if (!lastPriceFromCache) {
       throw new Error(`Cannot get last price from cache for: ${pairedToken}`);
     }
+
     return lastPriceFromCache.value;
   }
 }

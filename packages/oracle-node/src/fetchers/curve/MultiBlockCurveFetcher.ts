@@ -1,5 +1,5 @@
 import { terminateWithManifestConfigError } from "../../Terminator";
-import { getMedianBigNumber } from "../../utils/numbers";
+import { getMedianOfDecimals } from "../../utils/numbers";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { CurveFetcher, CurveFetcherResponse } from "./CurveFetcher";
 
@@ -34,7 +34,7 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     const ratios = responsesPerBlock.map((response) => response.ratio);
 
     return {
-      ratio: getMedianBigNumber(ratios),
+      ratio: getMedianOfDecimals(ratios),
       assetId: assetId,
     };
   }

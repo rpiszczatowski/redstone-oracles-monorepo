@@ -147,7 +147,9 @@ export const clearLastPricesCache = () => {
   }
 };
 
-const getRawPrice = (symbol: string): PriceValueInLocalDB | undefined => {
+export const getRawPrice = (
+  symbol: string
+): PriceValueInLocalDB | undefined => {
   const currentTimestamp = Date.now();
   const lastPrice = lastPrices[symbol];
 
