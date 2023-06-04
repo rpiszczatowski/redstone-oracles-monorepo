@@ -1,23 +1,13 @@
 import { DexOnChainFetcher } from "../../dex-on-chain/DexOnChainFetcher";
 import { BigNumber, providers } from "ethers";
-import UniswapV3Quoter from "./UniswapV3Quoter.abi.json";
 import UniswapV3Pool from "./UniswapV3Pool.abi.json";
-import { ethers } from "ethers";
 import { getLastPrice } from "../../../db/local-db";
-import { PoolsConfig, QuoterOutAmount, QuoterParams } from "./types";
-import {
-  Multicall,
-  ContractCallResults,
-  ContractCallContext,
-} from "ethereum-multicall";
+import { ObserveParams, ObserveResult, PoolsConfig } from "./types";
+import { Multicall, ContractCallContext } from "ethereum-multicall";
+import { Decimal } from "decimal.js";
+import { TEN_AS_BASE_OF_POWER } from "../shared/contants";
 
-import { isLiquidity } from "../../liquidity/utils";
-
-const DOLLAR_IN_CENTS = 100;
-const DOLLAR_IN_CENTS_EXPONENT = 2;
-const SPOT_PRICE_PRECISION = 10000;
-
-export class UniswapV3FetcherOnChain extends DexOnChainFetcher<QuoterOutAmount> {
+export class UniswapV3FetcherOnChain extends DexOnChainFetcher<ObserveResult> {
   constructor(
     name: string,
     private readonly poolsConfig: PoolsConfig,
@@ -26,58 +16,61 @@ export class UniswapV3FetcherOnChain extends DexOnChainFetcher<QuoterOutAmount> 
     super(name);
   }
 
-  async makeRequest(id: string): Promise<QuoterOutAmount | null> {
-    let assetId = id;
-    if (isLiquidity(id)) {
-      return null;
-    }
-    const { quoterParams, outAssetId, outAssetDecimals, inAssetDecimals } =
-      this.buildParamsForQuoter(
-        this.poolsConfig[assetId].token0Address,
-        this.poolsConfig[assetId].token1Address,
-        assetId
-      );
-    const multicall = this.createMulticallInstance();
-    const contractCallContext = this.buildContractCallContext(
-      assetId,
-      quoterParams
+  SINGLE_TICK = 1.0001;
+
+  async makeRequest(assetId: string): Promise<ObserveResult | null> {
+    const secondsAgoStart = 180; // fetch 2 data points: 3 minutes ago and the current one
+    const secondsAgoEnd = 0;
+    const multicallContext = this.buildContractCallContext(assetId, {
+      secondsAgoStart,
+      secondsAgoEnd,
+    });
+    const multicallResult = await this.createMulticallInstance().call(
+      multicallContext
     );
-    const results: ContractCallResults = await multicall.call(
-      contractCallContext
+    const poolConfig = this.poolsConfig[assetId];
+
+    // TODO how to convert this to something meaningful?
+    const liquidity = BigNumber.from(
+      multicallResult.results.poolContract.callsReturnContext[0].returnValues[0]
     );
 
-    return this.extractQuoterOutput(
-      results,
-      id,
-      outAssetId,
-      outAssetDecimals,
-      inAssetDecimals
+    const tickCumulatives: BigNumber[] =
+      multicallResult.results.poolContract.callsReturnContext[1]
+        .returnValues[0];
+    // twapTick is defined as log(1.0001, token0_sub_units/token1_sub_units)
+    const twapTick = BigNumber.from(tickCumulatives[1])
+      .sub(tickCumulatives[0])
+      .div(secondsAgoStart - secondsAgoEnd);
+    const decimalsDifferenceMultiplier = new Decimal(TEN_AS_BASE_OF_POWER).toPower(
+      poolConfig.token0Decimals - poolConfig.token1Decimals
     );
+    const priceRatio = new Decimal(this.SINGLE_TICK)
+      .toPower(twapTick.toNumber())
+      .times(decimalsDifferenceMultiplier)
+      .toNumber();
+
+    const isSymbol1Current = poolConfig.token1Symbol === assetId;
+
+    return {
+      priceRatio: isSymbol1Current ? 1.0 / priceRatio : priceRatio,
+      liquidity,
+      pairedToken: poolConfig.pairedToken ? poolConfig.pairedToken : isSymbol1Current
+        ? poolConfig.token0Symbol
+        : poolConfig.token1Symbol,
+    };
   }
 
-  override calculateSpotPrice(
-    assetId: string,
-    quoterResponse: QuoterOutAmount
-  ) {
-    const outAssetLastPrice = this.getLastPriceOrThrow(
-      quoterResponse.outAssetId
+  override calculateSpotPrice(assetId: string, observeResult: ObserveResult) {
+    const otherAssetLastPrice = this.getLastPriceOrThrow(
+      observeResult.pairedToken
     );
-    const outAssetDecimalsExp = this.calculateOutAssetDecimalsExp(
-      quoterResponse.outAssetDecimals
-    );
-    const outAssetPriceInCents =
-      this.calculateOutAssetPriceInCents(outAssetLastPrice);
-
-    const spotPriceInDollars = quoterResponse.amountOut
-      .mul(outAssetPriceInCents)
-      .div(outAssetDecimalsExp);
-
-    return spotPriceInDollars.toNumber() / SPOT_PRICE_PRECISION;
+    return otherAssetLastPrice * observeResult.priceRatio;
   }
 
   override calculateLiquidity(
-    assetId: string,
-    response: QuoterOutAmount
+    _assetId: string,
+    _observeResult: ObserveResult
   ): number {
     throw new Error("Method not implemented.");
   }
@@ -89,15 +82,6 @@ export class UniswapV3FetcherOnChain extends DexOnChainFetcher<QuoterOutAmount> 
     }
     return lastPrice.value;
   }
-  private calculateOutAssetDecimalsExp(outAssetDecimals: number) {
-    return BigNumber.from(10).pow(
-      BigNumber.from(outAssetDecimals - DOLLAR_IN_CENTS_EXPONENT)
-    );
-  }
-
-  private calculateOutAssetPriceInCents(outAssetLastPrice: number) {
-    return BigNumber.from(outAssetLastPrice * DOLLAR_IN_CENTS);
-  }
 
   private createMulticallInstance() {
     return new Multicall({
@@ -108,21 +92,9 @@ export class UniswapV3FetcherOnChain extends DexOnChainFetcher<QuoterOutAmount> 
 
   private buildContractCallContext(
     assetId: string,
-    quoterParams: QuoterParams
+    observeParams: ObserveParams
   ): ContractCallContext[] {
     return [
-      {
-        reference: "quoterContract",
-        contractAddress: this.poolsConfig[assetId].quoterAddress,
-        abi: UniswapV3Quoter.abi,
-        calls: [
-          {
-            reference: "quoteExactInputSingleCall",
-            methodName: "quoteExactInputSingle",
-            methodParameters: [quoterParams],
-          },
-        ],
-      },
       {
         reference: "poolContract",
         contractAddress: this.poolsConfig[assetId].poolAddress,
@@ -133,54 +105,15 @@ export class UniswapV3FetcherOnChain extends DexOnChainFetcher<QuoterOutAmount> 
             methodName: "liquidity",
             methodParameters: [],
           },
+          {
+            reference: "observeCall",
+            methodName: "observe",
+            methodParameters: [
+              [observeParams.secondsAgoStart, observeParams.secondsAgoEnd],
+            ],
+          },
         ],
       },
     ];
-  }
-
-  private extractQuoterOutput(
-    results: ContractCallResults,
-    id: string,
-    outAssetId: string,
-    outAssetDecimals: number,
-    inAssetDecimals: number
-  ): QuoterOutAmount {
-    const amountOut = BigNumber.from(
-      results.results.quoterContract.callsReturnContext[0].returnValues[0]
-    );
-    const liquidity = BigNumber.from(
-      results.results.poolContract.callsReturnContext[0]
-        .returnValues[0] as BigNumber
-    );
-
-    return {
-      amountOut,
-      assetId: id,
-      outAssetId,
-      outAssetDecimals,
-      inAssetDecimals,
-      liquidity,
-    };
-  }
-
-  private buildParamsForQuoter(
-    token0Address: string,
-    token1Address: string,
-    assetId: string
-  ) {
-    return {
-      quoterParams: {
-        tokenIn: token0Address,
-        tokenOut: token1Address,
-        amountIn: ethers.utils
-          .parseUnits("1", this.poolsConfig[assetId].token0Decimals)
-          .toString(),
-        fee: this.poolsConfig[assetId].fee,
-        sqrtPriceLimitX96: 0,
-      },
-      outAssetId: this.poolsConfig[assetId].token1Symbol,
-      outAssetDecimals: this.poolsConfig[assetId].token1Decimals,
-      inAssetDecimals: this.poolsConfig[assetId].token0Decimals,
-    };
   }
 }

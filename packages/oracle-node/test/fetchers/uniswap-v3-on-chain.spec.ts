@@ -2,8 +2,9 @@ import { MockProvider, deployMockContract } from "ethereum-waffle";
 import { closeLocalLevelDB, setupLocalDb } from "../../src/db/local-db";
 import { Contract } from "ethers";
 import { saveMockPriceInLocalDb } from "./_helpers";
-import UniswapV3Quoter from "../../src/fetchers/evm-chain/uniswap-v3-on-chain/UniswapV3Quoter.abi.json";
 import UniswapV3Pool from "../../src/fetchers/evm-chain/uniswap-v3-on-chain/UniswapV3Pool.abi.json";
+import UniswapV3Quoter from "../../src/fetchers/evm-chain/uniswap-v3-on-chain/UniswapV3Quoter.abi.json";
+
 
 import { UniswapV3FetcherOnChain } from "../../src/fetchers/evm-chain/uniswap-v3-on-chain/UniswapV3FetcherOnChain";
 import { PoolsConfig } from "../../src/fetchers/evm-chain/uniswap-v3-on-chain/types";
@@ -16,11 +17,28 @@ jest.mock("ethereum-multicall", () => {
       return {
         call: jest.fn().mockResolvedValue({
           results: {
-            quoterContract: {
-              callsReturnContext: [{ returnValues: ["5975473172377929"] }],
-            },
             poolContract: {
-              callsReturnContext: [{ returnValues: ["0"] }],
+              callsReturnContext: [
+                { returnValues: ["0"] },
+                {
+                  returnValues: [
+                    [
+                      { type: "BigNumber", hex: "0x0be069d1bcc3" },
+                      { type: "BigNumber", hex: "0x0be06bf9da3f" },
+                    ],
+                    [
+                      {
+                        type: "BigNumber",
+                        hex: "0x064404e0fd5ef65a1b6b2fa9f9",
+                      },
+                      {
+                        type: "BigNumber",
+                        hex: "0x064404e9bb13c8fbcbef353f14",
+                      },
+                    ],
+                  ],
+                },
+              ],
             },
           },
         }),
@@ -52,7 +70,7 @@ describe("uniswap V3 fetcher", () => {
         token1Address: MOCK_TOKEN_ADDRESS,
         token0Symbol: "MockToken",
         token1Symbol: "MockToken2",
-        token0Decimals: 9,
+        token0Decimals: 6,
         token1Decimals: 18,
         fee: 5000,
       },
@@ -69,8 +87,8 @@ describe("uniswap V3 fetcher", () => {
       mockTokenConfig,
       provider
     );
-    await saveMockPriceInLocalDb(1570.82, "MockToken2");
+    await saveMockPriceInLocalDb(1863.50, "MockToken2");
     const result = await fetcher.fetchAll(["MockToken"]);
-    expect(result).toEqual([{ symbol: "MockToken", value: 9.3863 }]);
+    expect(result).toEqual([{ symbol: "MockToken", value: 1.000085578653717 }]);
   });
 });

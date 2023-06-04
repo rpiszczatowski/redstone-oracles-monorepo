@@ -1,14 +1,14 @@
 {
-  "uniswap-v3-on-chain-OHM-10000": {
+  "uniswap-v3-on-chain-ohm-10000": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x584eC2562b937C4AC0452184D8d83346382B5D3a",
-      "token0Symbol": "WETH",
-      "token1Symbol": "OHM",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
-      "token0Decimals": 18,
-      "token1Decimals": 9,
+      "token0Symbol": "OHM",
+      "token1Symbol": "WETH",
+      "token0Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 9,
+      "token1Decimals": 18,
       "fee": 10000
     },
     "WBTC": {
@@ -23,55 +23,55 @@
       "fee": 10000
     }
   },
-  "uniswap-v3-on-chain-OHM-3000": {
+  "uniswap-v3-on-chain-ohm-3000": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x88051B0eea095007D3bEf21aB287Be961f3d8598",
-      "token0Symbol": "WETH",
-      "token1Symbol": "OHM",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
-      "token0Decimals": 18,
-      "token1Decimals": 9,
+      "token0Symbol": "OHM",
+      "token1Symbol": "WETH",
+      "token0Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 9,
+      "token1Decimals": 18,
       "fee": 3000
     },
     "DAI": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x2A4AED78CE95ac63F127C38B11C62FBEAf2939c0",
-      "token0Symbol": "DAI",
-      "token1Symbol": "OHM",
-      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      "token1Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
-      "token0Decimals": 18,
-      "token1Decimals": 9,
+      "token0Symbol": "OHM",
+      "token1Symbol": "DAI",
+      "token0Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
+      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token0Decimals": 9,
+      "token1Decimals": 18,
       "fee": 3000
     },
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x893f503FaC2Ee1e5B78665db23F9c94017Aae97D",
-      "token0Symbol": "USDC",
-      "token1Symbol": "OHM",
-      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token1Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
-      "token0Decimals": 6,
-      "token1Decimals": 9,
+      "token0Symbol": "OHM",
+      "token1Symbol": "USDC",
+      "token0Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 9,
+      "token1Decimals": 6,
       "fee": 3000
     }
   },
-  "uniswap-v3-on-chain-OHM-500": {
+  "uniswap-v3-on-chain-ohm-500": {
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x58557CFA7dcfe3A67E9A13080c90655E89cc1f11",
-      "token0Symbol": "USDC",
-      "token1Symbol": "OHM",
-      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token1Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
-      "token0Decimals": 6,
-      "token1Decimals": 9,
+      "token0Symbol": "OHM",
+      "token1Symbol": "USDC",
+      "token0Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 9,
+      "token1Decimals": 6,
       "fee": 500
     }
   },
-  "uniswap-v3-on-chain-WETH-10000": {
+  "uniswap-v3-on-chain-weth-10000": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x584eC2562b937C4AC0452184D8d83346382B5D3a",
@@ -81,7 +81,8 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 9,
       "token1Decimals": 18,
-      "fee": 10000
+      "fee": 10000,
+      "pairedToken": "ETH"
     },
     "WBTC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
@@ -92,7 +93,8 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 8,
       "token1Decimals": 18,
-      "fee": 10000
+      "fee": 10000,
+      "pairedToken": "ETH"
     },
     "DAI": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
@@ -103,7 +105,8 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 18,
       "token1Decimals": 18,
-      "fee": 10000
+      "fee": 10000,
+      "pairedToken": "ETH"
     },
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
@@ -114,10 +117,11 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 6,
       "token1Decimals": 18,
-      "fee": 10000
+      "fee": 10000,
+      "pairedToken": "ETH"
     }
   },
-  "uniswap-v3-on-chain-WETH-3000": {
+  "uniswap-v3-on-chain-weth-3000": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x88051B0eea095007D3bEf21aB287Be961f3d8598",
@@ -127,7 +131,8 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 9,
       "token1Decimals": 18,
-      "fee": 3000
+      "fee": 3000,
+      "pairedToken": "ETH"
     },
     "WBTC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
@@ -138,7 +143,8 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 8,
       "token1Decimals": 18,
-      "fee": 3000
+      "fee": 3000,
+      "pairedToken": "ETH"
     },
     "DAI": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
@@ -149,7 +155,8 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 18,
       "token1Decimals": 18,
-      "fee": 3000
+      "fee": 3000,
+      "pairedToken": "ETH"
     },
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
@@ -160,10 +167,11 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 6,
       "token1Decimals": 18,
-      "fee": 3000
+      "fee": 3000,
+      "pairedToken": "ETH"
     }
   },
-  "uniswap-v3-on-chain-WETH-500": {
+  "uniswap-v3-on-chain-weth-500": {
     "WBTC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x4585FE77225b41b697C938B018E2Ac67Ac5a20c0",
@@ -173,7 +181,8 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 8,
       "token1Decimals": 18,
-      "fee": 500
+      "fee": 500,
+      "pairedToken": "ETH"
     },
     "DAI": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
@@ -184,7 +193,8 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 18,
       "token1Decimals": 18,
-      "fee": 500
+      "fee": 500,
+      "pairedToken": "ETH"
     },
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
@@ -195,10 +205,23 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 6,
       "token1Decimals": 18,
-      "fee": 500
+      "fee": 500,
+      "pairedToken": "ETH"
+    },
+    "swETH": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x30ea22c879628514f1494d4bbfef79d21a6b49a2",
+      "token0Symbol": "WETH",
+      "token1Symbol": "swETH",
+      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token1Address": "0xf951E335afb289353dc249e82926178EaC7DEd78",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "fee": 500,
+      "pairedToken": "ETH"
     }
   },
-  "uniswap-v3-on-chain-WETH-100": {
+  "uniswap-v3-on-chain-weth-100": {
     "WBTC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xe6ff8b9A37B0fab776134636D9981Aa778c4e718",
@@ -208,7 +231,8 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 8,
       "token1Decimals": 18,
-      "fee": 100
+      "fee": 100,
+      "pairedToken": "ETH"
     },
     "DAI": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
@@ -219,7 +243,8 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 18,
       "token1Decimals": 18,
-      "fee": 100
+      "fee": 100,
+      "pairedToken": "ETH"
     },
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
@@ -230,150 +255,151 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 6,
       "token1Decimals": 18,
-      "fee": 100
+      "fee": 100,
+      "pairedToken": "ETH"
     }
   },
-  "uniswap-v3-on-chain-WBTC-10000": {
+  "uniswap-v3-on-chain-wbtc-10000": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x9Fd3D0979c6019Fc673FAB0158AFE7D2F055eCe0",
-      "token0Symbol": "OHM",
-      "token1Symbol": "WBTC",
-      "token0Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 9,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "OHM",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0x64aa3364F17a4D01c6f1751Fd97C2BD3D7e7f1D5",
+      "token0Decimals": 8,
+      "token1Decimals": 9,
       "fee": 10000
     },
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x6Ab3bba2F41e7eAA262fa5A1A9b3932fA161526F",
-      "token0Symbol": "WETH",
-      "token1Symbol": "WBTC",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 18,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "WETH",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 8,
+      "token1Decimals": 18,
       "fee": 10000
     },
     "DAI": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x649Caaf37F36E67D1129C0FD6C6539d390Ca2B82",
-      "token0Symbol": "DAI",
-      "token1Symbol": "WBTC",
-      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 18,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "DAI",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token0Decimals": 8,
+      "token1Decimals": 18,
       "fee": 10000
     },
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xCBFB0745b8489973Bf7b334d54fdBd573Df7eF3c",
-      "token0Symbol": "USDC",
-      "token1Symbol": "WBTC",
-      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 6,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "USDC",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 8,
+      "token1Decimals": 6,
       "fee": 10000
     }
   },
-  "uniswap-v3-on-chain-WBTC-3000": {
+  "uniswap-v3-on-chain-wbtc-3000": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xCBCdF9626bC03E24f779434178A73a0B4bad62eD",
-      "token0Symbol": "WETH",
-      "token1Symbol": "WBTC",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 18,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "WETH",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 8,
+      "token1Decimals": 18,
       "fee": 3000
     },
     "DAI": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x391E8501b626C623d39474AfcA6f9e46c2686649",
-      "token0Symbol": "DAI",
-      "token1Symbol": "WBTC",
-      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 18,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "DAI",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token0Decimals": 8,
+      "token1Decimals": 18,
       "fee": 3000
     },
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x99ac8cA7087fA4A2A1FB6357269965A2014ABc35",
-      "token0Symbol": "USDC",
-      "token1Symbol": "WBTC",
-      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 6,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "USDC",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 8,
+      "token1Decimals": 6,
       "fee": 3000
     }
   },
-  "uniswap-v3-on-chain-WBTC-500": {
+  "uniswap-v3-on-chain-wbtc-500": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x4585FE77225b41b697C938B018E2Ac67Ac5a20c0",
-      "token0Symbol": "WETH",
-      "token1Symbol": "WBTC",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 18,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "WETH",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 8,
+      "token1Decimals": 18,
       "fee": 500
     },
     "DAI": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xA93eb5b410b651514A18724872306F5ce9928Dde",
-      "token0Symbol": "DAI",
-      "token1Symbol": "WBTC",
-      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 18,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "DAI",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token0Decimals": 8,
+      "token1Decimals": 18,
       "fee": 500
     },
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x9a772018FbD77fcD2d25657e5C547BAfF3Fd7D16",
-      "token0Symbol": "USDC",
-      "token1Symbol": "WBTC",
-      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 6,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "USDC",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 8,
+      "token1Decimals": 6,
       "fee": 500
     }
   },
-  "uniswap-v3-on-chain-WBTC-100": {
+  "uniswap-v3-on-chain-wbtc-100": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xe6ff8b9A37B0fab776134636D9981Aa778c4e718",
-      "token0Symbol": "WETH",
-      "token1Symbol": "WBTC",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 18,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "WETH",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 8,
+      "token1Decimals": 18,
       "fee": 100
     },
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x026Babd2ae9379525030Fc2574e39bc156C10583",
-      "token0Symbol": "USDC",
-      "token1Symbol": "WBTC",
-      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token1Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      "token0Decimals": 6,
-      "token1Decimals": 8,
+      "token0Symbol": "WBTC",
+      "token1Symbol": "USDC",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 8,
+      "token1Decimals": 6,
       "fee": 100
     }
   },
-  "uniswap-v3-on-chain-DAI-3000": {
+  "uniswap-v3-on-chain-dai-3000": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x2A4AED78CE95ac63F127C38B11C62FBEAf2939c0",
@@ -388,10 +414,10 @@
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xC2e9F25Be6257c210d7Adf0D4Cd6E3E881ba25f8",
-      "token0Symbol": "WETH",
-      "token1Symbol": "DAI",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token0Symbol": "DAI",
+      "token1Symbol": "WETH",
+      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 18,
       "token1Decimals": 18,
       "fee": 3000
@@ -410,23 +436,23 @@
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xa63b490aA077f541c9d64bFc1Cc0db2a752157b5",
-      "token0Symbol": "USDC",
-      "token1Symbol": "DAI",
-      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      "token0Decimals": 6,
-      "token1Decimals": 18,
+      "token0Symbol": "DAI",
+      "token1Symbol": "USDC",
+      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
       "fee": 3000
     }
   },
-  "uniswap-v3-on-chain-DAI-10000": {
+  "uniswap-v3-on-chain-dai-10000": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xa80964C5bBd1A0E95777094420555fead1A26c1e",
-      "token0Symbol": "WETH",
-      "token1Symbol": "DAI",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token0Symbol": "DAI",
+      "token1Symbol": "WETH",
+      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 18,
       "token1Decimals": 18,
       "fee": 10000
@@ -445,23 +471,23 @@
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x6958686b6348c3D6d5f2dCA3106A5C09C156873a",
-      "token0Symbol": "USDC",
-      "token1Symbol": "DAI",
-      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      "token0Decimals": 6,
-      "token1Decimals": 18,
+      "token0Symbol": "DAI",
+      "token1Symbol": "USDC",
+      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
       "fee": 10000
     }
   },
-  "uniswap-v3-on-chain-DAI-500": {
+  "uniswap-v3-on-chain-dai-500": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x60594a405d53811d3BC4766596EFD80fd545A270",
-      "token0Symbol": "WETH",
-      "token1Symbol": "DAI",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token0Symbol": "DAI",
+      "token1Symbol": "WETH",
+      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 18,
       "token1Decimals": 18,
       "fee": 500
@@ -480,23 +506,23 @@
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x6c6Bc977E13Df9b0de53b251522280BB72383700",
-      "token0Symbol": "USDC",
-      "token1Symbol": "DAI",
-      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      "token0Decimals": 6,
-      "token1Decimals": 18,
+      "token0Symbol": "DAI",
+      "token1Symbol": "USDC",
+      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
       "fee": 500
     }
   },
-  "uniswap-v3-on-chain-DAI-100": {
+  "uniswap-v3-on-chain-dai-100": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xD8dEC118e1215F02e10DB846DCbBfE27d477aC19",
-      "token0Symbol": "WETH",
-      "token1Symbol": "DAI",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token0Symbol": "DAI",
+      "token1Symbol": "WETH",
+      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 18,
       "token1Decimals": 18,
       "fee": 100
@@ -504,16 +530,16 @@
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x5777d92f208679DB4b9778590Fa3CAB3aC9e2168",
-      "token0Symbol": "USDC",
-      "token1Symbol": "DAI",
-      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token1Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      "token0Decimals": 6,
-      "token1Decimals": 18,
+      "token0Symbol": "DAI",
+      "token1Symbol": "USDC",
+      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
       "fee": 100
     }
   },
-  "uniswap-v3-on-chain-USDC-3000": {
+  "uniswap-v3-on-chain-usdc-3000": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x893f503FaC2Ee1e5B78665db23F9c94017Aae97D",
@@ -528,12 +554,12 @@
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8",
-      "token0Symbol": "WETH",
-      "token1Symbol": "USDC",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token0Decimals": 18,
-      "token1Decimals": 6,
+      "token0Symbol": "USDC",
+      "token1Symbol": "WETH",
+      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 6,
+      "token1Decimals": 18,
       "fee": 3000
     },
     "WBTC": {
@@ -559,7 +585,7 @@
       "fee": 3000
     }
   },
-  "uniswap-v3-on-chain-USDC-500": {
+  "uniswap-v3-on-chain-usdc-500": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x58557CFA7dcfe3A67E9A13080c90655E89cc1f11",
@@ -574,12 +600,12 @@
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640",
-      "token0Symbol": "WETH",
-      "token1Symbol": "USDC",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token0Decimals": 18,
-      "token1Decimals": 6,
+      "token0Symbol": "USDC",
+      "token1Symbol": "WETH",
+      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 6,
+      "token1Decimals": 18,
       "fee": 500
     },
     "WBTC": {
@@ -605,16 +631,16 @@
       "fee": 500
     }
   },
-  "uniswap-v3-on-chain-USDC-10000": {
+  "uniswap-v3-on-chain-usdc-10000": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x7BeA39867e4169DBe237d55C8242a8f2fcDcc387",
-      "token0Symbol": "WETH",
-      "token1Symbol": "USDC",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token0Decimals": 18,
-      "token1Decimals": 6,
+      "token0Symbol": "USDC",
+      "token1Symbol": "WETH",
+      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 6,
+      "token1Decimals": 18,
       "fee": 10000
     },
     "WBTC": {
@@ -640,16 +666,16 @@
       "fee": 10000
     }
   },
-  "uniswap-v3-on-chain-USDC-100": {
+  "uniswap-v3-on-chain-usdc-100": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xE0554a476A092703abdB3Ef35c80e0D76d32939F",
-      "token0Symbol": "WETH",
-      "token1Symbol": "USDC",
-      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-      "token0Decimals": 18,
-      "token1Decimals": 6,
+      "token0Symbol": "USDC",
+      "token1Symbol": "WETH",
+      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 6,
+      "token1Decimals": 18,
       "fee": 100
     },
     "WBTC": {
