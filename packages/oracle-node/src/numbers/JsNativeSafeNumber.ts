@@ -199,7 +199,6 @@ const parseToSafeNumber = (value: utils.NumberLike) => {
         `Invalid number format: ${value}, not matching regexp: ${JsNativeSafeNumberConfig.DIGIT_REGEXP}`
       );
     }
-    reportIfLoosingPrecision(value);
     number = Number(value);
   } else if (typeof value === "number") {
     number = Number(value);
@@ -215,14 +214,4 @@ const parseToSafeNumber = (value: utils.NumberLike) => {
   }
 
   return number;
-};
-
-const reportIfLoosingPrecision = (number: string) => {
-  const [_, decimals] = number.split(".");
-
-  if (decimals && decimals.length > JsNativeSafeNumberConfig.MAX_DECIMALS) {
-    logger.warn(
-      `Lost precision casting number ${number} to ${JsNativeSafeNumberConfig.MAX_DECIMALS} decimals`
-    );
-  }
 };
