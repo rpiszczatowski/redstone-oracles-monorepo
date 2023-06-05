@@ -84,6 +84,9 @@
         "uniswap-v3"
       ],
       "skipSigning": true
+    },
+    "swETH": {
+      "source": ["balancer-bb-a-weth"]
     }
   }
 }

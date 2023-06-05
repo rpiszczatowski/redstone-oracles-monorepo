@@ -1193,6 +1193,9 @@
     },
     "USDT.e": {
       "source": ["trader-joe-on-chain-wavax", "pangolin-on-chain-wavax"]
+    },
+    "swETH": {
+      "source": ["balancer-bb-a-weth"]
     }
   }
 }

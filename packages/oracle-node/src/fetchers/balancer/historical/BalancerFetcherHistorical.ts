@@ -1,7 +1,7 @@
 import redstone from "redstone-api";
 import graphProxy from "../../../utils/graph-proxy";
 import axios from "axios";
-import { BalancerFetcher } from "../BalancerFetcher";
+import { BalancerFetcher, BalancerPoolConfig } from "../BalancerFetcher";
 
 const SECOND_IN_MILLISECONDS = 1000;
 const url = "https://api.thegraph.com/subgraphs/name/balancer-labs/balancer-v2";
@@ -10,8 +10,8 @@ const timestampToBlockProviderUrl = "https://coins.llama.fi/block/ethereum/";
 export class BalancerFetcherHistorical extends BalancerFetcher {
   private timestamp: number;
 
-  constructor(name: string, baseTokenSymbol: string, timestamp: number) {
-    super(name, baseTokenSymbol);
+  constructor(name: string, config: BalancerPoolConfig, timestamp: number) {
+    super(name, config);
     this.timestamp = timestamp;
   }
 
@@ -41,8 +41,7 @@ export class BalancerFetcherHistorical extends BalancerFetcher {
 
     const spotPrice = Number(token0.balance / token1.balance);
 
-    const symbol =
-      token0.symbol == this.baseTokenSymbol ? token1.symbol! : token0.symbol!;
+    const symbol = this.config[token0] ? token0.symbol! : token1.symbol!;
 
     return { spotPrice, assetId: symbol, pairedTokenPrice, liquidity: 0 };
   }
@@ -52,9 +51,10 @@ export class BalancerFetcherHistorical extends BalancerFetcher {
       .height;
   }
 
-  protected async getPairedTokenPrice() {
+  protected async getPairedTokenPrice(assetId: string) {
+    const pairedToken = this.config[assetId].pairedToken;
     return (
-      await redstone.getHistoricalPrice(`${this.baseTokenSymbol}`, {
+      await redstone.getHistoricalPrice(`${pairedToken}`, {
         date: new Date(this.timestamp * SECOND_IN_MILLISECONDS),
       })
     ).value;
