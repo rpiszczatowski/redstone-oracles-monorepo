@@ -19,8 +19,28 @@
       }
     }
   },
-  "balancer-bb-a-weth": {
+  "balancer-wsteth": {
+    "pairedToken": "WSTETH",
+    "poolsConfigs": {
+      "BB-A-WETH": {
+        "poolId": "0xe0fcbf4d98f0ad982db260f86cf28b49845403c5000000000000000000000504",
+        "tokenIn": "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
+        "tokenOut": "0x60d604890feaa0b5460b28a424407c24fe89374a"
+      }
+    }
+  },
+  "balancer-bb-a-weth-using-eth": {
     "pairedToken": "ETH",
+    "poolsConfigs": {
+      "swETH": {
+        "poolId": "0x02d928e68d8f10c0358566152677db51e1e2dc8c00000000000000000000051e",
+        "tokenIn": "0x60d604890feaa0b5460b28a424407c24fe89374a",
+        "tokenOut": "0xf951e335afb289353dc249e82926178eac7ded78"
+      }
+    }
+  },
+  "balancer-bb-a-weth": {
+    "pairedToken": "BB-A-WETH",
     "poolsConfigs": {
       "swETH": {
         "poolId": "0x02d928e68d8f10c0358566152677db51e1e2dc8c00000000000000000000051e",

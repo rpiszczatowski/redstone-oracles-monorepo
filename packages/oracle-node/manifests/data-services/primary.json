@@ -85,8 +85,14 @@
       ],
       "skipSigning": true
     },
+    "WSTETH": {
+      "source": ["coingecko", "coinmarketcap"]
+    },
+    "BB-A-WETH": {
+      "source": ["coinmarketcap", "coingecko", "balancer-wsteth"]
+    },
     "swETH": {
-      "source": ["balancer-bb-a-weth"]
+      "source": ["balancer-bb-a-weth", "balancer-bb-a-weth-using-eth"]
     }
   }
 }

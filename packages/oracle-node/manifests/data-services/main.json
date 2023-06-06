@@ -1417,8 +1417,11 @@
     "USDT.e": {
       "source": ["trader-joe-on-chain-wavax", "pangolin-on-chain-wavax"]
     },
+    "BB-A-WETH": {
+      "source": ["coinmarketcap", "coingecko", "balancer-wsteth"]
+    },
     "swETH": {
-      "source": ["balancer-bb-a-weth"]
+      "source": ["balancer-bb-a-weth", "balancer-bb-a-weth-using-eth"]
     },
     "ABNB": {
       "source": ["currencycom"]
