@@ -6,12 +6,23 @@ import {
 } from "@balancer-labs/sdk";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice } from "../../db/local-db";
-import balancerPools from "./balancer-pools.json";
 import { config } from "../../config";
 
 const balancerConfig: BalancerSdkConfig = {
   network: Network.MAINNET,
   rpcUrl: config.ethMainRpcUrl as string,
+};
+
+export type BalancerPoolsConfig = {
+  pairedToken: string;
+  poolsConfigs: Record<
+    string,
+    {
+      poolId: string;
+      tokenIn: string;
+      tokenOut: string;
+    }
+  >;
 };
 
 export interface BalancerResponse {
@@ -22,7 +33,7 @@ export interface BalancerResponse {
 export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
   private balancer: BalancerSDK;
 
-  constructor(name: string, protected readonly baseTokenSymbol: string) {
+  constructor(name: string, protected readonly config: BalancerPoolsConfig) {
     super(name);
     this.balancer = new BalancerSDK(balancerConfig);
   }
@@ -35,14 +46,12 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
   }
 
   override calculateSpotPrice(
-    _assetId: string,
+    assetId: string,
     response: BalancerResponse
   ): number {
     const { pool, pairedTokenPrice } = response;
-    const spotPrice = Number(
-      pool.calcSpotPrice(pool.tokens[1].address, pool.tokens[0].address)
-    );
-
+    const { tokenIn, tokenOut } = this.config.poolsConfigs[assetId];
+    const spotPrice = Number(pool.calcSpotPrice(tokenIn, tokenOut));
     return spotPrice * pairedTokenPrice;
   }
 
@@ -61,38 +70,22 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
     return pool;
   }
 
-  protected getSymbolFromPool(pool: PoolWithMethods): string {
-    return pool.tokens[0].symbol === this.baseTokenSymbol
-      ? pool.tokens[1].symbol!
-      : pool.tokens[0].symbol!;
-  }
-
   protected async getPairedTokenPrice(): Promise<number> {
-    let tokenToGet = this.baseTokenSymbol;
-    if (tokenToGet === "WETH") {
-      tokenToGet = "ETH";
-    }
-    const lastPriceFromCache = getLastPrice(tokenToGet);
+    const pairedToken = this.config.pairedToken;
+    const lastPriceFromCache = getLastPrice(pairedToken);
     if (!lastPriceFromCache) {
-      throw new Error(`Cannot get last price from cache for: ${tokenToGet}`);
+      throw new Error(`Cannot get last price from cache for: ${pairedToken}`);
     }
     return lastPriceFromCache.value;
   }
 
   protected getPoolIdForAssetId(assetId: string) {
-    const poolFound = balancerPools.find((pool) => {
-      const symbol0 = pool.tokens[0].symbol;
-      const symbol1 = pool.tokens[1].symbol;
-      return (
-        (symbol0 == this.baseTokenSymbol && assetId === symbol1) ||
-        (symbol1 == this.baseTokenSymbol && assetId === symbol0)
-      );
-    });
-    if (!poolFound) {
+    const poolId = this.config.poolsConfigs[assetId].poolId;
+    if (!poolId) {
       throw new Error(
         `Missing balancer pair for ${assetId}, check balancer pair config`
       );
     }
-    return poolFound.id;
+    return poolId;
   }
 }

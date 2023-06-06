@@ -934,5 +934,6 @@
   "CMP": "caduceus",
   "PLS": "plutusdao",
   "PEPE": "pepe",
-  "SWETH": "sweth"
+  "SWETH": "sweth",
+  "BB-A-WETH": "balancer-boosted-aave-weth"
 }
