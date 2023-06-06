@@ -63,7 +63,7 @@ export abstract class BaseFetcher implements Fetcher {
     }
 
     // Extracting prices from response
-    const pricesObj = await this.extractPrices(response, ids, opts);
+    const pricesObj = this.extractPrices(response, ids, opts);
 
     return this.convertPricesObjToResultPriceArray(pricesObj, ids);
   }

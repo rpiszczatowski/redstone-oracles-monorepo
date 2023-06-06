@@ -184,7 +184,7 @@ const validateNumber = (
   if (Math.abs(number) < JsNativeSafeNumberConfig.MIN_NUMBER && number !== 0) {
     return {
       result: NumberValidationResult.isUnderflow,
-      message: `Invalid number format: Number is smaller then min number acceptable by REDSTONE ${number}`,
+      message: `Invalid number format: Number is smaller than min number acceptable by REDSTONE ${number}`,
     };
   }
 
