@@ -16,6 +16,8 @@ const balancerConfig: BalancerSdkConfig = {
 export interface BalancerPoolConfig {
   [symbol: string]: {
     poolId: string;
+    tokenIn: string;
+    tokenOut: string;
     pairedToken: string;
   };
 }
@@ -41,14 +43,12 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
   }
 
   override calculateSpotPrice(
-    _assetId: string,
+    assetId: string,
     response: BalancerResponse
   ): number {
     const { pool, pairedTokenPrice } = response;
-    const spotPrice = Number(
-      pool.calcSpotPrice(pool.tokens[1].address, pool.tokens[0].address)
-    );
-
+    const { tokenIn, tokenOut } = this.config[assetId];
+    const spotPrice = Number(pool.calcSpotPrice(tokenIn, tokenOut));
     return spotPrice * pairedTokenPrice;
   }
 
