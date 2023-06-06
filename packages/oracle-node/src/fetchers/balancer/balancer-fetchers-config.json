@@ -32,7 +32,7 @@
   "balancer-bb-a-weth-using-eth": {
     "pairedToken": "ETH",
     "poolsConfigs": {
-      "swETH": {
+      "SWETH": {
         "poolId": "0x02d928e68d8f10c0358566152677db51e1e2dc8c00000000000000000000051e",
         "tokenIn": "0x60d604890feaa0b5460b28a424407c24fe89374a",
         "tokenOut": "0xf951e335afb289353dc249e82926178eac7ded78"
@@ -42,7 +42,7 @@
   "balancer-bb-a-weth": {
     "pairedToken": "BB-A-WETH",
     "poolsConfigs": {
-      "swETH": {
+      "SWETH": {
         "poolId": "0x02d928e68d8f10c0358566152677db51e1e2dc8c00000000000000000000051e",
         "tokenIn": "0x60d604890feaa0b5460b28a424407c24fe89374a",
         "tokenOut": "0xf951e335afb289353dc249e82926178eac7ded78"

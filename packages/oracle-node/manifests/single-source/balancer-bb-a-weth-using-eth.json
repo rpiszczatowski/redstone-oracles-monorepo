@@ -10,6 +10,6 @@
   },
   "defaultSource": ["balancer-bb-a-weth-using-eth"],
   "tokens": {
-    "swETH": {}
+    "SWETH": {}
   }
 }

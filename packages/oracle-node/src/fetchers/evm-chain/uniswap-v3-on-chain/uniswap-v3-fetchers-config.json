@@ -208,11 +208,11 @@
       "fee": 500,
       "pairedToken": "ETH"
     },
-    "swETH": {
+    "SWETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x30ea22c879628514f1494d4bbfef79d21a6b49a2",
       "token0Symbol": "WETH",
-      "token1Symbol": "swETH",
+      "token1Symbol": "SWETH",
       "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token1Address": "0xf951E335afb289353dc249e82926178EaC7DEd78",
       "token0Decimals": 18,
