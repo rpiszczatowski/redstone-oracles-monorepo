@@ -5,7 +5,7 @@ export const REDSTONE_DATA_SERVICES_URLS: Record<string, string[]> = {
     "https://oracle-gateway-1.a.redstone.finance",
     "https://oracle-gateway-2.a.redstone.finance",
   ],
-  "redstone-primary-demo": [DEMO_URL],
+  // TODO: NOT DEPLOYED YET "redstone-primary-demo": [],
   "redstone-avalanche-prod": [
     "https://oracle-gateway-1.a.redstone.finance",
     "https://oracle-gateway-2.a.redstone.finance",
