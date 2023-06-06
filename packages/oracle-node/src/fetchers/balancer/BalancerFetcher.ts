@@ -13,14 +13,17 @@ const balancerConfig: BalancerSdkConfig = {
   rpcUrl: config.ethMainRpcUrl as string,
 };
 
-export interface BalancerPoolConfig {
-  [symbol: string]: {
-    poolId: string;
-    tokenIn: string;
-    tokenOut: string;
-    pairedToken: string;
-  };
-}
+export type BalancerPoolsConfig = {
+  pairedToken: string;
+  poolsConfigs: Record<
+    string,
+    {
+      poolId: string;
+      tokenIn: string;
+      tokenOut: string;
+    }
+  >;
+};
 
 export interface BalancerResponse {
   pool: PoolWithMethods;
@@ -30,13 +33,13 @@ export interface BalancerResponse {
 export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
   private balancer: BalancerSDK;
 
-  constructor(name: string, protected readonly config: BalancerPoolConfig) {
+  constructor(name: string, protected readonly config: BalancerPoolsConfig) {
     super(name);
     this.balancer = new BalancerSDK(balancerConfig);
   }
 
   override async makeRequest(id: string): Promise<BalancerResponse> {
-    const pairedTokenPrice = await this.getPairedTokenPrice(id);
+    const pairedTokenPrice = await this.getPairedTokenPrice();
     const poolId = this.getPoolIdForAssetId(id);
     const pool = await this.fetchPool(poolId);
     return { pool, pairedTokenPrice };
@@ -47,7 +50,7 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
     response: BalancerResponse
   ): number {
     const { pool, pairedTokenPrice } = response;
-    const { tokenIn, tokenOut } = this.config[assetId];
+    const { tokenIn, tokenOut } = this.config.poolsConfigs[assetId];
     const spotPrice = Number(pool.calcSpotPrice(tokenIn, tokenOut));
     return spotPrice * pairedTokenPrice;
   }
@@ -67,8 +70,8 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
     return pool;
   }
 
-  protected async getPairedTokenPrice(assetId: string): Promise<number> {
-    const pairedToken = this.config[assetId].pairedToken;
+  protected async getPairedTokenPrice(): Promise<number> {
+    const pairedToken = this.config.pairedToken;
     const lastPriceFromCache = getLastPrice(pairedToken);
     if (!lastPriceFromCache) {
       throw new Error(`Cannot get last price from cache for: ${pairedToken}`);
@@ -77,7 +80,7 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
   }
 
   protected getPoolIdForAssetId(assetId: string) {
-    const poolId = this.config[assetId].poolId;
+    const poolId = this.config.poolsConfigs[assetId].poolId;
     if (!poolId) {
       throw new Error(
         `Missing balancer pair for ${assetId}, check balancer pair config`
