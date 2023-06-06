@@ -6,7 +6,9 @@ export default {
   provider: ethereumProvider,
   tokens: {
     SWETH: {
-      pairedToken: "WETH",
+      token0Symbol: "SWETH",
+      token1Symbol: "WETH",
+      pairedToken: "ETH",
       poolAddress: "0x0CE176E1b11A8f88a4Ba2535De80E81F88592bad",
     },
   },

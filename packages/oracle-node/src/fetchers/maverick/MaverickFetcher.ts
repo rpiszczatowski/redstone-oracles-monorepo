@@ -1,7 +1,6 @@
 import Decimal from "decimal.js";
 import { Contract } from "ethers";
 import { getRawPrice } from "../../db/local-db";
-import { ethereumProvider } from "../../utils/blockchain-providers";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import fetcherConfig from "./maverick-fetcher-config";
 import { MAVERICK_POOL_INFORMATION_ABI } from "./pool-information.abi";
@@ -55,11 +54,10 @@ export class MaverickFetcher extends DexOnChainFetcher<MaverickResponse> {
     throw new Error(`Calculating liquidity not implemented for ${this.name}`);
   }
 
-  protected getPairedTokenPrice(id: string): Decimal {
-    let tokenToGet = id === "WETH" ? "ETH" : id;
-    const lastPriceFromCache = getRawPrice(tokenToGet);
+  protected getPairedTokenPrice(tokenSymbol: string): Decimal {
+    const lastPriceFromCache = getRawPrice(tokenSymbol);
     if (!lastPriceFromCache) {
-      throw new Error(`Cannot get last price from cache for: ${tokenToGet}`);
+      throw new Error(`Cannot get last price from cache for: ${tokenSymbol}`);
     }
     return new Decimal(lastPriceFromCache.value);
   }

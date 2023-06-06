@@ -43,7 +43,9 @@ describe("Maverick", () => {
       tokens: {
         SWETH: {
           poolAddress: mockContract.address,
-          pairedToken: "WETH",
+          pairedToken: "ETH",
+          token0Symbol: "SWETH",
+          token1Symbol: "WETH",
         },
       },
     });
