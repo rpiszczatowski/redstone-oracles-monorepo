@@ -38,6 +38,8 @@ import twelveDataFetchers from "./twelve-data/all-twelve-data-fetchers";
 import { PermaswapFetcher } from "./permaswap/PermaswapFetcher";
 import fraxswapOnChainFetchers from "./evm-chain/ethereum/fraxswap-on-chain/all-fraxswap-on-chain-fetchers";
 import { CcxtFetcher } from "./ccxt/CcxtFetcher";
+import { MaverickFetcher } from "./maverick/MaverickFetcher";
+import maverickFetcherConfig from "./maverick/maverick-fetcher-config";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -66,6 +68,7 @@ export default {
   permaswap: new PermaswapFetcher(),
   "arbitrum-evm-fetcher": arbitrumEvmFetcher,
   "non-usd-based": new NonUsdBasedFetcher(),
+  maverick: new MaverickFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...balancerFetchers,
