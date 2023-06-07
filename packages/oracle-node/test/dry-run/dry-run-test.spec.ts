@@ -1,4 +1,4 @@
-import { SignedDataPackage } from "redstone-protocol";
+import { DataPackage, SignedDataPackage } from "redstone-protocol";
 import { DataPackageBroadcastPerformer } from "../../src/aggregated-price-handlers/DataPackageBroadcastPerformer";
 import { PriceDataBroadcastPerformer } from "../../src/aggregated-price-handlers/PriceDataBroadcastPerformer";
 import {
@@ -30,6 +30,18 @@ describe("Main dry run test", () => {
   >;
 
   beforeAll(() => {
+    // This hack allow to access this in jest mock function
+    //@ts-ignore
+    //prettier-ignore
+    DataPackage.prototype.getThis = function getThis() { return this; };
+
+    jest.spyOn(DataPackage.prototype, "sign").mockImplementation(() => {
+      return new SignedDataPackage(
+        (DataPackage.prototype as any).getThis(),
+        "mock-sig"
+      );
+    });
+
     jest
       .spyOn(ManifestHelper, "getScheduler")
       .mockImplementation(() => MockScheduler as unknown as CronScheduler);
