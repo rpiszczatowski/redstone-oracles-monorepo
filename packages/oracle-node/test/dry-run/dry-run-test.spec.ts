@@ -1,4 +1,4 @@
-import { SignedDataPackage } from "redstone-protocol";
+import { DataPackage, SignedDataPackage } from "redstone-protocol";
 import { DataPackageBroadcastPerformer } from "../../src/aggregated-price-handlers/DataPackageBroadcastPerformer";
 import { PriceDataBroadcastPerformer } from "../../src/aggregated-price-handlers/PriceDataBroadcastPerformer";
 import {
@@ -30,6 +30,19 @@ describe("Main dry run test", () => {
   >;
 
   beforeAll(() => {
+    jest.spyOn(DataPackage.prototype, "sign").mockImplementation(function () {
+      //@ts-ignore
+      return new SignedDataPackage(this, {
+        r: "r",
+        s: "s",
+        _vs: "_vs",
+        recoveryParam: 0,
+        v: 1,
+        yParityAndS: "yParityAndS",
+        compact: "true",
+      });
+    });
+
     jest
       .spyOn(ManifestHelper, "getScheduler")
       .mockImplementation(() => MockScheduler as unknown as CronScheduler);
