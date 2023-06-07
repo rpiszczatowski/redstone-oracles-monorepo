@@ -65,10 +65,6 @@ export default class ManifestHelper {
     return manifest.tokens[symbol]?.deviationCheck || manifest.deviationCheck;
   }
 
-  static getAllTokensCount(manifest: Manifest) {
-    return Object.keys(manifest.tokens).length;
-  }
-
   static getAllSourceCount(symbol: string, manifest: Manifest) {
     const allSourcesCount =
       manifest.tokens?.[symbol]?.source?.length ??
@@ -110,5 +106,9 @@ export default class ManifestHelper {
       );
     }
     return dataFeedDetails?.decimals;
+  }
+
+  static getAllTokensConfig(manifest: Manifest) {
+    return manifest.tokens;
   }
 }
