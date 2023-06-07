@@ -376,10 +376,39 @@ export default class PricesService {
   }
 
   async fetchPricesLimits(): Promise<PricesLimits> {
-    if (!config.pricesHardLimitsUrl) {
+    if (
+      !config.pricesHardLimitsUrls ||
+      config.pricesHardLimitsUrls.length === 0
+    ) {
       return {};
     }
-    const response = await axios.get<PricesLimits>(config.pricesHardLimitsUrl);
-    return response.data;
+
+    for (let i = 0; i < config.pricesHardLimitsUrls.length; i++) {
+      const url = config.pricesHardLimitsUrls[i];
+
+      try {
+        const response = await axios.get<PricesLimits>(url);
+        logger.info(
+          `Fetched hard limit ${JSON.stringify(
+            response.data,
+            null,
+            2
+          )} from ${url}`
+        );
+        return response.data;
+      } catch (e) {
+        logger.warn(
+          `Failed to fetch hard limit from ${url} (${i + 1}/${
+            config.pricesHardLimitsUrls.length
+          } attempt)`
+        );
+      }
+    }
+
+    throw new Error(
+      `Failed to fetch hard limits from ${config.pricesHardLimitsUrls.join(
+        ", "
+      )} urls`
+    );
   }
 }

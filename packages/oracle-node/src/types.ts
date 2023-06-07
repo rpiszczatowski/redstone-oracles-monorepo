@@ -170,7 +170,7 @@ export interface NodeConfig {
   coingeckoApiUrl: string;
   coingeckoApiKey?: string;
   enableHttpServer: boolean;
-  pricesHardLimitsUrl: string;
+  pricesHardLimitsUrls: string[];
   newyorkfedRatesUrl: string;
 }
 
