@@ -50,7 +50,7 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   arbitrumRpcUrl: "",
   coingeckoApiUrl: "",
   enableHttpServer: false,
-  pricesHardLimitsUrl: "mock-hard-prices-limits-url",
+  pricesHardLimitsUrls: ["mock-hard-prices-limits-url"],
   newyorkfedRatesUrl: "",
 };
 
