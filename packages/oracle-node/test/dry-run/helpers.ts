@@ -31,7 +31,7 @@ export const getDryRunTestNodeConfig = (manifest: Manifest): NodeConfig => ({
   arbitrumRpcUrl: "",
   coingeckoApiUrl: "",
   enableHttpServer: false,
-  pricesHardLimitsUrl: "",
+  pricesHardLimitsUrls: [""],
   newyorkfedRatesUrl: "",
 });
 
