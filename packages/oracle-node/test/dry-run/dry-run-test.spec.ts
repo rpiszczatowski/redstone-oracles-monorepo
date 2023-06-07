@@ -30,16 +30,17 @@ describe("Main dry run test", () => {
   >;
 
   beforeAll(() => {
-    // This hack allow to access this in jest mock function
-    //@ts-ignore
-    //prettier-ignore
-    DataPackage.prototype.getThis = function getThis() { return this; };
-
-    jest.spyOn(DataPackage.prototype, "sign").mockImplementation(() => {
-      return new SignedDataPackage(
-        (DataPackage.prototype as any).getThis(),
-        "mock-sig"
-      );
+    jest.spyOn(DataPackage.prototype, "sign").mockImplementation(function () {
+      //@ts-ignore
+      return new SignedDataPackage(this, {
+        r: "r",
+        s: "s",
+        _vs: "_vs",
+        recoveryParam: 0,
+        v: 1,
+        yParityAndS: "yParityAndS",
+        compact: "true",
+      });
     });
 
     jest
