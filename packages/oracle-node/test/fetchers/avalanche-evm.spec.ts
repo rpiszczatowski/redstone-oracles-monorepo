@@ -327,7 +327,7 @@ describe("Avalanche EVM fetcher", () => {
       const [wallet] = provider.getWallets();
       const gmdTokenContract = await deployMockContract(
         wallet,
-        gmdTokensContractsDetails.gmdAVAX.abi
+        gmdTokensContractsDetails.abi
       );
       await gmdTokenContract.mock.totalSupply.returns(
         "13893284805458516865839"
@@ -349,8 +349,9 @@ describe("Avalanche EVM fetcher", () => {
 
       multicallContract = await deployMulticallContract(wallet);
 
-      gmdTokensContractsDetails.gmdAVAX.address = gmdTokenContract.address;
-      gmdTokensContractsDetails.gmdAVAX.vaultAddress = gmdVaultContract.address;
+      gmdTokensContractsDetails.contractDetails.gmdAVAX.address =
+        gmdTokenContract.address;
+      gmdTokensContractsDetails.vaultAddress = gmdVaultContract.address;
     });
 
     test("Should properly fetch data", async () => {

@@ -40,7 +40,7 @@ export const requestHandlers = {
     SteakHutTokensRequestHandlers
   ),
   ...buildRequestHandlersFromContractDetails(
-    gmdTokensContractsDetails,
+    gmdTokensContractsDetails.contractDetails,
     GmdRequestHandler
   ),
 };
