@@ -25,7 +25,6 @@ export const gmdTokensContractsDetails = {
       address: "0xE28c95e9EB0f6D16b05D265cAa4BcEE9E5C2e625",
       tokenToFetch: "ETH",
       poolInfoArg: 3,
-      vaultAbi: GmdVaultAbi,
     },
   },
 };
