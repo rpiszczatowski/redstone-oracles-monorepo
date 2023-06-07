@@ -28,7 +28,7 @@ const DEFAULT_COINGECKO_API_URL =
   "https://api.coingecko.com/api/v3/simple/price";
 const DEFAULT_COINGECKO_API_KEY = "";
 const DEFAULT_ENABLE_HTTP_SERVER = "false";
-const DEFAULT_PRICES_HARD_LIMITS_URL = "[]";
+const DEFAULT_PRICES_HARD_LIMITS_URLS = "[]";
 const DEFAULT_NEWYORKFED_RATES_URL =
   "https://markets.newyorkfed.org/api/rates/all/latest.json";
 
@@ -68,7 +68,7 @@ const parserFromString = {
 
 const getHardLimitsUrls = () => {
   const hardLimitsUrls = JSON.parse(
-    getFromEnv("PRICES_HARD_LIMITS_URLS", DEFAULT_PRICES_HARD_LIMITS_URL)
+    getFromEnv("PRICES_HARD_LIMITS_URLS", DEFAULT_PRICES_HARD_LIMITS_URLS)
   );
 
   return hardLimitsUrls;
