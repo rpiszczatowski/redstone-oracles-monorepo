@@ -41,7 +41,7 @@ export class CcxtFetcher extends BaseFetcher {
   }
 
   async fetchData(ids: string[]): Promise<any> {
-    if (!this.exchange.fetchTickers) {
+    if (!this.exchange.has["fetchTickers"]) {
       throw new Error(
         `Exchange ${this.name} doesn't support fetchTickers method`
       );
