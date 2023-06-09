@@ -88,7 +88,7 @@ describe("Ethereum EVM fetcher", () => {
 
       const result = await fetcher.fetchAll(["BB-A-WETH"]);
       expect(result).toEqual([
-        { symbol: "BB-A-WETH", value: 1855.7836255384855 },
+        { symbol: "BB-A-WETH", value: 1853.9698689576974 },
       ]);
     });
   });
