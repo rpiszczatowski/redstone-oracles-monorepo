@@ -17,6 +17,7 @@ const SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [66, 130];
 const STABLECOIN_DECIMALS = 6;
 const BTC_DECIMALS = 8;
 const AVAX_DECIMALS = 18;
+const JOE_DECIMALS = 18;
 
 export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
   prepareMulticallRequest(id: SteakHutTokensDetailsKeys) {
@@ -82,6 +83,8 @@ export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
         tokenDecimals = BTC_DECIMALS;
       } else if (tokenName === "AVAX") {
         tokenDecimals = AVAX_DECIMALS;
+      } else if (tokenName === "JOE") {
+        tokenDecimals = JOE_DECIMALS;
       }
       const divider = new Decimal(TEN_AS_BASE_OF_POWER).toPower(tokenDecimals);
       tokenReserveSerialized = tokenReserves[tokenName].div(divider);

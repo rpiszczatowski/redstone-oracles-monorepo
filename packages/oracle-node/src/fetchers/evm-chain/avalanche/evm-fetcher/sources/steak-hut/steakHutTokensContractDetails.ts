@@ -16,4 +16,9 @@ export const steakHutTokensContractDetails = {
     abi: SteakHutLBVaultAbi,
     tokensToFetch: ["USDT.e", "USDT"],
   },
+  "SHLB_JOE-AVAX_B": {
+    address: "0x89547441489262fEb5cEE346fdacb9037C2574Db",
+    abi: SteakHutLBVaultAbi,
+    tokensToFetch: ["JOE", "AVAX"],
+  },
 };
