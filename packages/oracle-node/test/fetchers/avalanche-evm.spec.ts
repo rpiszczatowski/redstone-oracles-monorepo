@@ -14,12 +14,14 @@ import {
   closeLocalLevelDB,
   setupLocalDb,
 } from "../../src/db/local-db";
-import { yieldYakTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/yield-yak";
-import { dexLpTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/dex-lp-tokens";
-import { mooTraderJoeTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/moo-trader-joe";
-import { oracleAdapterContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/oracle-adapter";
-import { glpManagerContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/glp-manager";
 import { steakHutTokensContractDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/steak-hut/steakHutTokensContractDetails";
+import { yieldYakTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/yield-yak/yieldYakTokensContractsDetails";
+import { dexLpTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/dex-lp-tokens/dexLpTokensContractsDetails";
+import { mooTraderJoeTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/moo-trader-joe/mooTraderJoeTokensContractsDetails";
+import { glpManagerContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/glp-manager/glpManagerContractsDetails";
+import { oracleAdapterContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/oracle-adapter/oracleAdapterContractsDetails";
+import { gmdTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/gmd/gmdTokensContractsDetails";
+import GmdVaultAbi from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/gmd/GmdVault.abi.json";
 
 jest.setTimeout(15000);
 
@@ -296,7 +298,6 @@ describe("Avalanche EVM fetcher", () => {
       await steakHutVaultContract.mock.totalSupply.returns(
         "373022375711998840044"
       );
-
       multicallContract = await deployMulticallContract(wallet);
 
       steakHutTokensContractDetails["SHLB_BTC.b-AVAX_B"].address =
@@ -316,6 +317,56 @@ describe("Avalanche EVM fetcher", () => {
       const result = await fetcher.fetchAll(["SHLB_BTC.b-AVAX_B"]);
       expect(result).toEqual([
         { symbol: "SHLB_BTC.b-AVAX_B", value: 31.442821978615758 },
+      ]);
+    });
+  });
+
+  describe("GMD Token", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+      const gmdTokenContract = await deployMockContract(
+        wallet,
+        gmdTokensContractsDetails.abi
+      );
+      await gmdTokenContract.mock.totalSupply.returns(
+        "13893284805458516865839"
+      );
+      const gmdVaultContract = await deployMockContract(wallet, GmdVaultAbi);
+      await gmdVaultContract.mock.poolInfo.returns(
+        "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+        gmdTokenContract.address,
+        "57529812360454",
+        "14514081300794260141483",
+        "1683032305",
+        "15500000000000000000000",
+        "500",
+        "1250",
+        true,
+        true,
+        true
+      );
+
+      multicallContract = await deployMulticallContract(wallet);
+
+      gmdTokensContractsDetails.contractDetails.gmdAVAX.address =
+        gmdTokenContract.address;
+      gmdTokensContractsDetails.vaultAddress = gmdVaultContract.address;
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new EvmFetcher(
+        "avalanche-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
+      );
+
+      await saveMockPriceInLocalDb(16.64, "AVAX");
+
+      const result = await fetcher.fetchAll(["gmdAVAX"]);
+      expect(result).toEqual([
+        { symbol: "gmdAVAX", value: 17.383528533894893 },
       ]);
     });
   });
