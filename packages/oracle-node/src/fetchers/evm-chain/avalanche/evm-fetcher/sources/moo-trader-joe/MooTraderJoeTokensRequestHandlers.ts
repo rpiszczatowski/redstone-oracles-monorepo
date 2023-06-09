@@ -1,8 +1,8 @@
 import { Decimal } from "decimal.js";
 import { IEvmRequestHandlers } from "../../../../shared/IEvmRequestHandlers";
 import { buildMulticallRequests } from "../../../../shared/utils/build-multicall-request";
-import { extractValueFromMulticallResponse } from "../../../../shared/utils/extract-prices";
-import { mooTraderJoeTokensContractsDetails } from ".";
+import { extractValueFromMulticallResponse } from "../../../../shared/utils/extract-value-from-multicall-response";
+import { mooTraderJoeTokensContractsDetails } from "./mooTraderJoeTokensContractsDetails";
 import { getLastPrice } from "../../../../../../db/local-db";
 import { MulticallParsedResponses } from "../../../../../../types";
 

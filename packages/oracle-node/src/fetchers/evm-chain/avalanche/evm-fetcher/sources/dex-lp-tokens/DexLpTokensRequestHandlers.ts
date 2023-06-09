@@ -1,8 +1,8 @@
 import { Decimal } from "decimal.js";
 import { IEvmRequestHandlers } from "../../../../shared/IEvmRequestHandlers";
 import { buildMulticallRequests } from "../../../../shared/utils/build-multicall-request";
-import { extractValueFromMulticallResponse } from "../../../../shared/utils/extract-prices";
-import { dexLpTokensContractsDetails } from ".";
+import { extractValueFromMulticallResponse } from "../../../../shared/utils/extract-value-from-multicall-response";
+import { dexLpTokensContractsDetails } from "./dexLpTokensContractsDetails";
 import { MulticallParsedResponses } from "../../../../../../types";
 import { getFairPriceForLpToken } from "../../../../shared/utils/get-fair-price-lp-token";
 import { serializeDecimalsForLpTokens } from "../../../../shared/utils/serialize-decimals-lp-tokens";
@@ -14,7 +14,7 @@ export type DexLpTokensDetailsKeys = keyof typeof dexLpTokensContractsDetails;
 const FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [0, 66];
 const SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [66, 130];
 
-export class DexLpTokensRequestHandler implements IEvmRequestHandlers {
+export class DexLpTokensRequestHandlers implements IEvmRequestHandlers {
   prepareMulticallRequest(id: DexLpTokensDetailsKeys) {
     const { abi, address } = dexLpTokensContractsDetails[id];
     const functionsNamesWithValues = [

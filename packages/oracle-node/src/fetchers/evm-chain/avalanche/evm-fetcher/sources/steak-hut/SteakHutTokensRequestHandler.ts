@@ -1,7 +1,7 @@
 import { Decimal } from "decimal.js";
 import { IEvmRequestHandlers } from "../../../../shared/IEvmRequestHandlers";
 import { buildMulticallRequests } from "../../../../shared/utils/build-multicall-request";
-import { extractValueFromMulticallResponse } from "../../../../shared/utils/extract-prices";
+import { extractValueFromMulticallResponse } from "../../../../shared/utils/extract-value-from-multicall-response";
 import { steakHutTokensContractDetails } from "./steakHutTokensContractDetails";
 import { MulticallParsedResponses } from "../../../../../../types";
 import { TEN_AS_BASE_OF_POWER } from "../../../../shared/contants";
