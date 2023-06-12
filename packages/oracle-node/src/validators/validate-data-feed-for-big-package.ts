@@ -1,13 +1,14 @@
 import { DataPoint } from "redstone-protocol";
 import { config } from "../config";
 import { TokensConfig } from "../types";
+import { terminateWithManifestConfigError } from "../Terminator";
 
 export const validateDataPointsForBigPackage = (
   dataPoints: DataPoint[],
   allTokensConfig?: TokensConfig
 ) => {
   if (!allTokensConfig) {
-    throw new Error(`Cannot get token config from manifest.`);
+    terminateWithManifestConfigError(`Cannot get token config from manifest.`);
   }
 
   const dataPointsWithoutSkipSigning = filterDataPointsWithoutSkipSigning(
@@ -16,6 +17,10 @@ export const validateDataPointsForBigPackage = (
   );
   const tokensWithoutSkipSigningCount =
     countTokensWithoutSkipSigning(allTokensConfig);
+
+  if (tokensWithoutSkipSigningCount === 0) {
+    return false;
+  }
 
   const validDataPointsPercentage =
     (dataPointsWithoutSkipSigning.length / tokensWithoutSkipSigningCount) * 100;

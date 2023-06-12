@@ -2,12 +2,6 @@ import { validateDataPointsForBigPackage } from "../../src/validators/validate-d
 import { mockDataPoints, mockTokenConfig } from "./helpers";
 
 describe("validateDataPointsForBigPackage", () => {
-  test("throw error if no manifest", () => {
-    expect(() => validateDataPointsForBigPackage([], undefined)).toThrowError(
-      "Cannot get token config from manifest"
-    );
-  });
-
   test("return false if not enough data points", () => {
     const areEnoughDataPoint = validateDataPointsForBigPackage(
       mockDataPoints.slice(0, 1),
@@ -55,5 +49,20 @@ describe("validateDataPointsForBigPackage", () => {
       newMockTokenConfig
     );
     expect(areEnoughDataPoint).toBe(true);
+  });
+
+  test("return false if all tokens are with skipping singing", () => {
+    const newMockTokenConfig = {
+      ...mockTokenConfig,
+      BTC: { skipSigning: true },
+      ETH: { skipSigning: true },
+      AR: { skipSigning: true },
+      AVAX: { skipSigning: true },
+    };
+    const areEnoughDataPoint = validateDataPointsForBigPackage(
+      mockDataPoints,
+      newMockTokenConfig
+    );
+    expect(areEnoughDataPoint).toBe(false);
   });
 });
