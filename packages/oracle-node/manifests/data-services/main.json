@@ -876,11 +876,12 @@
       "source": [
         "binance",
         "binanceusdm",
+        "bitget",
+        "bybit",
         "coinbaseprime",
         "coinbasepro",
         "okx",
         "xt",
-        "btcex",
         "huobipro",
         "kucoin",
         "gate"
