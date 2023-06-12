@@ -8,8 +8,6 @@ import {
   ProviderWithFallbackConfig,
 } from "./ProviderWithFallback";
 
-const ERROR_GET_BLOCK_NUMBER_VALUE = -1;
-
 export interface ProviderWithAgreementConfig {
   numberOfProvidersThatHaveToAgree: number;
   getBlockNumberTimeoutMS: number;
@@ -137,53 +135,42 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       const results = new Map<string, number>();
       const blockPerProvider: Record<number, number> = {};
       let stop = false;
-      let handledResults = 0;
+      let finishedProvidersCount = 0;
 
       const syncProvider = async (providerIndex: number) => {
-        while (
-          blockPerProvider[providerIndex] !== ERROR_GET_BLOCK_NUMBER_VALUE &&
-          !stop &&
-          blockPerProvider[providerIndex] < electedBlockNumber
-        ) {
-          blockPerProvider[providerIndex] = await this.providers[providerIndex]
-            .getBlockNumber()
-            // if providers fails at least once we don't want to use it
-            .catch(() => ERROR_GET_BLOCK_NUMBER_VALUE);
+        while (!stop && blockPerProvider[providerIndex] < electedBlockNumber) {
+          blockPerProvider[providerIndex] = await this.providers[
+            providerIndex
+          ].getBlockNumber();
           await sleepMS(this.agreementConfig.sleepBetweenBlockSync);
         }
       };
 
       const call = async (providerIndex: number) => {
-        try {
-          const currentResult = await this.providers[providerIndex].call(
-            transaction,
-            electedBlockTag
-          );
-          const currentResultCount = results.get(currentResult);
+        const currentResult = await this.providers[providerIndex].call(
+          transaction,
+          electedBlockTag
+        );
+        const currentResultCount = results.get(currentResult);
 
-          if (currentResultCount) {
-            results.set(currentResult, currentResultCount + 1);
-            // we have found satisfying number of same responses
-            if (
-              currentResultCount + 1 >=
-              this.agreementConfig.numberOfProvidersThatHaveToAgree
-            ) {
-              stop = true;
-              resolve(currentResult);
-            }
-          } else {
-            results.set(currentResult, 1);
+        if (currentResultCount) {
+          results.set(currentResult, currentResultCount + 1);
+          // we have found satisfying number of same responses
+          if (
+            currentResultCount + 1 >=
+            this.agreementConfig.numberOfProvidersThatHaveToAgree
+          ) {
+            stop = true;
+            resolve(currentResult);
           }
-        } catch (e: any) {
-          errors.push(e);
+        } else {
+          results.set(currentResult, 1);
         }
       };
 
-      const syncThenCall = async (providerIndex: number) => {
-        await syncProvider(providerIndex);
-        await call(providerIndex);
-        handledResults++;
-        if (handledResults === this.providers.length) {
+      const handleProviderResult = () => {
+        finishedProvidersCount++;
+        if (finishedProvidersCount === this.providers.length) {
           stop = true;
           reject(
             new AggregateError(
@@ -191,6 +178,17 @@ export class ProviderWithAgreement extends ProviderWithFallback {
               `Failed to find at least ${this.agreementConfig.numberOfProvidersThatHaveToAgree} agreeing providers.`
             )
           );
+        }
+      };
+
+      const syncThenCall = async (providerIndex: number) => {
+        try {
+          await syncProvider(providerIndex);
+          await call(providerIndex);
+        } catch (e: any) {
+          errors.push(e);
+        } finally {
+          handleProviderResult();
         }
       };
 
