@@ -3,8 +3,11 @@ import { IEvmRequestHandlers } from "../../../../shared/IEvmRequestHandlers";
 import { buildMulticallRequests } from "../../../../shared/utils/build-multicall-request";
 import { extractValueFromMulticallResponse } from "../../../../shared/utils/extract-value-from-multicall-response";
 import { curveTokensContractsDetails } from "./curveTokensContractsDetails";
-import { MulticallParsedResponses } from "../../../../../../types";
 import { getTokensPricesFromLocalCache } from "../../../../shared/utils/get-tokens-prices-from-local-cache";
+import {
+  MulticallParsedResponses,
+  MulticallRequest,
+} from "../../../../../../types";
 
 export type CurveTokensDetailsKeys = keyof typeof curveTokensContractsDetails;
 
@@ -25,19 +28,13 @@ export class CurveRequestHandlers implements IEvmRequestHandlers {
     const { avWBTCAddress, avWETHAddress, av3CRVAddress } =
       curveTokensContractsDetails[id];
 
-    const wbtcBalanceRequest = this.buildErc20BalanceOfRequest(
-      id,
-      avWBTCAddress
+    return [avWBTCAddress, avWETHAddress, av3CRVAddress].reduce(
+      (multicallRequests, contractAddress) => [
+        ...multicallRequests,
+        ...this.buildErc20BalanceOfRequest(id, contractAddress),
+      ],
+      [] as MulticallRequest[]
     );
-    const wethBalanceRequest = this.buildErc20BalanceOfRequest(
-      id,
-      avWETHAddress
-    );
-    const crvBalanceRequest = this.buildErc20BalanceOfRequest(
-      id,
-      av3CRVAddress
-    );
-    return [...wbtcBalanceRequest, ...wethBalanceRequest, ...crvBalanceRequest];
   };
 
   buildErc20BalanceOfRequest(
@@ -63,12 +60,8 @@ export class CurveRequestHandlers implements IEvmRequestHandlers {
     const { wbtcLiquidity, wethLiquidity, wcrvLiquidity } =
       this.calculateLiquiditiesForCurveToken(response, id);
 
-    if (wbtcLiquidity && wethLiquidity && wcrvLiquidity) {
-      const totalLiquidity = wbtcLiquidity
-        .add(wethLiquidity)
-        .add(wcrvLiquidity);
-      return totalLiquidity.div(totalSupply).toNumber();
-    }
+    const totalLiquidity = wbtcLiquidity.add(wethLiquidity).add(wcrvLiquidity);
+    return totalLiquidity.div(totalSupply).toNumber();
   }
 
   calculateLiquiditiesForCurveToken(
@@ -77,36 +70,38 @@ export class CurveRequestHandlers implements IEvmRequestHandlers {
   ) {
     const { avWBTCAddress, avWETHAddress, av3CRVAddress, tokensToFetch } =
       curveTokensContractsDetails[id];
-    const tokenToFetchPrice = getTokensPricesFromLocalCache(tokensToFetch);
+    const tokensToFetchPrice = getTokensPricesFromLocalCache(tokensToFetch);
 
     const wbtcLiquidity = this.calculateTokenLiquidity(
       multicallResult,
       avWBTCAddress,
-      tokenToFetchPrice.BTC
+      tokensToFetchPrice.BTC
     );
     const wethLiquidity = this.calculateTokenLiquidity(
       multicallResult,
       avWETHAddress,
-      tokenToFetchPrice.ETH
+      tokensToFetchPrice.ETH
     );
     const wcrvLiquidity = this.calculateTokenLiquidity(
       multicallResult,
       av3CRVAddress,
-      tokenToFetchPrice.CRV
+      tokensToFetchPrice.CRV
     );
     return { wbtcLiquidity, wethLiquidity, wcrvLiquidity };
   }
 
   calculateTokenLiquidity(
     multicallResult: MulticallParsedResponses,
-    address: string,
+    contractAddress: string,
     tokenToFetchPrice: Decimal
   ) {
     const balance = new Decimal(
-      extractValueFromMulticallResponse(multicallResult, address, "balanceOf")
+      extractValueFromMulticallResponse(
+        multicallResult,
+        contractAddress,
+        "balanceOf"
+      )
     );
-    if (tokenToFetchPrice) {
-      return balance.mul(tokenToFetchPrice);
-    }
+    return balance.mul(tokenToFetchPrice);
   }
 }
