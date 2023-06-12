@@ -18,6 +18,8 @@ export interface ProviderWithAgreementConfig {
   electBlockFn: (blocks: number[], numberOfAgreeingNodes: number) => number;
 }
 
+const convertMsToNanoseconds = (ms: number) => BigInt(ms * 1e6);
+
 const DEFAULT_ELECT_BLOCK_FN = (blockNumbers: number[]): number => {
   const mid = Math.floor(blockNumbers.length / 2);
   blockNumbers.sort((a, b) => a - b);
@@ -40,6 +42,7 @@ const defaultConfig: Omit<
 
 export class ProviderWithAgreement extends ProviderWithFallback {
   private readonly agreementConfig: ProviderWithAgreementConfig;
+  private blockNumberCache = { value: 0, lastUpdate: 0n };
 
   constructor(
     providers: JsonRpcProvider[],
@@ -64,12 +67,16 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     }
   }
 
+  override getBlockNumber(): Promise<number> {
+    return this.electBlockNumber();
+  }
+
   override async call(
     transaction: Deferrable<TransactionRequest>,
     blockTag?: BlockTag
   ): Promise<string> {
     const electedBlockTag = utils.hexlify(
-      blockTag ?? (await this.getBlockNumber())
+      blockTag ?? (await this.electBlockNumber())
     );
     const callResult = this.executeCallWithAgreement(
       transaction,
@@ -77,6 +84,47 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     );
 
     return callResult;
+  }
+
+  private async electBlockNumber(): Promise<number> {
+    if (
+      process.hrtime.bigint() - this.blockNumberCache.lastUpdate <
+      convertMsToNanoseconds(this.agreementConfig.blockNumberCacheTTLInMS)
+    ) {
+      return this.blockNumberCache.value;
+    }
+
+    // collect block numbers
+    const blockNumbersResults = await Promise.allSettled(
+      this.providers.map((provider) =>
+        timeout(
+          provider.getBlockNumber(),
+          this.agreementConfig.getBlockNumberTimeoutMS
+        )
+      )
+    );
+
+    const blockNumbers = blockNumbersResults
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => (result as PromiseFulfilledResult<number>).value);
+
+    if (blockNumbers.length === 0) {
+      throw new AggregateError(
+        "Failed to getBlockNumber from at least one provider"
+      );
+    }
+
+    const electedBlockNumber = this.agreementConfig.electBlockFn(
+      blockNumbers,
+      this.providers.length
+    );
+
+    this.blockNumberCache = {
+      value: electedBlockNumber,
+      lastUpdate: process.hrtime.bigint(),
+    };
+
+    return electedBlockNumber;
   }
 
   private executeCallWithAgreement(
