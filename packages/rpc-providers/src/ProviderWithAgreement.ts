@@ -34,7 +34,7 @@ const defaultConfig: Omit<
   keyof ProviderWithFallbackConfig
 > = {
   numberOfProvidersThatHaveToAgree: 2,
-  getBlockNumberTimeoutMS: 1_000,
+  getBlockNumberTimeoutMS: 2_000,
   sleepBetweenBlockSync: 100,
   blockNumberCacheTTLInMS: 50,
   electBlockFn: DEFAULT_ELECT_BLOCK_FN,
