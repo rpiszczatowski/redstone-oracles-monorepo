@@ -27,14 +27,14 @@ export const validateDataPointsForBigPackage = (
 
 const filterDataPointsWithoutSkipSigning = (
   dataPoints: DataPoint[],
-  allTokens: TokensConfig
+  allTokensConfig: TokensConfig
 ) =>
   dataPoints.filter(
-    (dataPoint) => !allTokens[dataPoint.dataFeedId].skipSigning
+    (dataPoint) => !allTokensConfig[dataPoint.dataFeedId].skipSigning
   );
 
-const countTokensWithoutSkipSigning = (allTokens: TokensConfig) =>
-  Object.values(allTokens).reduce(
-    (count, config) => (config.skipSigning ? count : ++count),
+const countTokensWithoutSkipSigning = (allTokensConfig: TokensConfig) =>
+  Object.values(allTokensConfig).reduce(
+    (count, tokenConfig) => (tokenConfig.skipSigning ? count : count + 1),
     0
   );
