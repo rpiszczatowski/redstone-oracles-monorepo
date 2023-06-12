@@ -100,7 +100,10 @@ describe("Data packages (e2e)", () => {
     await DataPackage.insertMany(dataPackagesToInsert);
   });
 
-  afterEach(async () => await dropTestDatabase());
+  afterEach(async () => {
+    jest.clearAllMocks();
+    await dropTestDatabase();
+  });
 
   it("/data-packages/bulk (POST) - should accept data packages where prices are strings", async () => {
     const dataPackagesToSent = [
