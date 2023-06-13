@@ -22,7 +22,6 @@ import { glpManagerContractsDetails } from "../../src/fetchers/evm-chain/avalanc
 import { oracleAdapterContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/oracle-adapter/oracleAdapterContractsDetails";
 import { gmdTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/gmd/gmdTokensContractsDetails";
 import GmdVaultAbi from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/gmd/GmdVault.abi.json";
-import { traderJoeV2TokensContractDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/trader-joe-v2/traderJoeV2TokensContractDetails";
 
 jest.setTimeout(15000);
 
@@ -369,37 +368,6 @@ describe("Avalanche EVM fetcher", () => {
       expect(result).toEqual([
         { symbol: "gmdAVAX", value: 17.383528533894893 },
       ]);
-    });
-  });
-
-  describe("Trader Joe - EUROC token", () => {
-    beforeAll(async () => {
-      provider = new MockProvider();
-      const [wallet] = provider.getWallets();
-
-      const traderJoeV2Contract = await deployMockContract(
-        wallet,
-        traderJoeV2TokensContractDetails.EUROC.abi
-      );
-      await traderJoeV2Contract.mock.getActiveId.returns(8388754);
-      await traderJoeV2Contract.mock.getBinStep.returns(5);
-
-      multicallContract = await deployMulticallContract(wallet);
-
-      traderJoeV2TokensContractDetails.EUROC.address =
-        traderJoeV2Contract.address;
-    });
-
-    test("Should properly fetch data", async () => {
-      const fetcher = new EvmFetcher(
-        "avalanche-evm-test-fetcher",
-        { mainProvider: provider },
-        multicallContract.address,
-        requestHandlers
-      );
-
-      const result = await fetcher.fetchAll(["EUROC"]);
-      expect(result).toEqual([{ symbol: "EUROC", value: 1.0757109115530015 }]);
     });
   });
 
