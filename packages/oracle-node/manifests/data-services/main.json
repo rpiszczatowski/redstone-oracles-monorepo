@@ -854,6 +854,18 @@
         "xt"
       ]
     },
+    "EUROC": {
+      "source": [
+        "bitmart",
+        "coinbaseprime",
+        "coinbasepro",
+        "coingecko",
+        "coinmarketcap",
+        "huobipro",
+        "avalanche-evm-fetcher",
+        "uniswap-v3-on-chain-usdc-500"
+      ]
+    },
     "AUD": {
       "source": ["binance", "currencycom", "ecb", "kraken"]
     },
@@ -2428,7 +2440,6 @@
     "YLD": {},
     "GZONE": {},
     "AURORA": {},
-    "EUROC": {},
     "OUSD": {},
     "CHNG": {},
     "CPH": {},
