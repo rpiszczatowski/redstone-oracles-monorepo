@@ -13,6 +13,8 @@ import { steakHutTokensContractDetails } from "./steak-hut/steakHutTokensContrac
 import { SteakHutTokensRequestHandlers } from "./steak-hut/SteakHutTokensRequestHandler";
 import { gmdTokensContractsDetails } from "./gmd/gmdTokensContractsDetails";
 import { GmdRequestHandler } from "./gmd/GmdRequestHandlers";
+import { traderJoeAutoPoolTokenContractDetails } from "./trader-joe-auto/traderJoeAutoPoolTokenContractsDetails";
+import { TraderJoeAutoRequestHandlers } from "./trader-joe-auto/TraderJoeAutoRequestHandlers";
 
 export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
@@ -42,5 +44,9 @@ export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
     gmdTokensContractsDetails.contractDetails,
     GmdRequestHandler
+  ),
+  ...buildRequestHandlersFromContractDetails(
+    traderJoeAutoPoolTokenContractDetails,
+    TraderJoeAutoRequestHandlers
   ),
 };
