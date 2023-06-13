@@ -1,11 +1,11 @@
-name: Monorepo CI - core model
+name: Monorepo integration tests
 
 on:
   push:
     branches: "**"
 
 jobs:
-  build:
+  core:
     runs-on: LargeRunner
     defaults:
       run:
@@ -15,7 +15,21 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15
-      - name: Run tests
+      - name: Run core tests
         run: bash integration-test-core.sh
+        env:
+          NODE_ENV: test
+  classic:
+    runs-on: LargeRunner
+    defaults:
+      run:
+        working-directory: packages/integration
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15
+      - name: Run clasic tests
+        run: bash integration-test-classic.sh
         env:
           NODE_ENV: test
