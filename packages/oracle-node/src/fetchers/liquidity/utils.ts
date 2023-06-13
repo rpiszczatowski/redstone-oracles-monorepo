@@ -20,3 +20,30 @@ export const parseLiquidityDataFeedId = (assetId: string) => {
 };
 
 export const isLiquidity = (assetId: string) => !!runLiquidityRegex(assetId);
+
+export const buildSlippageDataFeedId = (
+  tokenName: string,
+  sourceName: string,
+  direction: string,
+  amount: string,
+) => `${tokenName}_${sourceName}_${direction}_${amount}_slippage`;
+
+const runSlippageRegex = (assetId: string) => {
+  const regex = /^([^_]+)_([^_]+)_(BUY|SELL)_([^_]+)_slippage$/;
+  return regex.exec(assetId);
+};
+
+export const parseSlippageDataFeedId = (assetId: string) => {
+  const regexResult = runSlippageRegex(assetId);
+  if (!regexResult) {
+    throw new Error(`Invalid symbol with slippage: ${assetId}`);
+  }
+  return {
+    dataFeedId: regexResult[1],
+    source: regexResult[2],
+    priceAction: regexResult[3],
+    amount: regexResult[4],
+  };
+};
+
+export const isSlippage = (assetId: string) => !!runSlippageRegex(assetId);

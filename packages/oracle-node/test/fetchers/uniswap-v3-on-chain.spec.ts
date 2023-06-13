@@ -5,8 +5,7 @@ import { saveMockPriceInLocalDb } from "./_helpers";
 import UniswapV3Pool from "../../src/fetchers/evm-chain/uniswap-v3-on-chain/UniswapV3Pool.abi.json";
 import UniswapV3Quoter from "../../src/fetchers/evm-chain/uniswap-v3-on-chain/UniswapV3Quoter.abi.json";
 
-
-import { UniswapV3FetcherOnChain } from "../../src/fetchers/evm-chain/uniswap-v3-on-chain/UniswapV3FetcherOnChain";
+import { UniswapV3OnChainFetcher } from "../../src/fetchers/evm-chain/uniswap-v3-on-chain/UniswapV3OnChainFetcher";
 import { PoolsConfig } from "../../src/fetchers/evm-chain/uniswap-v3-on-chain/types";
 
 jest.setTimeout(10000);
@@ -19,7 +18,11 @@ jest.mock("ethereum-multicall", () => {
           results: {
             poolContract: {
               callsReturnContext: [
-                { returnValues: ["0"] },
+                {
+                  returnValues: [
+                    { type: "BigNumber", hex: "0x64000000000000000000000000" },
+                  ],
+                },
                 {
                   returnValues: [
                     [
@@ -37,6 +40,28 @@ jest.mock("ethereum-multicall", () => {
                       },
                     ],
                   ],
+                },
+              ],
+            },
+            quoterContract: {
+              callsReturnContext: [
+                {
+                  returnValues: [
+                    { fake: "" },
+                    { type: "BigNumber", hex: "0x65000000000000000000000000" },
+                  ],
+                  reference: "1000_buy",
+                  methodName: "quoteExactInputSingle",
+                  success: true,
+                },
+                {
+                  returnValues: [
+                    { fake: "" },
+                    { type: "BigNumber", hex: "0x63500000000000000000000000" },
+                  ],
+                  reference: "1000_sell",
+                  methodName: "quoteExactOutputSingle",
+                  success: true,
                 },
               ],
             },
@@ -73,6 +98,7 @@ describe("uniswap V3 fetcher", () => {
         token0Decimals: 6,
         token1Decimals: 18,
         fee: 5000,
+        slippage: [1000],
       },
     };
   });
@@ -82,13 +108,30 @@ describe("uniswap V3 fetcher", () => {
   });
 
   test("should properly fetch price", async () => {
-    const fetcher = new UniswapV3FetcherOnChain(
+    const fetcher = new UniswapV3OnChainFetcher(
       "uniswap-v3-mock",
       mockTokenConfig,
       provider
     );
-    await saveMockPriceInLocalDb(1863.50, "MockToken2");
-    const result = await fetcher.fetchAll(["MockToken"]);
-    expect(result).toEqual([{ symbol: "MockToken", value: 1.000085578653717 }]);
+    await saveMockPriceInLocalDb(1863.5, "MockToken2");
+    const result = await fetcher.fetchAll([
+      "MockToken",
+      "MockToken_test-source_BUY_1K_slippage",
+      "MockToken_test-source_SELL_1K_slippage",
+      "MockToken_no-config_SELL_10K_slippage", // no config for 10K so no value should be returned
+    ]);
+    expect(result[0]).toEqual({
+      symbol: "MockToken",
+      value: 1.000085578653717,
+    });
+    expect(result[1]).toEqual({
+      symbol: "MockToken_test-source_BUY_1K_slippage",
+      value: 0.0201,
+    });
+    expect(result[2]).toEqual({
+      symbol: "MockToken_test-source_SELL_1K_slippage",
+      value: 0.0137027344,
+    });
+    expect(result[3]).toBeUndefined();
   });
 });
