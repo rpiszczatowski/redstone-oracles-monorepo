@@ -16,6 +16,11 @@
         "poolId": "0xd1ec5e215e8148d76f4460e4097fd3d5ae0a35580002000000000000000003d3",
         "tokenIn": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         "tokenOut": "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5"
+      },
+      "BB-A-WETH": {
+        "poolId": "0x60d604890feaa0b5460b28a424407c24fe89374a0000000000000000000004fc",
+        "tokenIn": "0x60d604890feaa0b5460b28a424407c24fe89374a",
+        "tokenOut": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
       }
     }
   },

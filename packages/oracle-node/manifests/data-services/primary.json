@@ -112,7 +112,7 @@
       ]
     },
     "BB-A-WETH": {
-      "source": ["ethereum-evm-fetcher"]
+      "source": ["balancer-weth"]
     },
     "SWETH": {
       "source": [
