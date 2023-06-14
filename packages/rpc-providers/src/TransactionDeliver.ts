@@ -48,6 +48,8 @@ type TransactionDeliverOpts = {
    * If you want to prioritize cost over speed choose numbers between 1-50
    */
   percentileOfPriorityFee?: number;
+
+  logger?: (text: string) => void;
 };
 
 type FeeStructure = {
@@ -59,6 +61,7 @@ const DEFAULT_TRANSACTION_DELIVERY_OPTS = {
   maxAttempts: 5,
   priorityFeePerGasMultiplier: 1.125,
   percentileOfPriorityFee: 75,
+  logger: (text: string) => console.log(`[${TransactionDeliver.name}] ${text}`),
   gasOracle: () => {
     throw new Error("Missing gas oracle");
   },
@@ -101,7 +104,10 @@ export class TransactionDeliver {
         await contract[method](...params, contractOverrides);
       } catch (e: any) {
         // if underpriced then bump fee
-        console.log(e.message, e.code);
+        this.opts.logger(
+          `Failed attempt to call contract code ${e.code} message: ${e.message}`
+        );
+
         if (this.isUnderpricedError(e)) {
           const scaledFees = this.scaleFees(await this.getFees(provider));
           Object.assign(contractOverrides, scaledFees);
@@ -138,8 +144,9 @@ export class TransactionDeliver {
   }
 
   async getFees(provider: providers.JsonRpcProvider): Promise<FeeStructure> {
+    let response;
     try {
-      return await this.opts.gasOracle();
+      response = await this.opts.gasOracle();
     } catch (e) {
       // this is reasonable (ether.js is not reasonable) fallback if gasOracle is not set
       const lastBlock = await provider.getBlock("latest");
@@ -151,8 +158,11 @@ export class TransactionDeliver {
       );
       const maxFeePerGas = baseFee + maxPriorityFeePerGas;
 
-      return { maxFeePerGas, maxPriorityFeePerGas };
+      response = { maxFeePerGas, maxPriorityFeePerGas };
     }
+
+    this.opts.logger(`getFees result ${JSON.stringify(response, null, 2)}`);
+    return response;
   }
 
   /**
@@ -181,6 +191,10 @@ export class TransactionDeliver {
     );
     const maxFeePerGas = Math.round(
       currentFees.maxFeePerGas * this.opts.priorityFeePerGasMultiplier
+    );
+
+    this.opts.logger(
+      `Scaling fees maxFeePerGas to ${maxFeePerGas} and maxPriorityFeePerGas to ${maxPriorityFeePerGas}`
     );
 
     return {
