@@ -1,14 +1,15 @@
 import { parseFixed } from "@balancer-labs/sdk";
 
-const DEFAULT_AMOUNT = parseFixed("1", 18);
+const DEFAULT_DECIMALS = 15;
+const DEFAULT_BASE = Math.pow(10, DEFAULT_DECIMALS);
+const DEFAULT_AMOUNT = parseFixed("1", DEFAULT_DECIMALS);
 
 export const balancerMultiConfigs = {
   SWETH: {
-    tokenIn: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
-    tokenOut: "0xf951E335afb289353dc249e82926178EaC7DEd78", // swETH
-    tokenAddress: "0xf951e335afb289353dc249e82926178eac7ded78",
+    tokenIn: "0xf951e335afb289353dc249e82926178eac7ded78", // swETH
+    tokenOut: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+    tokenFromResponseAddress: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     tokenToFetch: "ETH",
-    gasPrice: parseFixed("0", 18),
     swapAmount: DEFAULT_AMOUNT,
     swapAmountForSwaps: DEFAULT_AMOUNT,
     returnAmount: DEFAULT_AMOUNT,
@@ -17,41 +18,31 @@ export const balancerMultiConfigs = {
     swaps: [
       {
         poolId:
-          "0x32296969ef14eb0c6d29669c550d4a0449130230000200000000000000000080",
+          "0x02d928e68d8f10c0358566152677db51e1e2dc8c00000000000000000000051e",
         assetInIndex: 0,
         assetOutIndex: 1,
-        amount: "1000000000000000000",
+        amount: DEFAULT_BASE.toString(),
         userData: "0x",
-        returnAmount: "886158647881269494",
+        returnAmount: "0",
       },
       {
         poolId:
-          "0xe0fcbf4d98f0ad982db260f86cf28b49845403c5000000000000000000000504",
+          "0x60d604890feaa0b5460b28a424407c24fe89374a0000000000000000000004fc",
         assetInIndex: 1,
         assetOutIndex: 2,
         amount: "0",
         userData: "0x",
-        returnAmount: "997316090699442722",
-      },
-      {
-        poolId:
-          "0x02d928e68d8f10c0358566152677db51e1e2dc8c00000000000000000000051e",
-        assetInIndex: 2,
-        assetOutIndex: 3,
-        amount: "0",
-        userData: "0x",
-        returnAmount: "975429501025989269",
+        returnAmount: "0",
       },
     ],
     tokenAddresses: [
-      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-      "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
-      "0x60d604890feaa0b5460b28a424407c24fe89374a",
       "0xf951e335afb289353dc249e82926178eac7ded78",
+      "0x60d604890feaa0b5460b28a424407c24fe89374a",
+      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     ],
-    marketSp:
-      "1.02518203160612570379625541003059241475245310656507462434437884668042346746708605751360445391027705068007936",
-    tokenInForSwaps: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-    tokenOutFromSwaps: "0xf951e335afb289353dc249e82926178eac7ded78",
+
+    marketSp: "0.975579771147855490581674395757499488628449256697793016",
+    tokenInForSwaps: "0xf951e335afb289353dc249e82926178eac7ded78",
+    tokenOutFromSwaps: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
   },
 };

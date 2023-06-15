@@ -13,7 +13,6 @@ const balancerConfig: BalancerSdkConfig = {
 interface BalancerPoolsConfig {
   tokenIn: string;
   tokenOut: string;
-  gasPrice: BigNumber;
   swapAmount: BigNumber;
   swapAmountForSwaps: BigNumber;
   returnAmount: BigNumber;
@@ -25,7 +24,7 @@ interface BalancerPoolsConfig {
   tokenInForSwaps: string;
   tokenOutFromSwaps: string;
   tokenToFetch: string;
-  tokenAddress: string;
+  tokenFromResponseAddress: string;
 }
 
 interface SwapConfig {
@@ -58,8 +57,8 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<DeltaResponse> {
     _dataFeedId: string,
     response: DeltaResponse
   ): number {
-    const { tokenAddress, tokenToFetch, swapAmount } = this.config;
-    const ratio = new Decimal(response[tokenAddress]);
+    const { tokenFromResponseAddress, tokenToFetch, swapAmount } = this.config;
+    const ratio = new Decimal(response[tokenFromResponseAddress]);
     const ratioSerialized = ratio.div(swapAmount.toHexString());
 
     const tokenPrice = getLastPrice(this.config.tokenToFetch);
@@ -68,7 +67,7 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<DeltaResponse> {
     }
     const tokenPriceAsDecimal = new Decimal(tokenPrice.value);
 
-    return tokenPriceAsDecimal.div(ratioSerialized).abs().toNumber();
+    return tokenPriceAsDecimal.mul(ratioSerialized).abs().toNumber();
   }
 
   override calculateLiquidity(_assetId: string, response: any): number {
