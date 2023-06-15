@@ -78,7 +78,7 @@ const updatePricesInPriceFeedsAdapter = async ({
     wrappedContract,
     "updateDataFeedsValues",
     [proposedTimestamp],
-    Number(TX_CONFIG.gasLimit)
+    TX_CONFIG.gasLimit ? Number(TX_CONFIG.gasLimit) : undefined
   );
 
   if (!deliveryResult) {
