@@ -1,9 +1,10 @@
-import { Contract, BigNumber, providers } from "ethers";
-import { sleepMS } from "./common";
-import { RPC_ERROR_CODES } from "../test/helpers";
+import { ErrorCode } from "@ethersproject/logger";
+import { TransactionResponse } from "@ethersproject/providers";
 import axios from "axios";
+import { BigNumber, Contract, providers } from "ethers";
+import { sleepMS } from "./common";
 
-const GWEI = 1e9;
+const ONE_GWEI = 1e9;
 
 type ContractOverrides = {
   nonce: number;
@@ -13,6 +14,7 @@ type ContractOverrides = {
 type LastDeliveryAttempt = {
   nonce: number;
   maxFeePerGas: number;
+  result?: TransactionResponse;
 };
 
 type GasOracleFn = () => Promise<FeeStructure>;
@@ -35,12 +37,6 @@ type TransactionDeliverOpts = {
   priorityFeePerGasMultiplier?: number;
 
   /**
-   * Optional fn that can be used to fetch gas fees from something like gas tracker or gas station
-   * @returns fee structure in gwei
-   */
-  gasOracle?: GasOracleFn;
-
-  /**
    * If we want to take rewards from last block we can achieve is using percentiles
    * 75 percentile we will receive reward which was given by 75% of users and 25% of them has given bigger reward
    * the bigger the value the higher priority fee
@@ -57,14 +53,39 @@ type FeeStructure = {
   maxPriorityFeePerGas: number;
 };
 
+const unsafeBnToNumber = (bn: BigNumber) => Number(bn.toString());
+
+const ethGasTrackerOracle: GasOracleFn = async (apiKey: string = "") => {
+  const response = // rate limit is 5 seconds
+    (
+      await axios.get(
+        `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${apiKey}`
+      )
+    ).data;
+
+  const { suggestBaseFee, FastGasPrice } = response.result;
+
+  if (!suggestBaseFee || !FastGasPrice) {
+    throw new Error("Failed to fetch price from oracle");
+  }
+
+  return {
+    maxFeePerGas: Math.round(FastGasPrice * ONE_GWEI),
+    maxPriorityFeePerGas: Math.round(
+      (FastGasPrice - suggestBaseFee) * ONE_GWEI
+    ),
+  };
+};
+
+const CHAIN_ID_TO_GAS_ORACLE = {
+  1: ethGasTrackerOracle,
+} as Record<number, GasOracleFn | undefined>;
+
 const DEFAULT_TRANSACTION_DELIVERY_OPTS = {
   maxAttempts: 5,
-  priorityFeePerGasMultiplier: 1.125,
+  priorityFeePerGasMultiplier: 1.125, // 112,5%
   percentileOfPriorityFee: 75,
   logger: (text: string) => console.log(`[${TransactionDeliver.name}] ${text}`),
-  gasOracle: () => {
-    throw new Error("Missing gas oracle");
-  },
 };
 
 export class TransactionDeliver {
@@ -79,7 +100,7 @@ export class TransactionDeliver {
     method: M,
     params: Parameters<T[M]>,
     gasLimit?: number
-  ): Promise<void> {
+  ): Promise<TransactionResponse | undefined> {
     const provider = contract.provider as providers.JsonRpcProvider;
     const address = await contract.signer.getAddress();
 
@@ -93,15 +114,12 @@ export class TransactionDeliver {
     };
 
     for (let i = 0; i < this.opts.maxAttempts; i++) {
-      const currentNonce = await provider.getTransactionCount(address);
-      if (this.isTransactionDelivered(lastAttempt, currentNonce)) {
-        // transaction was already delivered because nonce increased
-        return;
-      }
-
       try {
         lastAttempt = { ...contractOverrides };
-        await contract[method](...params, contractOverrides);
+        lastAttempt.result = await contract[method](
+          ...params,
+          contractOverrides
+        );
       } catch (e: any) {
         // if underpriced then bump fee
         this.opts.logger(
@@ -111,16 +129,23 @@ export class TransactionDeliver {
         if (this.isUnderpricedError(e)) {
           const scaledFees = this.scaleFees(await this.getFees(provider));
           Object.assign(contractOverrides, scaledFees);
-          // we don't want to sleep on error
+          // we don't want to sleep on error, we want to react fast
           continue;
         } else {
           throw e;
         }
       }
 
-      const scaledFees = this.scaleFees(await this.getFees(provider));
-      Object.assign(contractOverrides, scaledFees);
       await sleepMS(this.opts.expectedDeliveryTimeMs);
+
+      const currentNonce = await provider.getTransactionCount(address);
+      if (this.isTransactionDelivered(lastAttempt, currentNonce)) {
+        // transaction was already delivered because nonce increased
+        return lastAttempt?.result;
+      } else {
+        const scaledFees = this.scaleFees(contractOverrides);
+        Object.assign(contractOverrides, scaledFees);
+      }
     }
 
     throw new Error(
@@ -132,7 +157,7 @@ export class TransactionDeliver {
     return (
       e.message.includes("maxFeePerGas") ||
       e.message.includes("baseFeePerGas") ||
-      e.code === RPC_ERROR_CODES.invalidInput
+      e.code === ErrorCode.INSUFFICIENT_FUNDS
     );
   }
 
@@ -143,33 +168,57 @@ export class TransactionDeliver {
     return lastAttempt && currentNonce > lastAttempt.nonce;
   }
 
-  async getFees(provider: providers.JsonRpcProvider): Promise<FeeStructure> {
-    let response;
+  private async getFees(
+    provider: providers.JsonRpcProvider
+  ): Promise<FeeStructure> {
     try {
-      response = await this.opts.gasOracle();
+      return await this.getFeeFromGasOracle(provider);
     } catch (e) {
-      // this is reasonable (ether.js is not reasonable) fallback if gasOracle is not set
-      const lastBlock = await provider.getBlock("latest");
-      const maxPriorityFeePerGas = await this.estimatePriorityFee(provider);
+      return await this.getFeeFromProvider(provider);
+    }
+  }
 
-      // we can be sure that his baseFee will be enough even in worst case
-      const baseFee = Math.round(
-        unsafeBnToNumber(lastBlock.baseFeePerGas as BigNumber)
-      );
-      const maxFeePerGas = baseFee + maxPriorityFeePerGas;
-
-      response = { maxFeePerGas, maxPriorityFeePerGas };
+  private async getFeeFromGasOracle(
+    provider: providers.JsonRpcProvider
+  ): Promise<FeeStructure> {
+    const { chainId } = await provider.getNetwork();
+    const gasOracle = CHAIN_ID_TO_GAS_ORACLE[chainId];
+    if (!gasOracle) {
+      throw new Error(`Gas oracle is not defined for ${chainId}`);
     }
 
-    this.opts.logger(`getFees result ${JSON.stringify(response, null, 2)}`);
-    return response;
+    const fee = await gasOracle();
+
+    this.opts.logger(`getFees result ${JSON.stringify(fee, null, 2)}`);
+
+    return fee;
+  }
+
+  /** this is reasonable (ether.js is not reasonable) fallback if gasOracle is not set */
+  private async getFeeFromProvider(
+    provider: providers.JsonRpcProvider
+  ): Promise<FeeStructure> {
+    const lastBlock = await provider.getBlock("latest");
+    const maxPriorityFeePerGas = await this.estimatePriorityFee(provider);
+
+    // we can be sure that his baseFee will be enough even in worst case
+    const baseFee = Math.round(
+      unsafeBnToNumber(lastBlock.baseFeePerGas as BigNumber)
+    );
+    const maxFeePerGas = baseFee + maxPriorityFeePerGas;
+
+    const fee = { maxFeePerGas, maxPriorityFeePerGas };
+
+    this.opts.logger(`getFees result ${JSON.stringify(fee, null, 2)}`);
+
+    return fee;
   }
 
   /**
    * Take value of percentileOfPriorityFee from last 5 blocks.
    * And return maximal value from it.
    */
-  async estimatePriorityFee(
+  private async estimatePriorityFee(
     provider: providers.JsonRpcProvider
   ): Promise<number> {
     const feeHistory = await provider.send("eth_feeHistory", [
@@ -203,25 +252,3 @@ export class TransactionDeliver {
     };
   }
 }
-
-export const ethGasTrackerOracle: GasOracleFn = async (apiKey: string = "") => {
-  const response = // rate limit is 5 seconds
-    (
-      await axios.get(
-        `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${apiKey}`
-      )
-    ).data;
-
-  const { suggestBaseFee, FastGasPrice } = response.result;
-
-  if (!suggestBaseFee || !FastGasPrice) {
-    throw new Error("Failed to fetch price from oracle");
-  }
-
-  return {
-    maxFeePerGas: FastGasPrice * GWEI,
-    maxPriorityFeePerGas: (FastGasPrice - suggestBaseFee) * GWEI,
-  };
-};
-
-const unsafeBnToNumber = (bn: BigNumber) => Number(bn.toString());
