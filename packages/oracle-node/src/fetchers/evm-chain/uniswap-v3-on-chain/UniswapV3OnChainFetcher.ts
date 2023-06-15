@@ -272,13 +272,6 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     return otherAssetLastPrice * priceMultiplier;
   }
 
-  override calculateLiquidity(
-    _assetId: string,
-    _observeResult: MulticallResult
-  ): number {
-    throw new Error("Method not implemented.");
-  }
-
   private static dataFeedIdAmountToNumber(amount: string): number {
     if (amount.endsWith("K")) {
       return 1000 * Number(amount.slice(0, -1));
