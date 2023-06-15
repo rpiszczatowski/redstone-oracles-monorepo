@@ -169,7 +169,7 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
         multicallParams,
         multicallResult,
         poolConfig
-      ),
+      ) ?? 0,
       slippage: UniswapV3OnChainFetcher.extractSlippage(multicallResult),
       pairedToken: UniswapV3OnChainFetcher.getPairedTokenSymbol(
         assetId,
@@ -208,7 +208,7 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
 
   private static extractSlippage(multicallResult: ContractCallResults) {
     const slippage: Record<string, number> = {};
-    if (!multicallResult.results.quoterContract) {
+    if (!multicallResult.results.quoterContract || !multicallResult.results.poolContract.callsReturnContext[0].success) {
       return slippage;
     }
     const priceBeforeSwap = this.getPriceBeforeSwap(multicallResult);
@@ -233,6 +233,9 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     multicallResult: ContractCallResults,
     poolConfig: PoolConfig
   ) {
+    if (!multicallResult.results.poolContract.callsReturnContext[1].success) {
+      return undefined;
+    }
     const tickCumulatives: BigNumber[] =
       multicallResult.results.poolContract.callsReturnContext[1]
         .returnValues[0];
@@ -255,6 +258,9 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     assetId: string,
     multicallResult: MulticallResult
   ) {
+    if (multicallResult.priceRatio === 0) {
+      return 0;
+    }
     const otherAssetLastPrice = UniswapV3OnChainFetcher.getLastPriceOrThrow(
       multicallResult.pairedToken
     );

@@ -22,6 +22,7 @@ jest.mock("ethereum-multicall", () => {
                   returnValues: [
                     { type: "BigNumber", hex: "0x64000000000000000000000000" },
                   ],
+                  success: true,
                 },
                 {
                   returnValues: [
@@ -40,6 +41,7 @@ jest.mock("ethereum-multicall", () => {
                       },
                     ],
                   ],
+                  success: true,
                 },
               ],
             },
