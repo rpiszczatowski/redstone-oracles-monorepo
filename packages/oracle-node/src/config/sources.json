@@ -239,6 +239,11 @@
     "url": "https://pangolin.exchange/",
     "color": "#f6ca45"
   },
+  "pangolin-on-chain-wavax": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/pangolin.png",
+    "url": "https://pangolin.exchange/",
+    "color": "#f6ca45"
+  },
   "platypus": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/platypus.png",
     "url": "https://platypus.finance/",
@@ -279,6 +284,11 @@
     "url": "https://www.traderjoexyz.com/",
     "color": "#e2786f"
   },
+  "trader-joe-on-chain-wavax": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/trader-joe.png",
+    "url": "https://www.traderjoexyz.com/",
+    "color": "#e2786f"
+  },
   "twelve-data": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/twelve-data.png",
     "url": "https://twelvedata.com",
@@ -295,6 +305,101 @@
     "color": "#e23275"
   },
   "uniswap-v3": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-dai-100": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-dai-10000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-dai-3000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-dai-500": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-ohm-10000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-ohm-3000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-ohm-500": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-usdc-100": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-usdc-10000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-usdc-3000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-usdc-500": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-wbtc-100": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-wbtc-10000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-wbtc-3000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-wbtc-500": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-weth-100": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-weth-10000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-weth-3000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-on-chain-weth-500": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
@@ -326,7 +431,7 @@
   },
   "wazirx": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/wazirx.png",
-    "url": "https://curve.fi/",
+    "url": "https://wazirx.com/",
     "color": "#3e66e8"
   },
   "stlouisfed": {
@@ -341,7 +446,17 @@
   },
   "curve-frax": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
-    "url": "https://wazirx.com/",
+    "url": "https://curve.fi/",
+    "color": "#78151d"
+  },
+  "curve-usdc-multi-block": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
+    "url": "https://curve.fi/",
+    "color": "#78151d"
+  },
+  "curve-frax-multi-block": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
+    "url": "https://curve.fi/",
     "color": "#78151d"
   },
   "curve-usdc": {
@@ -393,5 +508,35 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/fraxswap.svg",
     "url": "https://app.frax.finance/fraxswap",
     "color": "#232326"
+  },
+  "balancer-dai": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
+    "url": "https://balancer.fi",
+    "color": "#232326"
+  },
+  "balancer-weth": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
+    "url": "https://balancer.fi",
+    "color": "#232326"
+  },
+  "balancer-bb-a-weth-using-eth": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
+    "url": "https://balancer.fi",
+    "color": "#232326"
+  },
+  "balancer-bb-a-weth": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
+    "url": "https://balancer.fi",
+    "color": "#232326"
+  },
+  "chainlink": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/chainlink.svg",
+    "url": "https://chain.link",
+    "color": "#2A5ADA"
+  },
+  "band": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/band.svg",
+    "url": "https://www.bandprotocol.com",
+    "color": "#516AFF"
   }
 }
