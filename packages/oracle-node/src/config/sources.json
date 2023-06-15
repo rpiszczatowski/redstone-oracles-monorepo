@@ -538,5 +538,10 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/band.svg",
     "url": "https://www.bandprotocol.com",
     "color": "#516AFF"
+  },
+  "maverick": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/maverick.png",
+    "url": "https://www.mav.xyz/",
+    "color": "#5b0ef5"
   }
 }
