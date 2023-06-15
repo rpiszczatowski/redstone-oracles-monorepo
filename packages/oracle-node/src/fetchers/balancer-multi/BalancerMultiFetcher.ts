@@ -43,20 +43,32 @@ interface DeltaResponse {
 export class BalancerMultiFetcher extends DexOnChainFetcher<DeltaResponse> {
   private balancer: BalancerSDK;
 
-  constructor(name: string, protected readonly config: BalancerPoolsConfig) {
+  constructor(
+    name: string,
+    protected readonly config: BalancerPoolsConfig,
+    private readonly dataFeedId: string
+  ) {
     super(name);
     this.balancer = new BalancerSDK(balancerConfig);
   }
 
-  override async makeRequest(_dataFeedId: string): Promise<DeltaResponse> {
+  override async makeRequest(dataFeedId: string): Promise<DeltaResponse> {
+    if (this.dataFeedId !== dataFeedId) {
+      throw new Error("Invalid data feed used in balancer multi fetcher");
+    }
+
     // Simulates a call to `batchSwap`, returning an array of Vault asset deltas.
     return (this.balancer.swaps as any).queryExactIn(this.config);
   }
 
   override calculateSpotPrice(
-    _dataFeedId: string,
+    dataFeedId: string,
     response: DeltaResponse
   ): number {
+    if (this.dataFeedId !== dataFeedId) {
+      throw new Error("Invalid data feed used in balancer multi fetcher");
+    }
+
     const { tokenFromResponseAddress, tokenToFetch, swapAmount } = this.config;
     const ratio = new Decimal(response[tokenFromResponseAddress]);
     const ratioSerialized = ratio.div(swapAmount.toHexString());
@@ -70,7 +82,12 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<DeltaResponse> {
     return tokenPriceAsDecimal.mul(ratioSerialized).abs().toNumber();
   }
 
-  override calculateLiquidity(_assetId: string, response: any): number {
-    throw new Error();
+  override calculateLiquidity(
+    _assetId: string,
+    _response: DeltaResponse
+  ): number {
+    throw new Error(
+      `calculateLiquidity is not implemented for ${this.getName()}`
+    );
   }
 }

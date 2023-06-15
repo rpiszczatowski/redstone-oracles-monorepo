@@ -7,7 +7,8 @@ for (const [dataFeedId, config] of Object.entries(balancerMultiConfigs)) {
   balancerMultiFetchers[`balancer-multi-${dataFeedId.toLowerCase()}`] =
     new BalancerMultiFetcher(
       `balancer-multi-${dataFeedId.toLowerCase()}`,
-      config
+      config,
+      dataFeedId
     );
 }
 

@@ -40,7 +40,7 @@ import { PermaswapFetcher } from "./permaswap/PermaswapFetcher";
 import fraxswapOnChainFetchers from "./evm-chain/ethereum/fraxswap-on-chain/all-fraxswap-on-chain-fetchers";
 import { MaverickFetcher } from "./maverick/MaverickFetcher";
 import { ethereumEvmFetcher } from "./evm-chain/ethereum/evm-fetcher/EthereumEvmFetcher";
-import balancerMultiFetchers from "./balancer-multi/all-balancers-multi-fetcher";
+import balancerMultiFetchers from "./balancer-multi/all-balancers-multi-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
