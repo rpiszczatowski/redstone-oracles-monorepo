@@ -215,7 +215,7 @@ export class TransactionDeliver {
   }
 
   /**
-   * Take value of percentileOfPriorityFee from last 5 blocks.
+   * Take value of percentileOfPriorityFee from last 2 blocks.
    * And return maximal value from it.
    */
   private async estimatePriorityFee(
