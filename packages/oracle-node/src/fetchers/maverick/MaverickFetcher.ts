@@ -47,13 +47,6 @@ export class MaverickFetcher extends DexOnChainFetcher<MaverickResponse> {
     return priceInPairedToken.mul(pairedTokenPrice).toNumber();
   }
 
-  override calculateLiquidity(
-    _assetId: string,
-    _response: MaverickResponse
-  ): number {
-    throw new Error(`Calculating liquidity not implemented for ${this.name}`);
-  }
-
   protected getPairedTokenPrice(tokenSymbol: string): Decimal {
     const lastPriceFromCache = getRawPrice(tokenSymbol);
     if (!lastPriceFromCache) {

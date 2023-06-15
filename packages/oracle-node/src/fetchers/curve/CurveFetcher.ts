@@ -67,15 +67,6 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
     return ratio.mul(pairedTokenPrice).toNumber();
   }
 
-  calculateLiquidity(
-    _assetId: string,
-    _response: CurveFetcherResponse
-  ): number {
-    throw new Error(
-      `calculateLiquidity is not implemented for ${this.getName()}`
-    );
-  }
-
   getPairedTokenPrice(assetId: string): string {
     const { pairedToken } = this.poolsConfig[assetId];
 

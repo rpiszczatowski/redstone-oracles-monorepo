@@ -5,17 +5,22 @@ import {
   isSlippage,
   parseSlippageDataFeedId,
 } from "../liquidity/utils";
+import { terminateWithManifestConfigError } from "../../Terminator";
 
 export interface Responses<T> {
   [spotAssetId: string]: T;
 }
 
 export abstract class DexOnChainFetcher<T> extends MultiRequestFetcher {
-  abstract calculateLiquidity(assetId: string, response: T): number;
-  calculateSlippage(assetId: string, response: T): number {
-    throw new Error("method not implemented!");
+  calculateLiquidity(_assetId: string, _response: T): number {
+    terminateWithManifestConfigError(`liquidity calculation not implemented for ${this.getName()}`);
   }
-  abstract calculateSpotPrice(assetId: string, response: T): number;
+  calculateSlippage(_assetId: string, _response: T): number {
+    terminateWithManifestConfigError(`slippage calculation not implemented for ${this.getName()}`);
+  }
+  calculateSpotPrice(_assetId: string, _response: T): number {
+    terminateWithManifestConfigError(`spot price calculation not implemented for ${this.getName()}`);
+  }
 
   override prepareRequestIds(requestedDataFeedIds: string[]): string[] {
     const spotAssetIds = requestedDataFeedIds.filter(
