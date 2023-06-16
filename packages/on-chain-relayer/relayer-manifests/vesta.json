@@ -1,6 +1,6 @@
 {
   "network": "arbitrum",
-  "minDeviationPercentage": 0.2,
+  "minDeviationPercentage": 0.0002,
   "maxTimeIntervalMilliseconds": 86400000,
   "adapterContract": "0x36497BcFeA36A3Ba831e8322cad35be1663D347c",
   "dataServiceId": "redstone-primary-prod",
