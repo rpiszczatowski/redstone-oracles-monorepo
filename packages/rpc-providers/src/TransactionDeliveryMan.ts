@@ -1,8 +1,7 @@
 import { ErrorCode } from "@ethersproject/logger";
 import { TransactionResponse } from "@ethersproject/providers";
-import axios from "axios";
 import { BigNumber, Contract, providers } from "ethers";
-import { sleepMS } from "./common";
+import { fetchWithCache, sleepMS } from "./common";
 
 const ONE_GWEI = 1e9;
 
@@ -19,7 +18,7 @@ type LastDeliveryAttempt = {
 
 type GasOracleFn = () => Promise<FeeStructure>;
 
-type TransactionDeliverOpts = {
+type TransactionDeliveryManOpts = {
   /**
    * It depends on network block finalization
    * For example for ETH ~12 s block times  we should set it to 14_000
@@ -55,11 +54,12 @@ type FeeStructure = {
 
 const unsafeBnToNumber = (bn: BigNumber) => Number(bn.toString());
 
-const ethGasTrackerOracle: GasOracleFn = async (apiKey: string = "") => {
+const getEthFeeFromGasOracle: GasOracleFn = async (apiKey: string = "") => {
   const response = // rate limit is 5 seconds
     (
-      await axios.get(
-        `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${apiKey}`
+      await fetchWithCache<any>(
+        `https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${apiKey}`,
+        6_000
       )
     ).data;
 
@@ -78,21 +78,22 @@ const ethGasTrackerOracle: GasOracleFn = async (apiKey: string = "") => {
 };
 
 const CHAIN_ID_TO_GAS_ORACLE = {
-  1: ethGasTrackerOracle,
+  1: getEthFeeFromGasOracle,
 } as Record<number, GasOracleFn | undefined>;
 
-const DEFAULT_TRANSACTION_DELIVERY_OPTS = {
+const DEFAULT_TRANSACTION_DELIVERY_MAN_PTS = {
   maxAttempts: 5,
   priorityFeePerGasMultiplier: 1.125, // 112,5%
   percentileOfPriorityFee: 75,
-  logger: (text: string) => console.log(`[${TransactionDeliver.name}] ${text}`),
+  logger: (text: string) =>
+    console.log(`[${TransactionDeliveryMan.name}] ${text}`),
 };
 
-export class TransactionDeliver {
-  private readonly opts: Required<TransactionDeliverOpts>;
+export class TransactionDeliveryMan {
+  private readonly opts: Required<TransactionDeliveryManOpts>;
 
-  constructor(opts: TransactionDeliverOpts) {
-    this.opts = { ...DEFAULT_TRANSACTION_DELIVERY_OPTS, ...opts };
+  constructor(opts: TransactionDeliveryManOpts) {
+    this.opts = { ...DEFAULT_TRANSACTION_DELIVERY_MAN_PTS, ...opts };
   }
 
   public async deliver<T extends Contract, M extends keyof T>(
@@ -100,11 +101,11 @@ export class TransactionDeliver {
     method: M,
     params: Parameters<T[M]>,
     gasLimit?: number
-  ): Promise<TransactionResponse | undefined> {
+  ): Promise<TransactionResponse> {
     const provider = contract.provider as providers.JsonRpcProvider;
     const address = await contract.signer.getAddress();
 
-    let lastAttempt = undefined as LastDeliveryAttempt | undefined;
+    let lastAttempt: LastDeliveryAttempt | undefined = undefined;
 
     const currentNonce = await provider.getTransactionCount(address);
     const contractOverrides: ContractOverrides = {
@@ -141,6 +142,11 @@ export class TransactionDeliver {
       const currentNonce = await provider.getTransactionCount(address);
       if (this.isTransactionDelivered(lastAttempt, currentNonce)) {
         // transaction was already delivered because nonce increased
+        if (!lastAttempt.result) {
+          throw new Error(
+            "Transaction with sane nonce was delivered by someone else"
+          );
+        }
         return lastAttempt?.result;
       } else {
         const scaledFees = this.scaleFees(contractOverrides);

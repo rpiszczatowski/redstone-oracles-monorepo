@@ -9,7 +9,7 @@ import {
 } from "../../custom-integrations/mento/mento-utils";
 
 import { getSortedOraclesContractAtAddress } from "./get-contract";
-import { TransactionDeliver } from "redstone-rpc-providers";
+import { TransactionDeliveryMan } from "redstone-rpc-providers";
 
 interface UpdatePricesArgs {
   adapterContract: Contract;
@@ -19,7 +19,7 @@ interface UpdatePricesArgs {
 
 const TX_CONFIG = { gasLimit: config.gasLimit };
 
-const deliveryMan = new TransactionDeliver({
+const deliveryMan = new TransactionDeliveryMan({
   expectedDeliveryTimeMs: config.expectedTxDeliveryTimeInMS,
 });
 
@@ -80,12 +80,6 @@ const updatePricesInPriceFeedsAdapter = async ({
     [proposedTimestamp],
     TX_CONFIG.gasLimit ? Number(TX_CONFIG.gasLimit) : undefined
   );
-
-  if (!deliveryResult) {
-    throw new Error(
-      "Transaction with sane nonce was delivered by someone else"
-    );
-  }
 
   return deliveryResult;
 };
