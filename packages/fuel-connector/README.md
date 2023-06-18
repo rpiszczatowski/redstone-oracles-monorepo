@@ -7,7 +7,8 @@ Proudly supported by:
 [![Fuel Grants Program](fuel-grants-program.png)](#-the-fuel-grants-program)
 
 RedStone proposes a completely new modular design where data is first put into a data availability layer and then
-fetched on-chain. This allow us to broadcast a large number of assets at high frequency to a cheaper layer and put it on
+fetched on-chain. This allows us to broadcast a large number of assets at high frequency to a cheaper layer and put it
+on
 chain only when required by the protocol.
 
 The `@redstone-finance/fuel-connector` module implements an alternative design of providing oracle data to smart
@@ -26,9 +27,12 @@ the [whole RedStone Oracle model](https://docs.redstone.finance/docs/introductio
 
 ## 👨 Code structure
 
-- [sway](sway) directory contains the fuel-network on-chain libraries written in sway `0.35.5`.
+- The fuel-network on-chain sdk written in sway `0.40.1` is located in
+  a [separate repository](https://github.com/redstone-finance/redstone-fuel-sdk)
+  to be easily embedded in sway projects.
   - There are also various tests of signature verification with the given signers, timestamp validation, value
     aggregation as well as full data-processing tests with various configurations.
+- [sway](sway) directory contains contract and sample code using the sdk
   - You can find all the possibilities [here](sway/README.md).
   - You can read [here](sway/contract/README.md) how the contract works.
 - [src](src) directory contains the typescript classes, useful for establishing a connection between typescript and

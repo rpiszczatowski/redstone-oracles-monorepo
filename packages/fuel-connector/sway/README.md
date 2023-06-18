@@ -1,18 +1,22 @@
 ### Setting up the sway/Fuel environment
 
-1. Install sway & fuel toolchain as described [here](https://fuellabs.github.io/sway/master/book/introduction/installation.html).
-   * The version `beta-3` of the toolchain should be chosen.
-   * The version of the sway language (`forc` compiler) for `beta-3` (related to `fuel-core` in version `0.17.x`)
-     network must be `0.35.x`.
-1. In case of troubles 
+1. Install sway & fuel toolchain as
+   described [here](https://fuellabs.github.io/sway/master/book/introduction/installation.html).
+   * The version `beta-4` of the toolchain should be chosen.
+   * The version of the sway language (`forc` compiler) for `beta-4` (related to `fuel-core` in version `0.18.x`)
+     network must be `0.40.x`.
+1. In case of troubles
    1) of the `fuelup` installation
-      1) the installation of the newest version of `fuelup` is also described [here](http://install.fuel.network/master/installation/index.html)
+      1) the installation of the newest version of `fuelup` is also
+         described [here](http://install.fuel.network/master/installation/index.html)
    1) of the `sway` library installation/usage
-      1) it can be downloaded as a source from [here](https://github.com/FuelLabs/sway) and the proper version-tag checked out
+      1) it can be downloaded as a source from [here](https://github.com/FuelLabs/sway) and the proper version-tag
+         checked out
       1) then `cargo build` should be run (it's needed to have `cargo` installed)
       1) and the path exported by using for example: `export PATH="$HOME/Devel/sway/target/debug:$PATH"`
-   1) of the `fuel-core` installation/usage 
-      1) it can be downloaded as a source from [here](https://github.com/FuelLabs/fuel-core) and the proper version-tag checked out
+   1) of the `fuel-core` installation/usage
+      1) it can be downloaded as a source from [here](https://github.com/FuelLabs/fuel-core) and the proper version-tag
+         checked out
       1) then `cargo xtask build` should be run (it's needed to have `cargo` installed)
       1) and the path exported by using for example: `export PATH="$HOME/Devel/fuel-core/target/debug:$PATH"`
 1. You can use one of the nodes described [here](http://fuelbook.fuel.network/master/networks/networks.html) or 
