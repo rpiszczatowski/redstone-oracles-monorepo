@@ -1,9 +1,11 @@
 import { DataPackagesResponse, ValuesForDataFeeds } from "redstone-sdk";
+import { IterationConfig } from "./get-iteration-args";
 
 export interface Context {
   dataPackages: DataPackagesResponse;
   valuesFromContract: ValuesForDataFeeds;
   lastUpdateTimestamp: number;
+  config: IterationConfig;
 }
 
 export interface ConditionCheckResponse {

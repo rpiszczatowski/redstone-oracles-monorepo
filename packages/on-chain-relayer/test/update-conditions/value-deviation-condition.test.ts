@@ -20,7 +20,8 @@ describe("value-deviation-condition", () => {
     };
     const { shouldUpdatePrices, warningMessage } = valueDeviationCondition(
       dataPackages,
-      smallerValueDiff
+      smallerValueDiff,
+      10
     );
     expect(shouldUpdatePrices).to.be.false;
     expect(warningMessage).to.match(
@@ -36,7 +37,8 @@ describe("value-deviation-condition", () => {
     };
     const { shouldUpdatePrices, warningMessage } = valueDeviationCondition(
       dataPackages,
-      biggerValueDiff
+      biggerValueDiff,
+      10
     );
     expect(shouldUpdatePrices).to.be.true;
     expect(warningMessage).to.match(/Value has deviated enough to be/);

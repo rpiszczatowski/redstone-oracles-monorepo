@@ -14,6 +14,7 @@ import {
 } from "../helpers";
 import { parseUnits } from "ethers/lib/utils";
 import * as getProviderOrSigner from "../../src/core/contract-interactions/get-provider-or-signer";
+import { getUpdatePricesArgs } from "../../src/core/contract-interactions/get-update-prices-args";
 
 chai.use(chaiAsPromised);
 
@@ -39,19 +40,22 @@ describe("update-prices", () => {
     await priceFeedsAdapter.deployed();
 
     // Update prices
-    const { lastUpdateTimestamp } =
-      await getLastRoundParamsFromContract(priceFeedsAdapter);
+    const { lastUpdateTimestamp } = await getLastRoundParamsFromContract(
+      priceFeedsAdapter
+    );
     const dataPackages = await getDataPackagesResponse();
-    await updatePrices(
+    const updatePricesArgs = await getUpdatePricesArgs(
       dataPackages,
       priceFeedsAdapter,
       lastUpdateTimestamp
     );
 
+    await updatePrices(updatePricesArgs.args!);
+
     // Check updated values
-    const dataFeedsValues = await priceFeedsAdapter.getValuesForDataFeeds(
-      [btcDataFeed]
-    );
+    const dataFeedsValues = await priceFeedsAdapter.getValuesForDataFeeds([
+      btcDataFeed,
+    ]);
     expect(dataFeedsValues[0]).to.be.equal(2307768000000);
   });
 
@@ -79,14 +83,17 @@ describe("update-prices", () => {
     mockEnvVariables(overrideMockConfig);
 
     // Update prices
-    const { lastUpdateTimestamp } =
-      await getLastRoundParamsFromContract(mentoAdapter);
+    const { lastUpdateTimestamp } = await getLastRoundParamsFromContract(
+      mentoAdapter
+    );
     const dataPackages = await getDataPackagesResponse();
-    await updatePrices(
+    const updatePricesArgs = await getUpdatePricesArgs(
       dataPackages,
       mentoAdapter,
       lastUpdateTimestamp
     );
+
+    await updatePrices(updatePricesArgs.args!);
 
     // Check updated values in SortedOracles
     const normalizeValue = (num: number) => parseUnits(num.toString(), 24);

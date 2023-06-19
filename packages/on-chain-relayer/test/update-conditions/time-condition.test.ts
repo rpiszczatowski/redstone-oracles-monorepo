@@ -9,8 +9,10 @@ describe("time-condition", () => {
 
   it("should return false if time diff smaller than interval", () => {
     const lastUpdateTimestamp = Date.now() - 1;
-    const { shouldUpdatePrices, warningMessage } =
-      timeUpdateCondition(lastUpdateTimestamp);
+    const { shouldUpdatePrices, warningMessage } = timeUpdateCondition(
+      lastUpdateTimestamp,
+      10
+    );
     expect(shouldUpdatePrices).to.be.false;
     expect(warningMessage).to.match(
       /Not enough time has passed to update prices/
@@ -19,8 +21,10 @@ describe("time-condition", () => {
 
   it("should return true if time diff bigger than interval", () => {
     const lastUpdateTimestamp = Date.now() - 100000;
-    const { shouldUpdatePrices, warningMessage } =
-      timeUpdateCondition(lastUpdateTimestamp);
+    const { shouldUpdatePrices, warningMessage } = timeUpdateCondition(
+      lastUpdateTimestamp,
+      10
+    );
     expect(shouldUpdatePrices).to.be.true;
     expect(warningMessage).to.match(/Enough time passed to updated prices/);
   });

@@ -1,7 +1,7 @@
-import { config } from "../../config";
-
-export const timeUpdateCondition = (lastUpdateTimestamp: number) => {
-  const updatePriceInterval = config.updatePriceInterval;
+export const timeUpdateCondition = (
+  lastUpdateTimestamp: number,
+  updatePriceInterval: number
+) => {
   const currentTimestamp = Date.now();
   const timeDiff = currentTimestamp - lastUpdateTimestamp;
   const shouldUpdatePrices = timeDiff >= updatePriceInterval;

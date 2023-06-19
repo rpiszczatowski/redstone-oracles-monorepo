@@ -1,7 +1,7 @@
 import { BigNumber } from "ethers";
 import { INumericDataPoint } from "redstone-protocol";
 import { DataPackagesResponse, ValuesForDataFeeds } from "redstone-sdk";
-import { config } from "../../config";
+// import { config } from "../../config";
 import { formatUnits } from "ethers/lib/utils";
 import { MathUtils } from "redstone-utils";
 
@@ -9,7 +9,8 @@ const DEFAULT_DECIMALS = 8;
 
 export const valueDeviationCondition = (
   dataPackages: DataPackagesResponse,
-  valuesFromContract: ValuesForDataFeeds
+  valuesFromContract: ValuesForDataFeeds,
+  minDeviationPercentage: number
 ) => {
   const dataFeedsIds = Object.keys(dataPackages);
 
@@ -47,7 +48,6 @@ export const valueDeviationCondition = (
     }
   }
 
-  const { minDeviationPercentage } = config;
   const shouldUpdatePrices = maxDeviation >= minDeviationPercentage;
   logTrace.addDeviationInfo(maxDeviation, minDeviationPercentage);
 

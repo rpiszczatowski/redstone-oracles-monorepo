@@ -6,6 +6,7 @@ import {
   getDataPackagesResponse,
   mockEnvVariables,
 } from "../helpers";
+import { config } from "../../src/config";
 
 describe("should-update", () => {
   before(() => {
@@ -23,6 +24,7 @@ describe("should-update", () => {
       dataPackages,
       valuesFromContract: smallerValueDiff,
       lastUpdateTimestamp,
+      config,
     });
     expect(shouldUpdatePrices).to.be.false;
     expect(JSON.parse(warningMessage)[0]).to.match(
@@ -45,6 +47,7 @@ describe("should-update", () => {
       dataPackages,
       valuesFromContract: biggerValueDiff,
       lastUpdateTimestamp,
+      config,
     });
     expect(shouldUpdatePrices).to.be.true;
     expect(JSON.parse(warningMessage)).to.match(
@@ -63,6 +66,7 @@ describe("should-update", () => {
       dataPackages,
       valuesFromContract: smallerValueDiff,
       lastUpdateTimestamp,
+      config,
     });
     expect(shouldUpdatePrices).to.be.true;
     expect(JSON.parse(warningMessage)).to.match(
@@ -86,6 +90,7 @@ describe("should-update", () => {
       dataPackages,
       valuesFromContract: sameValue,
       lastUpdateTimestamp,
+      config,
     });
     expect(warningMessage).to.match(
       /Value has not deviated enough to be updated/
@@ -106,6 +111,7 @@ describe("should-update", () => {
       dataPackages,
       valuesFromContract: sameValue,
       lastUpdateTimestamp,
+      config,
     });
     expect(warningMessage).to.match(/Enough time passed to updated price/);
   });

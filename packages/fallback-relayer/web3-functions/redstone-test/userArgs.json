@@ -1,0 +1,8 @@
+{
+  "shouldUpdatePrices": false,
+  "message": "undefined",
+  "args": "undefined",
+  "numberOfFreeChecksToInvoke": 3,
+  "adapterContractAddress": "0x01234567890abcdef01201234567890abcdef012"
+}
+

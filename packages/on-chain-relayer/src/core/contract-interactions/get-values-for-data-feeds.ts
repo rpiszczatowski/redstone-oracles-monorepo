@@ -1,14 +1,14 @@
 import { Contract, utils } from "ethers";
-import { config } from "../../config";
 import { ValuesForDataFeeds } from "redstone-sdk";
 
 // TODO: rewrite this file, as now we even support getting values from smart contract for MentoAdapter
 export const getValuesForDataFeeds = async (
   priceFeedsAdapterContract: Contract,
-  dataFeeds: string[]
+  dataFeeds: string[],
+  adapterContractType: string
 ): Promise<ValuesForDataFeeds> => {
   // We do not support getting latest values from smart contract for MentoAdapter
-  if (config.adapterContractType === "mento") {
+  if (adapterContractType === "mento") {
     return {};
   }
 

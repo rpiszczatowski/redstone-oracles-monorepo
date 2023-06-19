@@ -1,13 +1,11 @@
 import { timeUpdateCondition } from "./time-condition";
 import { valueDeviationCondition } from "./value-deviation-condition";
-import { config } from "../../config";
 import { ConditionCheckResponse, Context } from "../../types";
 
 export const shouldUpdate = (context: Context): ConditionCheckResponse => {
-  const { updateConditions } = config;
   const warningMessages: string[] = [];
   let shouldUpdatePrices = false;
-  for (const conditionName of updateConditions) {
+  for (const conditionName of context.config.updateConditions) {
     const conditionCheck = checkConditionByName(context)[conditionName];
     shouldUpdatePrices =
       shouldUpdatePrices || conditionCheck.shouldUpdatePrices;
@@ -29,9 +27,13 @@ export const shouldUpdate = (context: Context): ConditionCheckResponse => {
 };
 
 const checkConditionByName = (context: Context) => ({
-  time: timeUpdateCondition(context.lastUpdateTimestamp),
+  time: timeUpdateCondition(
+    context.lastUpdateTimestamp,
+    context.config.updatePriceInterval
+  ),
   "value-deviation": valueDeviationCondition(
     context.dataPackages,
-    context.valuesFromContract
+    context.valuesFromContract,
+    context.config.minDeviationPercentage
   ),
 });

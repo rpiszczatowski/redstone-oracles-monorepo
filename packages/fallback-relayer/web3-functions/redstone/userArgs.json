@@ -1,0 +1,11 @@
+{
+  "adapterContractAddress": "0x89b6137B9c09677BC77dc53B9dc564E2B3eA2d43",
+  "dataServiceId": "redstone-main-demo",
+  "uniqueSignersCount": 1,
+  "dataFeeds": ["ETH"],
+  "updateConditions": ["time", "value-deviation"],
+  "updatePriceInterval": 140000,
+  "minDeviationPermillage": 5,
+  "adapterContractType": "price-feeds",
+  "numberOfFreeChecksToInvoke": 3
+}
