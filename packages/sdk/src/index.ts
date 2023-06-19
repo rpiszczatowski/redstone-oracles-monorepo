@@ -2,6 +2,7 @@ import axios from "axios";
 import { RedstoneOraclesState } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
 import redstoneOraclesInitialState from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/initial-state.json";
 import {
+  DataPackage,
   RedstonePayload,
   SignedDataPackage,
   SignedDataPackagePlainObj,
@@ -16,6 +17,12 @@ export interface DataPackagesRequestParams {
   dataFeeds?: string[];
   disablePayloadsDryRun?: boolean;
   urls?: string[];
+}
+
+export interface DataPackagesWithBiggestDeviationRequestParams
+  extends DataPackagesRequestParams {
+  allUniqueSignersCount: number;
+  valueToCompare: number;
 }
 
 export interface DataPackagesResponse {
@@ -132,12 +139,105 @@ export const getUrlsForDataServiceId = (
   return resolveDataServiceUrls(reqParams.dataServiceId);
 };
 
+export const requestDataPackagesWithBiggestDeviation = async ({
+  allUniqueSignersCount,
+  valueToCompare,
+  ...reqParams
+}: DataPackagesWithBiggestDeviationRequestParams) => {
+  if (allUniqueSignersCount < reqParams.uniqueSignersCount) {
+    throw new Error(
+      "All unique signers cannot be smaller than required unique signers"
+    );
+  }
+
+  const allDataPackages = await requestDataPackages({
+    ...reqParams,
+    uniqueSignersCount: allUniqueSignersCount,
+  });
+
+  return getDataPackagesWithBiggestDeviation(
+    allDataPackages,
+    valueToCompare,
+    reqParams.uniqueSignersCount,
+    reqParams.dataFeeds
+  );
+};
+
+const getDataPackagesWithBiggestDeviation = (
+  dataPackages: DataPackagesResponse,
+  valueToCompare: number,
+  requiredDataPackagesCount: number,
+  dataFeedsIds?: string[]
+) => {
+  if (!dataFeedsIds) {
+    throw new Error(
+      `Cannot get data packages with biggest deviation for ${ALL_FEEDS_KEY}`
+    );
+  }
+  const dataPackagesWithBiggestDeviation: DataPackagesResponse = {};
+  for (const dataFeedId of dataFeedsIds) {
+    const dataPackagesForDataFeed = dataPackages[dataFeedId];
+    const sortedDataPackages = sortDataPackagesByDeviation(
+      dataPackagesForDataFeed,
+      valueToCompare,
+      dataFeedId
+    );
+
+    dataPackagesWithBiggestDeviation[dataFeedId] = sortedDataPackages.slice(
+      0,
+      requiredDataPackagesCount
+    );
+  }
+  return dataPackagesWithBiggestDeviation;
+};
+
+const sortDataPackagesByDeviation = (
+  dataPackagesForDataFeed: SignedDataPackage[],
+  valueToCompare: number,
+  dataFeedId: string
+) =>
+  dataPackagesForDataFeed.sort((leftDataPackage, rightDataPackage) => {
+    const leftValue = Number(
+      findDataPointValueForDataFeed(leftDataPackage.dataPackage, dataFeedId)
+    );
+    const leftValueDeviation = calculateDeviation(leftValue, valueToCompare);
+    const rightValue = Number(
+      findDataPointValueForDataFeed(rightDataPackage.dataPackage, dataFeedId)
+    );
+    const rightValueDeviation = calculateDeviation(rightValue, valueToCompare);
+    return rightValueDeviation - leftValueDeviation;
+  });
+
+const calculateDeviation = (value: number, valueToCompare: number) => {
+  if (valueToCompare === 0) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+  const pricesDiff = Math.abs(valueToCompare - value);
+  return (pricesDiff * 100) / valueToCompare;
+};
+
+const findDataPointValueForDataFeed = (
+  dataPackage: DataPackage,
+  dataFeedToFind: string
+) => {
+  const dataPoint = dataPackage.dataPoints.find(
+    (dataPoint) => dataPoint.dataFeedId === dataFeedToFind
+  );
+  if (!dataPoint) {
+    throw new Error(
+      `Cannot find data point for ${dataFeedToFind} in data package`
+    );
+  }
+  return dataPoint.toObj().value;
+};
+
 export default {
   getOracleRegistryState,
   requestDataPackages,
   getDataServiceIdForSigner,
   requestRedstonePayload,
   resolveDataServiceUrls,
+  requestDataPackagesWithBiggestDeviation,
 };
 export * from "./data-services-urls";
 export * from "./contracts/ContractParamsProvider";
