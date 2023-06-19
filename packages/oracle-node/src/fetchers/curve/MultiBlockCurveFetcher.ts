@@ -56,14 +56,29 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     sequenceLength: number,
     sequenceStep: number
   ): number[] {
-    const blocks = [];
-    for (
-      let currentBlock = lastBlock;
-      currentBlock > lastBlock - sequenceLength;
-      currentBlock -= sequenceStep
-    ) {
-      blocks.push(currentBlock);
-    }
-    return blocks;
+    return generateRoundedStepSequence(lastBlock, sequenceLength, sequenceStep);
   }
+}
+
+export function generateRoundedStepSequence(
+  start: number,
+  sequenceLength: number,
+  step: number
+) {
+  const sequence = [start];
+
+  if (sequenceLength === 1) {
+    return sequence;
+  }
+
+  const stepsCount = Math.ceil(sequenceLength / step);
+
+  const scaledSecond = Math.floor((start - 1) / step) * step;
+  sequence.push(scaledSecond);
+
+  for (let i = 1; i < stepsCount - 1; i++) {
+    const next = scaledSecond - i * step;
+    sequence.push(next);
+  }
+  return sequence;
 }
