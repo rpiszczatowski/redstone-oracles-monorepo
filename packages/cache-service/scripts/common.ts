@@ -36,7 +36,7 @@ export async function queryDataPackages({
       dataServiceId,
     },
     { timestampMilliseconds: 1, signerAddress: 1, dataPoints: 1 }
-  );
+  ).sort({timestampMilliseconds: 1});
 }
 
 export function groupDataPackagesByField(
@@ -55,9 +55,18 @@ export function groupDataPackagesByField(
   return groupedBySigner;
 }
 
-export function getDeviationPercentage(a: number, b: number) {
-  return Math.abs((a - b) / Math.min(a, b)) * 100;
-}
+export function getDeviationPercentage(
+  baseValue: number,
+  valueToCompare: number,
+) {
+  const pricesDiff = Math.abs(baseValue - valueToCompare);
+
+  if (baseValue === 0) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  return (pricesDiff * 100) / baseValue;
+};
 
 export function formatTime(timestamp: number) {
   return new Date(timestamp).toISOString();
@@ -68,10 +77,10 @@ export async function fetchDataPackages(
   queryParams: QueryDataPackagesParams
 ) {
   const mongoConnection = await mongoose.connect(mongoDbUrl);
-  console.log("MongoDB connected");
+  //console.log("MongoDB connected");
   const dataPackages = await queryDataPackages(queryParams);
-  console.log(`Fetched ${dataPackages.length} data packages`);
+  //console.log(`Fetched ${dataPackages.length} data packages`);
   await mongoConnection.disconnect();
-  console.log("MongoDB disconnected");
+  //console.log("MongoDB disconnected");
   return dataPackages;
 }
