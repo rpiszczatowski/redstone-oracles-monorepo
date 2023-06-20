@@ -32,7 +32,7 @@ export const valueDeviationCondition = (
         );
 
         logTrace.addPerDataFeedLog(
-          dataFeedId,
+          dataPackage.timestampMilliseconds,
           valueFromContractAsDecimal,
           dataPackages[dataFeedId].length,
           dataPointObj
@@ -78,7 +78,7 @@ class ValueDeviationLogTrace {
     {
       valueFromContract: number;
       valuesFromNode: number[];
-      timestamp?: number;
+      timestamp: number;
       packagesCount: number;
     }
   > = {};
@@ -86,29 +86,22 @@ class ValueDeviationLogTrace {
   private thresholdDeviation!: string;
 
   addPerDataFeedLog(
-    dataFeedId: string,
+    timestamp: number,
     valueFromContract: number,
     packagesCount: number,
     dataPoint: INumericDataPoint
   ) {
+    const dataFeedId = dataPoint.dataFeedId;
     if (!this.perDataFeedId[dataFeedId]) {
       this.perDataFeedId[dataFeedId] = {
         valueFromContract: valueFromContract,
         valuesFromNode: [dataPoint.value],
         packagesCount,
+        timestamp,
       };
     } else {
       this.perDataFeedId[dataFeedId].valuesFromNode.push(dataPoint.value);
     }
-  }
-
-  addValueFromNode(dataPoint: INumericDataPoint) {
-    const dataFeedId = dataPoint.dataFeedId;
-    this.perDataFeedId[dataFeedId].valuesFromNode.push(dataPoint.value);
-  }
-
-  setTimestamp(dataFeedId: string, timestamp: number) {
-    this.perDataFeedId[dataFeedId].timestamp = timestamp;
   }
 
   addDeviationInfo(maxDeviation: number, thresholdDeviation: number) {
