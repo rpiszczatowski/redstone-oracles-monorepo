@@ -1,5 +1,5 @@
 import { AsyncTask, SimpleIntervalJob, ToadScheduler } from "toad-scheduler";
-import { requestDataPackages } from "redstone-sdk";
+import { ValuesForDataFeeds, requestDataPackages } from "redstone-sdk";
 import { shouldUpdate } from "./core/update-conditions/should-update";
 import { updatePrices } from "./core/contract-interactions/update-prices";
 import { getLastRoundParamsFromContract } from "./core/contract-interactions/get-last-round-params";
@@ -15,30 +15,28 @@ console.log(
 );
 
 const runIteration = async () => {
-  const { dataServiceId, uniqueSignersCount, dataFeeds, cacheServiceUrls } =
-    config;
+  const { dataServiceId, uniqueSignersCount, dataFeeds } = config;
   const adapterContract = getAdapterContract();
-  const dataPackages = await requestDataPackages(
-    {
-      dataServiceId,
-      uniqueSignersCount,
-      dataFeeds,
-    },
-    cacheServiceUrls
-  );
 
   const { lastUpdateTimestamp } = await getLastRoundParamsFromContract(
     adapterContract
   );
 
   // We fetch latest values from contract only if we want to check value deviation
-  let valuesFromContract = {};
+  let valuesFromContract: ValuesForDataFeeds = {};
   if (config.updateConditions.includes("value-deviation")) {
     valuesFromContract = await getValuesForDataFeeds(
       adapterContract,
       dataFeeds
     );
   }
+
+  const dataPackages = await requestDataPackages({
+    dataServiceId,
+    uniqueSignersCount,
+    dataFeeds,
+    valuesToCompare: valuesFromContract,
+  });
 
   const { shouldUpdatePrices } = shouldUpdate({
     dataPackages,

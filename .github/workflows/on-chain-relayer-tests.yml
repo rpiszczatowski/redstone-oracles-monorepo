@@ -21,6 +21,8 @@ jobs:
         run: yarn
       - name: Compile contracts
         run: yarn compile
+      - name: Compile evm-connector
+        run: cd ../evm-connector && yarn compile
       - name: Build
         run: yarn build
       - name: Run tests

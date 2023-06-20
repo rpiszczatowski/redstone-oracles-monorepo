@@ -1,9 +1,8 @@
-import { INumericDataPoint } from "redstone-protocol";
-import { DataPackagesResponse } from "redstone-sdk";
-import { config } from "../../config";
-import { ValuesForDataFeeds } from "../../types";
-import { formatUnits } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
+import { INumericDataPoint } from "redstone-protocol";
+import { DataPackagesResponse, ValuesForDataFeeds } from "redstone-sdk";
+import { config } from "../../config";
+import { formatUnits } from "ethers/lib/utils";
 
 const DEFAULT_DECIMALS = 8;
 
