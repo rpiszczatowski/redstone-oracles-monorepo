@@ -98,7 +98,7 @@ describe("uniswap V3 fetcher", () => {
         token0Symbol: "MockToken",
         token1Symbol: "MockToken2",
         token0Decimals: 6,
-        token1Decimals: 18,
+        token1Decimals: 8,
         fee: 5000,
         slippage: [1000],
       },
@@ -115,7 +115,7 @@ describe("uniswap V3 fetcher", () => {
       mockTokenConfig,
       provider
     );
-    await saveMockPriceInLocalDb(1863.5, "MockToken2");
+    await saveMockPriceInLocalDb(1, "MockToken2");
     const result = await fetcher.fetchAll([
       "MockToken",
       "MockToken_test-source_BUY_1K_slippage",
@@ -124,7 +124,7 @@ describe("uniswap V3 fetcher", () => {
     ]);
     expect(result[0]).toEqual({
       symbol: "MockToken",
-      value: 1.000085578653717,
+      value: 100,
     });
     expect(result[1]).toEqual({
       symbol: "MockToken_test-source_BUY_1K_slippage",
