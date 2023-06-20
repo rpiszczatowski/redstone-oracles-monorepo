@@ -19,7 +19,7 @@ export interface DataPackagesRequestParams {
   dataFeeds?: string[];
   disablePayloadsDryRun?: boolean;
   urls?: string[];
-  valuesToCompare?: { [dataFeedId: string]: BigNumber };
+  valuesToCompare?: ValuesForDataFeeds;
 }
 
 export interface DataPackagesResponse {
