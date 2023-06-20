@@ -77,7 +77,7 @@ export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
     for (const tokenName of Object.keys(tokenReserves)) {
       let tokenReserveSerialized = tokenReserves[tokenName];
       let tokenDecimals = 1;
-      if (["USDC", "USDT", "USDT.e"].includes(tokenName)) {
+      if (["USDC", "USDT", "USDT.e", "EUROC"].includes(tokenName)) {
         tokenDecimals = STABLECOIN_DECIMALS;
       } else if (tokenName === "BTC") {
         tokenDecimals = BTC_DECIMALS;
