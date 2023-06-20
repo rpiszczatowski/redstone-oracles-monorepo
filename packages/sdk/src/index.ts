@@ -26,6 +26,10 @@ export interface DataPackagesResponse {
   [dataFeedId: string]: SignedDataPackage[];
 }
 
+export interface ValuesForDataFeeds {
+  [dataFeedId: string]: BigNumber;
+}
+
 export const getOracleRegistryState =
   async (): Promise<RedstoneOraclesState> => {
     return redstoneOraclesInitialState;
@@ -70,24 +74,11 @@ export const parseDataPackagesResponse = (
       );
     }
 
-    let dataFeedPackagesSorted = dataFeedPackages;
-    if (
-      reqParams.valuesToCompare &&
-      Object.keys(reqParams.valuesToCompare).length > 0
-    ) {
-      const decimals =
-        (dataFeedPackages[0].dataPoints[0] as INumericDataPoint).decimals ??
-        DEFAULT_DECIMALS;
-      const valueToCompare = Number(
-        utils.formatUnits(reqParams.valuesToCompare[dataFeedId], decimals)
-      );
-
-      dataFeedPackagesSorted = sortDataPackagesByDeviationDesc(
-        dataFeedPackages,
-        valueToCompare,
-        requestedDataFeedIds
-      );
-    }
+    const dataFeedPackagesSorted = getDataPackagesSortedByDeviation(
+      dataFeedPackages,
+      reqParams.valuesToCompare,
+      dataFeedId
+    );
 
     parsedResponse[dataFeedId] = dataFeedPackagesSorted
       .slice(0, reqParams.uniqueSignersCount)
@@ -97,6 +88,51 @@ export const parseDataPackagesResponse = (
   }
 
   return parsedResponse;
+};
+
+const getDataPackagesSortedByDeviation = (
+  dataFeedPackages: SignedDataPackagePlainObj[],
+  valuesToCompare: ValuesForDataFeeds | undefined,
+  dataFeedId: string
+) => {
+  if (!valuesToCompare) {
+    return dataFeedPackages;
+  }
+
+  if (dataFeedId === ALL_FEEDS_KEY) {
+    throw new Error(
+      `Cannot sort data packages by deviation for ${ALL_FEEDS_KEY}`
+    );
+  }
+
+  if (!valuesToCompare[dataFeedId]) {
+    return dataFeedPackages;
+  }
+
+  const decimals =
+    getDecimalsForDataFeedId(dataFeedPackages) ?? DEFAULT_DECIMALS;
+  const valueToCompare = Number(
+    utils.formatUnits(valuesToCompare[dataFeedId], decimals)
+  );
+
+  return sortDataPackagesByDeviationDesc(dataFeedPackages, valueToCompare);
+};
+
+export const getDecimalsForDataFeedId = (
+  dataPackages: SignedDataPackagePlainObj[]
+) => {
+  const firstDecimal = (dataPackages[0].dataPoints[0] as INumericDataPoint)
+    .decimals;
+  const areAllDecimalsEqual = dataPackages.every((dataPackage) =>
+    dataPackage.dataPoints.every(
+      (dataPoint) => (dataPoint as INumericDataPoint).decimals === firstDecimal
+    )
+  );
+
+  if (!areAllDecimalsEqual) {
+    throw new Error("Decimals from data points in data packages are not equal");
+  }
+  return firstDecimal;
 };
 
 const errToString = (e: any): string => {
@@ -156,23 +192,15 @@ export const getUrlsForDataServiceId = (
 
 const sortDataPackagesByDeviationDesc = (
   dataPackages: SignedDataPackagePlainObj[],
-  valueToCompare: number,
-  dataFeedsIds: string[]
-) => {
-  if (dataFeedsIds[0] === ALL_FEEDS_KEY) {
-    throw new Error(
-      `Cannot get data packages with biggest deviation for ${ALL_FEEDS_KEY}`
-    );
-  }
-
-  return dataPackages.sort((leftDataPackage, rightDataPackage) => {
+  valueToCompare: number
+) =>
+  dataPackages.sort((leftDataPackage, rightDataPackage) => {
     const leftValue = Number(leftDataPackage.dataPoints[0].value);
     const leftValueDeviation = calculateDeviation(leftValue, valueToCompare);
     const rightValue = Number(rightDataPackage.dataPoints[0].value);
     const rightValueDeviation = calculateDeviation(rightValue, valueToCompare);
     return rightValueDeviation - leftValueDeviation;
   });
-};
 
 const calculateDeviation = (value: number, valueToCompare: number) => {
   if (valueToCompare === 0) {
@@ -188,6 +216,7 @@ export default {
   getDataServiceIdForSigner,
   requestRedstonePayload,
   resolveDataServiceUrls,
+  getDecimalsForDataFeedId,
 };
 export * from "./data-services-urls";
 export * from "./contracts/ContractParamsProvider";

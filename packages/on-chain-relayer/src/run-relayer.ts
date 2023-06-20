@@ -1,5 +1,5 @@
 import { AsyncTask, SimpleIntervalJob, ToadScheduler } from "toad-scheduler";
-import { requestDataPackages } from "redstone-sdk";
+import { ValuesForDataFeeds, requestDataPackages } from "redstone-sdk";
 import { shouldUpdate } from "./core/update-conditions/should-update";
 import { updatePrices } from "./core/contract-interactions/update-prices";
 import { getLastRoundParamsFromContract } from "./core/contract-interactions/get-last-round-params";
@@ -7,7 +7,6 @@ import { getAdapterContract } from "./core/contract-interactions/get-contract";
 import { getValuesForDataFeeds } from "./core/contract-interactions/get-values-for-data-feeds";
 import { sendHealthcheckPing } from "./core/monitoring/send-healthcheck-ping";
 import { config } from "./config";
-import { ValuesForDataFeeds } from "./types";
 
 const { relayerIterationInterval } = config;
 
