@@ -8,7 +8,10 @@ import {
 } from "../../src/db/local-db";
 import abi from "../../src/fetchers/curve/CurveFactory.abi.json";
 import { CurveFetcher } from "../../src/fetchers/curve/CurveFetcher";
-import { MultiBlockCurveFetcher } from "../../src/fetchers/curve/MultiBlockCurveFetcher";
+import {
+  MultiBlockCurveFetcher,
+  generateRoundedStepSequence,
+} from "../../src/fetchers/curve/MultiBlockCurveFetcher";
 import { saveMockPriceInLocalDb } from "./_helpers";
 
 jest.setTimeout(15_000);
@@ -18,7 +21,7 @@ describe("Curve Multi Block", () => {
 
   const getMultiBlockCurveFetcher = (
     sequenceStep: number,
-    sequenceLength: number
+    intervalLength: number
   ) => {
     const curveFetcher = new CurveFetcher("curve-test", {
       STETH: {
@@ -31,7 +34,7 @@ describe("Curve Multi Block", () => {
         functionName: "get_dy",
         multiBlockConfig: {
           sequenceStep,
-          sequenceLength,
+          intervalLength,
         },
       },
     });
@@ -109,6 +112,38 @@ describe("Curve Multi Block", () => {
     const result = await fetcher.fetchAll(["STETH"]);
 
     expect(result).toEqual([{ symbol: "STETH", value: 1052.3205560609752 }]);
+  });
+
+  describe("generateRoundedToStepSequence", () => {
+    it.each([
+      [
+        [9, 10, 1],
+        [9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
+      ],
+      [
+        [9, 10, 2],
+        [9, 8, 6, 4, 2],
+      ],
+      [
+        [1023, 50, 10],
+        [1023, 1020, 1010, 1000, 990],
+      ],
+      [
+        [1322349, 500, 50],
+        [
+          1322349, 1322300, 1322250, 1322200, 1322150, 1322100, 1322050,
+          1322000, 1321950, 1321900,
+        ],
+      ],
+      [
+        [100, 50, 10],
+        [100, 90, 80, 70, 60],
+      ],
+    ])("should generate sequence", (params: number[], expected: number[]) => {
+      expect(
+        generateRoundedStepSequence(params[0], params[1], params[2])
+      ).toEqual(expected);
+    });
   });
 });
 
