@@ -21,7 +21,7 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     const currentBlockNumber = await provider.getBlockNumber();
     const blockSequence = this.getBlocksSequence(
       currentBlockNumber,
-      multiBlockConfig.sequenceLength,
+      multiBlockConfig.intervalLength,
       multiBlockConfig.sequenceStep
     );
 
@@ -53,25 +53,25 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
 
   private getBlocksSequence(
     lastBlock: number,
-    sequenceLength: number,
+    intervalLength: number,
     sequenceStep: number
   ): number[] {
-    return generateRoundedStepSequence(lastBlock, sequenceLength, sequenceStep);
+    return generateRoundedStepSequence(lastBlock, intervalLength, sequenceStep);
   }
 }
 
 export function generateRoundedStepSequence(
   start: number,
-  sequenceLength: number,
+  intervalLength: number,
   step: number
 ) {
   const sequence = [start];
 
-  if (sequenceLength === 1) {
+  if (intervalLength === 1) {
     return sequence;
   }
 
-  const stepsCount = Math.ceil(sequenceLength / step);
+  const stepsCount = Math.ceil(intervalLength / step);
 
   const scaledSecond = Math.floor((start - 1) / step) * step;
   sequence.push(scaledSecond);

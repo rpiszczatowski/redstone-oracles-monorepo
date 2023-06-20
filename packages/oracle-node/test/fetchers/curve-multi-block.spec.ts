@@ -21,7 +21,7 @@ describe("Curve Multi Block", () => {
 
   const getMultiBlockCurveFetcher = (
     sequenceStep: number,
-    sequenceLength: number
+    intervalLength: number
   ) => {
     const curveFetcher = new CurveFetcher("curve-test", {
       STETH: {
@@ -34,7 +34,7 @@ describe("Curve Multi Block", () => {
         functionName: "get_dy",
         multiBlockConfig: {
           sequenceStep,
-          sequenceLength,
+          intervalLength,
         },
       },
     });
@@ -135,7 +135,11 @@ describe("Curve Multi Block", () => {
           1322000, 1321950, 1321900,
         ],
       ],
-    ])("should work", (params: number[], expected: number[]) => {
+      [
+        [100, 50, 10],
+        [100, 90, 80, 70, 60],
+      ],
+    ])("should generate sequence", (params: number[], expected: number[]) => {
       expect(
         generateRoundedStepSequence(params[0], params[1], params[2])
       ).toEqual(expected);
