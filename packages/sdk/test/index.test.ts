@@ -1,9 +1,9 @@
+import { utils } from "ethers";
 import {
   DataPackagesRequestParams,
   getOracleRegistryState,
   requestDataPackages,
   requestRedstonePayload,
-  requestDataPackagesWithBiggestDeviation,
 } from "../src";
 import { mockSignedDataPackages } from "./mocks/mock-packages";
 import { server } from "./mocks/server";
@@ -11,7 +11,7 @@ import { server } from "./mocks/server";
 const getReqParams = (urls?: string[]): DataPackagesRequestParams => {
   return {
     dataFeeds: ["BTC", "ETH"],
-    dataServiceId: "mock-data-service",
+    dataServiceId: "mock-data-service-tests",
     uniqueSignersCount: 2,
     urls,
   };
@@ -52,26 +52,13 @@ describe("SDK tests", () => {
     );
   });
 
-  test("Should select the newest data packages", async () => {
-    const defaultReqParams = getReqParams([
-      "https://good-url-sorted-asc-only-eth.com",
-    ]);
-    const dataPackages = await requestDataPackages({
-      ...defaultReqParams,
-      dataFeeds: ["ETH"],
-      uniqueSignersCount: 1,
-    });
-    const dataPackage = dataPackages.ETH[0].dataPackage;
-    expect(dataPackage.timestampMilliseconds).toBe(11);
-  });
-
   test("Should fail if all urls fail", async () => {
     const defaultReqParams = getReqParams([
       "https://bad-url-1.com",
       "https://bad-url-2.com",
     ]);
     await expect(requestDataPackages(defaultReqParams)).rejects.toThrow(
-      'Request failed {"reqParams":{"dataFeeds":["BTC","ETH"],"dataServiceId":"mock-data-service","uniqueSignersCount":2,"urls":["https://bad-url-1.com","https://bad-url-2.com"]}}, Original error: All promises were rejected: 0: Request failed with status code 400, 1: Request failed with status code 400, '
+      'Request failed {"reqParams":{"dataFeeds":["BTC","ETH"],"dataServiceId":"mock-data-service-tests","uniqueSignersCount":2,"urls":["https://bad-url-1.com","https://bad-url-2.com"]}}, Original error: All promises were rejected: 0: Request failed with status code 400, 1: Request failed with status code 400, '
     );
   });
 
@@ -96,57 +83,41 @@ describe("SDK tests", () => {
   });
 
   test("Should get data packages with biggest deviation", async () => {
-    const dataPackages = await requestDataPackagesWithBiggestDeviation({
+    const dataPackages = await requestDataPackages({
       ...getReqParams(),
       dataFeeds: ["ETH"],
-      allUniqueSignersCount: 4,
-      valueToCompare: 999,
+      valuesToCompare: { ETH: utils.parseUnits("999", 8) },
     });
 
     expect(dataPackages["ETH"].length).toBe(2);
-    expect(dataPackages["ETH"][0].toObj().dataPoints[1].value).toBe(990);
-    expect(dataPackages["ETH"][1].toObj().dataPoints[1].value).toBe(1002);
+    expect(dataPackages["ETH"][0].toObj().dataPoints[0].value).toBe(990);
+    expect(dataPackages["ETH"][1].toObj().dataPoints[0].value).toBe(1002);
   });
 
-  test("Should get data package with biggest deviation", async () => {
-    const dataPackages = await requestDataPackagesWithBiggestDeviation({
+  test("Should get single data package with biggest deviation", async () => {
+    const dataPackages = await requestDataPackages({
       ...getReqParams(),
       uniqueSignersCount: 1,
       dataFeeds: ["ETH"],
-      allUniqueSignersCount: 4,
-      valueToCompare: 991,
+      valuesToCompare: { ETH: utils.parseUnits("991", 8) },
     });
 
     expect(dataPackages["ETH"].length).toBe(1);
-    expect(dataPackages["ETH"][0].toObj().dataPoints[1].value).toBe(1002);
+    expect(dataPackages["ETH"][0].toObj().dataPoints[0].value).toBe(1002);
   });
 
   test("Should get all data packages with biggest deviation", async () => {
-    const dataPackages = await requestDataPackagesWithBiggestDeviation({
+    const dataPackages = await requestDataPackages({
       ...getReqParams(),
       uniqueSignersCount: 4,
       dataFeeds: ["ETH"],
-      allUniqueSignersCount: 4,
-      valueToCompare: 996,
+      valuesToCompare: { ETH: utils.parseUnits("996", 8) },
     });
 
     expect(dataPackages["ETH"].length).toBe(4);
-    expect(dataPackages["ETH"][0].toObj().dataPoints[1].value).toBe(990);
-    expect(dataPackages["ETH"][1].toObj().dataPoints[1].value).toBe(1002);
-    expect(dataPackages["ETH"][2].toObj().dataPoints[1].value).toBe(1000);
-    expect(dataPackages["ETH"][3].toObj().dataPoints[1].value).toBe(1000);
-  });
-
-  test("Should throw error if all unique signers bigger than required unique signers", async () => {
-    await expect(() =>
-      requestDataPackagesWithBiggestDeviation({
-        ...getReqParams(),
-        dataFeeds: ["ETH"],
-        allUniqueSignersCount: 1,
-        valueToCompare: 999,
-      })
-    ).rejects.toThrow(
-      "All unique signers cannot be smaller than required unique signers"
-    );
+    expect(dataPackages["ETH"][0].toObj().dataPoints[0].value).toBe(990);
+    expect(dataPackages["ETH"][1].toObj().dataPoints[0].value).toBe(1002);
+    expect(dataPackages["ETH"][2].toObj().dataPoints[0].value).toBe(1000);
+    expect(dataPackages["ETH"][3].toObj().dataPoints[0].value).toBe(1000);
   });
 });
