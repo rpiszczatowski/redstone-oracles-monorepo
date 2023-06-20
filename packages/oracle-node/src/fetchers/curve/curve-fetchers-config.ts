@@ -13,7 +13,7 @@ export interface PoolsConfig {
     provider: providers.Provider;
     ratioMultiplier: number;
     functionName: string;
-    multiBlockConfig?: { sequenceStep: number; sequenceLength: number };
+    multiBlockConfig?: { sequenceStep: number; intervalLength: number };
   };
 }
 
@@ -23,7 +23,7 @@ export interface PoolsConfig {
 // 20 blocks = 4  min
 const ETH_MULTI_BLOCK_CONFIG = {
   sequenceStep: 1,
-  sequenceLength: 20,
+  intervalLength: 20,
 };
 
 // 7200 blocks = 30 min
@@ -32,7 +32,7 @@ const ETH_MULTI_BLOCK_CONFIG = {
 // 1000 blocks = 4  min
 const ARBITRUM_MULTI_BLOCK_CONFIG = {
   sequenceStep: 50,
-  sequenceLength: 1000,
+  intervalLength: 1000,
 };
 
 export const curveFetchersConfig: Record<string, PoolsConfig> = {

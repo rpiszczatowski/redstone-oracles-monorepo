@@ -6,7 +6,7 @@ import {
   SanitizedPriceDataBeforeAggregation,
 } from "../../src/types";
 
-describe.only("lwapAggregator", () => {
+describe("lwapAggregator", () => {
   beforeAll(() => {
     setupLocalDb();
   });
