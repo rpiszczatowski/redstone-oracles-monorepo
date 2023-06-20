@@ -51,8 +51,6 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
   private prepareMulticallParams(assetId: string): MulticallParams {
     const poolConfig = this.poolsConfig[assetId];
 
-    const secondsAgoStart = DEFAULT_TWAP_SECONDS;
-    const secondsAgoEnd = 0;
     const pairedTokenPrice = getLastPrice(
       UniswapV3OnChainFetcher.getPairedTokenSymbol(assetId, poolConfig)
     );
@@ -96,7 +94,6 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
       }
     }
     return {
-      observeParams: [secondsAgoStart, secondsAgoEnd],
       slippageParams,
     };
   }
@@ -166,10 +163,9 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
 
     return {
       priceRatio: UniswapV3OnChainFetcher.extractPriceRatio(
-        multicallParams,
         multicallResult,
         poolConfig
-      ) ?? 0,
+      ),
       slippage: UniswapV3OnChainFetcher.extractSlippage(multicallResult),
       pairedToken: UniswapV3OnChainFetcher.getPairedTokenSymbol(
         assetId,
@@ -208,8 +204,15 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
 
   private static extractSlippage(multicallResult: ContractCallResults) {
     const slippage: Record<string, number> = {};
-    if (!multicallResult.results.quoterContract || !multicallResult.results.poolContract.callsReturnContext[0].success) {
+    if (!multicallResult.results.quoterContract) {
       return slippage;
+    }
+    if (!multicallResult.results.poolContract.callsReturnContext[0].success) {
+      throw new Error(
+        `method 'slot0' failed, result ${JSON.stringify(
+          multicallResult.results.poolContract.callsReturnContext[0]
+        )}`
+      );
     }
     const priceBeforeSwap = this.getPriceBeforeSwap(multicallResult);
     for (const callReturnContext of multicallResult.results.quoterContract.callsReturnContext.filter(
@@ -229,27 +232,14 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
   }
 
   private static extractPriceRatio(
-    multicallParams: MulticallParams,
     multicallResult: ContractCallResults,
     poolConfig: PoolConfig
   ) {
-    if (!multicallResult.results.poolContract.callsReturnContext[1].success) {
-      return undefined;
-    }
-    const tickCumulatives: BigNumber[] =
-      multicallResult.results.poolContract.callsReturnContext[1]
-        .returnValues[0];
-    // tick is defined as log(1.0001, token1_sub_units/token0_sub_units)
-    const arithmeticMeanOfTicks = BigNumber.from(tickCumulatives[1])
-      .sub(tickCumulatives[0])
-      .div(multicallParams.observeParams[0] - multicallParams.observeParams[1]);
+    const price = this.getPriceBeforeSwap(multicallResult);
     const decimalsDifferenceMultiplier = new Decimal(
       TEN_AS_BASE_OF_POWER
     ).toPower(poolConfig.token0Decimals - poolConfig.token1Decimals);
-    const priceRatio = new Decimal(SINGLE_TICK)
-      .toPower(arithmeticMeanOfTicks.toNumber())
-      .times(decimalsDifferenceMultiplier)
-      .toNumber();
+    const priceRatio = price.times(decimalsDifferenceMultiplier).toNumber();
 
     return priceRatio; // as defined by uniswap v3 protocol (i.e. token1_amount/token0_amount)
   }
@@ -258,9 +248,6 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     assetId: string,
     multicallResult: MulticallResult
   ) {
-    if (multicallResult.priceRatio === 0) {
-      return 0;
-    }
     const otherAssetLastPrice = UniswapV3OnChainFetcher.getLastPriceOrThrow(
       multicallResult.pairedToken
     );
@@ -268,7 +255,6 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     const priceMultiplier = isSymbol1Current
       ? 1.0 / multicallResult.priceRatio
       : multicallResult.priceRatio;
-
     return otherAssetLastPrice * priceMultiplier;
   }
 
@@ -325,11 +311,6 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
             reference: "slot0Call",
             methodName: "slot0",
             methodParameters: [],
-          },
-          {
-            reference: "observeCall",
-            methodName: "observe",
-            methodParameters: [multicallParams.observeParams],
           },
         ],
       },

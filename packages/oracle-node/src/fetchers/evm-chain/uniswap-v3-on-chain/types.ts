@@ -40,7 +40,6 @@ export interface QuoterOutSingleParams {
 
 export type SlippageParams = { [key: string] : (QuoterInSingleParams | QuoterOutSingleParams) };
 export interface MulticallParams {
-  observeParams: number[];
   slippageParams: SlippageParams;
 }
 
