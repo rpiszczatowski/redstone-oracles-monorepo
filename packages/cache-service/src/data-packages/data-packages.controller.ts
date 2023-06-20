@@ -21,6 +21,10 @@ import { duplexStream } from "../utils/streams";
 import { ReceivedDataPackage } from "./data-packages.interface";
 import { CachedDataPackage } from "./data-packages.model";
 import { DataPackagesService } from "./data-packages.service";
+import {
+  assertContainsNonEmptyProp,
+  validateBulkPostRequestBody,
+} from "../utils/utils";
 
 export interface BulkPostRequestBody {
   requestSignature: string;
@@ -70,7 +74,10 @@ export class DataPackagesController {
   private prepareDataPackagesRequestParams(
     query: GetLatestDataPackagesQuery
   ): DataPackagesRequestParams {
-    // TODO: implement request validation
+    assertContainsNonEmptyProp(query, [
+      "data-service-id",
+      "unique-signers-count",
+    ]);
 
     const requestParams: DataPackagesRequestParams = {
       dataServiceId: query["data-service-id"],
@@ -187,8 +194,7 @@ export class DataPackagesController {
       );
     }
 
-    // TODO: implement request validation
-    // TODO: implement request size limit
+    validateBulkPostRequestBody(body);
 
     const signerAddress = this.dataPackagesService.verifyRequester(body);
 

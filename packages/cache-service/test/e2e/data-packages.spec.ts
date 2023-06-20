@@ -234,11 +234,11 @@ describe("Data packages (e2e)", () => {
     const requestSignature = signByMockSigner(mockDataPackages);
     const newDataPackages = [...mockDataPackages];
     newDataPackages[0].dataPoints[0].value = 43;
-    await request(httpServer)
+    const response = await request(httpServer)
       .post("/data-packages/bulk")
       .send({
         requestSignature,
-        mockDataPackages,
+        dataPackages: mockDataPackages,
       })
       .expect(500);
 
