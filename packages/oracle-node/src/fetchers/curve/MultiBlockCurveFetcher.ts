@@ -4,6 +4,8 @@ import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { CurveFetcher, CurveFetcherResponse } from "./CurveFetcher";
 
 export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
+  protected retryForInvalidResponse: boolean = true;
+
   constructor(name: string, private readonly curveFetcher: CurveFetcher) {
     super(name);
   }
