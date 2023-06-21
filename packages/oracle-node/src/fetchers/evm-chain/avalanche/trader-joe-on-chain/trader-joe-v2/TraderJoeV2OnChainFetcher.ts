@@ -1,7 +1,6 @@
 import Decimal from "decimal.js";
 import { Contract, providers } from "ethers";
 import { DexOnChainFetcher } from "../../../../dex-on-chain/DexOnChainFetcher";
-import { avalancheProvider } from "../../../../../utils/blockchain-providers";
 import abi from "./TraderJoeV2LBPair.abi.json";
 
 // Price calculation based on https://docs.traderjoexyz.com/guides/price-from-id
@@ -19,9 +18,7 @@ interface PairConfig {
   [symbol: string]: {
     address: string;
     symbolX: string;
-    symbolXDecimals: number;
     symbolY: string;
-    symbolYDecimals: number;
   };
 }
 
@@ -37,8 +34,15 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<BinConfig> {
   }
 
   override async makeRequest(dataFeedId: string): Promise<BinConfig> {
+    const pairConfigForDataFeed = this.pairConfig[dataFeedId];
+    if (!pairConfigForDataFeed) {
+      throw new Error(
+        `Missing pair config for ${dataFeedId} in ${this.name} fetcher`
+      );
+    }
+
     const lbPair = new Contract(
-      this.pairConfig[dataFeedId].address,
+      pairConfigForDataFeed.address,
       abi,
       this.provider
     );

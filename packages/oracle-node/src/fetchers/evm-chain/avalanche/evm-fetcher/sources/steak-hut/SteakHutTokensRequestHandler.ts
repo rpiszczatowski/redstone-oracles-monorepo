@@ -14,10 +14,20 @@ const TEN_TO_POWER_EIGHTEEN_AS_STRING = "1000000000000000000";
 const FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [0, 66];
 const SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [66, 130];
 
+const DEFAULT_DECIMALS = 1;
 const STABLECOIN_DECIMALS = 6;
 const BTC_DECIMALS = 8;
 const AVAX_DECIMALS = 18;
 const JOE_DECIMALS = 18;
+const TOKENS_DECIMALS: Record<string, number> = {
+  USDC: STABLECOIN_DECIMALS,
+  USDT: STABLECOIN_DECIMALS,
+  "USDT.e": STABLECOIN_DECIMALS,
+  EUROC: STABLECOIN_DECIMALS,
+  BTC: BTC_DECIMALS,
+  AVAX: AVAX_DECIMALS,
+  JOE: JOE_DECIMALS,
+};
 
 export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
   prepareMulticallRequest(id: SteakHutTokensDetailsKeys) {
@@ -75,19 +85,9 @@ export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
   serializeDecimals(tokenReserves: Record<string, Decimal>) {
     const serializedTokenReserves = {} as Record<string, Decimal>;
     for (const tokenName of Object.keys(tokenReserves)) {
-      let tokenReserveSerialized = tokenReserves[tokenName];
-      let tokenDecimals = 1;
-      if (["USDC", "USDT", "USDT.e", "EUROC"].includes(tokenName)) {
-        tokenDecimals = STABLECOIN_DECIMALS;
-      } else if (tokenName === "BTC") {
-        tokenDecimals = BTC_DECIMALS;
-      } else if (tokenName === "AVAX") {
-        tokenDecimals = AVAX_DECIMALS;
-      } else if (tokenName === "JOE") {
-        tokenDecimals = JOE_DECIMALS;
-      }
+      const tokenDecimals = TOKENS_DECIMALS[tokenName] ?? DEFAULT_DECIMALS;
       const divider = new Decimal(TEN_AS_BASE_OF_POWER).toPower(tokenDecimals);
-      tokenReserveSerialized = tokenReserves[tokenName].div(divider);
+      const tokenReserveSerialized = tokenReserves[tokenName].div(divider);
       serializedTokenReserves[tokenName] = tokenReserveSerialized;
     }
     return serializedTokenReserves;
