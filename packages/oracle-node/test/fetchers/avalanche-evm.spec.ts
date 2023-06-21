@@ -442,14 +442,17 @@ describe("Avalanche EVM fetcher", () => {
 
       multicallContract = await deployMulticallContract(wallet);
 
-      curveTokensContractsDetails.crvUSDBTCETH.address =
-        curveLpTokenContract.address;
-      curveTokensContractsDetails.crvUSDBTCETH.avWBTCAddress =
-        wbtcContract.address;
-      curveTokensContractsDetails.crvUSDBTCETH.avWETHAddress =
-        wethContract.address;
-      curveTokensContractsDetails.crvUSDBTCETH.av3CRVAddress =
-        wcrvContract.address;
+      const tokensAddresses = {
+        address: curveLpTokenContract.address,
+        avWBTCAddress: wbtcContract.address,
+        avWETHAddress: wethContract.address,
+        av3CRVAddress: wcrvContract.address,
+      };
+
+      curveTokensContractsDetails.crvUSDBTCETH = {
+        ...curveTokensContractsDetails.crvUSDBTCETH,
+        ...tokensAddresses,
+      };
     });
 
     test("Should properly fetch data", async () => {
