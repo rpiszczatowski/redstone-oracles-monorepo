@@ -23,7 +23,7 @@ import { gmdTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanch
 import GmdVaultAbi from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/gmd/GmdVault.abi.json";
 import { traderJoeAutoPoolTokenContractDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/trader-joe-auto/traderJoeAutoPoolTokenContractsDetails";
 import { steakHutTokensContractDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/steak-hut/steakHutTokensContractDetails";
-import { curveTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/curve/curveTokensContractsDetails";
+import { curveTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/curve-lp-tokens/curveTokensContractsDetails";
 
 jest.setTimeout(15000);
 

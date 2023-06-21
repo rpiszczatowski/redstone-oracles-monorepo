@@ -15,8 +15,8 @@ import { gmdTokensContractsDetails } from "./gmd/gmdTokensContractsDetails";
 import { GmdRequestHandler } from "./gmd/GmdRequestHandlers";
 import { traderJoeAutoPoolTokenContractDetails } from "./trader-joe-auto/traderJoeAutoPoolTokenContractsDetails";
 import { TraderJoeAutoRequestHandlers } from "./trader-joe-auto/TraderJoeAutoRequestHandlers";
-import { curveTokensContractsDetails } from "./curve/curveTokensContractsDetails";
-import { CurveRequestHandlers } from "./curve/CurveRequestHandlers";
+import { curveTokensContractsDetails } from "./curve-lp-tokens/curveTokensContractsDetails";
+import { CurveRequestHandlers } from "./curve-lp-tokens/CurveRequestHandlers";
 
 export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
