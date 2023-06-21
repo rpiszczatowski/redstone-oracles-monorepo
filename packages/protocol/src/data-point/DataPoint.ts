@@ -7,16 +7,31 @@ import { IStringDataPoint } from "./StringDataPoint";
 export interface IStandardDataPoint {
   dataFeedId: ConvertibleToBytes32;
   value: string; // base64-encoded bytes
+  metadata?: Metadata;
 }
-export type DataPointPlainObj =
-  | INumericDataPoint
-  | IStandardDataPoint
-  | IStringDataPoint;
+export type DataPointPlainObj = IStandardDataPoint | INumericDataPoint;
+
+export enum MetadataDataPointType {
+  PRICE_V1,
+}
+
+export interface PriceMetadata {
+  type: MetadataDataPointType.PRICE_V1;
+  /** <source, priceAsFloatString> */
+  sources?: Record<string, string>;
+}
+
+/**
+ * This is union of all possible metadata
+ * .type field is used to detect type.
+ */
+export type Metadata = PriceMetadata;
 
 export class DataPoint extends Serializable {
   constructor(
     public readonly dataFeedId: ConvertibleToBytes32,
-    public readonly value: Uint8Array
+    public readonly value: Uint8Array,
+    public readonly metadata?: PriceMetadata
   ) {
     super();
   }
@@ -29,6 +44,7 @@ export class DataPoint extends Serializable {
     return {
       dataFeedId: this.dataFeedId,
       value: base64.encode(this.value),
+      metadata: this.metadata,
     };
   }
 
