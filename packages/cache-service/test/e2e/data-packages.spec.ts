@@ -1,3 +1,4 @@
+import "../common/set-test-envs";
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ethers } from "ethers";
@@ -22,9 +23,9 @@ import {
   mockSigner,
   produceMockDataPackage,
 } from "../common/mock-values";
-import "../common/set-test-envs";
 import { connectToTestDB, dropTestDatabase } from "../common/test-db";
 import { signByMockSigner } from "../common/test-utils";
+
 jest.mock("redstone-sdk", () => ({
   __esModule: true,
   ...jest.requireActual("redstone-sdk"),
