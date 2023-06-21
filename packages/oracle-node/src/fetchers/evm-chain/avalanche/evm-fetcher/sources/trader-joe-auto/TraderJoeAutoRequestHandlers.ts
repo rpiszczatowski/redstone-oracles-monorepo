@@ -12,7 +12,7 @@ export type TraderJoeAutoPoolTokensDetailsKeys =
 
 const FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [0, 66];
 const SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [66, 130];
-const DEFAULT_DECIMALS = 18;
+const TRADER_JOE_DEFAULT_DECIMALS = 18;
 
 export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
   prepareMulticallRequest(id: TraderJoeAutoPoolTokensDetailsKeys) {
@@ -104,7 +104,13 @@ export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
   }
 
   serializeDecimals(balance: Decimal, tokenDecimals: number) {
-    const serializedDecimals = DEFAULT_DECIMALS - tokenDecimals;
+    const serializedDecimals = TRADER_JOE_DEFAULT_DECIMALS - tokenDecimals;
+    if (serializedDecimals < 0) {
+      throw new Error(
+        `Error in Trader Joe Auto handler, decimals cannot be below 0`
+      );
+    }
+
     const multiplier = new Decimal(TEN_AS_BASE_OF_POWER).toPower(
       serializedDecimals
     );
