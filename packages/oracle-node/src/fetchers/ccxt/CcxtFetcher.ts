@@ -61,6 +61,9 @@ export class CcxtFetcher extends BaseFetcher {
 
   private extractPricePair(ticker: Ticker) {
     const pairSymbol = ticker.symbol;
+    if (ticker.last === undefined) {
+      throw new Error(`Price not returned for: ${pairSymbol}`);
+    }
     const lastPrice = ticker.last as number;
     if (pairSymbol.endsWith("/USD")) {
       return { value: lastPrice, id: pairSymbol };

@@ -178,7 +178,7 @@ const validateNumber = (
   if (Math.abs(number) > JsNativeSafeNumberConfig.MAX_NUMBER) {
     return {
       result: NumberValidationResult.isOverflow,
-      message: `Invalid number format: Number is bigger then max number acceptable by REDSTONE ${number}`,
+      message: `Invalid number format: Number is bigger than max number acceptable by REDSTONE ${number}`,
     };
   }
   if (Math.abs(number) < JsNativeSafeNumberConfig.MIN_NUMBER && number !== 0) {
