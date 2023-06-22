@@ -101,7 +101,7 @@ describe("Data packages (e2e)", () => {
   });
 
   afterEach(async () => {
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
     await dropTestDatabase();
   });
 
@@ -220,7 +220,7 @@ describe("Data packages (e2e)", () => {
 
   it("/data-packages/latest (GET) return same result as /data-packages/latest (GET), when same number of dataPackages", async () => {
     const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
-    Date.now = jest.fn(() => dpTimestamp);
+    jest.spyOn(Date, "now").mockImplementation(() => dpTimestamp);
     const responseLatest = await request(httpServer)
       .get("/data-packages/latest/mock-data-service-1")
       .expect(200);
@@ -253,7 +253,7 @@ describe("Data packages (e2e)", () => {
       },
     ]);
     const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
-    Date.now = jest.fn(() => dpTimestamp);
+    jest.spyOn(Date, "now").mockImplementation(() => dpTimestamp);
     const responseLatest = await request(httpServer)
       .get("/data-packages/latest/mock-data-service-1")
       .expect(200);
@@ -267,7 +267,7 @@ describe("Data packages (e2e)", () => {
     await DataPackage.insertMany(mockDataPackagesForUniqueSigners);
 
     const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
-    Date.now = jest.fn(() => dpTimestamp);
+    jest.spyOn(Date, "now").mockImplementation(() => dpTimestamp);
     const responseLatest = await request(httpServer)
       .get("/data-packages/latest/mock-data-service-1")
       .expect(200);
@@ -303,7 +303,7 @@ describe("Data packages (e2e)", () => {
 
   it("/data-packages/latest (GET)", async () => {
     const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
-    Date.now = jest.fn(() => dpTimestamp);
+    jest.spyOn(Date, "now").mockImplementation(() => dpTimestamp);
     const testResponse = await request(httpServer)
       .get("/data-packages/latest")
       .query({
@@ -348,7 +348,7 @@ describe("Data packages (e2e)", () => {
 
   it("/data-packages/latest/mock-data-service-1 (GET)", async () => {
     const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
-    Date.now = jest.fn(() => dpTimestamp);
+    jest.spyOn(Date, "now").mockImplementation(() => dpTimestamp);
     const testResponse = await request(httpServer)
       .get("/data-packages/latest/mock-data-service-1")
       .expect(200);
