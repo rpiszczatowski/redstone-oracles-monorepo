@@ -22,6 +22,7 @@ import { glpManagerContractsDetails } from "../../src/fetchers/evm-chain/avalanc
 import { oracleAdapterContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/oracle-adapter/oracleAdapterContractsDetails";
 import { gmdTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/gmd/gmdTokensContractsDetails";
 import GmdVaultAbi from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/gmd/GmdVault.abi.json";
+import { traderJoeAutoPoolTokenContractDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/trader-joe-auto/traderJoeAutoPoolTokenContractsDetails";
 
 jest.setTimeout(15000);
 
@@ -367,6 +368,45 @@ describe("Avalanche EVM fetcher", () => {
       const result = await fetcher.fetchAll(["gmdAVAX"]);
       expect(result).toEqual([
         { symbol: "gmdAVAX", value: 17.383528533894893 },
+      ]);
+    });
+  });
+
+  describe("Trader Joe Auto - TJ_AVAX_USDC_AUTO", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+      const traderJoeAutoContract = await deployMockContract(
+        wallet,
+        traderJoeAutoPoolTokenContractDetails.TJ_AVAX_USDC_AUTO.abi
+      );
+      await traderJoeAutoContract.mock.getBalances.returns(
+        "74327537225082812589017",
+        "288750527247"
+      );
+      await traderJoeAutoContract.mock.totalSupply.returns(
+        "1460320130438534473"
+      );
+      await traderJoeAutoContract.mock.decimals.returns(12);
+      multicallContract = await deployMulticallContract(wallet);
+
+      traderJoeAutoPoolTokenContractDetails.TJ_AVAX_USDC_AUTO.address =
+        traderJoeAutoContract.address;
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new EvmFetcher(
+        "avalanche-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
+      );
+
+      await saveMockPricesInLocalDb([11.65, 1], ["AVAX", "USDC"]);
+
+      const result = await fetcher.fetchAll(["TJ_AVAX_USDC_AUTO"]);
+      expect(result).toEqual([
+        { symbol: "TJ_AVAX_USDC_AUTO", value: 0.7906939799374457 },
       ]);
     });
   });
