@@ -14,8 +14,12 @@ export interface INumericDataPoint {
   value: number;
   decimals?: number;
   valueByteSize?: number;
-  metadata: Metadata;
+  metadata?: Metadata;
 }
+
+export type INumericDataPointWithMetadata = INumericDataPoint & {
+  metadata: Metadata;
+};
 
 // This data point does not store information about data size in its serialized value
 export class NumericDataPoint extends DataPoint {
@@ -40,7 +44,7 @@ export class NumericDataPoint extends DataPoint {
     );
   }
 
-  toObj(): INumericDataPoint {
+  toObj(): INumericDataPointWithMetadata {
     return {
       ...this.numericDataPointArgs,
       metadata: this.metadata,
