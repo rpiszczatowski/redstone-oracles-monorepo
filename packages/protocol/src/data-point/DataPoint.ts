@@ -25,7 +25,7 @@ export interface PriceMetadata {
  * This is union of all possible metadata
  * .type field is used to detect type.
  */
-export type Metadata = PriceMetadata;
+export type Metadata = PriceMetadata & { [x: string]: any };
 
 export class DataPoint extends Serializable {
   constructor(
