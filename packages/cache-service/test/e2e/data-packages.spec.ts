@@ -51,6 +51,7 @@ describe("Data packages (e2e)", () => {
     Promise<void>,
     [dataPackages: CachedDataPackage[]]
   >;
+
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -96,9 +97,7 @@ describe("Data packages (e2e)", () => {
       }
     }
 
-    const dataPackageWithSources = await DataPackage.insertMany(
-      dataPackagesToInsert
-    );
+    await DataPackage.insertMany(dataPackagesToInsert);
   });
 
   afterEach(async () => await dropTestDatabase());
@@ -312,7 +311,7 @@ describe("Data packages (e2e)", () => {
     const allFeedsDataPackages = testResponse2.body[ALL_FEEDS_KEY];
     const parsedDataPoints = JSON.parse(allFeedsDataPackages[0]).dataPoints;
     expect(allFeedsDataPackages.length).toBe(4);
-    expect(parsedDataPoints.length).toBe(2);
+    expect(parsedDataPoints.length).toBe(3);
     for (const [_, dataPackages] of Object.entries<any>(testResponse2.body)) {
       for (let i = 0; i++; i < dataPackages.length) {
         const dataPackage = JSON.parse(dataPackages[i]);
@@ -372,7 +371,7 @@ describe("Data packages (e2e)", () => {
       })
       .expect(200);
 
-    const expectedStreamLengthWithFeedsSpecified = 1662;
+    const expectedStreamLengthWithFeedsSpecified = 2174;
     const expectedDataPackagesCountWithFeedSpecified = 8; // 4 * 2
     verifyPayloadResponse(
       testResponse,
@@ -391,7 +390,7 @@ describe("Data packages (e2e)", () => {
       })
       .expect(200);
 
-    const expectedStreamLengthForAllFeeds = 838;
+    const expectedStreamLengthForAllFeeds = 1094;
     const expectedDataPackagesCountForAllFeeds = 4;
     verifyPayloadResponse(
       testResponse2,
@@ -423,11 +422,14 @@ describe("Data packages (e2e)", () => {
       mockDataPackage.timestampMilliseconds
     );
 
-    const dataPoints: any[] = signedDataPackage.dataPackage.dataPoints;
-    expect(dataPoints.length).toBe(2);
-    expect(
-      dataPoints.map((dataPoint) => dataPoint.numericDataPointArgs)
-    ).toEqual(mockDataPackage.dataPoints);
+    const dataPoints = signedDataPackage.dataPackage.dataPoints;
+    expect(dataPoints.length).toBe(3);
+
+    for (let i = 0; i < dataPoints.length; i++) {
+      expect(mockDataPackage.dataPoints[i]).toMatchObject(
+        dataPoints[i].toObj()
+      );
+    }
   }
 
   it("/data-packages/payload (GET) - should return payload in hex format", async () => {

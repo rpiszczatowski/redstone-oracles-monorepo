@@ -7,7 +7,11 @@ import {
   INumericDataPoint,
   NumericDataPoint,
 } from "redstone-protocol";
-import { NumberLike } from "redstone-protocol/src/common/utils";
+import {
+  NumberLike,
+  convertBytesToNumber,
+  convertNumberToBytes,
+} from "redstone-protocol/src/common/utils";
 
 export const MOCK_PRIVATE_KEY =
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
@@ -45,7 +49,7 @@ export const mockOracleRegistryState: RedstoneOraclesState = {
 };
 
 export const MOCK_SIGNATURE =
-  "I3VOkm58RvyLIxSNqBDiAaGrRiCKCgF4kTHooTlCg18yR74gJJRsFbn2Ws4CrdUMDb/on141amtAg0X5SzTggBs=";
+  "uSAEAXX3O40GG5a8/6QLqERrS0ETq0J1SRed7Ak0lExy3G9IHUdKGELLQuctmwkOojA+T+EMMB7hrq2B1G9jwxs=";
 
 export const produceMockDataPackage = (
   dataPoints: DataPoint[],
@@ -61,5 +65,8 @@ export const mockDataPackages = [
   produceMockDataPackage([
     new NumericDataPoint({ dataFeedId: "mock-data-feed-id-1", value: 42 }),
     new NumericDataPoint({ dataFeedId: "mock-data-feed-id-2", value: 123 }),
+    new DataPoint("XD", convertNumberToBytes("120", 8, 32), {
+      type: "HEX_BIG_INT",
+    }),
   ]),
 ];
