@@ -82,7 +82,7 @@ describe("Curve Multi Block", () => {
   test("Should properly fetch data with 7 block", async () => {
     const fetcher = getMultiBlockCurveFetcher(1, 7);
 
-    // 3 smaller values and 3 bigger then 1000130962107597656
+    // 3 smaller values and 3 bigger than 1000130962107597656
     await mockGetDyCalls(mockContract, [
       BigNumber.from("0000130962107597656"),
       BigNumber.from("0000130962107597656"),
@@ -99,7 +99,7 @@ describe("Curve Multi Block", () => {
   test("Should properly fetch data with 7 blocks and sequence step 2", async () => {
     const fetcher = getMultiBlockCurveFetcher(2, 7);
 
-    // 3 smaller values and 3 bigger then 1000130962107597656
+    // 3 smaller values and 3 bigger than 1000130962107597656
     await mockGetDyCalls(mockContract, [
       BigNumber.from("0000130962107597656"), // this
       BigNumber.from("0000130962107597656"),
