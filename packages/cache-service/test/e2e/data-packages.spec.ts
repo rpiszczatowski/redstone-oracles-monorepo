@@ -1,3 +1,4 @@
+import "../common/set-test-envs";
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ethers } from "ethers";
@@ -19,7 +20,6 @@ import {
   mockOracleRegistryState,
   mockSigner,
 } from "../common/mock-values";
-import "../common/set-test-envs";
 import { connectToTestDB, dropTestDatabase } from "../common/test-db";
 import { signByMockSigner } from "../common/test-utils";
 import { ResponseFormat } from "../../src/data-packages/data-packages.interface";
