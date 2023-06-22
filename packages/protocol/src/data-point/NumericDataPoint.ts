@@ -7,13 +7,14 @@ import {
   DEFAULT_NUM_VALUE_BS,
   DEFAULT_NUM_VALUE_DECIMALS,
 } from "../common/redstone-constants";
-import { DataPoint } from "./DataPoint";
+import { DataPoint, Metadata } from "./DataPoint";
 
 export interface INumericDataPoint {
   dataFeedId: ConvertibleToBytes32;
   value: number;
   decimals?: number;
   valueByteSize?: number;
+  metadata?: Metadata;
 }
 
 // This data point does not store information about data size in its serialized value
@@ -32,7 +33,11 @@ export class NumericDataPoint extends DataPoint {
       decimals,
       valueByteSize
     );
-    super(numericDataPointArgs.dataFeedId, valueBytes);
+    super(
+      numericDataPointArgs.dataFeedId,
+      valueBytes,
+      numericDataPointArgs.metadata
+    );
   }
 
   toObj(): INumericDataPoint {
