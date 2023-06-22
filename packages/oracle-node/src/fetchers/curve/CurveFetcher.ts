@@ -8,7 +8,7 @@ import { PoolsConfig } from "./curve-fetchers-config";
 /**
  * as default value we should use 10 ** 18 this the PRECISION on Curve StableSwap contract
  * if we provide value lower then 10 ** 18 we start loosing PRECISION
- * if we provide value bigger then 10 ** 18  for example 100 * 10**18 we are saying how much 100 x  pairedTokenIndex i wil receive for tokenIndex
+ * if we provide value bigger than 10 ** 18  for example 100 * 10**18 we are saying how much 100 x  pairedTokenIndex i wil receive for tokenIndex
  * thus there is higher chance that slippage will occur and will affect price
  * same in examples https://curve.readthedocs.io/factory-pools.html#StableSwap.get_dy and on Curve frontend
  * in case of LPs (with big volume) it shouldn't be a problem, however this just not correct
