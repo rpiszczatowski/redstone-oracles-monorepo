@@ -3,12 +3,14 @@ import {
   IsEnum,
   IsOptional,
   IsString,
+  Matches,
+  MaxLength,
+  MinLength,
   Validate,
   ValidateNested,
 } from "class-validator";
 import {
   DataPointPlainObj,
-  IStandardDataPoint,
   SignedDataPackagePlainObj,
 } from "redstone-protocol";
 import { IsNumberOrString } from "../utils/IsNumberOrString";
@@ -29,16 +31,19 @@ export class ReceivedDataPackage implements SignedDataPackagePlainObj {
   sources?: Record<string, string | number>;
 }
 
-export class ReceivedDataPoint implements IStandardDataPoint {
+export class ReceivedDataPoint {
   @IsString()
   dataFeedId: string;
 
   @Validate(IsNumberOrString)
-  value: string;
+  value: string | number;
 }
 
 export class BulkPostRequestBody {
   @IsString()
+  @Matches(/^0x[0-9A-Fa-f]*$/)
+  @MinLength(132)
+  @MaxLength(132)
   requestSignature: string;
 
   @ValidateNested({ each: true })
