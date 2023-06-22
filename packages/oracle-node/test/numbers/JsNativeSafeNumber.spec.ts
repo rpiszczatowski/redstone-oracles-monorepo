@@ -44,7 +44,7 @@ describe("JsNativePreciseNumber", () => {
       ],
       [
         JsNativeSafeNumberConfig.MAX_NUMBER + 1,
-        /Number is bigger then max number acceptable by REDSTONE/,
+        /Number is bigger than max number acceptable by REDSTONE/,
       ],
       // 8 decimals number
       ["1.12345678", 1.12345678],

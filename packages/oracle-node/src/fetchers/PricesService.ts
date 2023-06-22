@@ -260,8 +260,8 @@ export default class PricesService {
 
         newSources[sourceName] = valueFromSourceNum;
       } catch (e: any) {
-        logger.warn(
-          `Excluding ${price.symbol} value ${valueFromSource} for source: ${sourceName}. Reason: ${e.message}`
+        logger.error(
+          `Excluding token: "${price.symbol}", value: "${valueFromSource}" for source: "${sourceName}", reason: "${e.message}"`
         );
       }
     }

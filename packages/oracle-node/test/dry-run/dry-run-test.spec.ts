@@ -66,7 +66,7 @@ describe("Main dry run test", () => {
     await closeLocalLevelDB();
   });
 
-  test(`Dry run test for ${process.env.DRY_RUN_TYPE} manifest`, async () => {
+  test(`Dry run test for ${process.env.DRY_RUN_TEST_TYPE} manifest`, async () => {
     /* 
       We want to run Node 4 times because in order to calculate price of some tokens
       we need price of another tokens e.g. 

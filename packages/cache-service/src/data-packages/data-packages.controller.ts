@@ -7,12 +7,13 @@ import {
   HttpException,
   HttpStatus,
   Inject,
-  NotFoundException,
   Param,
   Post,
   Query,
   Res,
   ServiceUnavailableException,
+  UsePipes,
+  ValidationPipe,
 } from "@nestjs/common";
 import { Cache } from "cache-manager";
 import type { Response } from "express";
@@ -20,49 +21,22 @@ import { Serializable } from "redstone-protocol";
 import { DataPackagesRequestParams } from "redstone-sdk";
 import config from "../config";
 import { duplexStream } from "../utils/streams";
-import { ReceivedDataPackage } from "./data-packages.interface";
-import { CachedDataPackage } from "./data-packages.model";
+import {
+  BulkPostRequestBody,
+  DataPackagesResponse,
+  DataPackagesStatsResponse,
+  GetDataPackagesStatsQuery,
+  GetLatestDataPackagesQuery,
+  ResponseFormat,
+} from "./data-packages.interface";
 import { DataPackagesService } from "./data-packages.service";
-
-export interface BulkPostRequestBody {
-  requestSignature: string;
-  dataPackages: ReceivedDataPackage[];
-}
-
-export type ResponseFormat = "raw" | "hex" | "bytes" | "json";
-
-export interface GetLatestDataPackagesQuery {
-  "data-service-id": string;
-  "unique-signers-count": number;
-  "data-feeds": string;
-  format?: ResponseFormat;
-}
-
-export interface GetDataPackagesStatsQuery {
-  "from-timestamp": string;
-  "to-timestamp"?: string;
-  "api-key": string;
-}
-
-export interface DataPackagesResponse {
-  [dataFeedId: string]: CachedDataPackage[];
-}
-
-export interface DataPackagesStatsResponse {
-  [signerAddress: string]: {
-    dataPackagesCount: number;
-    verifiedDataPackagesCount: number;
-    verifiedDataPackagesPercentage: number;
-    nodeName: string;
-    dataServiceId: string;
-  };
-}
 
 const CONTENT_TYPE_OCTET_STREAM = "application/octet-stream";
 const CONTENT_TYPE_TEXT = "text/html";
 const CONTENT_TYPE_JSON = "application/json";
 
 @Controller("data-packages")
+@UsePipes(new ValidationPipe({ transform: true }))
 export class DataPackagesController {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
@@ -76,7 +50,7 @@ export class DataPackagesController {
 
     const requestParams: DataPackagesRequestParams = {
       dataServiceId: query["data-service-id"],
-      uniqueSignersCount: query["unique-signers-count"],
+      uniqueSignersCount: Number(query["unique-signers-count"]),
     };
 
     if (query["data-feeds"]) {
@@ -193,9 +167,6 @@ export class DataPackagesController {
         HttpStatus.BAD_REQUEST
       );
     }
-
-    // TODO: implement request validation
-    // TODO: implement request size limit
 
     const signerAddress = this.dataPackagesService.verifyRequester(body);
 
