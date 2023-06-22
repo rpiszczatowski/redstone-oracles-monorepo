@@ -455,24 +455,32 @@ describe("Data packages (e2e)", () => {
   }
 
   it("/data-packages/payload (GET) - should return payload in hex format", async () => {
+    const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
+    jest.spyOn(Date, "now").mockImplementation(() => dpTimestamp);
     await performPayloadTests((response) => {
       return ethers.utils.arrayify(response.text);
     }, "hex");
   });
 
   it("/data-packages/payload (GET) - should return payload in raw format", async () => {
+    const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
+    jest.spyOn(Date, "now").mockImplementation(() => dpTimestamp);
     await performPayloadTests((response) => {
       return response.body;
     }, "raw");
   });
 
   it("/data-packages/payload (GET) - should return payload in bytes format", async () => {
+    const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
+    jest.spyOn(Date, "now").mockImplementation(() => dpTimestamp);
     await performPayloadTests((response) => {
       return response.body;
     }, "bytes");
   });
 
   it("/data-packages/payload (GET) - should return payload in raw format when no format is specified", async () => {
+    const dpTimestamp = mockDataPackages[0].timestampMilliseconds;
+    jest.spyOn(Date, "now").mockImplementation(() => dpTimestamp);
     await performPayloadTests((response) => {
       return response.body;
     });
