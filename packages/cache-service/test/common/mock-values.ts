@@ -49,7 +49,7 @@ export const mockOracleRegistryState: RedstoneOraclesState = {
 };
 
 export const MOCK_SIGNATURE =
-  "uSAEAXX3O40GG5a8/6QLqERrS0ETq0J1SRed7Ak0lExy3G9IHUdKGELLQuctmwkOojA+T+EMMB7hrq2B1G9jwxs=";
+  "PJkkAPFdAh24XW5IyiFbdL2Sjhsl7S7kLSGoiCACZZtGNjkeHXiFed7Zq4KP1pMVAanBp5B+qmtKb9Wht5RANxw=";
 
 export const produceMockDataPackage = (
   dataPoints: DataPoint[],
@@ -65,8 +65,9 @@ export const mockDataPackages = [
   produceMockDataPackage([
     new NumericDataPoint({ dataFeedId: "mock-data-feed-id-1", value: 42 }),
     new NumericDataPoint({ dataFeedId: "mock-data-feed-id-2", value: 123 }),
-    new DataPoint("XD", convertNumberToBytes("120", 8, 32), {
+    new DataPoint("XD", convertNumberToBytes(1.2, 8, 32), {
       type: "HEX_BIG_INT",
+      sources: { exchange_1: "1.19", exchange_2: "1.20", exchange_3: "1.21" },
     }),
   ]),
 ];

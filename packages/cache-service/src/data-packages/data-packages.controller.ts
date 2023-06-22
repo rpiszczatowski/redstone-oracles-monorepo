@@ -109,10 +109,11 @@ export class DataPackagesController {
       );
     }
     await this.validateDataServiceId(dataServiceId);
-    return this.dataPackagesService.getByTimestamp(
+    const response = await this.dataPackagesService.getByTimestamp(
       dataServiceId,
       Number(timestamp)
     );
+    return response;
   }
 
   @Get("latest")

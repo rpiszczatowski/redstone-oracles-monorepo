@@ -25,6 +25,7 @@ export interface RedstonePayloadParsingResult {
 
 type SliceConfig = { negativeOffset: number; length: number };
 
+/** @deprecated don't use to parse DataPoint supports only NumericDataPoint */
 export class RedstonePayloadParser {
   // Last bytes of bytesData must contain valid redstone payload
   constructor(private bytesData: Uint8Array) {}
