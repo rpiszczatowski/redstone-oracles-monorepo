@@ -93,7 +93,10 @@ describe("Data packages (e2e)", () => {
         }
       }
     }
-    await DataPackage.insertMany(dataPackagesToInsert);
+
+    const dataPackageWithSources = await DataPackage.insertMany(
+      dataPackagesToInsert
+    );
   });
 
   afterEach(async () => await dropTestDatabase());

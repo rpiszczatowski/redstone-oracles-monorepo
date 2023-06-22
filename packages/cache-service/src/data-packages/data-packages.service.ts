@@ -369,29 +369,46 @@ export class DataPackagesService {
     );
 
     const dataPackagesForSaving = receivedDataPackages.map(
-      (receivedDataPackage) => {
-        const isSignatureValid = this.isSignatureValid(
+      (receivedDataPackage) =>
+        this.prepareDataPackageForSaving(
           receivedDataPackage,
-          signerAddress
-        );
-
-        const cachedDataPackage: CachedDataPackage = {
-          ...receivedDataPackage,
-          dataServiceId,
           signerAddress,
-          isSignatureValid: isSignatureValid,
-        };
-        if (receivedDataPackage.dataPoints.length === 1) {
-          cachedDataPackage.dataFeedId =
-            receivedDataPackage.dataPoints[0].dataFeedId;
-        } else {
-          cachedDataPackage.dataFeedId = ALL_FEEDS_KEY;
-        }
-        return cachedDataPackage;
-      }
+          dataServiceId
+        )
     );
 
     return dataPackagesForSaving;
+  }
+
+  private prepareDataPackageForSaving(
+    receivedDataPackage: ReceivedDataPackage,
+    signerAddress: string,
+    dataServiceId: string
+  ) {
+    const isSignatureValid = this.isSignatureValid(
+      receivedDataPackage,
+      signerAddress
+    );
+
+    if (!config.enableMetadataPersistance) {
+      for (const dataPoint of receivedDataPackage.dataPoints) {
+        delete dataPoint.metadata;
+      }
+    }
+
+    const cachedDataPackage: CachedDataPackage = {
+      ...receivedDataPackage,
+      dataServiceId,
+      signerAddress,
+      isSignatureValid: isSignatureValid,
+    };
+    if (receivedDataPackage.dataPoints.length === 1) {
+      cachedDataPackage.dataFeedId =
+        receivedDataPackage.dataPoints[0].dataFeedId;
+    } else {
+      cachedDataPackage.dataFeedId = ALL_FEEDS_KEY;
+    }
+    return cachedDataPackage;
   }
 
   private isSignatureValid(
