@@ -7,13 +7,11 @@ import { IStringDataPoint } from "./StringDataPoint";
 export interface IStandardDataPoint {
   dataFeedId: ConvertibleToBytes32;
   value: string; // base64-encoded bytes
-  metadata: Metadata;
+  metadata?: Metadata;
 }
 export type DataPointPlainObj = IStandardDataPoint | INumericDataPoint;
 
-export type MetadataType = "LEGACY_JS_NUMBER" | "HEX_BIG_INT";
-
-export const LEGACY_METADATA = { type: "LEGACY_JS_NUMBER" } as const;
+export type MetadataType = "HEX_BIG_INT";
 
 /**
  * This is union of all possible metadata
@@ -25,7 +23,7 @@ export class DataPoint extends Serializable {
   constructor(
     public readonly dataFeedId: ConvertibleToBytes32,
     public readonly value: Uint8Array,
-    protected readonly metadata: Metadata = LEGACY_METADATA
+    protected readonly metadata?: Metadata
   ) {
     super();
   }

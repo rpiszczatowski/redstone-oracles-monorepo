@@ -1,13 +1,13 @@
 import {
-  convertNumberToBytes,
-  ConvertibleToBytes32,
-  useDefaultIfUndefined,
-} from "../common/utils";
-import {
   DEFAULT_NUM_VALUE_BS,
   DEFAULT_NUM_VALUE_DECIMALS,
 } from "../common/redstone-constants";
-import { DataPoint, LEGACY_METADATA, Metadata } from "./DataPoint";
+import {
+  ConvertibleToBytes32,
+  convertNumberToBytes,
+  useDefaultIfUndefined,
+} from "../common/utils";
+import { DataPoint, Metadata } from "./DataPoint";
 
 export interface INumericDataPoint {
   dataFeedId: ConvertibleToBytes32;
@@ -16,10 +16,6 @@ export interface INumericDataPoint {
   valueByteSize?: number;
   metadata?: Metadata;
 }
-
-export type INumericDataPointWithMetadata = INumericDataPoint & {
-  metadata: Metadata;
-};
 
 // This data point does not store information about data size in its serialized value
 export class NumericDataPoint extends DataPoint {
@@ -44,10 +40,9 @@ export class NumericDataPoint extends DataPoint {
     );
   }
 
-  toObj(): INumericDataPointWithMetadata {
+  toObj(): INumericDataPoint {
     return {
       ...this.numericDataPointArgs,
-      metadata: this.metadata,
     };
   }
 }
