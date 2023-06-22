@@ -34,13 +34,14 @@ import uniswapV2OnChainFetchers from "./evm-chain/ethereum/uniswap-v2-on-chain/a
 import camelotFetchers from "./evm-chain/arbitrum/camelot/all-camelot-fetchers";
 import { NonUsdBasedFetcher } from "./non-usd-based/NonUsdBasedFetcher";
 import pangolinOnChainFetchers from "./evm-chain/avalanche/pangolin-on-chain/pangolin-on-chain-fetchers";
-import traderJoeOnChainFetchers from "./evm-chain/avalanche/trader-joe-on-chain/trader-joe-on-chain-fetchers";
+import traderJoeOnChainFetchers from "./evm-chain/avalanche/trader-joe-on-chain/trader-joe-v1/trader-joe-on-chain-fetchers";
 import twelveDataFetchers from "./twelve-data/all-twelve-data-fetchers";
 import { PermaswapFetcher } from "./permaswap/PermaswapFetcher";
 import fraxswapOnChainFetchers from "./evm-chain/ethereum/fraxswap-on-chain/all-fraxswap-on-chain-fetchers";
 import { MaverickFetcher } from "./maverick/MaverickFetcher";
 import { ethereumEvmFetcher } from "./evm-chain/ethereum/evm-fetcher/EthereumEvmFetcher";
 import balancerMultiFetchers from "./balancer-multi/all-balancers-multi-fetchers";
+import traderJoeV2OnChainFetchers from "./evm-chain/avalanche/trader-joe-on-chain/trader-joe-v2/trader-joe-v2-on-chain-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -85,4 +86,5 @@ export default {
   ...twelveDataFetchers,
   ...fraxswapOnChainFetchers,
   ...balancerMultiFetchers,
+  ...traderJoeV2OnChainFetchers,
 } as { [name: string]: Fetcher };
