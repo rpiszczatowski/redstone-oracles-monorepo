@@ -15,7 +15,6 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { Cache } from "cache-manager";
-import { IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
 import type { Response } from "express";
 import { Serializable } from "redstone-protocol";
 import { DataPackagesRequestParams } from "redstone-sdk";
@@ -27,10 +26,8 @@ import {
   DataPackagesStatsResponse,
   GetDataPackagesStatsQuery,
   GetLatestDataPackagesQuery,
-  ReceivedDataPackage,
   ResponseFormat,
 } from "./data-packages.interface";
-import { CachedDataPackage } from "./data-packages.model";
 import { DataPackagesService } from "./data-packages.service";
 
 const CONTENT_TYPE_OCTET_STREAM = "application/octet-stream";

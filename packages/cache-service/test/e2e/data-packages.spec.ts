@@ -8,7 +8,6 @@ import { RedstonePayloadParser } from "redstone-protocol/dist/src/redstone-paylo
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
 import { BundlrService } from "../../src/bundlr/bundlr.service";
-import { ResponseFormat } from "../../src/data-packages/data-packages.controller";
 import {
   CachedDataPackage,
   DataPackage,
@@ -25,7 +24,7 @@ import {
 } from "../common/mock-values";
 import { connectToTestDB, dropTestDatabase } from "../common/test-db";
 import { signByMockSigner } from "../common/test-utils";
-
+import { ResponseFormat } from "../../src/data-packages/data-packages.interface";
 
 jest.mock("redstone-sdk", () => ({
   __esModule: true,
