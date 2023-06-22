@@ -11,27 +11,17 @@ export interface IStandardDataPoint {
 }
 export type DataPointPlainObj = IStandardDataPoint | INumericDataPoint;
 
-export enum MetadataDataPointType {
-  PRICE_V1,
-}
-
-export interface PriceMetadata {
-  type: MetadataDataPointType.PRICE_V1;
-  /** <source, priceAsFloatString> */
-  sources?: Record<string, string>;
-}
-
 /**
  * This is union of all possible metadata
  * .type field is used to detect type.
  */
-export type Metadata = PriceMetadata & { [x: string]: any };
+export type Metadata = Record<string, any>;
 
 export class DataPoint extends Serializable {
   constructor(
     public readonly dataFeedId: ConvertibleToBytes32,
     public readonly value: Uint8Array,
-    public readonly metadata?: PriceMetadata
+    public readonly metadata?: Metadata
   ) {
     super();
   }
