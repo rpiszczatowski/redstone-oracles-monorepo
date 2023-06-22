@@ -7,7 +7,7 @@ import {
   DEFAULT_NUM_VALUE_BS,
   DEFAULT_NUM_VALUE_DECIMALS,
 } from "../common/redstone-constants";
-import { DataPoint, Metadata } from "./DataPoint";
+import { DataPoint, LEGACY_METADATA, Metadata } from "./DataPoint";
 
 export interface INumericDataPoint {
   dataFeedId: ConvertibleToBytes32;
@@ -40,9 +40,10 @@ export class NumericDataPoint extends DataPoint {
     );
   }
 
-  toObj(): INumericDataPoint {
+  toObj(): INumericDataPoint & { metadata: Metadata } {
     return {
       ...this.numericDataPointArgs,
+      metadata: this.numericDataPointArgs.metadata ?? LEGACY_METADATA,
     };
   }
 }
