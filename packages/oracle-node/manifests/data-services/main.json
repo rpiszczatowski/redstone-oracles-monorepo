@@ -883,6 +883,10 @@
         "gate"
       ]
     },
+    "USDf": {
+      "source": ["mock"],
+      "fixedValue": 1
+    },
     "AUD": {
       "source": ["binance", "currencycom", "ecb", "kraken"]
     },

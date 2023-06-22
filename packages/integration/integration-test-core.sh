@@ -11,6 +11,7 @@ export MONOREPO_INTEGRATION_TEST=true
 MONGO_URI_FILE=./tmp-mongo-db-uri.log
 CACHE_SERVICE_URL=http://localhost:3000
 HARDHAT_MOCK_PRIVATE_KEY=ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+MOCK_PRICES_URL=https://raw.githubusercontent.com/redstone-finance/redstone-mock-prices/main/mock-prices.json
 
 declare mongoDbPid
 declare cacheLayerPid
@@ -55,6 +56,7 @@ main() {
   updateDotEnvFile "OVERRIDE_DIRECT_CACHE_SERVICE_URLS" '["http://localhost:3000"]'
   updateDotEnvFile "OVERRIDE_MANIFEST_USING_FILE" "./manifests/single-source/mock.json"
   updateDotEnvFile "ECDSA_PRIVATE_KEY" $HARDHAT_MOCK_PRIVATE_KEY
+  updateDotEnvFile "MOCK_PRICES_URL_OR_PATH" $MOCK_PRICES_URL
   cat .env
   runWithLogPrefixInBackground "yarn start" "oracle-node"
   oracleNodePid=$!
