@@ -7,31 +7,25 @@ import { IStringDataPoint } from "./StringDataPoint";
 export interface IStandardDataPoint {
   dataFeedId: ConvertibleToBytes32;
   value: string; // base64-encoded bytes
-  metadata?: Metadata;
+  metadata: Metadata;
 }
 export type DataPointPlainObj = IStandardDataPoint | INumericDataPoint;
 
-export enum MetadataDataPointType {
-  PRICE_V1,
-}
+export type MetadataType = "LEGACY_JS_NUMBER" | "HEX_BIG_INT";
 
-export interface PriceMetadata {
-  type: MetadataDataPointType.PRICE_V1;
-  /** <source, priceAsFloatString> */
-  sources?: Record<string, string>;
-}
+export const LEGACY_METADATA = { type: "LEGACY_JS_NUMBER" } as const;
 
 /**
  * This is union of all possible metadata
  * .type field is used to detect type.
  */
-export type Metadata = PriceMetadata;
+export type Metadata = Record<string, any> & { type: MetadataType };
 
 export class DataPoint extends Serializable {
   constructor(
     public readonly dataFeedId: ConvertibleToBytes32,
     public readonly value: Uint8Array,
-    public readonly metadata?: PriceMetadata
+    protected readonly metadata: Metadata = LEGACY_METADATA
   ) {
     super();
   }
