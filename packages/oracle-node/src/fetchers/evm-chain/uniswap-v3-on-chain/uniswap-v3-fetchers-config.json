@@ -630,6 +630,17 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "fee": 500
+    },
+    "EUROC": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x95dbb3c7546f22bce375900abfdd64a4e5bd73d6",
+      "token0Symbol": "EUROC",
+      "token1Symbol": "USDC",
+      "token0Address": "0x1abaea1f7c830bd89acc67ec4af516284b1bc33c",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 6,
+      "token1Decimals": 6,
+      "fee": 500
     }
   },
   "uniswap-v3-on-chain-usdc-10000": {
