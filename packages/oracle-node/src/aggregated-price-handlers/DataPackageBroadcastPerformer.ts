@@ -19,6 +19,10 @@ import { validateDataPointsForBigPackage } from "../validators/validate-data-fee
 import { ManifestDataProvider } from "./ManifestDataProvider";
 import { IterationContext } from "../schedulers/IScheduler";
 import ManifestHelper from "../manifest/ManifestHelper";
+import {
+  convertBytesToNumber,
+  convertNumberToBytes,
+} from "redstone-protocol/src/common/utils";
 const logger = require("./../utils/logger")("runner") as Consola;
 
 const DEFAULT_HTTP_BROADCASTER_URLS = [
@@ -65,7 +69,7 @@ export class DataPackageBroadcastPerformer
     }
 
     // Signing
-    const signedDataPackages = this.signPrices(
+    const signedDataPackages = this.createDataPackagesAndSign(
       pricesForSigning,
       iterationContext
     );
@@ -74,7 +78,7 @@ export class DataPackageBroadcastPerformer
     await this.broadcastDataPackages(signedDataPackages);
   }
 
-  private signPrices(
+  private createDataPackagesAndSign(
     prices: PriceDataAfterAggregation[],
     iterationContext: IterationContext
   ): SignedDataPackage[] {
@@ -137,14 +141,15 @@ export class DataPackageBroadcastPerformer
     await this.performBroadcast(promises, "data package");
   }
 
-  private priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
-    return new NumericDataPoint({
-      dataFeedId: price.symbol,
-      value: price.value.unsafeToNumber(),
-      decimals: ManifestHelper.getDataFeedDecimals(
+  private priceToDataPoint(price: PriceDataAfterAggregation): DataPoint {
+    const decimals =
+      ManifestHelper.getDataFeedDecimals(
         this.manifestDataProvider.latestManifest!,
         price.symbol
-      ),
-    });
+      ) ?? 8;
+
+    const value = convertNumberToBytes(price.value.toString(), decimals, 32);
+
+    return new DataPoint(price.symbol, value);
   }
 }
