@@ -1153,12 +1153,6 @@
       "name": "3X Long Bitcoin Cash Token"
     }
   ],
-  "BSVBULL": [
-    {
-      "id": "3x-long-bitcoin-sv-token",
-      "name": "3X Long Bitcoin SV Token"
-    }
-  ],
   "BULL": [
     {
       "id": "3x-long-bitcoin-token",
@@ -1273,12 +1267,6 @@
     {
       "id": "3x-long-leo-token",
       "name": "3X Long LEO Token"
-    }
-  ],
-  "LTCBULL": [
-    {
-      "id": "3x-long-litecoin-token",
-      "name": "3X Long Litecoin Token"
     }
   ],
   "MKRBULL": [
@@ -1459,12 +1447,6 @@
       "name": "3X Short Dragon Index Token"
     }
   ],
-  "EOSBEAR": [
-    {
-      "id": "3x-short-eos-token",
-      "name": "3X Short EOS Token"
-    }
-  ],
   "ETHBEAR": [
     {
       "id": "3x-short-ethereum-token",
@@ -1493,12 +1475,6 @@
     {
       "id": "3x-short-leo-token",
       "name": "3X Short LEO Token"
-    }
-  ],
-  "LTCBEAR": [
-    {
-      "id": "3x-short-litecoin-token",
-      "name": "3X Short Litecoin Token"
     }
   ],
   "MKRBEAR": [
