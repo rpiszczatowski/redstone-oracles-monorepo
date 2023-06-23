@@ -3,5 +3,6 @@
   "DAI": "dai_usdt",
   "CMP": "cmp_usdt",
   "JOE": "joe_usdt",
-  "BNB": "bnb_usdt"
+  "BNB": "bnb_usdt",
+  "CRV": "crv_usdt"
 }

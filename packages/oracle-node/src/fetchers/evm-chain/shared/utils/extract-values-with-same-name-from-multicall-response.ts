@@ -9,7 +9,6 @@ export const extractValuesWithTheSameNameFromMulticall = (
   if (!results) {
     throw new Error(`Multicall results for [${address}] is empty`);
   }
-
   const values = results.map((result) => result[id]);
   if (values.some((value) => !value)) {
     throw new Error(
