@@ -259,11 +259,6 @@
     "url": "https://www.probit.com",
     "color": "#3c35ba"
   },
-  "stex": {
-    "logoURI": "https://cdn.redstone.finance/sources/stex.png",
-    "url": "https://www.stex.com",
-    "color": "#000"
-  },
   "sushiswap": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/sushiswap.png",
     "url": "https://sushi.com/",
