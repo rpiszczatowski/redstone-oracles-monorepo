@@ -15,6 +15,8 @@ import { gmdTokensContractsDetails } from "./gmd/gmdTokensContractsDetails";
 import { GmdRequestHandler } from "./gmd/GmdRequestHandlers";
 import { traderJoeAutoPoolTokenContractDetails } from "./trader-joe-auto/traderJoeAutoPoolTokenContractsDetails";
 import { TraderJoeAutoRequestHandlers } from "./trader-joe-auto/TraderJoeAutoRequestHandlers";
+import { curveTokensContractsDetails } from "./curve-lp-tokens/curveTokensContractsDetails";
+import { CurveRequestHandlers } from "./curve-lp-tokens/CurveRequestHandlers";
 
 export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
@@ -48,5 +50,9 @@ export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
     traderJoeAutoPoolTokenContractDetails,
     TraderJoeAutoRequestHandlers
+  ),
+  ...buildRequestHandlersFromContractDetails(
+    curveTokensContractsDetails,
+    CurveRequestHandlers
   ),
 };

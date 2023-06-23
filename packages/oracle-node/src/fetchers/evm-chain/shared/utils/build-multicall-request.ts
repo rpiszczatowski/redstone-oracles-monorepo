@@ -6,11 +6,17 @@ export interface FunctionNamesWithValues {
   values?: any[];
 }
 
+export interface MulticallRequest {
+  address: string;
+  data: string;
+  name: string;
+}
+
 export const buildMulticallRequests = (
   abi: string | readonly (string | Fragment | JsonFragment)[],
   address: string,
   functionsNamesWithValues: FunctionNamesWithValues[]
-) => {
+): MulticallRequest[] => {
   return Object.values(functionsNamesWithValues).map(({ name, values }) => {
     const functionData = new Interface(abi).encodeFunctionData(name, values);
     return {
