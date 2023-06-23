@@ -3,7 +3,7 @@ import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ethers } from "ethers";
 import { base64 } from "ethers/lib/utils";
-import { DataPoint } from "redstone-protocol";
+import { DataPoint, SignedDataPackagePlainObj } from "redstone-protocol";
 import { RedstonePayloadParser } from "redstone-protocol/dist/src/redstone-payload/RedstonePayloadParser";
 import * as request from "supertest";
 import { AppModule } from "../../src/app.module";
@@ -17,7 +17,7 @@ import {
   MOCK_DATA_SERVICE_ID,
   MOCK_SIGNATURE,
   MOCK_SIGNER_ADDRESS,
-  mockDataPackages,
+  getMockDataPackages,
   mockOracleRegistryState,
   mockSigner,
   produceMockDataPackage,
@@ -25,6 +25,11 @@ import {
 import { connectToTestDB, dropTestDatabase } from "../common/test-db";
 import { signByMockSigner } from "../common/test-utils";
 import { ResponseFormat } from "../../src/data-packages/data-packages.interface";
+import { ModuleKind } from "typescript";
+import {
+  convertBytesToNumber,
+  convertNumberToBytes,
+} from "redstone-protocol/src/common/utils";
 
 jest.mock("redstone-sdk", () => ({
   __esModule: true,
@@ -34,7 +39,9 @@ jest.mock("redstone-sdk", () => ({
 
 const dataFeedIds = [ALL_FEEDS_KEY, "ETH", "AAVE", "BTC"];
 
-const getExpectedDataPackagesInDB = (dataPackages = mockDataPackages) =>
+const getExpectedDataPackagesInDB = (
+  dataPackages: SignedDataPackagePlainObj[]
+) =>
   dataPackages.map((dataPackage) => ({
     ...dataPackage,
     signerAddress: mockSigner.address,
@@ -51,12 +58,14 @@ describe("Data packages (e2e)", () => {
     Promise<void>,
     [dataPackages: CachedDataPackage[]]
   >;
+  let mockDataPackages: SignedDataPackagePlainObj[];
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
+    mockDataPackages = getMockDataPackages();
     app = moduleFixture.createNestApplication();
     await app.init();
     httpServer = app.getHttpServer();
@@ -148,7 +157,7 @@ describe("Data packages (e2e)", () => {
       return rest;
     });
     expect(dataPackagesInDBCleaned).toEqual(
-      expect.arrayContaining(getExpectedDataPackagesInDB())
+      expect.arrayContaining(getExpectedDataPackagesInDB(mockDataPackages))
     );
   });
 
@@ -165,7 +174,7 @@ describe("Data packages (e2e)", () => {
     // Should have been saved in Arweave
     expect(bundlrSaveDataPackagesSpy).toHaveBeenCalledTimes(1);
     expect(bundlrSaveDataPackagesSpy).toHaveBeenCalledWith(
-      getExpectedDataPackagesInDB()
+      getExpectedDataPackagesInDB(mockDataPackages)
     );
   });
 
@@ -191,7 +200,7 @@ describe("Data packages (e2e)", () => {
       return rest;
     });
     expect(dataPackagesInDBCleaned).toEqual(
-      expect.arrayContaining(getExpectedDataPackagesInDB())
+      expect.arrayContaining(getExpectedDataPackagesInDB(mockDataPackages))
     );
   });
 
@@ -211,7 +220,7 @@ describe("Data packages (e2e)", () => {
 
     expect(bundlrSaveDataPackagesSpy).toHaveBeenCalledTimes(1);
     expect(bundlrSaveDataPackagesSpy).toHaveBeenCalledWith(
-      getExpectedDataPackagesInDB()
+      getExpectedDataPackagesInDB(mockDataPackages)
     );
   });
 
@@ -227,12 +236,12 @@ describe("Data packages (e2e)", () => {
       .expect(200);
 
     expect(
-      responseLatest.body[ALL_FEEDS_KEY].sort(
-        (a: any, b: any) => a.signerAddress - b.signerAddress
+      responseLatest.body[ALL_FEEDS_KEY].sort((a: any, b: any) =>
+        a.signerAddress.localeCompare(b.signerAddress)
       )
     ).toEqual(
-      responseMostRecent.body[ALL_FEEDS_KEY].sort(
-        (a: any, b: any) => a.signerAddress - b.signerAddress
+      responseMostRecent.body[ALL_FEEDS_KEY].sort((a: any, b: any) =>
+        a.signerAddress.localeCompare(b.signerAddress)
       )
     );
   });
@@ -269,7 +278,7 @@ describe("Data packages (e2e)", () => {
       .post("/data-packages/bulk")
       .send({
         requestSignature,
-        mockDataPackages,
+        mockDataPackages: mockDataPackages,
       })
       .expect(500);
 
@@ -432,9 +441,22 @@ describe("Data packages (e2e)", () => {
     expect(dataPoints.length).toBe(3);
 
     for (let i = 0; i < dataPoints.length; i++) {
-      expect(mockDataPackage.dataPoints[i]).toMatchObject(
-        dataPoints[i].toObj()
-      );
+      const inputDataPoint = mockDataPackage.dataPoints[i];
+      const decodedDataPoint = dataPoints[i].toObj();
+
+      // we have to handle differently this two cases NumericDataPoint or DataPoint as input
+      // because RedstonePayloadParser naively cast everything to NumericDataPoint
+      if (
+        inputDataPoint.metadata &&
+        inputDataPoint.metadata?.type === "HEX_BIG_INT"
+      ) {
+        expect(inputDataPoint.dataFeedId).toEqual(decodedDataPoint.dataFeedId);
+        expect(inputDataPoint.value).toEqual(
+          base64.encode(convertNumberToBytes(decodedDataPoint.value, 8, 32))
+        );
+      } else {
+        expect(inputDataPoint).toEqual(decodedDataPoint);
+      }
     }
   }
 

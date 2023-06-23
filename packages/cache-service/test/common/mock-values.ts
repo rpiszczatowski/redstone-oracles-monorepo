@@ -61,7 +61,7 @@ export const produceMockDataPackage = (
   return dataPackage.toObj();
 };
 
-export const mockDataPackages = [
+export const getMockDataPackages = () => [
   produceMockDataPackage([
     new NumericDataPoint({ dataFeedId: "mock-data-feed-id-1", value: 42 }),
     new NumericDataPoint({ dataFeedId: "mock-data-feed-id-2", value: 123 }),
