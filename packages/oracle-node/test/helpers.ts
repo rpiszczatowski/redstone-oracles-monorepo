@@ -43,14 +43,15 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   ethereumAddress: new ethers.Wallet(MOCK_ETH_PRIV_KEY).address,
   levelDbLocation: "oracle-node-level-db-tests",
   ttlForPricesInLocalDBInMilliseconds: 900000,
-  avalancheRpcUrl: "",
   enableStreamrBroadcasting: false,
   mockPricesUrlOrPath: "",
   minDataFeedsPercentageForBigPackage: 50,
-  arbitrumRpcUrl: "",
   coingeckoApiUrl: "",
   enableHttpServer: false,
   pricesHardLimitsUrls: ["mock-hard-prices-limits-url"],
+  avalancheRpcUrls: ["https://mock-rpc.url"],
+  ethMainRpcUrls: ["https://mock-rpc.url"],
+  arbitrumRpcUrls: ["https://mock-rpc.url"],
   newyorkfedRatesUrl: "",
 };
 

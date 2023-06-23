@@ -2,11 +2,9 @@ import uniswapV3FetchersConfig from "./uniswap-v3-fetchers-config.json";
 import { UniswapV3OnChainFetcher } from "./UniswapV3OnChainFetcher";
 import { ethers } from "ethers";
 import { config } from "../../../config";
+import { ethereumProvider } from "../../../utils/blockchain-providers";
 
 const uniswapV3Fetchers: Record<string, UniswapV3OnChainFetcher> = {};
-const provider = new ethers.providers.StaticJsonRpcProvider(
-  config.ethMainRpcUrl
-);
 
 for (const [fetcherName, fetcherConfig] of Object.entries(
   uniswapV3FetchersConfig
@@ -14,7 +12,7 @@ for (const [fetcherName, fetcherConfig] of Object.entries(
   uniswapV3Fetchers[fetcherName] = new UniswapV3OnChainFetcher(
     fetcherName,
     fetcherConfig,
-    provider
+    ethereumProvider
   );
 }
 
