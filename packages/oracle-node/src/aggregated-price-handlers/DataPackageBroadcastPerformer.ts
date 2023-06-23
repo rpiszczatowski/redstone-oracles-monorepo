@@ -113,7 +113,7 @@ export class DataPackageBroadcastPerformer
     // Adding a data package with all data points
     const areEnoughDataPoint = validateDataPointsForBigPackage(
       dataPoints,
-      this.manifestDataProvider.allTokenCount
+      this.manifestDataProvider.allTokensConfig
     );
     if (areEnoughDataPoint) {
       const bigDataPackage = new DataPackage(

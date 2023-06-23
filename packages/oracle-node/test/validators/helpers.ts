@@ -16,3 +16,10 @@ export const mockManifest = {
     AVAX: {},
   },
 } as unknown as Manifest;
+
+export const mockTokenConfig = {
+  BTC: {},
+  ETH: {},
+  AR: {},
+  AVAX: {},
+};

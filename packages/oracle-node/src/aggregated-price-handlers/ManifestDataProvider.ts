@@ -1,4 +1,4 @@
-import { Manifest } from "../types";
+import { Manifest, TokensConfig } from "../types";
 import ManifestHelper from "../manifest/ManifestHelper";
 
 // Our mechanism for auto-updating manifests can be improved, which will
@@ -7,10 +7,10 @@ import ManifestHelper from "../manifest/ManifestHelper";
 // but only for active iterations
 export class ManifestDataProvider {
   latestManifest?: Manifest;
-  allTokenCount?: number;
+  allTokensConfig?: TokensConfig;
 
   handleManifest(manifest: Manifest) {
-    this.allTokenCount = ManifestHelper.getAllTokensCount(manifest);
     this.latestManifest = manifest;
+    this.allTokensConfig = ManifestHelper.getAllTokensConfig(manifest);
   }
 }
