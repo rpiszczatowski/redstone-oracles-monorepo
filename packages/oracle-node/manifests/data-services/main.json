@@ -884,7 +884,7 @@
       ]
     },
     "USDf": {
-      "source": ["mock"],
+      "source": ["fixed-value"],
       "fixedValue": 1
     },
     "AUD": {
