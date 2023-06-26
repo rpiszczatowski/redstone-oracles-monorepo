@@ -28,7 +28,7 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<BinConfig> {
   constructor(
     name: string,
     private readonly pairConfig: PairConfig,
-    private readonly provider: providers.StaticJsonRpcProvider
+    private readonly provider: providers.Provider
   ) {
     super(name);
   }

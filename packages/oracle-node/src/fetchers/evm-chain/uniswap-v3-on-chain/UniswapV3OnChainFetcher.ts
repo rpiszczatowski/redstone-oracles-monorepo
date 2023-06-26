@@ -30,7 +30,7 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
   constructor(
     name: string,
     private readonly poolsConfig: PoolsConfig,
-    private readonly provider: providers.JsonRpcProvider
+    private readonly provider: providers.Provider
   ) {
     super(name);
   }
