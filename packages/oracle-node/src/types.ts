@@ -151,14 +151,13 @@ export interface NodeConfig {
   overrideDirectCacheServiceUrls?: string[];
   overridePriceCacheServiceUrls?: string[];
   coinbaseIndexerMongoDbUrl?: string;
-  ethMainRpcUrl?: string;
   levelDbLocation: string;
   etherscanApiUrl?: string;
   etherscanApiKey?: string;
   ttlForPricesInLocalDBInMilliseconds: number;
-  avalancheRpcUrl: string;
-  fallbackAvalancheRpcUrl?: string;
-  arbitrumRpcUrl: string;
+  ethMainRpcUrls: string[];
+  avalancheRpcUrls: string[];
+  arbitrumRpcUrls: string[];
   enableStreamrBroadcasting: boolean;
   mockPricesUrlOrPath: string;
   twelveDataApiKey?: string;

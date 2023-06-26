@@ -10,7 +10,7 @@ import { config } from "../../config";
 
 const balancerConfig: BalancerSdkConfig = {
   network: Network.MAINNET,
-  rpcUrl: config.ethMainRpcUrl as string,
+  rpcUrl: config.ethMainRpcUrls[0],
 };
 
 export type BalancerPoolsConfig = {
