@@ -87,13 +87,14 @@ describe("permaswap fetcher", () => {
     expect(result).toEqual([]);
   });
 
-  it("should return empty array when provider returning undefined", async () => {
+  it("should throw error when provider returning undefined", async () => {
     await saveMockPricesInLocalDb([1], ["USDC"]);
     const getResponse = () => undefined;
     mockFetcherResponseWithFunction(getResponse);
 
-    const result = await sut.fetchAll(["ACNH"]);
-    expect(result).toEqual([]);
+    await expect(() => sut.fetchAll(["ACNH"])).rejects.toThrowError(
+      'Response is invalid: [{"success":true,"requestId":"ACNH"}]'
+    );
   });
 
   it("should fetch only defined tokens", async () => {
