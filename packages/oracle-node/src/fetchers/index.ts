@@ -42,6 +42,7 @@ import { MaverickFetcher } from "./maverick/MaverickFetcher";
 import { ethereumEvmFetcher } from "./evm-chain/ethereum/evm-fetcher/EthereumEvmFetcher";
 import balancerMultiFetchers from "./balancer-multi/all-balancers-multi-fetchers";
 import traderJoeV2OnChainFetchers from "./evm-chain/avalanche/trader-joe-on-chain/trader-joe-v2/trader-joe-v2-on-chain-fetchers";
+import { FixedValueFetcher } from "./fixed-value-fetcher/fixed-value-fetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -72,6 +73,7 @@ export default {
   "non-usd-based": new NonUsdBasedFetcher(),
   maverick: new MaverickFetcher(),
   "ethereum-evm-fetcher": ethereumEvmFetcher,
+  "fixed-value": new FixedValueFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...balancerFetchers,

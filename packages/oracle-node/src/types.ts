@@ -30,6 +30,7 @@ export interface TokenConfig {
   skipSigning?: boolean;
   priceAggregator?: string;
   decimals?: number;
+  fixedValue?: number;
 }
 
 export interface DeviationCheckConfig {
