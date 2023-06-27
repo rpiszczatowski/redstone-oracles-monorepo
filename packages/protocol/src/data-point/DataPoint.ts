@@ -11,13 +11,7 @@ export interface IStandardDataPoint {
 }
 export type DataPointPlainObj = IStandardDataPoint | INumericDataPoint;
 
-export type MetadataType = "HEX_BIG_INT";
-
-/**
- * This is union of all possible metadata
- * .type field is used to detect type.
- */
-export type Metadata = Record<string, any> & { type: MetadataType };
+export type Metadata = Record<string, any>;
 
 export class DataPoint extends Serializable {
   constructor(
