@@ -10,13 +10,8 @@ export class FixedValueFetcher extends BaseFetcher {
     return this.getFixedTokenValuesFromManifest(opts.manifest.tokens);
   }
 
-  extractPrices(response: any, ids: string[]): PricesObj {
-    const result: PricesObj = {};
-
-    for (const id of ids) {
-      result[id] = response[id] ?? response.__DEFAULT__;
-    }
-    return result;
+  extractPrices(response: Record<string, number>): PricesObj {
+    return response;
   }
 
   getFixedTokenValuesFromManifest(tokens: TokensConfig) {
