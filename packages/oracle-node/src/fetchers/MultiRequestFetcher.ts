@@ -25,6 +25,16 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
     return requestedDataFeedIds;
   }
 
+  // This method may be overridden to extend validation
+  validateResponse(responses: ExtendedPromiseResult[]): boolean {
+    return (
+      responses !== undefined &&
+      responses.some(
+        (singleResponse: ExtendedPromiseResult) => !!singleResponse.response
+      )
+    );
+  }
+
   async makeSafeRequest(requestId: string): Promise<ExtendedPromiseResult> {
     try {
       const response = await this.makeRequest(requestId);
