@@ -18,18 +18,14 @@ const MUTLICALL_CONTRACT_ADDRESS = "0x8755b94F88D120AB2Cc13b1f6582329b067C760d";
 export class EvmFetcher extends BaseFetcher {
   protected retryForInvalidResponse: boolean = true;
 
-  private multicallContractAddress: string;
   private evmMulticallService: EvmMulticallService;
-  private requestHandlers: Record<string, IEvmRequestHandlers>;
-
   constructor(
     name: string,
     providers: Providers,
     multicallContractAddress: string = MUTLICALL_CONTRACT_ADDRESS,
-    requestHandlers: Record<string, IEvmRequestHandlers>
+    private requestHandlers: Record<string, IEvmRequestHandlers>
   ) {
     super(name);
-    this.multicallContractAddress = multicallContractAddress;
     this.evmMulticallService = new EvmMulticallService(
       providers.mainProvider,
       multicallContractAddress
