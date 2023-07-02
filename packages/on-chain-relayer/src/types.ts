@@ -11,4 +11,42 @@ export interface ConditionCheckResponse {
   warningMessage: string;
 }
 
+export interface OnChainRelayerManifest {
+  chain: {
+    name: string;
+    id: number;
+  };
+  updateTriggers: {
+    deviationPercentage?: number;
+    timeSinceLastUpdateInMilliseconds?: number;
+  };
+  adapterContract: string;
+  dataServiceId: string;
+  priceFeeds: {
+    [dataFeedId: string]: string /* PriceFeed contract address */;
+  };
+}
+
+export interface RelayerConfig {
+  relayerIterationInterval?: number;
+  updatePriceInterval?: number;
+  rpcUrl: string;
+  chainName: string;
+  chainId: number;
+  privateKey: string;
+  adapterContractAddress: string;
+  dataServiceId: string;
+  uniqueSignersCount: number;
+  dataFeeds: string[];
+  cacheServiceUrls: string[];
+  gasLimit: string;
+  updateConditions: ConditionChecksNames[];
+  minDeviationPercentage?: number;
+  healthcheckPingUrl?: string;
+  adapterContractType: string;
+  expectedTxDeliveryTimeInMS: number;
+}
+
+export type ConfigProvider = () => RelayerConfig;
+
 export type ConditionChecksNames = "time" | "value-deviation";

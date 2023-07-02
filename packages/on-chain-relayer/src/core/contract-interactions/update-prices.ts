@@ -17,11 +17,15 @@ interface UpdatePricesArgs {
   proposedTimestamp: number;
 }
 
-const TX_CONFIG = { gasLimit: config.gasLimit };
-
-const deliveryMan = new TransactionDeliveryMan({
-  expectedDeliveryTimeMs: config.expectedTxDeliveryTimeInMS,
-});
+let deliveryMan: TransactionDeliveryMan | undefined = undefined;
+const getDeliveryManager = () => {
+  deliveryMan =
+    deliveryMan ??
+    new TransactionDeliveryMan({
+      expectedDeliveryTimeMs: config().expectedTxDeliveryTimeInMS,
+    });
+  return deliveryMan;
+};
 
 export const updatePrices = async (
   dataPackages: DataPackagesResponse,
@@ -60,14 +64,14 @@ export const updatePrices = async (
 const updatePriceInAdapterContract = async (
   args: UpdatePricesArgs
 ): Promise<TransactionResponse> => {
-  switch (config.adapterContractType) {
+  switch (config().adapterContractType) {
     case "price-feeds":
       return await updatePricesInPriceFeedsAdapter(args);
     case "mento":
       return await updatePricesInMentoAdapter(args);
     default:
       throw new Error(
-        `Unsupported adapter contract type: ${config.adapterContractType}`
+        `Unsupported adapter contract type: ${config().adapterContractType}`
       );
   }
 };
@@ -79,11 +83,11 @@ const updatePricesInPriceFeedsAdapter = async ({
 }: UpdatePricesArgs): Promise<TransactionResponse> => {
   const wrappedContract = wrapContract(adapterContract);
 
-  const deliveryResult = await deliveryMan.deliver(
+  const deliveryResult = await getDeliveryManager().deliver(
     wrappedContract,
     "updateDataFeedsValues",
     [proposedTimestamp],
-    TX_CONFIG.gasLimit ? Number(TX_CONFIG.gasLimit) : undefined
+    config().gasLimit ? Number(config().gasLimit) : undefined
   );
 
   return deliveryResult;

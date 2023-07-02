@@ -1,0 +1,18 @@
+{
+  "chain": {
+    "name": "Canto Testnet",
+    "id": 7701
+  },
+  "updateTriggers": {
+    "timeSinceLastUpdateInMilliseconds": 3600000
+  },
+  "adapterContract": "0xE84823246a76820203F2b4bb8d9BC0E3df45BD77",
+  "dataServiceId": "redstone-main-demo",
+  "priceFeeds": {
+    "CANTO": "0xaCf97fb2f2c336c45b799DAB925ad10ADC70fCAC",
+    "ETH": "0xd75F4B5AA9480E6956f2570Dd258ca716784f6E1",
+    "ATOM": "0x1cd0AB40549BA6812a6ec602e8897f8e28566AbE",
+    "USDC": "0x1a6bbc6Ff8BEeE20B4177Ac87580F4e2aF3Abf71",
+    "USDT": "0x31714B74fbf6ca78eC60C07f10eef061b20E192E"
+  }
+}
