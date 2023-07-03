@@ -46,8 +46,18 @@ export class TwelveDataFetcher extends BaseFetcher {
     });
   }
 
-  extractPrices(response: AxiosResponse<TwelveDataResponse>): PricesObj {
+  extractPrices(
+    response: AxiosResponse<TwelveDataResponse>,
+    ids: string[]
+  ): PricesObj {
     const twelveDataResponse = response.data;
+
+    // If we require only 1 data feed price, response would be { price: xxx }
+    if (ids.length === 1) {
+      const id = ids[0];
+      const value = (twelveDataResponse as unknown as { price: number }).price;
+      return this.extractPricesSafely([id], (id) => ({ id, value }));
+    }
 
     return this.extractPricesSafely(Object.keys(twelveDataResponse), (id) => ({
       value: twelveDataResponse[id].price,
