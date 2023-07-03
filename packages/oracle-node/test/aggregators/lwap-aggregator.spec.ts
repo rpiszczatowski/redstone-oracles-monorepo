@@ -1,6 +1,6 @@
 import lwapAggregator from "../../src/aggregators/lwap-aggregator/lwap-aggregator";
 import { closeLocalLevelDB, setupLocalDb } from "../../src/db/local-db";
-import { createSafeNumber } from "../../src/numbers/SafeNumberFactory";
+import { SafeNumber } from "redstone-utils";
 import {
   PriceDataBeforeAggregation,
   SanitizedPriceDataBeforeAggregation,
@@ -18,22 +18,22 @@ describe("lwapAggregator", () => {
   test("should throw error if liquidities missing", async () => {
     const input = {
       source: {
-        "trader-joe": createSafeNumber(3),
-        uniswap: createSafeNumber(7),
-        sushiswap: createSafeNumber(2),
+        "trader-joe": SafeNumber.createSafeNumber(3),
+        uniswap: SafeNumber.createSafeNumber(7),
+        sushiswap: SafeNumber.createSafeNumber(2),
       },
       symbol: "WAVAX",
     } as unknown as SanitizedPriceDataBeforeAggregation;
     const liquidities = [
       {
         source: {
-          "trader-joe": createSafeNumber(43542.3241241),
+          "trader-joe": SafeNumber.createSafeNumber(43542.3241241),
         },
         symbol: "WAVAX_trader-joe_liquidity",
       },
       {
         source: {
-          uniswap: createSafeNumber(43542.3241241),
+          uniswap: SafeNumber.createSafeNumber(43542.3241241),
         },
         symbol: "WAVAX_uniswap_liquidity",
       },
@@ -48,9 +48,9 @@ describe("lwapAggregator", () => {
   test("should throw error if liquidities contain NaN", async () => {
     const input = {
       source: {
-        "pangolin-wavax": createSafeNumber(3),
-        "trader-joe": createSafeNumber(7),
-        sushiswap: createSafeNumber(6),
+        "pangolin-wavax": SafeNumber.createSafeNumber(3),
+        "trader-joe": SafeNumber.createSafeNumber(7),
+        sushiswap: SafeNumber.createSafeNumber(6),
       },
       symbol: "WAVAX",
     } as unknown as SanitizedPriceDataBeforeAggregation;
@@ -58,7 +58,7 @@ describe("lwapAggregator", () => {
     const liquidities = [
       {
         source: {
-          "trader-joe": createSafeNumber(43542.3241241),
+          "trader-joe": SafeNumber.createSafeNumber(43542.3241241),
         },
         symbol: "WAVAX_trader-joe_liquidity",
       },
@@ -70,7 +70,7 @@ describe("lwapAggregator", () => {
       },
       {
         source: {
-          uniswap: createSafeNumber(234563.5467),
+          uniswap: SafeNumber.createSafeNumber(234563.5467),
         },
         symbol: "WAVAX_pangolin-wavax_liquidity",
       },
@@ -85,10 +85,10 @@ describe("lwapAggregator", () => {
     const input = {
       id: "",
       source: {
-        "pangolin-usdc": createSafeNumber(3.23),
-        uniswap: createSafeNumber(4.676),
-        sushiswap: createSafeNumber(2.943),
-        "trader-joe": createSafeNumber(4.6546),
+        "pangolin-usdc": SafeNumber.createSafeNumber(3.23),
+        uniswap: SafeNumber.createSafeNumber(4.676),
+        sushiswap: SafeNumber.createSafeNumber(2.943),
+        "trader-joe": SafeNumber.createSafeNumber(4.6546),
       },
       symbol: "WAVAX",
       timestamp: 0,
@@ -98,25 +98,25 @@ describe("lwapAggregator", () => {
     const liquidities = [
       {
         source: {
-          "trader-joe": createSafeNumber(32343.431989),
+          "trader-joe": SafeNumber.createSafeNumber(32343.431989),
         },
         symbol: "WAVAX_trader-joe_liquidity",
       },
       {
         source: {
-          uniswap: createSafeNumber(123450.534543),
+          uniswap: SafeNumber.createSafeNumber(123450.534543),
         },
         symbol: "WAVAX_uniswap_liquidity",
       },
       {
         source: {
-          sushiswap: createSafeNumber(993241.090542),
+          sushiswap: SafeNumber.createSafeNumber(993241.090542),
         },
         symbol: "WAVAX_sushiswap_liquidity",
       },
       {
         source: {
-          uniswap: createSafeNumber(43542.3241241),
+          uniswap: SafeNumber.createSafeNumber(43542.3241241),
         },
         symbol: "WAVAX_pangolin-usdc_liquidity",
       },
@@ -130,38 +130,38 @@ describe("lwapAggregator", () => {
     const input = {
       id: "",
       source: {
-        "pangolin-usdc": createSafeNumber(3.23),
-        uniswap: createSafeNumber(4.676),
-        sushiswap: createSafeNumber(2.943),
-        "trader-joe": createSafeNumber(4.6546),
+        "pangolin-usdc": SafeNumber.createSafeNumber(3.23),
+        uniswap: SafeNumber.createSafeNumber(4.676),
+        sushiswap: SafeNumber.createSafeNumber(2.943),
+        "trader-joe": SafeNumber.createSafeNumber(4.6546),
       },
       symbol: "WAVAX",
-      timestamp: createSafeNumber(0),
+      timestamp: SafeNumber.createSafeNumber(0),
       version: "",
     } as unknown as SanitizedPriceDataBeforeAggregation;
 
     const liquidities = [
       {
         source: {
-          "trader-joe": createSafeNumber(0),
+          "trader-joe": SafeNumber.createSafeNumber(0),
         },
         symbol: "WAVAX_trader-joe_liquidity",
       },
       {
         source: {
-          uniswap: createSafeNumber(0),
+          uniswap: SafeNumber.createSafeNumber(0),
         },
         symbol: "WAVAX_uniswap_liquidity",
       },
       {
         source: {
-          sushiswap: createSafeNumber(0),
+          sushiswap: SafeNumber.createSafeNumber(0),
         },
         symbol: "WAVAX_sushiswap_liquidity",
       },
       {
         source: {
-          uniswap: createSafeNumber(0),
+          uniswap: SafeNumber.createSafeNumber(0),
         },
         symbol: "WAVAX_pangolin-usdc_liquidity",
       },

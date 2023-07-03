@@ -40,6 +40,9 @@
     },
     {
       "path": "../streamr-proxy"
+    },
+    {
+      "path": "../utils"
     }
   ]
 }

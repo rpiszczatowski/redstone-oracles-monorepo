@@ -1,8 +1,8 @@
 import {
-  JsNativeSafeNumber,
+  NumberArg,
   JsNativeSafeNumberConfig,
-} from "../../src/numbers/JsNativeSafeNumber";
-import { NumberArg } from "../../src/numbers/ISafeNumber";
+  JsNativeSafeNumber,
+} from "../../src/ISafeNumber";
 
 describe("JsNativePreciseNumber", () => {
   describe("from", () => {

@@ -4,12 +4,12 @@ const config: Config.InitialOptions = {
   roots: ["<rootDir>/"],
   testMatch: ["**/test/**/?(*.)+(spec).+(ts)"],
   transform: {
-    "^.+\\.(ts|js)$": "ts-jest",
+    "^.+\\.(ts)$": "ts-jest",
   },
   testEnvironment: "node",
   modulePaths: ["<rootDir>"],
-  setupFiles: ["<rootDir>/.jest/set-env-vars.js"],
-  testPathIgnorePatterns: ["<rootDir>/test/dry-run/*"],
+  setupFiles: ["<rootDir>/.jest/set-redstone-number-config.ts"],
+  testPathIgnorePatterns: [],
 };
 
 export default config;

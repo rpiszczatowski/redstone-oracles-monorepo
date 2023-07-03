@@ -76,7 +76,7 @@ describe("Curve Multi Block", () => {
     ]);
     const result = await fetcher.fetchAll(["STETH"]);
 
-    expect(result).toEqual([{ symbol: "STETH", value: 2104.365556060975 }]);
+    expect(result).toEqual([{ symbol: "STETH", value: 2104.36555606098 }]);
   });
 
   test("Should properly fetch data with 7 block", async () => {
@@ -111,7 +111,7 @@ describe("Curve Multi Block", () => {
     ]);
     const result = await fetcher.fetchAll(["STETH"]);
 
-    expect(result).toEqual([{ symbol: "STETH", value: 1052.3205560609752 }]);
+    expect(result).toEqual([{ symbol: "STETH", value: 1052.3205560609802 }]);
   });
 
   describe("generateRoundedToStepSequence", () => {

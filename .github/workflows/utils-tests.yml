@@ -1,0 +1,26 @@
+name: Rpc-providers CI
+on:
+  push:
+    paths:
+      - packages/utils/**
+      - .github/workflows/utils-tests.yml
+
+jobs:
+  run-tests:
+    runs-on: LargeRunner
+    defaults:
+      run:
+        working-directory: packages/utils
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15
+      - name: Install modules
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Run tests
+        run: yarn test
+        env:
+          NODE_ENV: test
