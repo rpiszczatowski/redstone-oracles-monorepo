@@ -45,3 +45,13 @@ export const avalancheProvider = produceProvider(
   config.avalancheRpcUrls,
   avalancheNetworkConfig
 );
+
+const optimismNetworkConfig = {
+  name: "Optimism",
+  chainId: 10,
+};
+
+export const optimismProvider = produceProvider(
+  config.optimismRpcUrls,
+  optimismNetworkConfig
+);

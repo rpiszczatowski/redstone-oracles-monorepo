@@ -653,6 +653,17 @@
       "token0Decimals": 6,
       "token1Decimals": 6,
       "fee": 500
+    },
+    "LUSD": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x4e0924d3a751bE199C426d52fb1f2337fa96f736",
+      "token0Symbol": "LUSD",
+      "token1Symbol": "USDC",
+      "token0Address": "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 500
     }
   },
   "uniswap-v3-on-chain-usdc-10000": {

@@ -49,6 +49,14 @@ const DEFAULT_ETH_MAIN_RPC_URLS = [
   "https://core.gashawk.io/rpc",
   "https://ethereum.publicnode.com",
 ];
+const DEFAULT_OPTIMISM_RPC_URLS = [
+  "https://mainnet.optimism.io",
+  "https://optimism.publicnode.com",
+  "https://optimism-mainnet.public.blastapi.io",
+  "https://rpc.ankr.com/optimism",
+  "https://1rpc.io/op",
+  "https://optimism.blockpi.network/v1/rpc/public",
+];
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -221,4 +229,5 @@ export const config: NodeConfig = Object.freeze({
   ),
   arbitrumRpcUrls: getRpcUrls("ARBITRUM_RPC_URLS", DEFAULT_ARBITRUM_RPC_URLS),
   ethMainRpcUrls: getRpcUrls("ETH_MAIN_RPC_URLS", DEFAULT_ETH_MAIN_RPC_URLS),
+  optimismRpcUrls: getRpcUrls("OPTIMISM_RPC_URLS", DEFAULT_OPTIMISM_RPC_URLS),
 });

@@ -11,5 +11,11 @@ export default {
       pairedToken: "ETH",
       poolAddress: "0x0CE176E1b11A8f88a4Ba2535De80E81F88592bad",
     },
+    LUSD: {
+      token0Symbol: "LUSD",
+      token1Symbol: "USDC",
+      pairedToken: "USDC",
+      poolAddress: "0x6c6FC818b25dF89A8adA8da5A43669023bAD1F4c",
+    },
   },
 };
