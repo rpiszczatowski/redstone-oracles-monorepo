@@ -8,20 +8,20 @@ import {
 import { EvmFetcher } from "../../src/fetchers/evm-chain/shared/EvmFetcher";
 import { requestHandlers } from "../../src/fetchers/evm-chain/ethereum/evm-fetcher/sources";
 import Multicall2 from "../../src/fetchers/evm-chain/shared/abis/Multicall2.abi.json";
-import { saveMockPriceInLocalDb } from "./_helpers";
+import { saveMockPriceInLocalDb, saveMockPricesInLocalDb } from "./_helpers";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
   setupLocalDb,
 } from "../../src/db/local-db";
 import { balancerTokensContractDetails } from "../../src/fetchers/evm-chain/ethereum/evm-fetcher/sources/balancer/balancerTokensContractDetails";
+import { curveTokensContractsDetails } from "../../src/fetchers/evm-chain/ethereum/evm-fetcher/sources/curve-lp-tokens/curveTokensContractsDetails";
 
 jest.setTimeout(15000);
 
 describe("Ethereum EVM fetcher", () => {
   let provider: MockProvider;
   let multicallContract: Contract;
-  let yycontract: MockContract;
 
   beforeAll(() => {
     setupLocalDb();
@@ -90,6 +90,56 @@ describe("Ethereum EVM fetcher", () => {
       expect(result).toEqual([
         { symbol: "BB-A-WETH", value: 1853.9698689576974 },
       ]);
+    });
+  });
+
+  describe("Curve Token - crvFRAX", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+
+      const erc20Contract = await deployMockContract(
+        wallet,
+        curveTokensContractsDetails.erc20abi
+      );
+      await erc20Contract.mock.totalSupply.returns(
+        "317026235670089709931993389"
+      );
+      const poolContract = await deployMockContract(
+        wallet,
+        curveTokensContractsDetails.abi
+      );
+      await poolContract.mock.balances
+        .withArgs(0)
+        .returns("112592607687628212016974636");
+      await poolContract.mock.balances.withArgs(1).returns("106490055087428");
+      await poolContract.mock.balances.withArgs(2).returns("106266964025858");
+
+      multicallContract = await deployMulticallContract(wallet);
+
+      const tokensAddresses = {
+        erc20Address: erc20Contract.address,
+        poolAddress: poolContract.address,
+      };
+
+      curveTokensContractsDetails["3Crv"] = {
+        ...curveTokensContractsDetails["3Crv"],
+        ...tokensAddresses,
+      };
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new EvmFetcher(
+        "ethereum-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
+      );
+
+      await saveMockPricesInLocalDb([1.0, 1.0, 1.0], ["DAI", "USDC", "USDT"]);
+
+      const result = await fetcher.fetchAll(["3Crv"]);
+      expect(result).toEqual([{ symbol: "3Crv", value: 1.0262545814646273 }]);
     });
   });
 });

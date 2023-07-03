@@ -412,41 +412,34 @@ describe("Avalanche EVM fetcher", () => {
     });
   });
 
-  describe("Curve Token", () => {
+  describe("Curve Token - crvUSDBTCETH", () => {
     beforeAll(async () => {
       provider = new MockProvider();
       const [wallet] = provider.getWallets();
 
-      const curveLpTokenContract = await deployMockContract(
+      const erc20Contract = await deployMockContract(
         wallet,
-        curveTokensContractsDetails.crvUSDBTCETH.abi
+        curveTokensContractsDetails.erc20abi
       );
-      await curveLpTokenContract.mock.totalSupply.returns(
-        "2789046954387404997799"
-      );
-      const wbtcContract = await deployMockContract(
+      await erc20Contract.mock.totalSupply.returns("2932165587542432290261");
+
+      const poolContract = await deployMockContract(
         wallet,
-        curveTokensContractsDetails.crvUSDBTCETH.abi
+        curveTokensContractsDetails.abi
       );
-      await wbtcContract.mock.balanceOf.returns("3827679491");
-      const wethContract = await deployMockContract(
-        wallet,
-        curveTokensContractsDetails.crvUSDBTCETH.abi
-      );
-      await wethContract.mock.balanceOf.returns("566773096955970306543");
-      const wcrvContract = await deployMockContract(
-        wallet,
-        curveTokensContractsDetails.crvUSDBTCETH.abi
-      );
-      await wcrvContract.mock.balanceOf.returns("1092413975173947426287877");
+      await poolContract.mock.balances
+        .withArgs("0")
+        .returns("1119820024147240997756265");
+      await poolContract.mock.balances.withArgs("1").returns("3891897421");
+      await poolContract.mock.balances
+        .withArgs("2")
+        .returns("633420213309859800953");
 
       multicallContract = await deployMulticallContract(wallet);
 
       const tokensAddresses = {
-        address: curveLpTokenContract.address,
-        avWBTCAddress: wbtcContract.address,
-        avWETHAddress: wethContract.address,
-        av3CRVAddress: wcrvContract.address,
+        erc20Address: erc20Contract.address,
+        poolAddress: poolContract.address,
       };
 
       curveTokensContractsDetails.crvUSDBTCETH = {
@@ -464,13 +457,13 @@ describe("Avalanche EVM fetcher", () => {
       );
 
       await saveMockPricesInLocalDb(
-        [29570.8, 1991.91, 0.9718],
+        [30173.88, 1855.19, 0.677235],
         ["BTC", "ETH", "CRV"]
       );
 
       const result = await fetcher.fetchAll(["crvUSDBTCETH"]);
       expect(result).toEqual([
-        { symbol: "crvUSDBTCETH", value: 785.418437398068 },
+        { symbol: "crvUSDBTCETH", value: 1059.910337370855 },
       ]);
     });
   });

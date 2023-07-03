@@ -4,15 +4,14 @@ import { buildMulticallRequests } from "../../../../shared/utils/build-multicall
 import { extractValueFromMulticallResponse } from "../../../../shared/utils/extract-value-from-multicall-response";
 import { traderJoeAutoPoolTokenContractDetails } from "./traderJoeAutoPoolTokenContractsDetails";
 import { MulticallParsedResponses } from "../../../../../../types";
-import { TEN_AS_BASE_OF_POWER } from "../../../../shared/contants";
 import { getTokensPricesFromLocalCache } from "../../../../shared/utils/get-tokens-prices-from-local-cache";
+import { serializeDecimalsToDefault } from "../../../../shared/utils/serialize-decimals-to-default";
 
 export type TraderJoeAutoPoolTokensDetailsKeys =
   keyof typeof traderJoeAutoPoolTokenContractDetails;
 
 const FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [0, 66];
 const SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [66, 130];
-const TRADER_JOE_DEFAULT_DECIMALS = 18;
 
 export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
   prepareMulticallRequest(id: TraderJoeAutoPoolTokensDetailsKeys) {
@@ -71,11 +70,11 @@ export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
     );
     const secondToken = tokensToFetch[1];
 
-    const firstBalanceSerialized = this.serializeDecimals(
+    const firstBalanceSerialized = serializeDecimalsToDefault(
       firstBalance,
       token0Decimals
     );
-    const secondBalanceSerialized = this.serializeDecimals(
+    const secondBalanceSerialized = serializeDecimalsToDefault(
       secondBalance,
       token1Decimals
     );
@@ -100,20 +99,6 @@ export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
     const totalSupplyDecimals = new Decimal(
       extractValueFromMulticallResponse(response, address, "decimals")
     ).toNumber();
-    return this.serializeDecimals(totalSupply, totalSupplyDecimals);
-  }
-
-  serializeDecimals(balance: Decimal, tokenDecimals: number) {
-    const serializedDecimals = TRADER_JOE_DEFAULT_DECIMALS - tokenDecimals;
-    if (serializedDecimals < 0) {
-      throw new Error(
-        `Error in Trader Joe Auto handler, decimals cannot be below 0`
-      );
-    }
-
-    const multiplier = new Decimal(TEN_AS_BASE_OF_POWER).toPower(
-      serializedDecimals
-    );
-    return balance.mul(multiplier);
+    return serializeDecimalsToDefault(totalSupply, totalSupplyDecimals);
   }
 }
