@@ -7,6 +7,6 @@ export const buildRequestHandlersFromContractDetails = (
   evmRequestHandlers: Class<IEvmRequestHandlers>
 ) =>
   Object.keys(contractDetails).reduce((obj, id) => {
-    obj[id] = new evmRequestHandlers();
+    obj[id] = new evmRequestHandlers(contractDetails);
     return obj;
   }, {} as Record<string, IEvmRequestHandlers>);
