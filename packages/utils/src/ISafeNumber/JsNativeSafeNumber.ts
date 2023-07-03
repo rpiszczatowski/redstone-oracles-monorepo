@@ -1,10 +1,4 @@
-import { Consola } from "consola";
-import { utils } from "redstone-protocol";
 import { NumberArg, ISafeNumber } from "./ISafeNumber";
-
-const logger = require("../utils/logger")(
-  "numbers/JsNativeSafeNumber"
-) as Consola;
 
 export enum NumberValidationResult {
   isOk,
@@ -31,8 +25,8 @@ export const JsNativeSafeNumberConfig = {
     [NumberValidationResult.isNotFinite]: (msg) => {
       throw new Error(msg);
     },
-    [NumberValidationResult.isOverflow]: logger.error,
-    [NumberValidationResult.isUnderflow]: logger.error,
+    [NumberValidationResult.isOverflow]: console.error,
+    [NumberValidationResult.isUnderflow]: console.error,
   } as Record<NumberValidationError, (msg: string) => any>,
   EPSILON: 1e-14,
 };
@@ -66,6 +60,10 @@ export class JsNativeSafeNumber implements ISafeNumber {
 
   toString(): string {
     return this._value.toString();
+  }
+
+  isSafeNumber(): boolean {
+    return true;
   }
 
   abs(): JsNativeSafeNumber {
@@ -102,7 +100,9 @@ export class JsNativeSafeNumber implements ISafeNumber {
   }
 
   assertNonNegative() {
-    utils.assert(this._value >= 0, `${this.toString} >= 0`);
+    if (this._value < 0) {
+      throw new Error("Assert non negative failed");
+    }
   }
 
   /** In the case of this implementation it is actually safe. */
@@ -191,7 +191,7 @@ const validateNumber = (
   return { result: NumberValidationResult.isOk, message: "" };
 };
 
-const parseToSafeNumber = (value: utils.NumberLike) => {
+const parseToSafeNumber = (value: number | string) => {
   let number;
   if (typeof value === "string") {
     if (!JsNativeSafeNumberConfig.DIGIT_REGEXP.test(value)) {

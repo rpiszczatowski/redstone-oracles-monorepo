@@ -1,10 +1,10 @@
 import { savePrices } from "../../src/db/local-db";
-import { createSafeNumber } from "../../src/numbers/SafeNumberFactory";
 import axios from "axios";
 import {
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
 } from "../../src/types";
+import { SafeNumber } from "redstone-utils";
 
 export const saveMockPriceInLocalDb = async (
   value: number,
@@ -12,7 +12,7 @@ export const saveMockPriceInLocalDb = async (
 ) => {
   const priceToSave = preparePrice({
     symbol,
-    value: createSafeNumber(value),
+    value: SafeNumber.createSafeNumber(value),
   });
   await savePrices([priceToSave]);
 };
@@ -24,7 +24,7 @@ export const saveMockPricesInLocalDb = async (
   const pricesToPrepare = symbols.map((symbol, index) =>
     preparePrice({
       symbol,
-      value: createSafeNumber(values[index]),
+      value: SafeNumber.createSafeNumber(values[index]),
     })
   );
   const pricesToSave = preparePrices(pricesToPrepare);

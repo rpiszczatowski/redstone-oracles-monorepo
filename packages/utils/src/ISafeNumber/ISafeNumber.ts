@@ -1,5 +1,3 @@
-import { utils } from "redstone-protocol";
-
 export interface ISafeNumber {
   add(numberLike: NumberArg): ISafeNumber;
   sub(numberLike: NumberArg): ISafeNumber;
@@ -16,6 +14,7 @@ export interface ISafeNumber {
   /** Convert number to string without loosing precision */
   toString(): string;
   unsafeToNumber(): number;
+  isSafeNumber(): boolean;
 }
 
-export type NumberArg = utils.NumberLike | ISafeNumber;
+export type NumberArg = string | number | ISafeNumber;

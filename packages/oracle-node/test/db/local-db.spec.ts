@@ -1,3 +1,4 @@
+import { SafeNumber } from "redstone-utils";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
@@ -7,7 +8,6 @@ import {
   savePrices,
   getLastPrice,
 } from "../../src/db/local-db";
-import { createSafeNumber } from "../../src/numbers/SafeNumberFactory";
 import { PriceDataAfterAggregation } from "../../src/types";
 import { roundTimestamp } from "../../src/utils/timestamps";
 
@@ -28,12 +28,12 @@ const prices: PriceDataAfterAggregation[] = [
   {
     ...defaultPriceProps,
     symbol: "BTC",
-    value: createSafeNumber(4242),
+    value: SafeNumber.createSafeNumber(4242),
   },
   {
     ...defaultPriceProps,
     symbol: "ETH",
-    value: createSafeNumber(42),
+    value: SafeNumber.createSafeNumber(42),
   },
 ];
 
@@ -130,7 +130,7 @@ describe("Local DB", () => {
         prices.push({
           ...defaultPriceProps,
           symbol,
-          value: createSafeNumber(assetIndex),
+          value: SafeNumber.createSafeNumber(assetIndex),
           timestamp: roundedTimestamp,
         });
       }
@@ -189,7 +189,7 @@ describe("Local DB", () => {
         ...defaultPriceProps,
         timestamp: defaultPriceProps.timestamp - FIVE_MINUTES_IN_MILLISECONDS,
         symbol: "AVAX",
-        value: createSafeNumber("17"),
+        value: SafeNumber.createSafeNumber("17"),
       },
     ]);
 

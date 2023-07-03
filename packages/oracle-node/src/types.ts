@@ -1,4 +1,4 @@
-import { ISafeNumber } from "./numbers/ISafeNumber";
+import { SafeNumber } from "redstone-utils";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
@@ -57,7 +57,7 @@ export interface Fetcher {
 }
 
 export type SanitizedPriceDataBeforeAggregation =
-  PriceDataBeforeAggregation<ISafeNumber>;
+  PriceDataBeforeAggregation<SafeNumber.ISafeNumber>;
 
 export interface Aggregator {
   getAggregatedValue: (
@@ -98,7 +98,7 @@ export interface PriceSource<T> {
 
 export interface PriceDataAfterAggregation
   extends SanitizedPriceDataBeforeAggregation {
-  value: ISafeNumber;
+  value: SafeNumber.ISafeNumber;
 }
 
 export interface PriceDataBeforeSigning extends PriceDataAfterAggregation {

@@ -4,7 +4,6 @@ import {
   setupLocalDb,
   savePrices,
 } from "../src/db/local-db";
-import { createSafeNumber } from "../src/numbers/SafeNumberFactory";
 import PricesService, {
   PricesBeforeAggregation,
   PricesDataFetched,
@@ -16,6 +15,7 @@ import {
   PriceDataBeforeAggregation,
 } from "../src/types";
 import { preparePrices, preparePrice } from "./fetchers/_helpers";
+import { SafeNumber } from "redstone-utils";
 
 jest.mock("../src/Terminator", () => ({
   terminateWithManifestConfigError: (details: string) => {
@@ -195,11 +195,11 @@ describe("PricesService", () => {
       const prices = preparePrices([
         {
           symbol: "ETH",
-          value: createSafeNumber(42),
+          value: SafeNumber.createSafeNumber(42),
         },
         {
           symbol: "BTC",
-          value: createSafeNumber(442),
+          value: SafeNumber.createSafeNumber(442),
         },
       ]);
 
@@ -221,17 +221,17 @@ describe("PricesService", () => {
         {
           symbol: "ETH",
           source: {
-            src1: createSafeNumber(41),
-            src2: createSafeNumber(43),
-            src3: createSafeNumber(42),
+            src1: SafeNumber.createSafeNumber(41),
+            src2: SafeNumber.createSafeNumber(43),
+            src3: SafeNumber.createSafeNumber(42),
           },
         },
         {
           symbol: "BTC",
           source: {
-            src1: createSafeNumber(442),
-            src2: createSafeNumber(443),
-            src3: createSafeNumber(442),
+            src1: SafeNumber.createSafeNumber(442),
+            src2: SafeNumber.createSafeNumber(443),
+            src3: SafeNumber.createSafeNumber(442),
           },
         },
       ]);
@@ -247,15 +247,17 @@ describe("PricesService", () => {
 
     it("should properly calculate aggregated values (some sources are too deviated)", async () => {
       await savePrices(
-        preparePrices([{ symbol: "ETH", value: createSafeNumber(41) }])
+        preparePrices([
+          { symbol: "ETH", value: SafeNumber.createSafeNumber(41) },
+        ])
       );
       const prices: PriceDataBeforeAggregation[] = preparePrices([
         {
           symbol: "ETH",
           source: {
-            src1: createSafeNumber(40),
-            src2: createSafeNumber(20),
-            src3: createSafeNumber(44),
+            src1: SafeNumber.createSafeNumber(40),
+            src2: SafeNumber.createSafeNumber(20),
+            src3: SafeNumber.createSafeNumber(44),
           }, // value from src2 should be exluded
         },
       ]);
@@ -270,15 +272,17 @@ describe("PricesService", () => {
 
     it("should exclude price if all sources values are deviated", async () => {
       await savePrices(
-        preparePrices([{ symbol: "ETH", value: createSafeNumber(42) }])
+        preparePrices([
+          { symbol: "ETH", value: SafeNumber.createSafeNumber(42) },
+        ])
       );
       const prices: PriceDataBeforeAggregation[] = preparePrices([
         {
           symbol: "ETH",
           source: {
-            src1: createSafeNumber(60),
-            src2: createSafeNumber(20),
-            src3: createSafeNumber(100000),
+            src1: SafeNumber.createSafeNumber(60),
+            src2: SafeNumber.createSafeNumber(20),
+            src3: SafeNumber.createSafeNumber(100000),
           },
         },
       ]);
@@ -321,11 +325,11 @@ describe("PricesService", () => {
       const price = preparePrice({
         symbol: "ETH",
         source: {
-          src1: createSafeNumber(100),
-          src2: createSafeNumber(44),
-          src3: createSafeNumber(20),
-          src4: createSafeNumber(41),
-          src5: createSafeNumber(42),
+          src1: SafeNumber.createSafeNumber(100),
+          src2: SafeNumber.createSafeNumber(44),
+          src3: SafeNumber.createSafeNumber(20),
+          src4: SafeNumber.createSafeNumber(41),
+          src5: SafeNumber.createSafeNumber(42),
         },
       });
       const recentPrices = [{ value: "42", timestamp: price.timestamp }];
@@ -353,7 +357,7 @@ describe("PricesService", () => {
       partialPriceValidationArgs: Partial<PriceValidationArgs>
     ) => {
       const defaultPriceValidationArgs = {
-        value: createSafeNumber(42),
+        value: SafeNumber.createSafeNumber(42),
         timestamp: testTimestamp,
         deviationConfig: emptyManifest.deviationCheck,
         recentPrices: [],
@@ -369,42 +373,42 @@ describe("PricesService", () => {
     it("should properly calculate deviation with recent values", () => {
       expect(
         getDeviation({
-          value: createSafeNumber(42),
+          value: SafeNumber.createSafeNumber(42),
           recentPrices: [{ value: "42", timestamp: testTimestamp - 1 }],
         })
       ).toBe(0);
 
       expect(
         getDeviation({
-          value: createSafeNumber(84),
+          value: SafeNumber.createSafeNumber(84),
           recentPrices: [{ value: "42", timestamp: testTimestamp - 1 }],
         })
       ).toBe(100);
 
       expect(
         getDeviation({
-          value: createSafeNumber(63),
+          value: SafeNumber.createSafeNumber(63),
           recentPrices: [{ value: "42", timestamp: testTimestamp - 1 }],
         })
       ).toBe(50);
 
       expect(
         getDeviation({
-          value: createSafeNumber(168),
+          value: SafeNumber.createSafeNumber(168),
           recentPrices: [{ value: "42", timestamp: testTimestamp - 1 }],
         })
       ).toBe(300);
 
       expect(
         getDeviation({
-          value: createSafeNumber(11),
+          value: SafeNumber.createSafeNumber(11),
           recentPrices: [{ value: "10", timestamp: testTimestamp - 1 }],
         })
       ).toBe(10);
 
       expect(
         getDeviation({
-          value: createSafeNumber(11),
+          value: SafeNumber.createSafeNumber(11),
           recentPrices: [
             { value: "9.5", timestamp: testTimestamp - 1 },
             { value: "10.5", timestamp: testTimestamp - 2 },
@@ -414,7 +418,7 @@ describe("PricesService", () => {
 
       expect(
         getDeviation({
-          value: createSafeNumber(21),
+          value: SafeNumber.createSafeNumber(21),
           recentPrices: [{ value: "42", timestamp: testTimestamp - 1 }],
         })
       ).toBe(50);
@@ -423,7 +427,7 @@ describe("PricesService", () => {
     it("should properly calculate deviations for big recent prices arrays", () => {
       expect(
         getDeviation({
-          value: createSafeNumber(210000),
+          value: SafeNumber.createSafeNumber(210000),
           recentPrices: Array(30000).fill({
             value: "420000",
             timestamp: testTimestamp - 1,
@@ -435,7 +439,7 @@ describe("PricesService", () => {
     it("should exclude too old values from the deviation calculation", () => {
       expect(
         getDeviation({
-          value: createSafeNumber(21),
+          value: SafeNumber.createSafeNumber(21),
           recentPrices: [
             { value: "42", timestamp: testTimestamp - 2 * 60 * 1000 },
             { value: "41", timestamp: testTimestamp - 3 * 60 * 1000 },
@@ -449,7 +453,7 @@ describe("PricesService", () => {
     it("should return 0% deviation if there are no recent values", () => {
       expect(
         getDeviation({
-          value: createSafeNumber(42),
+          value: SafeNumber.createSafeNumber(42),
           recentPrices: [],
         })
       ).toBe(0);
@@ -471,9 +475,9 @@ describe("PricesService", () => {
       value: 43,
       symbol: "TestToken",
       source: {
-        testSource1: createSafeNumber(42),
-        testSource2: createSafeNumber(44),
-        testSource4: createSafeNumber(43),
+        testSource1: SafeNumber.createSafeNumber(42),
+        testSource2: SafeNumber.createSafeNumber(44),
+        testSource4: SafeNumber.createSafeNumber(43),
       },
     } as unknown as PriceDataAfterAggregation;
 
@@ -485,8 +489,8 @@ describe("PricesService", () => {
       const newPriceObject = {
         ...priceObject,
         source: {
-          testSource1: createSafeNumber(42),
-          testSource3: createSafeNumber(44),
+          testSource1: SafeNumber.createSafeNumber(42),
+          testSource3: SafeNumber.createSafeNumber(44),
         },
       };
       pricesService.assertSourcesNumber(newPriceObject, manifest);
@@ -495,7 +499,7 @@ describe("PricesService", () => {
     test("should not pass assertion for less than minValidSourcesPercentage", () => {
       const newPriceObject = {
         ...priceObject,
-        source: { testSource3: createSafeNumber(43) },
+        source: { testSource3: SafeNumber.createSafeNumber(43) },
       };
       expect(() =>
         pricesService.assertSourcesNumber(newPriceObject, manifest)

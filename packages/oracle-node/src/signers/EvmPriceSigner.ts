@@ -9,16 +9,17 @@ import {
   SerializedPriceData,
 } from "../types";
 import _ from "lodash";
-import { ISafeNumber } from "../numbers/ISafeNumber";
-import { JsNativeSafeNumber } from "../numbers/JsNativeSafeNumber";
+import { SafeNumber } from "redstone-utils";
 
 /** IMPORTANT: This function as side effect convert Class instances to pure objects */
 const sortDeepObjects = <T>(arr: T[]): T[] => sortDeepObjectArrays(arr);
 
-const serializePriceValue = (value: number | ISafeNumber): number => {
+const serializePriceValue = (
+  value: number | SafeNumber.ISafeNumber
+): number => {
   if (typeof value === "number") {
     return Math.round(value * 10 ** 8);
-  } else if (value instanceof JsNativeSafeNumber) {
+  } else if (value instanceof SafeNumber.JsNativeSafeNumber) {
     return Math.round(value.unsafeToNumber() * 10 ** 8);
   } else {
     throw new Error(`Don't know how to serialize ${value} to price`);
