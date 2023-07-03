@@ -1,0 +1,15 @@
+{
+  "uniswap-v3-optimism-on-chain-usdc-500": {
+    "LUSD": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x1682dCd12f6E291De6874DCb0a89EE50465f43bD",
+      "token0Symbol": "USDC",
+      "token1Symbol": "LUSD",
+      "token0Address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+      "token1Address": "0xc40F949F8a4e094D1b49a23ea9241D289B7b2819",
+      "token0Decimals": 6,
+      "token1Decimals": 18,
+      "fee": 500
+    }
+  }
+}

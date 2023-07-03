@@ -34,6 +34,7 @@ export const getDryRunTestNodeConfig = (manifest: Manifest): NodeConfig => ({
   avalancheRpcUrls: ["https://mock-rpc.url"],
   ethMainRpcUrls: ["https://mock-rpc.url"],
   arbitrumRpcUrls: ["https://mock-rpc.url"],
+  optimismRpcUrls: ["https://mock-rpc.url"],
 });
 
 export const MockScheduler = {

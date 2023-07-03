@@ -1,6 +1,5 @@
 import { Contract, Wallet } from "ethers";
 import {
-  MockContract,
   MockProvider,
   deployContract,
   deployMockContract,

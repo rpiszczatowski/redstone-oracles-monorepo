@@ -160,5 +160,15 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       functionName: "get_dy_underlying",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
     },
+    LUSD: {
+      address: "0xed279fdd11ca84beef15af5d39bb4d4bee23f0ca",
+      tokenIndex: 0,
+      pairedTokenIndex: 1,
+      pairedToken: "3Crv",
+      provider: ethereumProvider,
+      ratioMultiplier: 1,
+      functionName: "get_dy_underlying",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+    },
   },
 };

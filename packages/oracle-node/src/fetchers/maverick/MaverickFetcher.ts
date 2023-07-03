@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { Contract } from "ethers";
+import { Contract, providers } from "ethers";
 import { getRawPrice } from "../../db/local-db";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import fetcherConfig from "./maverick-fetcher-config";
@@ -7,8 +7,20 @@ import { MAVERICK_POOL_INFORMATION_ABI } from "./pool-information.abi";
 
 const MAVERICK_PRECISION_DIVIDER = 1e18;
 
-type FetcherConfig = typeof fetcherConfig;
-type SupportedIds = keyof FetcherConfig["tokens"];
+interface FetcherConfig {
+  poolInformationAddress: string;
+  provider: providers.Provider;
+  tokens: {
+    [dataFeedId: string]: TokenConfig;
+  };
+}
+interface TokenConfig {
+  token0Symbol: string;
+  token1Symbol: string;
+  pairedToken: string;
+  poolAddress: string;
+}
+type SupportedIds = keyof (typeof fetcherConfig)["tokens"];
 
 export interface MaverickResponse {
   priceInPairedToken: Decimal;

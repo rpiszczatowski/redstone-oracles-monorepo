@@ -159,6 +159,7 @@ export interface NodeConfig {
   ethMainRpcUrls: string[];
   avalancheRpcUrls: string[];
   arbitrumRpcUrls: string[];
+  optimismRpcUrls: string[];
   enableStreamrBroadcasting: boolean;
   mockPricesUrlOrPath: string;
   twelveDataApiKey?: string;

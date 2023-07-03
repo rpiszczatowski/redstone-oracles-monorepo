@@ -22,9 +22,6 @@ import { Decimal } from "decimal.js";
 import { TEN_AS_BASE_OF_POWER } from "../shared/contants";
 import { parseSlippageDataFeedId } from "../../liquidity/utils";
 
-const SINGLE_TICK = 1.0001; // single tick is a 1bp (0.01%) distance
-const DEFAULT_TWAP_SECONDS = 180;
-
 type PriceAction = "buy" | "sell";
 export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> {
   constructor(
