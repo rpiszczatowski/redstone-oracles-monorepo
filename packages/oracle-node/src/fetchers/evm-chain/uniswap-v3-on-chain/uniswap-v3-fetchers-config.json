@@ -161,11 +161,23 @@
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8",
+      "token0Symbol": "AAVE",
+      "token1Symbol": "WETH",
+      "token0Address": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 6,
+      "token1Decimals": 18,
+      "fee": 3000,
+      "pairedToken": "ETH"
+    },
+    "AAVE": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x5aB53EE1d50eeF2C1DD3d5402789cd27bB52c1bB",
       "token0Symbol": "USDC",
       "token1Symbol": "WETH",
       "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-      "token0Decimals": 6,
+      "token0Decimals": 18,
       "token1Decimals": 18,
       "fee": 3000,
       "pairedToken": "ETH"
