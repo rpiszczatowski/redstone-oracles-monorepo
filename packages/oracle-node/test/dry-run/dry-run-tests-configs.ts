@@ -55,7 +55,7 @@ function assertAllRequiredTokensAreProperlyFetched(manifest: Manifest) {
   return function (token: string, currentDataFeedPrice: number) {
     const avalancheTokens = getTokensFromManifest(manifest);
     if (avalancheTokens.includes(token)) {
-      expect(currentDataFeedPrice).toBeGreaterThan(0);
+      expect(Number(currentDataFeedPrice)).toBeGreaterThan(0);
     }
   };
 }
