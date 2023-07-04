@@ -1,8 +1,9 @@
 import { Decimal } from "decimal.js";
+import { glpManagerContractsDetails } from "./glpManagerContractsDetails";
 import { IEvmRequestHandlers } from "../../../../shared/IEvmRequestHandlers";
 import { buildMulticallRequests } from "../../../../shared/utils/build-multicall-request";
 import { extractValueFromMulticallResponse } from "../../../../shared/utils/extract-value-from-multicall-response";
-import { glpManagerContractsDetails } from "./glpManagerContractsDetails";
+import { getContractDetailsFromConfig } from "../../../../shared/utils/get-contract-details-from-config";
 import { MulticallParsedResponses } from "../../../../../../types";
 import {
   GLP_MANAGER_PRICE_PRECISION,
@@ -10,10 +11,16 @@ import {
 } from "../../../../shared/contants";
 
 export type GlpManagerDetailsKeys = keyof typeof glpManagerContractsDetails;
+export type GlpManagerDetailsValues =
+  (typeof glpManagerContractsDetails)[GlpManagerDetailsKeys];
 
 export class GlpManagerRequestHandler implements IEvmRequestHandlers {
   prepareMulticallRequest(id: GlpManagerDetailsKeys) {
-    const { abi, address } = glpManagerContractsDetails[id];
+    const { abi, address } = getContractDetailsFromConfig<
+      GlpManagerDetailsKeys,
+      GlpManagerDetailsValues
+    >(glpManagerContractsDetails, id);
+
     const functionsNamesWithValues = [{ name: "getPrice", values: ["false"] }];
     return buildMulticallRequests(abi, address, functionsNamesWithValues);
   }
@@ -22,7 +29,11 @@ export class GlpManagerRequestHandler implements IEvmRequestHandlers {
     response: MulticallParsedResponses,
     id: GlpManagerDetailsKeys
   ): number | undefined {
-    const { address } = glpManagerContractsDetails[id];
+    const { address } = getContractDetailsFromConfig<
+      GlpManagerDetailsKeys,
+      GlpManagerDetailsValues
+    >(glpManagerContractsDetails, id);
+
     const value = new Decimal(
       extractValueFromMulticallResponse(response, address, "getPrice")
     );
