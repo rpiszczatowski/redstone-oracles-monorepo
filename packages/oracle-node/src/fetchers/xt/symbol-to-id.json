@@ -4,5 +4,6 @@
   "CMP": "cmp_usdt",
   "JOE": "joe_usdt",
   "BNB": "bnb_usdt",
-  "CRV": "crv_usdt"
+  "CRV": "crv_usdt",
+  "AAVE": "aave_usdt"
 }
