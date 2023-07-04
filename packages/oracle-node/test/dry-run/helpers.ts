@@ -1,5 +1,7 @@
 import { ethers } from "ethers";
 import { SignedDataPackage } from "redstone-protocol";
+import { convertAndSerializeBytesToNumber } from "redstone-protocol/src/common/utils";
+import { base64 } from "ethers/lib/utils";
 import { IterationContext } from "../../src/schedulers/IScheduler";
 import { roundTimestamp } from "../../src/utils/timestamps";
 import { Manifest, NodeConfig } from "../../src/types";
@@ -69,7 +71,9 @@ export const getPricesForDataFeedId = (dataPackages: SignedDataPackage[]) => {
   for (const dataPackage of dataPackages) {
     const dataPackageObject = dataPackage.dataPackage.toObj();
     const { dataFeedId, value } = dataPackageObject.dataPoints[0];
-    pricesForDataFeedId[dataFeedId] = Number(value);
+    pricesForDataFeedId[dataFeedId] = convertAndSerializeBytesToNumber(
+      base64.decode(value.toString())
+    );
   }
   return pricesForDataFeedId;
 };
