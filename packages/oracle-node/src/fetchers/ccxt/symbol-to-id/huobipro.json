@@ -501,5 +501,6 @@
   "GMX": "GMX/USDT",
   "UFT": "UFT/USDT",
   "JOE": "JOE/USDT",
-  "EUROC": "EUROC/USDT"
+  "EUROC": "EUROC/USDT",
+  "STETH": "STETH/USDT"
 }

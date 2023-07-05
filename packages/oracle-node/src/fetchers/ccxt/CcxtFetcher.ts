@@ -47,8 +47,9 @@ export class CcxtFetcher extends BaseFetcher {
       );
     }
 
-    // If we pass undefined as tickerSymbols then all available tickers will be loaded
-    // But some exchanges (like kraken) do not support this anymore
+    if (this.exchange.name === "Bybit") {
+      return await this.handleRequestsForBybit(ids);
+    }
     return await this.exchange.fetchTickers(ids);
   }
 
@@ -79,5 +80,22 @@ export class CcxtFetcher extends BaseFetcher {
   getStableCoinPrice(pairSymbol: string) {
     const stableCoinSymbol = pairSymbol.slice(-4);
     return getLastPrice(stableCoinSymbol)?.value;
+  }
+
+  async handleRequestsForBybit(ids: string[]) {
+    const oldTypeIds = [];
+    const newTypeIds = [];
+
+    for (const id of ids) {
+      if (id.includes("USDT:USDT")) {
+        oldTypeIds.push(id);
+      } else {
+        newTypeIds.push(id);
+      }
+    }
+
+    const oldTypeIdsResponse = await this.exchange.fetchTickers(oldTypeIds);
+    const newTypeIdsResponse = await this.exchange.fetchTickers(newTypeIds);
+    return { ...oldTypeIdsResponse, ...newTypeIdsResponse };
   }
 }
