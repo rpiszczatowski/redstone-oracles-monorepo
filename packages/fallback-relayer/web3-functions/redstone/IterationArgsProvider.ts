@@ -4,7 +4,8 @@ import {
   getAbiForAdapter,
   getIterationArgs,
   IRedstoneAdapter,
-  IterationConfig,
+  RelayerConfig,
+  setConfigProvider,
   UpdatePricesArgs,
 } from "redstone-on-chain-relayer";
 import {
@@ -19,9 +20,9 @@ export class IterationArgsProvider
     userArgs: Web3FunctionUserArgs,
     provider: providers.StaticJsonRpcProvider
   ): Promise<IterationArgs<UpdatePricesArgs>> {
-    const abi = getAbiForAdapter(
-      userArgs.adapterContractType as unknown as string
-    );
+    setConfigProvider(() => userArgs as unknown as RelayerConfig);
+
+    const abi = getAbiForAdapter();
 
     const adapterContract = new Contract(
       userArgs.adapterContractAddress as unknown as string,
@@ -32,10 +33,7 @@ export class IterationArgsProvider
     userArgs.minDeviationPercentage =
       (userArgs.minDeviationPermillage as number) / 10;
 
-    return await getIterationArgs(
-      userArgs as unknown as IterationConfig,
-      adapterContract
-    );
+    return await getIterationArgs(adapterContract);
   }
 
   async getTransactionData({
