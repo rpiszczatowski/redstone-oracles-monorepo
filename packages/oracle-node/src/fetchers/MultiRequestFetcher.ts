@@ -13,7 +13,10 @@ interface ExtendedPromiseResult {
 }
 
 export abstract class MultiRequestFetcher extends BaseFetcher {
-  abstract makeRequest(requestId: string): Promise<any>;
+  abstract makeRequest(
+    requestId: string,
+    blockTag?: string | number
+  ): Promise<any>;
   abstract extractPrice(
     dataFeedId: string,
     responses: RequestIdToResponse
@@ -35,9 +38,12 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
     );
   }
 
-  async makeSafeRequest(requestId: string): Promise<ExtendedPromiseResult> {
+  async makeSafeRequest(
+    requestId: string,
+    blockTag?: string | number
+  ): Promise<ExtendedPromiseResult> {
     try {
-      const response = await this.makeRequest(requestId);
+      const response = await this.makeRequest(requestId, blockTag);
       return {
         success: true,
         response,

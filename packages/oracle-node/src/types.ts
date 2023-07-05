@@ -47,13 +47,11 @@ export interface CustomUrlDetails {
 
 export interface FetcherOpts {
   manifest: Manifest;
+  blockTag?: number | string;
 }
 
 export interface Fetcher {
-  fetchAll: (
-    tokens: string[],
-    opts?: FetcherOpts
-  ) => Promise<PriceDataFetched[]>;
+  fetchAll(tokens: string[], opts?: FetcherOpts): Promise<PriceDataFetched[]>;
 }
 
 export type SanitizedPriceDataBeforeAggregation =
