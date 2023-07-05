@@ -23,16 +23,11 @@ const broadcastingUrl =
   "http://mock-direct-cache-service-url/data-packages/bulk";
 const priceDataBroadcastingUrl = "http://mock-price-cache-service-url/prices";
 
-const terminateWithManifestConfigErrorSpy = jest.spyOn(
-  Terminator,
-  "terminateWithManifestConfigError"
-);
-
 const simulateSerialization = (obj: any) => JSON.parse(JSON.stringify(obj));
 
-terminateWithManifestConfigErrorSpy.mockImplementation((message: string) => {
-  throw new Error(`Terminate mock manifest config error: ${message}`);
-});
+const terminateWithManifestConfigErrorSpy = jest
+  .spyOn(Terminator, "terminateWithManifestConfigError")
+  .mockImplementation((message: string) => message as never);
 
 jest.mock("../../src/signers/EvmPriceSigner", () => {
   return jest.fn().mockImplementation(() => {
@@ -159,7 +154,7 @@ describe("NodeRunner", () => {
 
       expect(terminateWithManifestConfigErrorSpy).toBeCalledTimes(1);
       expect(terminateWithManifestConfigErrorSpy).toBeCalledWith(
-        "Interval needs to be divisible by 1000"
+        "Invalid manifest configuration - interval: Number must be a multiple of 1000, interval: If interval is greater than 60 seconds it must to be multiple of 1 minute"
       );
     });
 
@@ -174,7 +169,9 @@ describe("NodeRunner", () => {
       await sut.run();
       expect(terminateWithManifestConfigErrorSpy).toBeCalledTimes(1);
       expect(terminateWithManifestConfigErrorSpy).toBeCalledWith(
-        expect.stringMatching(/Could not determine deviationCheckConfig/)
+        expect.stringMatching(
+          "Invalid manifest configuration - deviationCheck: Required"
+        )
       );
     });
 
@@ -188,7 +185,7 @@ describe("NodeRunner", () => {
 
       await sut.run();
       expect(terminateWithManifestConfigErrorSpy).toBeCalledWith(
-        expect.stringMatching(/No timeout configured for/)
+        "Invalid manifest configuration - sourceTimeout: Required"
       );
     });
   });

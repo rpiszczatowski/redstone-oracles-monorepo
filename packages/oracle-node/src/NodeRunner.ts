@@ -322,6 +322,7 @@ export default class NodeRunner {
   }
 
   private useNewManifest(newManifest: Manifest) {
+    ManifestHelper.validateManifest(newManifest);
     this.currentManifest = newManifest;
     this.pricesService = new PricesService(newManifest);
     this.tokensBySource = ManifestHelper.groupTokensBySource(newManifest);
