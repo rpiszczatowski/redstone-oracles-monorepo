@@ -97,12 +97,6 @@ export default class PricesService {
     source: string,
     tokens: string[]
   ): Promise<PriceDataFetched[]> {
-    if (tokens.length === 0) {
-      terminateWithManifestConfigError(
-        `${source} fetcher received an empty array of symbols`
-      );
-    }
-
     if (!fetchers[source]) {
       terminateWithManifestConfigError(
         `Fetcher for source ${source} doesn't exist`
@@ -118,11 +112,6 @@ export default class PricesService {
       source,
       this.manifest
     );
-    if (sourceTimeout === null) {
-      terminateWithManifestConfigError(
-        `No timeout configured for ${source}. Did you forget to add "sourceTimeout" field in manifest file?`
-      );
-    }
     logger.info(`Call to ${source} will timeout after ${sourceTimeout}ms`);
 
     const trackingId = trackStart(`fetching-${source}`);
@@ -345,12 +334,6 @@ export default class PricesService {
         priceSymbol,
         this.manifest
       );
-    if (!deviationCheckConfig) {
-      terminateWithManifestConfigError(
-        `Could not determine deviationCheckConfig for ${priceSymbol}. ` +
-          `Did you forget to add deviationCheck parameter in the manifest file?`
-      );
-    }
     return deviationCheckConfig;
   }
 
