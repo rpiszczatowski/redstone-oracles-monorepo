@@ -39,7 +39,8 @@
         "okx",
         "poloniex",
         "probit"
-      ]
+      ],
+      "skipSigning": true
     },
     "USDT": {
       "source": [
@@ -58,7 +59,8 @@
       "deviationWithRecentValues": {
         "maxPercent": 5,
         "maxDelayMilliseconds": 300000
-      }
+      },
+      "skipSigning": true
     },
     "PNG": {
       "source": [
@@ -69,7 +71,8 @@
         "gate",
         "pangolin-on-chain-wavax",
         "trader-joe-on-chain-wavax"
-      ]
+      ],
+      "skipSigning": true
     },
     "AVAX": {
       "source": [
@@ -87,7 +90,8 @@
         "kucoin",
         "lbank",
         "okx"
-      ]
+      ],
+      "skipSigning": true
     },
     "LINK": {
       "source": [
@@ -118,7 +122,8 @@
         "probit",
         "sushiswap-on-chain-weth",
         "uniswap-v2-on-chain-weth"
-      ]
+      ],
+      "skipSigning": true
     },
     "BTC": {
       "source": [
@@ -148,7 +153,8 @@
         "okx",
         "poloniex",
         "probit"
-      ]
+      ],
+      "skipSigning": true
     },
     "QI": {
       "source": [
@@ -159,7 +165,8 @@
         "pangolin-on-chain-wavax",
         "trader-joe-on-chain-wavax",
         "xt"
-      ]
+      ],
+      "skipSigning": true
     },
     "USDC": {
       "source": [
@@ -183,10 +190,12 @@
       "deviationWithRecentValues": {
         "maxPercent": 5,
         "maxDelayMilliseconds": 300000
-      }
+      },
+      "skipSigning": true
     },
     "sAVAX": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "PTP": {
       "source": [
@@ -197,55 +206,72 @@
         "mexc",
         "pangolin-on-chain-wavax",
         "trader-joe-on-chain-wavax"
-      ]
+      ],
+      "skipSigning": true
     },
     "YY_AAVE_AVAX": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "YY_PTP_sAVAX": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "PNG_AVAX_USDC_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "PNG_AVAX_USDT_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "PNG_AVAX_ETH_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "TJ_AVAX_USDC_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "TJ_AVAX_USDT_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "TJ_AVAX_ETH_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "TJ_AVAX_BTC_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "TJ_AVAX_sAVAX_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "MOO_TJ_AVAX_USDC_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "YY_PNG_AVAX_USDC_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "YY_PNG_AVAX_ETH_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "YY_TJ_AVAX_sAVAX_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "YY_TJ_AVAX_USDC_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "YY_TJ_AVAX_ETH_LP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "XAVA": {
       "source": [
@@ -257,10 +283,12 @@
         "mexc",
         "pangolin-on-chain-wavax",
         "trader-joe-on-chain-wavax"
-      ]
+      ],
+      "skipSigning": true
     },
     "YYAV3SA1": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "GMX": {
       "source": [
@@ -274,10 +302,12 @@
         "kucoin",
         "mexc",
         "trader-joe-on-chain-wavax"
-      ]
+      ],
+      "skipSigning": true
     },
     "GLP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "JOE": {
       "source": [
@@ -294,7 +324,8 @@
         "phemex",
         "trader-joe-on-chain-wavax",
         "xt"
-      ]
+      ],
+      "skipSigning": true
     },
     "BUSD": {
       "source": [
@@ -305,10 +336,12 @@
         "hitbtc",
         "lbank",
         "oceanex"
-      ]
+      ],
+      "skipSigning": true
     },
     "YY_GLP": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "DAI": {
       "source": [
@@ -325,51 +358,65 @@
         "uniswap-v2-on-chain-weth",
         "xt"
       ],
+      "skipSigning": true,
       "deviationWithRecentValues": {
         "maxPercent": 5,
         "maxDelayMilliseconds": 300000
       }
     },
     "SHLB_AVAX-USDC_B": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "SHLB_BTC.b-AVAX_B": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "SHLB_USDT.e-USDt_C": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "SHLB_JOE-AVAX_B": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "USDT.e": {
-      "source": ["trader-joe-on-chain-wavax", "pangolin-on-chain-wavax"]
+      "source": ["trader-joe-on-chain-wavax", "pangolin-on-chain-wavax"],
+      "skipSigning": true
     },
     "SOFR": {
-      "source": ["newyorkfed"]
+      "source": ["newyorkfed"],
+      "skipSigning": true
     },
     "SOFR_EFFECTIVE_DATE": {
       "source": ["newyorkfed"],
-      "decimals": 0
+      "decimals": 0,
+      "skipSigning": true
     },
     "SOFRAI": {
-      "source": ["newyorkfed"]
+      "source": ["newyorkfed"],
+      "skipSigning": true
     },
     "SOFRAI_EFFECTIVE_DATE": {
       "source": ["newyorkfed"],
-      "decimals": 0
+      "decimals": 0,
+      "skipSigning": true
     },
     "gmdUSDC": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "gmdAVAX": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "gmdBTC": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "gmdETH": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "EUROC": {
       "source": [
@@ -381,13 +428,16 @@
         "huobipro",
         "trader-joe-v2-on-chain-usdc",
         "uniswap-v3-on-chain-usdc-500"
-      ]
+      ],
+      "skipSigning": true
     },
     "SHLB_EUROC-USDC_V2_1_B": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "TJ_AVAX_USDC_AUTO": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     },
     "CRV": {
       "source": [
@@ -402,10 +452,12 @@
         "huobipro",
         "kucoin",
         "gate"
-      ]
+      ],
+      "skipSigning": true
     },
     "crvUSDBTCETH": {
-      "source": ["avalanche-evm-fetcher"]
+      "source": ["avalanche-evm-fetcher"],
+      "skipSigning": true
     }
   }
 }

@@ -67,11 +67,6 @@ export default class NodeRunner {
         ethereumPrivKey,
         this.manifestDataProvider
       ),
-      new PriceDataBroadcastPerformer(
-        priceHttpBroadcasterURLs,
-        ethereumPrivKey,
-        this.providerAddress
-      ),
     ];
 
     // https://www.freecodecamp.org/news/the-complete-guide-to-this-in-javascript/
