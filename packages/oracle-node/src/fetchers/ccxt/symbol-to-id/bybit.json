@@ -4,5 +4,6 @@
   "CMP": "CMP/USDT",
   "BNB": "BNB/USDT:USDT",
   "CRV": "CRV/USDT:USDT",
-  "AAVE": "AAVE/USDT:USDT"
+  "AAVE": "AAVE/USDT:USDT",
+  "STETH": "STETH/USDT"
 }
