@@ -210,7 +210,6 @@ export default class NodeRunner {
 
     if (aggregatedPrices.length === 0) {
       logger.info("No aggregated prices to process");
-
       return;
     }
 
