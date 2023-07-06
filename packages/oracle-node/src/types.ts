@@ -1,4 +1,4 @@
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber, RedstoneTypes } from "redstone-utils";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
@@ -59,6 +59,9 @@ export interface Fetcher {
 export type SanitizedPriceDataBeforeAggregation =
   PriceDataBeforeAggregation<SafeNumber.ISafeNumber>;
 
+export type NotSanitizedPriceDataBeforeAggregation =
+  PriceDataBeforeAggregation<PriceDataFetchedValue>;
+
 export interface Aggregator {
   getAggregatedValue: (
     price: SanitizedPriceDataBeforeAggregation,
@@ -80,13 +83,17 @@ export interface PricesObj {
 
 export interface PriceDataFetched {
   symbol: string;
-  value: any; // usually it is a positive number, but it may also be 0, null, undefined or "error"
+  value: PriceDataFetchedValue; // usually it is a positive number, but it may also be 0, null, undefined or "error"
+  metadata?: RedstoneTypes.MetadataPerSource;
 }
+
+export type PriceDataFetchedValue = number | null | undefined | "error";
 
 export interface PriceDataBeforeAggregation<T = number> {
   id: string;
   symbol: string;
   source: PriceSource<T>;
+  sourceMetadata: Record<string, RedstoneTypes.MetadataPerSource>;
   timestamp: number;
   blockNumber?: number;
   version: string;

@@ -85,6 +85,7 @@ export const preparePrice = (
     id: "00000000-0000-0000-0000-000000000000",
     symbol: "mock-symbol",
     source: {},
+    sourceMetadata: {},
     timestamp: testTimestamp,
     version: "3",
   };

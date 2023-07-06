@@ -197,10 +197,11 @@ describe("NodeRunner", () => {
       const firstCallArgs = (axios.post as any).mock.calls[0];
 
       expect(firstCallArgs[0]).toEqual(broadcastingUrl);
+      console.log(firstCallArgs[1]);
       expect(simulateSerialization(firstCallArgs[1])).toEqual(
         simulateSerialization({
           requestSignature:
-            "0x262eda99c935322d84d2431b5d81adfc9b7cc46169240c43ea8973cb3d6e48cd29fb2a4f2df58ba1b0ff785b94cdc700f1f8a2ba7a24394e212dffd0d8fa653f1c",
+            "0x31374eb4f1e6a7e12925ce6852c08548f18b01db0cac1c75dac97432d0782a1940e3f1165f59b6b525c162baa6a2bd73f0619d81dc02ab8596d8bd387a860c821c",
           dataPackages: [
             {
               signature:
@@ -210,6 +211,17 @@ describe("NodeRunner", () => {
                 {
                   dataFeedId: "BTC",
                   value: 444.5,
+                  metadata: {
+                    sourceMetadata: {
+                      coingecko: {
+                        value: "444",
+                      },
+                      uniswap: {
+                        value: "445",
+                      },
+                    },
+                    value: "444.5",
+                  },
                 },
               ],
             },
@@ -220,6 +232,14 @@ describe("NodeRunner", () => {
               dataPoints: [
                 {
                   dataFeedId: "ETH",
+                  metadata: {
+                    sourceMetadata: {
+                      uniswap: {
+                        value: "42",
+                      },
+                    },
+                    value: "42",
+                  },
                   value: 42,
                 },
               ],
@@ -231,10 +251,29 @@ describe("NodeRunner", () => {
               dataPoints: [
                 {
                   dataFeedId: "BTC",
+                  metadata: {
+                    sourceMetadata: {
+                      coingecko: {
+                        value: "444",
+                      },
+                      uniswap: {
+                        value: "445",
+                      },
+                    },
+                    value: "444.5",
+                  },
                   value: 444.5,
                 },
                 {
                   dataFeedId: "ETH",
+                  metadata: {
+                    sourceMetadata: {
+                      uniswap: {
+                        value: "42",
+                      },
+                    },
+                    value: "42",
+                  },
                   value: 42,
                 },
               ],
@@ -264,6 +303,10 @@ describe("NodeRunner", () => {
             permawebTx: "mock-permaweb-tx",
             provider: TEST_PROVIDER_EVM_ADDRESS,
             source: { coingecko: 444, uniswap: 445 },
+            sourceMetadata: {
+              coingecko: { value: "444" },
+              uniswap: { value: "445" },
+            },
             symbol: "BTC",
             timestamp: 111111000,
             value: 444.5,
@@ -275,6 +318,9 @@ describe("NodeRunner", () => {
             permawebTx: "mock-permaweb-tx",
             provider: TEST_PROVIDER_EVM_ADDRESS,
             source: { uniswap: 42 },
+            sourceMetadata: {
+              uniswap: { value: "42" },
+            },
             symbol: "ETH",
             timestamp: 111111000,
             value: 42,
