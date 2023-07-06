@@ -1,21 +1,22 @@
+import { SafeNumber } from "redstone-utils";
+import emptyManifest from "../manifests/dev/empty.json";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
-  setupLocalDb,
   savePrices,
+  setupLocalDb,
 } from "../src/db/local-db";
 import PricesService, {
+  PriceValidationArgs,
   PricesBeforeAggregation,
   PricesDataFetched,
-  PriceValidationArgs,
 } from "../src/fetchers/PricesService";
-import emptyManifest from "../manifests/dev/empty.json";
 import {
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
+  PriceDataFetchedValue,
 } from "../src/types";
-import { preparePrices, preparePrice } from "./fetchers/_helpers";
-import { SafeNumber } from "redstone-utils";
+import { preparePrice, preparePrices } from "./fetchers/_helpers";
 
 jest.mock("../src/Terminator", () => ({
   terminateWithManifestConfigError: (details: string) => {
@@ -73,11 +74,12 @@ describe("PricesService", () => {
       };
 
       // When
-      const result: PricesBeforeAggregation = PricesService.groupPricesByToken(
-        { timestamp: fetchTimestamp },
-        pricesData,
-        nodeVersion
-      );
+      const result: PricesBeforeAggregation<PriceDataFetchedValue> =
+        PricesService.groupPricesByToken(
+          { timestamp: fetchTimestamp },
+          pricesData,
+          nodeVersion
+        );
 
       // Then
       expect(result).toEqual({
@@ -87,6 +89,10 @@ describe("PricesService", () => {
             src1: 444,
             src2: 444.2,
           },
+          sourceMetadata: {
+            src1: { value: "444" },
+            src2: { value: "444.2" },
+          },
           symbol: "BTC",
         },
         DOGE: {
@@ -94,6 +100,10 @@ describe("PricesService", () => {
           source: {
             src1: 111,
             src3: 107.4,
+          },
+          sourceMetadata: {
+            src1: { value: "111" },
+            src3: { value: "107.4" },
           },
           symbol: "DOGE",
         },
@@ -103,6 +113,11 @@ describe("PricesService", () => {
             src1: 222,
             src2: 222.5,
             src3: "error",
+          },
+          sourceMetadata: {
+            src1: { value: "222" },
+            src2: { value: "222.5" },
+            src3: { value: "error" },
           },
           symbol: "ETH",
         },

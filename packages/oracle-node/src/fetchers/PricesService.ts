@@ -9,10 +9,12 @@ import { terminateWithManifestConfigError } from "../Terminator";
 import {
   DeviationCheckConfig,
   Manifest,
+  NotSanitizedPriceDataBeforeAggregation,
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
   PriceDataBeforeSigning,
   PriceDataFetched,
+  PriceDataFetchedValue,
   SanitizedPriceDataBeforeAggregation,
 } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
@@ -20,14 +22,15 @@ import { trackEnd, trackStart } from "../utils/performance-tracker";
 import { promiseTimeout } from "../utils/promise-timeout";
 import fetchers from "./index";
 import { config } from "../config";
+import { createMetadataPerSource } from "./MetadataForRedstonePrice";
 
-const VALUE_FOR_FAILED_FETCHER = "error";
+export const VALUE_FOR_FAILED_FETCHER = "error";
 
 const logger = require("../utils/logger")("PricesFetcher") as Consola;
 
 export type PricesDataFetched = { [source: string]: PriceDataFetched[] };
-export type PricesBeforeAggregation = {
-  [token: string]: PriceDataBeforeAggregation;
+export type PricesBeforeAggregation<T = number> = {
+  [token: string]: PriceDataBeforeAggregation<T>;
 };
 
 export interface PriceValidationArgs {
@@ -132,8 +135,8 @@ export default class PricesService {
     iterationContext: IterationContext,
     pricesData: PricesDataFetched,
     nodeVersion: string
-  ): PricesBeforeAggregation {
-    const result: PricesBeforeAggregation = {};
+  ): PricesBeforeAggregation<PriceDataFetchedValue> {
+    const result: PricesBeforeAggregation<PriceDataFetchedValue> = {};
 
     for (const source in pricesData) {
       for (const price of pricesData[source]) {
@@ -141,6 +144,7 @@ export default class PricesService {
           result[price.symbol] = {
             id: uuidv4(), // Generating unique id for each price
             source: {},
+            sourceMetadata: {},
             symbol: price.symbol,
             timestamp: iterationContext.timestamp,
             blockNumber: iterationContext.blockNumber,
@@ -149,6 +153,8 @@ export default class PricesService {
         }
 
         result[price.symbol].source[source] = price.value;
+        result[price.symbol].sourceMetadata[source] =
+          createMetadataPerSource(price);
       }
     }
 
@@ -164,7 +170,7 @@ export default class PricesService {
       - aggregated prices hard limits
   */
   async calculateAggregatedValues(
-    prices: PriceDataBeforeAggregation[]
+    prices: NotSanitizedPriceDataBeforeAggregation[]
   ): Promise<PriceDataAfterAggregation[]> {
     const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
     const pricesLimits = await this.fetchPricesLimits();
@@ -190,7 +196,7 @@ export default class PricesService {
         // Calculating final aggregated value based on the values from the "valid" sources
         const priceAfterAggregation = aggregator.getAggregatedValue(
           sanitizedPriceBeforeAggregation,
-          prices
+          prices as PriceDataBeforeAggregation[]
         );
 
         // Throwing an error if price < 0 is invalid or too deviated
@@ -223,7 +229,7 @@ export default class PricesService {
    * and excludes sources with invalid values
    * */
   sanitizeSourceValues(
-    price: PriceDataBeforeAggregation,
+    price: NotSanitizedPriceDataBeforeAggregation,
     recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
     deviationCheckConfig: DeviationCheckConfig
   ): SanitizedPriceDataBeforeAggregation {
@@ -231,6 +237,9 @@ export default class PricesService {
 
     for (const [sourceName, valueFromSource] of Object.entries(price.source)) {
       try {
+        if (valueFromSource === undefined || valueFromSource === null) {
+          throw new Error("Value from source is undefined");
+        }
         const valueFromSourceNum = SafeNumber.createSafeNumber(valueFromSource);
 
         valueFromSourceNum.assertNonNegative();

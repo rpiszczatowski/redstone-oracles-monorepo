@@ -8,17 +8,21 @@ import {
   SignedDataPackage,
 } from "redstone-protocol";
 import { Consola } from "consola";
-import { config } from "../config";
 import {
   DataPackageBroadcaster,
   HttpBroadcaster,
   StreamrBroadcaster,
 } from "../broadcasters";
-import { BroadcastPerformer } from "./BroadcastPerformer";
-import { validateDataPointsForBigPackage } from "../validators/validate-data-feed-for-big-package";
-import { ManifestDataProvider } from "./ManifestDataProvider";
-import { IterationContext } from "../schedulers/IScheduler";
+import { config } from "../config";
 import ManifestHelper from "../manifest/ManifestHelper";
+import { value } from "jsonpath";
+import { DEFAULT_NUM_VALUE_DECIMALS } from "redstone-protocol/src/common/redstone-constants";
+import { convertNumberToBytes } from "redstone-protocol/src/common/utils";
+import { createMetadataForRedstonePrice } from "../fetchers/MetadataForRedstonePrice";
+import { IterationContext } from "../schedulers/IScheduler";
+import { validateDataPointsForBigPackage } from "../validators/validate-data-feed-for-big-package";
+import { BroadcastPerformer } from "./BroadcastPerformer";
+import { ManifestDataProvider } from "./ManifestDataProvider";
 const logger = require("./../utils/logger")("runner") as Consola;
 
 const DEFAULT_HTTP_BROADCASTER_URLS = [
@@ -145,6 +149,7 @@ export class DataPackageBroadcastPerformer
         this.manifestDataProvider.latestManifest!,
         price.symbol
       ),
+      metadata: createMetadataForRedstonePrice(price),
     });
   }
 }

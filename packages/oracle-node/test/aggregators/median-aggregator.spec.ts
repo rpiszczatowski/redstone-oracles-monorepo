@@ -1,4 +1,5 @@
 import {
+  NotSanitizedPriceDataBeforeAggregation,
   PriceDataAfterAggregation,
   SanitizedPriceDataBeforeAggregation,
 } from "../../src/types";
@@ -22,6 +23,7 @@ describe("medianAggregator", () => {
       symbol: "BTC",
       timestamp: 0,
       version: "",
+      sourceMetadata: {},
     };
 
     // When
