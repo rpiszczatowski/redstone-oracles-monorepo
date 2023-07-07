@@ -7,7 +7,7 @@ const hardcodedNames = {
   EUR: "Euro",
   GBP: "Pound sterling",
   wNXM: "Wrapped NXM",
-  sUSD: "sUSD",
+  SUSD: "sUSD",
   JPY: "Japanese yen",
   CHF: "Swiss Franc",
   YFV: "YFValue",
