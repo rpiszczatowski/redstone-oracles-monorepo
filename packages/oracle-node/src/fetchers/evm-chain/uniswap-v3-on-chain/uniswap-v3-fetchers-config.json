@@ -236,8 +236,8 @@
     "FRXETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x8a15b2dc9c4f295dcebb0e7887dd25980088fdcb",
-      "token0Symbol": "USDC",
-      "token1Symbol": "FRXETH",
+      "token0Symbol": "FRXETH",
+      "token1Symbol": "WETH",
       "token0Address": "0x5e8422345238f34275888049021821e8e08caa1f",
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 18,
