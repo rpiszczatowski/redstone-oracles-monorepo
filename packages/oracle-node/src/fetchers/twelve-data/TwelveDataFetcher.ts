@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
 import { config } from "../../config";
-import { getRequiredPropValue } from "../../utils/objects";
+import { getRequiredPropValue, isDefined } from "../../utils/objects";
 
 export interface TwelveDataResponse {
   [symbol: string]: {
@@ -44,6 +44,9 @@ export class TwelveDataFetcher extends BaseFetcher {
         apikey: config.twelveDataApiKey,
       },
     });
+  }
+  override validateResponse(response: any): boolean {
+    return isDefined(response) && isDefined(response.data) && response.data.status !== "error";
   }
 
   extractPrices(
