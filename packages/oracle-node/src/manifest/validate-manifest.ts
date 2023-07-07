@@ -31,7 +31,7 @@ const TokenSchema = z.object({
   deviationCheck: z.string().optional(),
   customUrlDetails: z.string().optional(),
   comment: z.string().optional(),
-  skipSigning: z.string().optional(),
+  skipSigning: z.boolean().optional(),
   priceAggregator: z.string().optional(),
 });
 
