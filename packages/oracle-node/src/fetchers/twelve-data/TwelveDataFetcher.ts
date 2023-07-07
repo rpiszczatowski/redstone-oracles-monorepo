@@ -49,6 +49,12 @@ export class TwelveDataFetcher extends BaseFetcher {
     return isDefined(response) && isDefined(response.data) && response.data.status !== "error";
   }
 
+  override serializeResponse(response: any): string {
+    // response is a circular object of the size of ~3MB.
+    // we want to get only the crucial part
+    return JSON.stringify(response.data);
+  }
+
   extractPrices(
     response: AxiosResponse<TwelveDataResponse>,
     ids: string[]

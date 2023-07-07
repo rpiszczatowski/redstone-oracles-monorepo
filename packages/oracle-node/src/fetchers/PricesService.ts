@@ -253,9 +253,11 @@ export default class PricesService {
 
         newSources[sourceName] = valueFromSourceNum;
       } catch (e: any) {
-        logger.error(
-          `Excluding token: "${price.symbol}", value: "${valueFromSource}" for source: "${sourceName}", reason: "${e.message}"`
-        );
+        if (valueFromSource as any as string !== VALUE_FOR_FAILED_FETCHER) {
+          logger.error(
+            `Excluding token: "${price.symbol}", value: "${valueFromSource}" for source: "${sourceName}", reason: "${e.message}"`
+          );
+        }
       }
     }
 
