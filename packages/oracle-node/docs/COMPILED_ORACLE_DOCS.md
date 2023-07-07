@@ -407,8 +407,6 @@ Env variables should be treated as **private**, especially all keys and JWKs. Th
 | ENABLE_JSON_LOGS             |                    optional                     | true          | if set to true, logging in JSON format will be enabled                                             |
 | ENABLE_PERFORMANCE_TRACKING  |                    optional                     | true          | if set to true, performance data will be send to RedStone                                          |
 | PRINT_DIAGNOSTIC_INFO        |                    optional                     | true          | if set to true, additional info with diagnostics information will be logged                        |
-| ARWEAVE_KEYS_FILE_PATH       |    required if ARWEAVE_KEYS_JWK not provided    |               | path to the arweave wallet (for relative paths it assumes that you are in the project root folder) |
-| ARWEAVE_KEYS_JWK             | required if ARWEAVE_KEYS_FILE_PATH not provided |               | JWK of arweave wallet (helpful with Docker)                                                        |
 | OVERRIDE_MANIFEST_USING_FILE |                    optional                     |               | path to the manifest file, if not specified manifest is loaded from smart contract                 |
 | MANIFEST_REFRESH_INTERVAL    |                    optional                     | 120000        | if manifest is loaded from smart contracts it defines how often node will check for new manifest   |
 | ECDSA_PRIVATE_KEY            |                    required                     |               | Ethereum private key that will be used for price data signing                                      |
@@ -477,8 +475,6 @@ RedStone node relies on env variables, so please remember to pass correct env va
 ENV ENABLE_JSON_LOGS=true
 ENV PRINT_DIAGNOSTIC_INFO=true
 ENV MANIFEST_REFRESH_INTERVAL=120000
-ENV ARWEAVE_KEYS_FILE_PATH=
-ENV ARWEAVE_KEYS_JWK=
 ENV OVERRIDE_MANIFEST_USING_FILE=
 ENV ECDSA_PRIVATE_KEY=
 ENV TWELVE_DATA_RAPID_API_KEY=
