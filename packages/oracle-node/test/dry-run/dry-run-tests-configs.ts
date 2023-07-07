@@ -9,7 +9,7 @@ import { Manifest } from "../../src/types";
 interface DryRunTestConfig {
   manifest: Manifest;
   nodeIterations: number;
-  additionalCheck?: (...args: any) => void;
+  additionalCheck?: (token: string, currentDataFeedPrice?: number) => void;
 }
 
 enum DryRunTestType {
@@ -52,9 +52,9 @@ export const getDryRunTestConfig = (): DryRunTestConfig => {
 };
 
 function assertAllRequiredTokensAreProperlyFetched(manifest: Manifest) {
-  return function (token: string, currentDataFeedPrice: number) {
-    const avalancheTokens = getTokensFromManifest(manifest);
-    if (avalancheTokens.includes(token)) {
+  const manifestTokens = getTokensFromManifest(manifest);
+  return (token: string, currentDataFeedPrice?: number) => {
+    if (manifestTokens.includes(token)) {
       expect(currentDataFeedPrice).toBeGreaterThan(0);
     }
   };
