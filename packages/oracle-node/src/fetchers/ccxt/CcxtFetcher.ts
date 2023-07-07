@@ -65,21 +65,18 @@ export class CcxtFetcher extends BaseFetcher {
     if (ticker.last === undefined) {
       throw new Error(`Price not returned for: ${pairSymbol}`);
     }
-    const lastPrice = ticker.last as number;
+    const lastPrice = ticker.last!;
     if (pairSymbol.endsWith("/USD")) {
       return { value: lastPrice, id: pairSymbol };
-    } else {
-      const lastUsdInStablePrice = this.getStableCoinPrice(pairSymbol);
-      if (lastUsdInStablePrice) {
-        return { value: lastPrice * lastUsdInStablePrice, id: pairSymbol };
-      }
     }
-    throw new Error(`Pair symbol not supported: ${pairSymbol}`);
-  }
-
-  getStableCoinPrice(pairSymbol: string) {
     const stableCoinSymbol = pairSymbol.slice(-4);
-    return getLastPrice(stableCoinSymbol)?.value;
+    const lastUsdInStablePrice = getLastPrice(stableCoinSymbol)?.value;
+    if (lastUsdInStablePrice) {
+      return { value: lastPrice * lastUsdInStablePrice, id: pairSymbol };
+    }
+    throw new Error(
+      `Cannot get last price from cache for ${stableCoinSymbol}`
+    );
   }
 
   async handleRequestsForBybit(ids: string[]) {
