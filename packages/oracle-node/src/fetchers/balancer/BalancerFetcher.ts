@@ -8,7 +8,7 @@ import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice } from "../../db/local-db";
 import { config } from "../../config";
 
-const balancerConfig: BalancerSdkConfig = {
+const DEFAULT_NETWORK_CONFIG: BalancerSdkConfig = {
   network: Network.MAINNET,
   rpcUrl: config.ethMainRpcUrls[0],
 };
@@ -21,6 +21,7 @@ export type BalancerPoolsConfig = {
       poolId: string;
       tokenIn: string;
       tokenOut: string;
+      networkConfig?: BalancerSdkConfig;
     }
   >;
 };
@@ -31,17 +32,14 @@ export interface BalancerResponse {
 }
 
 export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
-  private balancer: BalancerSDK;
-
   constructor(name: string, protected readonly config: BalancerPoolsConfig) {
     super(name);
-    this.balancer = new BalancerSDK(balancerConfig);
   }
 
   override async makeRequest(id: string): Promise<BalancerResponse> {
     const pairedTokenPrice = await this.getPairedTokenPrice();
     const poolId = this.getPoolIdForAssetId(id);
-    const pool = await this.fetchPool(poolId);
+    const pool = await this.fetchPool(poolId, id);
     return { pool, pairedTokenPrice };
   }
 
@@ -62,8 +60,11 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
     return Number(response.pool.totalLiquidity);
   }
 
-  private async fetchPool(poolId: string) {
-    const pool = await this.balancer.pools.find(poolId);
+  private async fetchPool(poolId: string, dataFeedId: string) {
+    const poolConfig = this.config.poolsConfigs[dataFeedId];
+    const networkConfig = poolConfig?.networkConfig ?? DEFAULT_NETWORK_CONFIG;
+    const balancerSdk = new BalancerSDK(networkConfig);
+    const pool = await balancerSdk.pools.find(poolId);
     if (!pool) {
       throw new Error(`Pool with ${poolId} not found`);
     }

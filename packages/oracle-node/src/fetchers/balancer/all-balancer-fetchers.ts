@@ -1,4 +1,4 @@
-import balancerFetchersConfig from "./balancer-fetchers-config.json";
+import { balancerFetchersConfig } from "./balancer-fetchers-config";
 import { BalancerFetcher } from "./BalancerFetcher";
 
 const balancerFetchers: Record<string, BalancerFetcher> = {};
