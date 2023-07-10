@@ -1,34 +1,30 @@
-import { BaseFetcher } from "../BaseFetcher";
 import { getLastPrice } from "../../db/local-db";
-import { PricesObj } from "../../types";
+import {
+  MultiRequestFetcher,
+  RequestIdToResponse,
+} from "../MultiRequestFetcher";
 
-interface PricesById {
-  [id: string]: {
-    mainTokenPrice: number;
-    pairedTokenPrice: number;
-  };
+interface TokenPrices {
+  mainTokenPrice: number;
+  pairedTokenPrice: number;
 }
 
-export class NonUsdBasedFetcher extends BaseFetcher {
+export class NonUsdBasedFetcher extends MultiRequestFetcher {
   constructor() {
     super("non-usd-based");
   }
 
-  fetchData(ids: string[]): Promise<PricesById> {
-    const prices: PricesById = {};
-    for (const id of ids) {
-      const { mainToken, pairedToken } = this.extractTokensFromId(id);
+  async makeRequest(id: string): Promise<TokenPrices> {
+    const { mainToken, pairedToken } = this.extractTokensFromId(id);
 
-      const mainTokenPrice = getLastPrice(mainToken)?.value;
-      const pairedTokenPrice = getLastPrice(pairedToken)?.value;
-      if (!mainTokenPrice || !pairedTokenPrice) {
-        throw new Error(
-          `Cannot get last price from cache for: ${mainToken} or ${pairedToken}`
-        );
-      }
-      prices[id] = { mainTokenPrice, pairedTokenPrice };
+    const mainTokenPrice = getLastPrice(mainToken)?.value;
+    const pairedTokenPrice = getLastPrice(pairedToken)?.value;
+    if (!mainTokenPrice || !pairedTokenPrice) {
+      throw new Error(
+        `Cannot get last price from cache for: ${mainToken} or ${pairedToken}`
+      );
     }
-    return Promise.resolve(prices);
+    return { mainTokenPrice, pairedTokenPrice };
   }
 
   extractTokensFromId(id: string) {
@@ -45,10 +41,9 @@ export class NonUsdBasedFetcher extends BaseFetcher {
     };
   }
 
-  extractPrices(response: PricesById): PricesObj {
-    return this.extractPricesSafely(Object.keys(response), (id) => {
-      const { mainTokenPrice, pairedTokenPrice } = response[id];
-      return { id, value: mainTokenPrice / pairedTokenPrice };
-    });
+  extractPrice(dataFeedId: string, responses: RequestIdToResponse): number {
+    const response = responses[dataFeedId] as TokenPrices;
+    const { mainTokenPrice, pairedTokenPrice } = response;
+    return mainTokenPrice / pairedTokenPrice;
   }
 }
