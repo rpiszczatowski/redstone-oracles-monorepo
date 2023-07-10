@@ -6,6 +6,7 @@ import fetcherConfig from "./maverick-fetcher-config";
 import { MAVERICK_POOL_INFORMATION_ABI } from "./pool-information.abi";
 
 const MAVERICK_PRECISION_DIVIDER = 1e18;
+const ONE_AS_DECIMAL = new Decimal(1);
 
 interface FetcherConfig {
   poolInformationAddress: string;
@@ -51,12 +52,22 @@ export class MaverickFetcher extends DexOnChainFetcher<MaverickResponse> {
   }
 
   override calculateSpotPrice(
-    _assetId: string,
+    dataFeedId: string,
     response: MaverickResponse
   ): number {
     const { priceInPairedToken, pairedTokenPrice } = response;
 
-    return priceInPairedToken.mul(pairedTokenPrice).toNumber();
+    const isCurrentDataFeedToken0 =
+      this.config.tokens[dataFeedId].token0Symbol === dataFeedId;
+
+    let priceInPairedTokenSerialized = priceInPairedToken;
+    if (!isCurrentDataFeedToken0) {
+      priceInPairedTokenSerialized = ONE_AS_DECIMAL.div(
+        priceInPairedTokenSerialized
+      );
+    }
+
+    return priceInPairedTokenSerialized.mul(pairedTokenPrice).toNumber();
   }
 
   protected getPairedTokenPrice(tokenSymbol: string): Decimal {
