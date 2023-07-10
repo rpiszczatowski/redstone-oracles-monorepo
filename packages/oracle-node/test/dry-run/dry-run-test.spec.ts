@@ -5,7 +5,7 @@ import {
   MockScheduler,
   getPricesForDataFeedId,
   getTokensFromManifest,
-  runNodeMultipleTimes,
+  runTestNode,
 } from "./helpers";
 import ManifestHelper from "../../src/manifest/ManifestHelper";
 import { CronScheduler } from "../../src/schedulers/CronScheduler";
@@ -16,6 +16,7 @@ import {
   setupLocalDb,
 } from "../../src/db/local-db";
 import { getDryRunTestConfig } from "./dry-run-tests-configs";
+import { Manifest, TokensConfig } from "../../src/types";
 
 const TWENTY_MINUTES_IN_MILLISECONDS = 1000 * 60 * 20;
 jest.setTimeout(TWENTY_MINUTES_IN_MILLISECONDS);
@@ -23,6 +24,35 @@ jest.setTimeout(TWENTY_MINUTES_IN_MILLISECONDS);
 const MIN_REQUIRED_MANIFEST_TOKENS_PERCENTAGE = 0.95;
 
 const config = getDryRunTestConfig();
+
+function removeSkippedItemsFromManifest(manifest: Manifest) {
+  const skippedSources = JSON.parse(
+    process.env.SKIPPED_SOURCES ?? "[]"
+  ) as string[];
+  const skippedTokens = JSON.parse(
+    process.env.SKIPPED_TOKENS ?? "[]"
+  ) as string[];
+  let filteredTokens: TokensConfig = {};
+  for (const token in manifest.tokens) {
+    if (!skippedTokens.includes(token)) {
+      filteredTokens[token] = manifest.tokens[token];
+      filteredTokens[token].source = filteredTokens[token].source?.filter(
+        (s) => !skippedSources.includes(s)
+      );
+    }
+  }
+  manifest.tokens = filteredTokens;
+}
+
+function removeAlreadyFetchedTokensFromManifest(manifest: Manifest) {
+  let filteredTokens: TokensConfig = {};
+  for (const token in manifest.tokens) {
+    if (!getLastPrice(token)) {
+      filteredTokens[token] = manifest.tokens[token];
+    }
+  }
+  manifest.tokens = filteredTokens;
+}
 
 describe("Main dry run test", () => {
   let mockedBroadcaster: jest.SpyInstance<
@@ -73,7 +103,11 @@ describe("Main dry run test", () => {
       we need price of another tokens e.g.
       USDC/USDT -> AVAX/ETH -> TJ_AVAX_ETH_LP -> YY_TJ_AVAX_ETH_LP
     */
-    await runNodeMultipleTimes(config.manifest, config.nodeIterations);
+    removeSkippedItemsFromManifest(config.manifest);
+    for (let i = 0; i < config.nodeIterations; ++i) {
+      await runTestNode(config.manifest);
+      removeAlreadyFetchedTokensFromManifest(config.manifest);
+    }
     const tokens = getTokensFromManifest(config.manifest);
     for (const token of tokens) {
       const currentDataFeedPrice = getLastPrice(token);
