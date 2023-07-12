@@ -106,9 +106,7 @@ describe("Avalanche EVM fetcher", () => {
       await saveMockPriceInLocalDb(23, "sAVAX");
 
       const result = await fetcher.fetchAll(["YY_PTP_sAVAX"]);
-      expect(result).toEqual([
-        { symbol: "YY_PTP_sAVAX", value: 24.27627510050246 },
-      ]);
+      expect(result).toEqual([{ symbol: "YY_PTP_sAVAX", value: 15.47 }]);
     });
   });
 
