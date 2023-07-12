@@ -14,6 +14,7 @@ import { PoolsConfig } from "./curve-fetchers-config";
  * in case of LPs (with big volume) it shouldn't be a problem, however this just not correct
  */
 const CURVE_PRECISION_DECIMAL = new Decimal("10").toPower(18);
+const ONE_AS_DECIMAL = new Decimal("1");
 
 export interface CurveFetcherResponse {
   ratio: Decimal;
@@ -63,13 +64,13 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
   calculateSpotPrice(assetId: string, response: CurveFetcherResponse): number {
     const pairedTokenPrice = new Decimal(this.getPairedTokenPrice(assetId));
     const ratio = response.ratio;
-
-    return ratio.mul(pairedTokenPrice).toNumber();
+    const fee = this.poolsConfig[assetId].fee;
+    const ratioWithFee = ratio.div(ONE_AS_DECIMAL.minus(fee));
+    return ratioWithFee.mul(pairedTokenPrice).toNumber();
   }
 
   getPairedTokenPrice(assetId: string): string {
     const { pairedToken } = this.poolsConfig[assetId];
-
     const lastPriceFromCache = getRawPrice(pairedToken);
     if (!lastPriceFromCache) {
       throw new Error(`Cannot get last price from cache for: ${pairedToken}`);

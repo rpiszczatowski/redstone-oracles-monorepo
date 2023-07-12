@@ -32,6 +32,7 @@ describe("Curve Multi Block", () => {
         provider,
         ratioMultiplier: 1,
         functionName: "get_dy",
+        fee: 0.00015,
         multiBlockConfig: {
           sequenceStep,
           intervalLength,
@@ -64,7 +65,7 @@ describe("Curve Multi Block", () => {
     await mockGetDyCalls(mockContract, [BigNumber.from("1000130962107597656")]);
     const result = await fetcher.fetchAll(["STETH"]);
 
-    expect(result).toEqual([{ symbol: "STETH", value: 2104.365556060975 }]);
+    expect(result).toEqual([{ symbol: "STETH", value: 2104.6812582497123 }]);
   });
 
   test("Should properly fetch data with 2 block", async () => {
@@ -76,7 +77,7 @@ describe("Curve Multi Block", () => {
     ]);
     const result = await fetcher.fetchAll(["STETH"]);
 
-    expect(result).toEqual([{ symbol: "STETH", value: 2104.36555606098 }]);
+    expect(result).toEqual([{ symbol: "STETH", value: 2104.6812582497178 }]);
   });
 
   test("Should properly fetch data with 7 block", async () => {
@@ -94,7 +95,7 @@ describe("Curve Multi Block", () => {
     ]);
     const result = await fetcher.fetchAll(["STETH"]);
 
-    expect(result).toEqual([{ symbol: "STETH", value: 2104.365556060975 }]);
+    expect(result).toEqual([{ symbol: "STETH", value: 2104.6812582497123 }]);
   });
   test("Should properly fetch data with 7 blocks and sequence step 2", async () => {
     const fetcher = getMultiBlockCurveFetcher(2, 7);
@@ -111,7 +112,7 @@ describe("Curve Multi Block", () => {
     ]);
     const result = await fetcher.fetchAll(["STETH"]);
 
-    expect(result).toEqual([{ symbol: "STETH", value: 1052.3205560609802 }]);
+    expect(result).toEqual([{ symbol: "STETH", value: 1052.4784278251539 }]);
   });
 
   describe("generateRoundedToStepSequence", () => {
