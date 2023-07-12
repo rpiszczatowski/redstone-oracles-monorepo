@@ -43,6 +43,7 @@ describe("Curve", () => {
         provider,
         ratioMultiplier: 1,
         functionName: "get_dy",
+        fee: 0.00015,
       },
     });
 
@@ -50,6 +51,6 @@ describe("Curve", () => {
 
     const result = await fetcher.fetchAll(["STETH"]);
 
-    expect(result).toEqual([{ symbol: "STETH", value: 2104.365556060975 }]);
+    expect(result).toEqual([{ symbol: "STETH", value: 2104.6812582497128 }]);
   });
 });
