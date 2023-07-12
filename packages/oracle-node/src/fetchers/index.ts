@@ -24,6 +24,7 @@ import { KaikoFetcher } from "./kaiko/KaikoFetcher";
 import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
 import balancerFetchers from "./balancer/all-balancer-fetchers";
 import uniswapV3Fetchers from "./evm-chain/uniswap-v3-on-chain/all-uniswap-v3-fetchers";
+import velodromeFetchers from "./evm-chain/optimism/velodrome/all-velodrome-fetchers";
 import { arbitrumEvmFetcher } from "./evm-chain/arbitrum/evm-fetcher/ArbitrumEvmFetcher";
 import sushiswapEthereumOnChainFetchers from "./evm-chain/ethereum/sushiswap-on-chain/all-sushiswap-fetchers";
 import curveFetchers from "./curve/all-curve-fetchers";
@@ -91,4 +92,5 @@ export default {
   ...fraxswapOnChainFetchers,
   ...balancerMultiFetchers,
   ...traderJoeV2OnChainFetchers,
+  ...velodromeFetchers
 } as { [name: string]: Fetcher };

@@ -1,0 +1,40 @@
+{
+  "velodrome-on-chain-USDC": {
+    "alUSD": {
+      "poolAddress": "0xe75a3f4bf99882ad9f8aebab2115873315425d00",
+      "token0Symbol": "USDC",
+      "token1Symbol": "alUSD",
+      "token0Address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+      "token1Address": "0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A",
+      "token0Decimals": 6,
+      "token1Decimals": 18,
+      "stable": true,
+      "slippage": [10000, 100000]
+    },
+    "OP": {
+      "poolAddress": "0x47029bc8f5CBe3b464004E87eF9c9419a48018cd",
+      "token0Symbol": "OP",
+      "token1Symbol": "USDC",
+      "token0Address": "0x4200000000000000000000000000000000000042",
+      "token1Address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "stable": false,
+      "slippage": [10000, 100000]
+    }
+  },
+  "velodrome-on-chain-WETH": {
+    "alETH": {
+      "poolAddress": "0x6fD5BEe1Ddb4dbBB0b7368B080Ab99b8BA765902",
+      "token0Symbol": "alETH",
+      "token1Symbol": "WETH",
+      "token0Address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+      "token1Address": "0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "pairedToken": "ETH",
+      "stable": true,
+      "slippage": [10000, 100000]
+    }
+  }
+}
