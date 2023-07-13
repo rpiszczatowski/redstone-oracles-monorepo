@@ -26,10 +26,15 @@ const DeviationCheckSchema = z.object({
   }),
 });
 
+const CustomUrlsSchema = z.object({
+  url: z.string(),
+  jsonpath: z.string(),
+});
+
 const TokenSchema = z.object({
   source: z.array(z.string()).optional(),
   deviationCheck: z.string().optional(),
-  customUrlDetails: z.string().optional(),
+  customUrlDetails: CustomUrlsSchema.optional(),
   comment: z.string().optional(),
   skipSigning: z.boolean().optional(),
   priceAggregator: z.string().optional(),
