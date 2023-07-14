@@ -3,50 +3,47 @@ import _ from "lodash";
 import { CachedDataPackage } from "src/data-packages/data-packages.model";
 import config from "../src/config";
 import { fetchDataPackages, getDeviationPercentage } from "./common";
+import { writeCsvFile } from "./csv-utils";
 
+const probingWindowInDays = 20;
 const END_TIMESTAMP = Date.now();
-const TIMESTAMPS_INTERVAL = 20 * 24 * 60 * 60 * 1000;
+const TIMESTAMPS_INTERVAL = probingWindowInDays * 24 * 60 * 60 * 1000;
 const START_TIMESTAMP = END_TIMESTAMP - TIMESTAMPS_INTERVAL;
-const TIMESTAMP_GRANULATION = 1000;
 const DATA_SERVICE_INTERVAL = 60 * 1000;
-const DATA_SERVICE_TIMESTAMP_GRANULATION =
-  TIMESTAMP_GRANULATION / DATA_SERVICE_INTERVAL;
 const DEVIATION_LIMIT = 0.01;
+const assetName = "VST";
+const dataServiceId = "redstone-main-demo";
+const dataFeedId = "IB01.L";
+const generateCsv = true;
 
 (async () => {
   const dataPackages = await fetchDataPackages(config.mongoDbUrl, {
     startTimestamp: START_TIMESTAMP,
     endTimestamp: END_TIMESTAMP,
-    dataServiceId: "redstone-main-demo",
-    dataFeedId: "IB01.L",
+    dataServiceId,
+    dataFeedId,
   });
-
   // const pricesFromApi = await fetchPricesFromApi(
   //   START_TIMESTAMP,
   //   END_TIMESTAMP
   // );
 
-  const { deviationsWithGranulation, deviationsWithoutGranulation } =
+  const { deviationsWithoutGranulation } =
     await countDeviationsBiggerThanLimitAndFindMax(dataPackages);
-  console.log(
-    `Found ${deviationsWithGranulation} deviations with granulation ${TIMESTAMP_GRANULATION} milliseconds bigger than limit`
-  );
   console.log(
     `Found ${deviationsWithoutGranulation} deviations without granulation bigger than limit`
   );
+
+  if (generateCsv) {
+    await generateCsvOutput(dataPackages);
+  }
 })();
 
 async function countDeviationsBiggerThanLimitAndFindMax(prices: any[]) {
   console.log(`Counting deviations bigger than ${DEVIATION_LIMIT}`);
-  const deviationsWithGranulation = handleDeviationsCalculationsFromDb(
-    prices,
-    DATA_SERVICE_TIMESTAMP_GRANULATION
-  );
-  const deviationsWithoutGranulation = handleDeviationsCalculationsFromDb(
-    prices,
-    1
-  );
-  return { deviationsWithGranulation, deviationsWithoutGranulation };
+  const deviationsWithoutGranulation =
+    handleDeviationsCalculationsFromDb(prices);
+  return { deviationsWithoutGranulation };
 }
 
 async function fetchPricesFromApi(fromTimestamp: number, toTimestamp: number) {
@@ -58,7 +55,7 @@ async function fetchPricesFromApi(fromTimestamp: number, toTimestamp: number) {
   const fetchFromApi = async (index: number) => {
     return await axios.get("https://api.redstone.finance/prices", {
       params: {
-        symbol: "VST",
+        symbol: assetName,
         provider: "redstone-rapid",
         fromTimestamp,
         toTimestamp,
@@ -83,15 +80,12 @@ async function fetchPricesFromApi(fromTimestamp: number, toTimestamp: number) {
   return allPrices;
 }
 
-function handleDeviationsCalculationsFromApi(
-  prices: any[],
-  granulation: number
-) {
+function handleDeviationsCalculationsFromApi(prices: any[]) {
   let index = 0;
   let deviationsBiggerThanLimitCount = 0;
-  let lastValue = prices[index * granulation].source["curve-frax"];
-  while (!!prices[index * granulation] && !!prices[(index + 1) * granulation]) {
-    const currentValue = prices[index * granulation].source["curve-frax"];
+  let lastValue = prices[index].source["curve-frax"];
+  while (!!prices[index] && !!prices[index + 1]) {
+    const currentValue = prices[index].source["curve-frax"];
     if (!currentValue) {
       index += 1;
       continue;
@@ -109,18 +103,12 @@ function handleDeviationsCalculationsFromApi(
   return deviationsBiggerThanLimitCount;
 }
 
-function handleDeviationsCalculationsFromDb(
-  dataPackages: CachedDataPackage[],
-  granulation: number
-) {
+function handleDeviationsCalculationsFromDb(dataPackages: CachedDataPackage[]) {
   let index = 0;
   let deviationsBiggerThanLimitCount = 0;
-  let lastValue = dataPackages[index * granulation].dataPoints[0].value;
-  while (
-    !!dataPackages[index * granulation] &&
-    !!dataPackages[(index + 1) * granulation]
-  ) {
-    const currentValue = dataPackages[index * granulation].dataPoints[0].value;
+  let lastValue = dataPackages[index].dataPoints[0].value;
+  while (!!dataPackages[index] && !!dataPackages[index + 1]) {
+    const currentValue = dataPackages[index].dataPoints[0].value;
     const deviation = getDeviationPercentage(
       Number(currentValue),
       Number(lastValue)
@@ -132,4 +120,19 @@ function handleDeviationsCalculationsFromDb(
     index += 1;
   }
   return deviationsBiggerThanLimitCount;
+}
+
+function convertDataToCsvFormat(dataPackages: CachedDataPackage[]) {
+  const csvRows = dataPackages.map((dataPackage) => {
+    const { timestampMilliseconds, dataPoints } = dataPackage;
+    const dataPointValues = dataPoints.map((dataPoint) => dataPoint.value);
+    return `${timestampMilliseconds},${dataPointValues.join(",")}`;
+  });
+  return csvRows.join("\n");
+}
+
+async function generateCsvOutput(dataPackages: CachedDataPackage[]) {
+  const csvData = convertDataToCsvFormat(dataPackages);
+  await writeCsvFile("output.csv", csvData);
+  console.log("Generated CSV output file: output.csv");
 }
