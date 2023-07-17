@@ -51,7 +51,7 @@ export class EvmFetcher extends BaseFetcher {
   }
 
   extractPrices(response: MulticallParsedResponses, ids: string[]): PricesObj {
-    const extractedPrices = this.extractPricesSafely(ids, (id) => {
+    return this.extractPricesSafely(ids, (id) => {
       const requestHandlersForId = getRequestHandlersForDataFeedId(
         id,
         this.requestHandlers
@@ -61,23 +61,5 @@ export class EvmFetcher extends BaseFetcher {
         id,
       };
     });
-
-    // Temporary workaround for PTP
-    const pausedFeedId = "YY_PTP_sAVAX";
-    const minValue = 10;
-    const maxValue = 20;
-    const latestValidValue = 15.47;
-    const extractedPrice = extractedPrices[pausedFeedId];
-    const shouldMockThePrice =
-      ids.includes(pausedFeedId) &&
-      (!extractedPrice ||
-        Number(extractedPrice) < minValue ||
-        Number(extractedPrice) > maxValue);
-
-    if (shouldMockThePrice) {
-      extractedPrices[pausedFeedId] = latestValidValue;
-    }
-
-    return extractedPrices;
   }
 }
