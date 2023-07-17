@@ -58,7 +58,7 @@
     "redstone-api": "^0.4.11",
     "sort-deep-object-arrays": "^1.1.2",
     "uuid": "^9.0.0",
-    "yahoo-finance": "^0.3.7",
+    "yahoo-finance2": "^2.4.2",
     "zod": "^3.21.4"
   },
   "devDependencies": {
