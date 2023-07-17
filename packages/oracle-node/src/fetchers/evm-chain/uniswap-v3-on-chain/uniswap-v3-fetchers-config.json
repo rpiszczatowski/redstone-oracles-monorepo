@@ -620,6 +620,17 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "fee": 3000
+    },
+    "GHO": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x54EEbc36527FE2E5624051E3c895810d7b68bcFc",
+      "token0Symbol": "GHO",
+      "token1Symbol": "USDC",
+      "token0Address": "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 3000
     }
   },
   "uniswap-v3-on-chain-usdc-500": {
@@ -758,6 +769,19 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "fee": 100
+    }
+  },
+  "uniswap-v3-on-chain-usdt-3000": {
+    "GHO": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0xBBec426df87537AD0bec0E899007bE441427d0F8",
+      "token0Symbol": "GHO",
+      "token1Symbol": "USDT",
+      "token0Address": "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f",
+      "token1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 3000
     }
   }
 }
