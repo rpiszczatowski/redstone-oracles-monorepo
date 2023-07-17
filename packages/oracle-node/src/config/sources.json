@@ -359,6 +359,11 @@
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
+  "uniswap-v3-on-chain-usdt-3000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
   "uniswap-v3-on-chain-wbtc-100": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
@@ -470,6 +475,11 @@
     "color": "#78151d"
   },
   "curve-weth": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
+    "url": "https://curve.fi/",
+    "color": "#78151d"
+  },
+  "curve-crvusd": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
     "url": "https://curve.fi/",
     "color": "#78151d"
