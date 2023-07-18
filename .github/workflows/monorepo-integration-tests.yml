@@ -15,8 +15,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15
+      - name: Install deps
+        run: yarn
       - name: Run core tests
-        run: bash integration-test-core.sh
+        run: yarn run-ts integration-test-core.ts
         env:
           NODE_ENV: test
   classic:
@@ -29,7 +31,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15
+      - name: Install deps
+        run: yarn
       - name: Run clasic tests
-        run: bash integration-test-classic.sh
+        run: yarn run-ts integration-test-classic.ts
         env:
           NODE_ENV: test
