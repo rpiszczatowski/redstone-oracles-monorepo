@@ -1,5 +1,4 @@
 import { Network } from "@balancer-labs/sdk";
-import { arbitrumProvider } from "../../utils/blockchain-providers";
 import { config } from "../../config";
 
 export const balancerFetchersConfig = {
@@ -23,12 +22,6 @@ export const balancerFetchersConfig = {
         tokenIn: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         tokenOut: "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5",
       },
-      "BB-A-WETH": {
-        poolId:
-          "0x60d604890feaa0b5460b28a424407c24fe89374a0000000000000000000004fc",
-        tokenIn: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-        tokenOut: "0x60d604890feaa0b5460b28a424407c24fe89374a",
-      },
       WSTETH: {
         poolId:
           "0x36bf227d6bac96e2ab1ebb5492ecec69c691943f000200000000000000000316",
@@ -41,25 +34,14 @@ export const balancerFetchersConfig = {
       },
     },
   },
-  "balancer-bb-a-weth-using-eth": {
-    pairedToken: "ETH",
+  "balancer-lusd": {
+    pairedToken: "LUSD",
     poolsConfigs: {
-      SWETH: {
+      GHO: {
         poolId:
-          "0x02d928e68d8f10c0358566152677db51e1e2dc8c00000000000000000000051e",
-        tokenIn: "0x60d604890feaa0b5460b28a424407c24fe89374a",
-        tokenOut: "0xf951e335afb289353dc249e82926178eac7ded78",
-      },
-    },
-  },
-  "balancer-bb-a-weth": {
-    pairedToken: "BB-A-WETH",
-    poolsConfigs: {
-      SWETH: {
-        poolId:
-          "0x02d928e68d8f10c0358566152677db51e1e2dc8c00000000000000000000051e",
-        tokenIn: "0x60d604890feaa0b5460b28a424407c24fe89374a",
-        tokenOut: "0xf951e335afb289353dc249e82926178eac7ded78",
+          "0x3fa8c89704e5d07565444009e5d9e624b40be813000000000000000000000599",
+        tokenIn: "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0",
+        tokenOut: "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f",
       },
     },
   },

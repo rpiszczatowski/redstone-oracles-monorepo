@@ -15,16 +15,11 @@ interface BalancerPoolsConfig {
   tokenOut: string;
   swapAmount: BigNumber;
   swapAmountForSwaps: BigNumber;
-  returnAmount: BigNumber;
-  returnAmountFromSwaps: BigNumber;
-  returnAmountConsideringFees: BigNumber;
   swaps: SwapConfig[];
   tokenAddresses: string[];
-  marketSp: string;
   tokenInForSwaps: string;
   tokenOutFromSwaps: string;
   tokenToFetch: string;
-  tokenFromResponseAddress: string;
 }
 
 interface SwapConfig {
@@ -33,7 +28,6 @@ interface SwapConfig {
   assetOutIndex: number;
   amount: string;
   userData: string;
-  returnAmount: string;
 }
 
 interface DeltaResponse {
@@ -69,10 +63,9 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<DeltaResponse> {
       throw new Error("Invalid data feed used in balancer multi fetcher");
     }
 
-    const { tokenFromResponseAddress, tokenToFetch, swapAmount } = this.config;
-    const ratio = new Decimal(response[tokenFromResponseAddress]);
+    const { tokenOut, tokenToFetch, swapAmount } = this.config;
+    const ratio = new Decimal(response[tokenOut]);
     const ratioSerialized = ratio.div(swapAmount.toHexString());
-
     const tokenPrice = getLastPrice(this.config.tokenToFetch);
     if (!tokenPrice) {
       throw new Error(`Cannot get last price from cache for: ${tokenToFetch}`);
