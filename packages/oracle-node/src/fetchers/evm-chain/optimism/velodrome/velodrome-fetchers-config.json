@@ -1,9 +1,9 @@
 {
-  "velodrome-on-chain-USDC": {
-    "alUSD": {
+  "velodrome-on-chain-usdc": {
+    "ALUSD": {
       "poolAddress": "0xe75a3f4bf99882ad9f8aebab2115873315425d00",
       "token0Symbol": "USDC",
-      "token1Symbol": "alUSD",
+      "token1Symbol": "ALUSD",
       "token0Address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
       "token1Address": "0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A",
       "token0Decimals": 6,
@@ -21,12 +21,23 @@
       "token1Decimals": 6,
       "stable": false,
       "slippage": [10000, 100000]
+    },
+    "LUSD": {
+      "poolAddress": "0x207AddB05C548F262219f6bFC6e11c02d0f7fDbe",
+      "token0Symbol": "USDC",
+      "token1Symbol": "LUSD",
+      "token0Address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
+      "token1Address": "0xc40F949F8a4e094D1b49a23ea9241D289B7b2819",
+      "token0Decimals": 6,
+      "token1Decimals": 18,
+      "stable": true,
+      "slippage": [10000, 100000]
     }
   },
-  "velodrome-on-chain-WETH": {
-    "alETH": {
+  "velodrome-on-chain-weth": {
+    "ALETH": {
       "poolAddress": "0x6fD5BEe1Ddb4dbBB0b7368B080Ab99b8BA765902",
-      "token0Symbol": "alETH",
+      "token0Symbol": "ALETH",
       "token1Symbol": "WETH",
       "token0Address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
       "token1Address": "0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A",
