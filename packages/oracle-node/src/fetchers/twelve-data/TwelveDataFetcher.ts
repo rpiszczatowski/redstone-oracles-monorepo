@@ -46,7 +46,11 @@ export class TwelveDataFetcher extends BaseFetcher {
     });
   }
   override validateResponse(response: any): boolean {
-    return isDefined(response) && isDefined(response.data) && response.data.status !== "error";
+    return (
+      isDefined(response) &&
+      isDefined(response.data) &&
+      response.data.status !== "error"
+    );
   }
 
   override serializeResponse(response: any): string {
@@ -69,8 +73,17 @@ export class TwelveDataFetcher extends BaseFetcher {
     }
 
     return this.extractPricesSafely(Object.keys(twelveDataResponse), (id) => ({
-      value: twelveDataResponse[id].price,
+      value: this.isInverseQuote(id)
+        ? 1 / twelveDataResponse[id].price
+        : twelveDataResponse[id].price,
       id,
     }));
+  }
+
+  // This is used when twelve data only has data feed as e.g USD/CNH and CNH/USD doesn't exists
+  isInverseQuote(id: string) {
+    const dataFeedIdsWhichAreInverse = ["CNH"];
+    const dataFeedId = this.convertIdToSymbol(id);
+    return dataFeedIdsWhichAreInverse.includes(dataFeedId);
   }
 }
