@@ -1,5 +1,5 @@
 import { OpenedContract, TonClient, WalletContractV4 } from "ton";
-import { Sender } from "ton-core";
+import { ContractProvider, Sender } from "ton-core";
 import { mnemonicToWalletKey } from "ton-crypto";
 import { config } from "./config";
 import { getHttpEndpoint } from "@orbs-network/ton-access";
@@ -8,8 +8,6 @@ export abstract class Ton {
   walletContract?: OpenedContract<WalletContractV4>;
   walletSender?: Sender;
   client?: TonClient;
-
-  abstract perform(): Promise<any>;
 
   async connect(): Promise<Ton> {
     const key = await mnemonicToWalletKey(config.mnemonic);
@@ -33,7 +31,22 @@ export abstract class Ton {
     return this;
   }
 
-  async wait(callback: () => void): Promise<void> {
+  async internalMessage(
+    provider: ContractProvider,
+    coins: number,
+    body?: any, // Maybe<Cell | string> but that's incompatible with itself
+    bounce?: boolean
+  ): Promise<void> {
+    await this.wait(() => {
+      provider.internal(this.walletSender!, {
+        value: `${coins}`,
+        body,
+        bounce,
+      });
+    });
+  }
+
+  private async wait(callback: () => void): Promise<void> {
     const seqno = await this.walletContract!.getSeqno();
 
     await callback();

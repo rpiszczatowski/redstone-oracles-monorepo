@@ -1,16 +1,6 @@
-import { TonDeployer } from "../src/TonDeployer";
-import {
-  Adapter,
-  GetKeyAdapterContractExecutor,
-  SendInitAdapterContractExecutor,
-  SendMessageAdapterContractExecutor,
-} from "../src/Adapter";
-import { DeployableContract } from "../src/DeployableContract";
-import fs from "fs";
-import {
-  GetFeedValueFeedContractExecutor,
-  SendMessageFeedContractExecutor,
-} from "../src/Feed";
+import { Adapter } from "../src/Adapter";
+import * as fs from "fs";
+import { Feed } from "../src/Feed";
 
 async function main() {
   const argv = require("minimist")(process.argv.slice(2));
@@ -18,67 +8,55 @@ async function main() {
     `deploy/adapter.address`,
     "utf8"
   );
+
   const feedAddress = await fs.promises.readFile(`deploy/feed.address`, "utf8");
 
   switch (argv["op"]) {
     case "deploy-adapter":
-      return await new TonDeployer(
-        Adapter.createForDeploy("adapter")
-      ).perform();
+      return await (await Adapter.createForDeploy("adapter")).sendDeploy();
 
     case "deploy-feed":
-      return await new TonDeployer(
-        DeployableContract.createForDeploy("feed")
-      ).perform();
+      return await (await Feed.createForDeploy("feed")).sendDeploy();
 
     case "init-adapter":
-      await new SendInitAdapterContractExecutor(adapterAddress).perform();
-      console.log(
-        await new GetKeyAdapterContractExecutor(adapterAddress).perform()
-      );
+      await (
+        await Adapter.createForExecute<Adapter>(adapterAddress)
+      ).sendInit();
 
       break;
 
     case "send-message":
-      await new SendMessageAdapterContractExecutor(adapterAddress).perform();
-      console.log(
-        await new GetKeyAdapterContractExecutor(adapterAddress).perform()
-      );
+      await (
+        await Adapter.createForExecute<Adapter>(adapterAddress)
+      ).sendMessage();
 
       break;
 
     case "get-feed-value":
       console.log(
-        await new GetFeedValueFeedContractExecutor(feedAddress).perform()
-      );
-
-      console.log(
-        await new GetKeyAdapterContractExecutor(adapterAddress).perform()
+        await (await Feed.createForExecute<Feed>(feedAddress)).getFeedValue()
       );
 
       break;
 
     case "fetch-feed-value":
-      await new SendMessageFeedContractExecutor(feedAddress).perform();
+      await (await Feed.createForExecute<Feed>(feedAddress)).sendMessage();
       console.log(
-        await new GetFeedValueFeedContractExecutor(feedAddress).perform()
-      );
-      console.log(
-        await new GetKeyAdapterContractExecutor(adapterAddress).perform()
+        await (await Feed.createForExecute<Feed>(feedAddress)).getFeedValue()
       );
 
       break;
 
     case "get-key":
-      console.log(
-        await new GetKeyAdapterContractExecutor(adapterAddress).perform()
-      );
-
       break;
 
     default:
       throw `Unknown op: '${argv["op"]}'`;
   }
+
+  console.log(
+    await (await Adapter.createForExecute<Adapter>(adapterAddress)).getKey(333)
+  );
 }
 
 main();

@@ -1,9 +1,8 @@
-import { beginCell, ContractProvider, Sender } from "ton-core";
-import { DeployableContract } from "./DeployableContract";
-import { ContractExecutor } from "./ContractExecutor";
+import { beginCell, ContractProvider } from "ton-core";
+import { TonContract } from "./TonContract";
 
-export class Adapter extends DeployableContract {
-  async sendInit(provider: ContractProvider, via: Sender) {
+export class Adapter extends TonContract {
+  async sendInit(provider: ContractProvider) {
     const messageBody = beginCell()
       .storeUint(1, 32) // op (op #1 = increment)
       .storeUint(0, 64); // query id
@@ -18,22 +17,17 @@ export class Adapter extends DeployableContract {
 
     const body = messageBody.endCell();
 
-    await provider.internal(via, {
-      value: "0.05", // send 0.02 TON for gas
-      body,
-    });
+    await this.internalMessage(provider, 0.05, body);
   }
 
-  async sendMessage(provider: ContractProvider, via: Sender) {
+  async sendMessage(provider: ContractProvider) {
     const messageBody = beginCell()
       .storeUint(101, 32) // op (op #1 = increment)
       .storeUint(0, 64); // query id
 
     const body = messageBody.endCell();
-    await provider.internal(via, {
-      value: "0.02", // send 0.02 TON for gas
-      body,
-    });
+
+    await this.internalMessage(provider, 0.02, body);
   }
 
   async getKey(provider: ContractProvider, value: number) {
@@ -42,39 +36,5 @@ export class Adapter extends DeployableContract {
     ]);
 
     return stack.readBigNumber();
-  }
-}
-
-abstract class AdapterContractExecutor extends ContractExecutor<Adapter> {
-  constructor(protected address: string) {
-    super(Adapter, address);
-  }
-}
-
-export class SendMessageAdapterContractExecutor extends AdapterContractExecutor {
-  override async perform() {
-    await super.perform();
-
-    await this.wait(() => {
-      this.openedContract!.sendMessage(this.walletSender!);
-    });
-  }
-}
-
-export class SendInitAdapterContractExecutor extends AdapterContractExecutor {
-  override async perform() {
-    await super.perform();
-
-    await this.wait(() => {
-      this.openedContract!.sendInit(this.walletSender!);
-    });
-  }
-}
-
-export class GetKeyAdapterContractExecutor extends AdapterContractExecutor {
-  override async perform() {
-    await super.perform();
-
-    return await this.openedContract?.getKey(333);
   }
 }
