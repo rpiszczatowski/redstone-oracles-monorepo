@@ -2,7 +2,10 @@ import { OpenedContract, TonClient, WalletContractV4 } from "ton";
 import { ContractProvider, Sender } from "ton-core";
 import { mnemonicToWalletKey } from "ton-crypto";
 import { config } from "./config";
-import { getHttpEndpoint } from "@orbs-network/ton-access";
+
+export async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export abstract class Ton {
   walletContract?: OpenedContract<WalletContractV4>;
@@ -17,8 +20,10 @@ export abstract class Ton {
     });
 
     // initialize ton rpc client on testnet
-    const endpoint = await getHttpEndpoint({ network: "testnet" });
-    this.client = new TonClient({ endpoint });
+    this.client = new TonClient({
+      endpoint: config.apiEndpoint,
+      apiKey: config.apiKey,
+    });
 
     this.walletContract = this.client.open(wallet);
     this.walletSender = this.walletContract.sender(key.secretKey);
@@ -55,14 +60,10 @@ export abstract class Ton {
     let currentSeqno = seqno;
     while (currentSeqno == seqno) {
       console.log("waiting for transaction to confirm...");
-      await this.sleep(1500);
+      await sleep(1500);
       currentSeqno = await this.walletContract!.getSeqno();
     }
 
     console.log("transaction confirmed!");
-  }
-
-  private sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

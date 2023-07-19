@@ -50,6 +50,24 @@ async function main() {
     case "get-key":
       break;
 
+    case "recover":
+      console.log(
+        await (
+          await Adapter.createForExecute<Adapter>(adapterAddress)
+        ).getRecover()
+      );
+
+      return;
+
+    case "verify":
+      console.log(
+        await (
+          await Adapter.createForExecute<Adapter>(adapterAddress)
+        ).getVerify()
+      );
+
+      return;
+
     default:
       throw `Unknown op: '${argv["op"]}'`;
   }

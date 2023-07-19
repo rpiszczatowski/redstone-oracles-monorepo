@@ -1,3 +1,7 @@
+#include "stdlib.fc";
+#include "crypto.fc";
+#include "utils.fc";
+
 ;; =============== storage =============================
 
 cell load_data() impure {
@@ -95,5 +99,16 @@ cell load_data() impure {
   throw_unless(98, success);
 
   int value = payload~load_uint(256);
+
   return (value, payload);
+}
+
+(int)recover(int hash, cell signature) method_id {
+  return recover_address(hash, signature.begin_parse());
+}
+
+(int)verify(slice data, cell signature) method_id {
+  var hash = keccak(data, 1);
+
+  return recover_address(hash, signature.begin_parse());
 }

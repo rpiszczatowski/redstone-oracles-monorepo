@@ -2,21 +2,6 @@
 ;;
 
 {-
-    This file is part of TON FunC Standard Library.
-
-    FunC Standard Library is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
-    the Free Software Foundation, either version 2 of the License, or
-    (at your option) any later version.
-
-    FunC Standard Library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
-
--}
-
-{-
   # Tuple manipulation primitives
   The names and the types are mostly self-explaining.
   See [polymorhism with forall](https://ton.org/docs/#/func/functions?id=polymorphism-with-forall)
@@ -116,8 +101,6 @@ forall X -> X null() asm "PUSHNULL";
 
 ;;; Moves a variable [x] to the top of the stack
 forall X -> (X, ()) ~impure_touch(X x) impure asm "NOP";
-
-
 
 ;;; Returns the current Unix time as an Integer
 int now() asm "NOW";
@@ -305,7 +288,7 @@ slice begin_parse(cell c) asm "CTOS";
 ;;; Preloads the first reference from the slice.
 cell preload_ref(slice s) asm "PLDREF";
 
-{- Functions below are commented because are implemented on compilator level for optimisation -}
+  {- Functions below are commented because are implemented on compilator level for optimisation -}
 
 ;;; Loads a signed [len]-bit integer from a slice [s].
 ;; (slice, int) ~load_int(slice s, int len) asm(s len -> 1 0) "LDIX";
@@ -325,7 +308,7 @@ cell preload_ref(slice s) asm "PLDREF";
 ;;; Preloads the first `0 ≤ len ≤ 1023` bits from slice [s] into a separate `slice s''`.
 ;; slice preload_bits(slice s, int len) asm "PLDSLICEX";
 
-;;; Loads serialized amount of TonCoins (any unsigned integer up to `2^120 - 1`).
+;;; Loads serialized amount of TonCoins (any unsigned integer up to `2^128 - 1`).
 (slice, int) load_grams(slice s) asm( -> 1 0) "LDGRAMS";
 (slice, int) load_coins(slice s) asm( -> 1 0) "LDGRAMS";
 
@@ -353,6 +336,10 @@ cell preload_dict(slice s) asm "PLDDICT";
 ;;; Loads a dictionary as [load_dict], but returns only the remainder of the slice.
 slice skip_dict(slice s) asm "SKIPDICT";
 
+
+slice bls_g1_negate(slice x) asm "BLS_G1_NEG";
+slice bls_g1_mul(slice x, int s) asm "BLS_G1_MUL";
+slice bls_g1_add(slice x, slice y) asm "BLS_G1_ADD";
 ;;; Loads (Maybe ^Cell) from `slice` [s].
 ;;; In other words loads 1 bit and if it is true
 ;;; loads first ref and return it with slice remainder
@@ -441,7 +428,7 @@ builder store_ref(builder b, cell c) asm(c b) "STREF";
 ;;; Stores `slice` [s] into `builder` [b]
 builder store_slice(builder b, slice s) asm "STSLICER";
 
-;;; Stores (serializes) an integer [x] in the range `0..2^120 − 1` into `builder` [b].
+;;; Stores (serializes) an integer [x] in the range `0..2^128 − 1` into `builder` [b].
 ;;; The serialization of [x] consists of a 4-bit unsigned big-endian integer `l`,
 ;;; which is the smallest integer `l ≥ 0`, such that `x < 2^8l`,
 ;;; followed by an `8l`-bit unsigned big-endian representation of [x].
@@ -626,14 +613,15 @@ int rand(int range) impure asm "RAND";
 ;;; Returns the current random seed as an unsigned 256-bit Integer.
 int get_seed() impure asm "RANDSEED";
 ;;; Sets the random seed to unsigned 256-bit seed.
-() set_seed(int) impure asm "SETRAND";
+() set_seed(int x) impure asm "SETRAND";
 ;;; Mixes unsigned 256-bit integer x into the random seed r by setting the random seed to sha256 of the concatenation of two 32-byte strings: the first with the big-endian representation of the old seed r, and the second with the big-endian representation of x.
 () randomize(int x) impure asm "ADDRAND";
 ;;; Equivalent to randomize(cur_lt());.
 () randomize_lt() impure asm "LTIME" "ADDRAND";
 
 ;;; Checks whether the data parts of two slices coinside
-int equal_slice_bits (slice a, slice b) asm "SDEQ";
+int equal_slice_bits(slice a, slice b) asm "SDEQ";
+int equal_slices(slice a, slice b) asm "SDEQ";
 
 ;;; Concatenates two builders
 builder store_builder(builder to, builder from) asm "STBR";
