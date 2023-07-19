@@ -22,6 +22,7 @@ const STABLECOIN_DECIMALS = 6;
 const BTC_DECIMALS = 8;
 const AVAX_DECIMALS = 18;
 const JOE_DECIMALS = 18;
+const GMX_DECIMALS = 18;
 const TOKENS_DECIMALS: Record<string, number> = {
   USDC: STABLECOIN_DECIMALS,
   USDT: STABLECOIN_DECIMALS,
@@ -30,6 +31,7 @@ const TOKENS_DECIMALS: Record<string, number> = {
   BTC: BTC_DECIMALS,
   AVAX: AVAX_DECIMALS,
   JOE: JOE_DECIMALS,
+  GMX: GMX_DECIMALS,
 };
 
 export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
