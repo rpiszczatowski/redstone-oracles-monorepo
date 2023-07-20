@@ -1,12 +1,7 @@
 import { AggregatedPriceHandler } from "./AggregatedPriceHandler";
 import { PriceDataAfterAggregation } from "../types";
 import PricesService from "./../fetchers/PricesService";
-import {
-  DataPackage,
-  DataPoint,
-  NumericDataPoint,
-  SignedDataPackage,
-} from "redstone-protocol";
+import { DataPackage, DataPoint, SignedDataPackage } from "redstone-protocol";
 import { Consola } from "consola";
 import {
   DataPackageBroadcaster,
@@ -15,7 +10,6 @@ import {
 } from "../broadcasters";
 import { config } from "../config";
 import ManifestHelper from "../manifest/ManifestHelper";
-import { value } from "jsonpath";
 import { DEFAULT_NUM_VALUE_DECIMALS } from "redstone-protocol/src/common/redstone-constants";
 import { convertNumberToBytes } from "redstone-protocol/src/common/utils";
 import { createMetadataForRedstonePrice } from "../fetchers/MetadataForRedstonePrice";
@@ -141,15 +135,14 @@ export class DataPackageBroadcastPerformer
     await this.performBroadcast(promises, "data package");
   }
 
-  private priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
-    return new NumericDataPoint({
-      dataFeedId: price.symbol,
-      value: price.value.unsafeToNumber(),
-      decimals: ManifestHelper.getDataFeedDecimals(
+  private priceToDataPoint(price: PriceDataAfterAggregation): DataPoint {
+    const decimals =
+      ManifestHelper.getDataFeedDecimals(
         this.manifestDataProvider.latestManifest!,
         price.symbol
-      ),
-      metadata: createMetadataForRedstonePrice(price),
-    });
+      ) ?? DEFAULT_NUM_VALUE_DECIMALS;
+    const metadata = createMetadataForRedstonePrice(price);
+    const value = convertNumberToBytes(price.value.toString(), decimals, 32);
+    return new DataPoint(price.symbol, value, metadata);
   }
 }

@@ -1,6 +1,8 @@
+import axios from "axios";
+import { base64 } from "ethers/lib/utils";
+import { convertNumberToBytes } from "redstone-protocol/src/common/utils";
 import NodeRunner from "../../src/NodeRunner";
 import fetchers from "../../src/fetchers";
-import axios from "axios";
 import ArweaveService from "../../src/arweave/ArweaveService";
 import { any } from "jest-mock-extended";
 import { timeout } from "../../src/utils/promise-timeout";
@@ -201,7 +203,7 @@ describe("NodeRunner", () => {
       expect(simulateSerialization(firstCallArgs[1])).toEqual(
         simulateSerialization({
           requestSignature:
-            "0x31374eb4f1e6a7e12925ce6852c08548f18b01db0cac1c75dac97432d0782a1940e3f1165f59b6b525c162baa6a2bd73f0619d81dc02ab8596d8bd387a860c821c",
+            "0xa4627603332b20c175df72c95e23339e9d57eff63bf030e5c8117304c56f52a0667d865b563643de7c2ea8bf5b261266d7019c99241cb1864000d37ec0db1e2e1c",
           dataPackages: [
             {
               signature:
@@ -210,7 +212,6 @@ describe("NodeRunner", () => {
               dataPoints: [
                 {
                   dataFeedId: "BTC",
-                  value: 444.5,
                   metadata: {
                     sourceMetadata: {
                       coingecko: {
@@ -222,6 +223,7 @@ describe("NodeRunner", () => {
                     },
                     value: "444.5",
                   },
+                  value: base64.encode(convertNumberToBytes("444.5", 8, 32)),
                 },
               ],
             },
@@ -240,7 +242,7 @@ describe("NodeRunner", () => {
                     },
                     value: "42",
                   },
-                  value: 42,
+                  value: base64.encode(convertNumberToBytes("42", 8, 32)),
                 },
               ],
             },
@@ -262,7 +264,7 @@ describe("NodeRunner", () => {
                     },
                     value: "444.5",
                   },
-                  value: 444.5,
+                  value: base64.encode(convertNumberToBytes("444.5", 8, 32)),
                 },
                 {
                   dataFeedId: "ETH",
@@ -274,7 +276,7 @@ describe("NodeRunner", () => {
                     },
                     value: "42",
                   },
-                  value: 42,
+                  value: base64.encode(convertNumberToBytes("42", 8, 32)),
                 },
               ],
             },
@@ -341,7 +343,9 @@ describe("NodeRunner", () => {
               dataPoints: expect.arrayContaining([
                 expect.objectContaining({
                   dataFeedId: symbol,
-                  value: expectedValue,
+                  value: base64.encode(
+                    convertNumberToBytes(expectedValue.toString(), 8, 32)
+                  ),
                 }),
               ]),
             }),
