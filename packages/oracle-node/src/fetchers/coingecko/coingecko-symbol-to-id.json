@@ -933,5 +933,6 @@
   "PLS": "plutusdao",
   "PEPE": "pepe",
   "SWETH": "sweth",
-  "BB-A-WETH": "balancer-boosted-aave-weth"
+  "BB-A-WETH": "balancer-boosted-aave-weth",
+  "crvUSD": "crvusd"
 }

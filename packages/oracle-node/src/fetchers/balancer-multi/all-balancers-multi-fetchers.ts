@@ -1,14 +1,16 @@
+import { ethereumProvider } from "../../utils/blockchain-providers";
 import { balancerMultiConfigs } from "./balancer-multi-configs";
 import { BalancerMultiFetcher } from "./BalancerMultiFetcher";
 
 const balancerMultiFetchers: Record<string, BalancerMultiFetcher> = {};
 
-for (const [dataFeedId, config] of Object.entries(balancerMultiConfigs)) {
-  balancerMultiFetchers[`balancer-multi-${dataFeedId.toLowerCase()}`] =
+for (const [underlyingToken, config] of Object.entries(balancerMultiConfigs)) {
+  balancerMultiFetchers[`balancer-multi-${underlyingToken.toLowerCase()}`] =
     new BalancerMultiFetcher(
-      `balancer-multi-${dataFeedId.toLowerCase()}`,
+      `balancer-multi-${underlyingToken.toLowerCase()}`,
       config,
-      dataFeedId
+      underlyingToken,
+      ethereumProvider
     );
 }
 
