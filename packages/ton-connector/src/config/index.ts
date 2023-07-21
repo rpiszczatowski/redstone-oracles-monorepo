@@ -14,7 +14,7 @@ const getFromEnv = (name: string) => {
 };
 
 export const config = Object.freeze({
-  mnemonic: getFromEnv("MNEMONIC").split(" "),
+  mnemonic: getFromEnv("WALLET_MNEMONIC").split(" "),
   apiKey: getFromEnv("TONCENTER_API_KEY"),
   apiEndpoint: API_ENDPOINT,
 });

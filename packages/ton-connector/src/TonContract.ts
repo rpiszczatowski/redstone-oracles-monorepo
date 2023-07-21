@@ -9,9 +9,14 @@ import {
 import fs from "fs";
 import { Ton } from "./Ton";
 import { OpenedContract } from "ton";
+import { NetworkProvider } from "@ton-community/blueprint";
 
 export class TonContract extends Ton implements Contract {
   private openedContract!: OpenedContract<this>;
+
+  static getName(): string {
+    throw "Must be overridden";
+  }
 
   constructor(
     readonly address: Address,
@@ -20,36 +25,50 @@ export class TonContract extends Ton implements Contract {
     super();
   }
 
-  static async createForExecute<T>(
-    address: string
+  static async openForExecute<T>(
+    networkProvider: NetworkProvider
   ): Promise<OpenedContract<T>> {
+    const address = await fs.promises.readFile(
+      `deploy/${this.getName()}.address`,
+      "utf8"
+    );
+
     const contract = new this(Address.parse(address));
-    await contract.connect();
+    await contract.connect(networkProvider);
 
     return contract.openedContract as unknown as OpenedContract<T>;
   }
 
-  static async createForDeploy(name: string, workchain: number = 0) {
-    const code = Cell.fromBoc(fs.readFileSync(`func/${name}.cell`))[0];
+  static async openForDeploy(
+    networkProvider: NetworkProvider,
+    workchain: number = 0
+  ) {
+    const code = Cell.fromBoc(
+      fs.readFileSync(`contracts/${this.getName()}.cell`)
+    )[0];
 
     const data = beginCell().endCell();
     const address = contractAddress(workchain, { code, data });
 
-    fs.writeFile(`deploy/${name}.address`, address.toString(), (err) => {
-      if (err) {
-        throw `Error while saving address file: ${err}`;
+    fs.writeFile(
+      `deploy/${this.getName()}.address`,
+      address.toString(),
+      (err) => {
+        if (err) {
+          throw `Error while saving address file: ${err}`;
+        }
       }
-    });
+    );
 
     const contract = new this(address, { code, data });
 
-    await contract.connect();
+    await contract.connect(networkProvider);
 
     return contract.openedContract;
   }
 
-  async connect(): Promise<this> {
-    await super.connect();
+  override async connect(networkProvider: NetworkProvider): Promise<this> {
+    await super.connect(networkProvider);
 
     this.openedContract = this.client!.open(this);
 
@@ -57,13 +76,11 @@ export class TonContract extends Ton implements Contract {
   }
 
   async sendDeploy(provider: ContractProvider) {
-    await this.connect();
-
     console.log("contract address:", this.openedContract.address.toString());
     if (await this.client!.isContractDeployed(this.openedContract.address)) {
       throw "Contract already deployed";
     }
 
-    await this.internalMessage(provider, 0.02, undefined, false);
+    await this.internalMessage(provider, 0.02, undefined);
   }
 }

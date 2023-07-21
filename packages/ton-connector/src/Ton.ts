@@ -1,7 +1,9 @@
 import { OpenedContract, TonClient, WalletContractV4 } from "ton";
-import { ContractProvider, Sender } from "ton-core";
+import { Cell, ContractProvider, Sender } from "ton-core";
 import { mnemonicToWalletKey } from "ton-crypto";
 import { config } from "./config";
+import { Maybe } from "ton/dist/utils/maybe";
+import { NetworkProvider } from "@ton-community/blueprint";
 
 export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -12,24 +14,26 @@ export abstract class Ton {
   walletSender?: Sender;
   client?: TonClient;
 
-  async connect(): Promise<Ton> {
+  async connect(networkProvider: NetworkProvider): Promise<Ton> {
     const key = await mnemonicToWalletKey(config.mnemonic);
     const wallet = WalletContractV4.create({
       publicKey: key.publicKey,
       workchain: 0,
     });
 
-    // initialize ton rpc client on testnet
     this.client = new TonClient({
       endpoint: config.apiEndpoint,
       apiKey: config.apiKey,
     });
 
     this.walletContract = this.client.open(wallet);
-    this.walletSender = this.walletContract.sender(key.secretKey);
+    this.walletSender = networkProvider.sender();
 
     // make sure wallet is deployed
-    if (!(await this.client.isContractDeployed(wallet.address))) {
+    if (
+      !this.walletSender.address ||
+      !(await networkProvider.isContractDeployed(this.walletSender.address))
+    ) {
       throw "wallet is not deployed";
     }
 
@@ -39,14 +43,12 @@ export abstract class Ton {
   async internalMessage(
     provider: ContractProvider,
     coins: number,
-    body?: any, // Maybe<Cell | string> but that's incompatible with itself
-    bounce?: boolean
+    body?: Maybe<Cell | string>
   ): Promise<void> {
     await this.wait(() => {
       provider.internal(this.walletSender!, {
         value: `${coins}`,
         body,
-        bounce,
       });
     });
   }

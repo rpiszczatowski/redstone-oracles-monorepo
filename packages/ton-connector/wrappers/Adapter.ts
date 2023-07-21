@@ -1,5 +1,5 @@
 import { beginCell, ContractProvider } from "ton-core";
-import { TonContract } from "./TonContract";
+import { TonContract } from "../src/TonContract";
 import { arrayify, hexlify } from "ethers/lib/utils";
 import { requestRedstonePayload } from "redstone-sdk";
 import {
@@ -12,6 +12,10 @@ import {
 } from "redstone-protocol/dist/src/common/redstone-constants";
 
 export class Adapter extends TonContract {
+  static getName(): string {
+    return "adapter";
+  }
+
   async sendInit(provider: ContractProvider) {
     const messageBody = beginCell()
       .storeUint(1, 32) // op (op #1 = increment)

@@ -103,10 +103,6 @@ cell load_data() impure {
   return (value, payload);
 }
 
-(int)recover(int hash, cell signature) method_id {
-  return recover_address(hash, signature.begin_parse());
-}
-
 (int)verify(slice data, cell signature) method_id {
   var hash = keccak(data, 1);
 

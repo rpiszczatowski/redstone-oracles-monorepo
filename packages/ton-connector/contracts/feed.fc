@@ -19,7 +19,7 @@
 () recv_internal(int balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     int op = in_msg_body~load_uint(32);
     int query_id = in_msg_body~load_uint(64);
-    slice adapter_address = "EQCBx1iK19X8p9QgtIxPmP3HVe0iYb5f6PwGrLIUkxBQCl5c"a;
+    slice adapter_address = "EQCVOmfS4pRtGopmgWAke4S8btRBaBN19a58goTlDD-2guxX"a;
 
     if (op == 1) {
         send_message(101, adapter_address, begin_cell().store_uint(333, 256));

@@ -12,7 +12,8 @@
     "declaration": true,
     "declarationMap": true,
     "incremental": true,
-    "composite": true
+    "composite": true,
+    "forceConsistentCasingInFileNames": true
   },
   "ts-node": {
     "files": true
