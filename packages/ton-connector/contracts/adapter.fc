@@ -103,8 +103,110 @@ cell load_data() impure {
   return (value, payload);
 }
 
-(int)verify(slice data, cell signature) method_id {
+const DATA_POINTS_COUNT_BITS = 8 * 3;
+const DATA_POINT_VALUE_BYTE_SIZE_BITS = 8 * 4;
+const ERR_DATA_NOT_SUPPORTED_BASE = 600;
+const DATA_FEED_ID_BITS = 8 * 32;
+const ERR_DATA_NOT_EMPTY = 1000;
+const TIMESTAMP_BITS = 8 * 6;
+
+(slice, int)slice_int(slice data, int len) {
+  slice num_slice = data.slice_last(len);
+  int value = num_slice~load_int(len);
+
+  data~skip_last_bits(len);
+
+  return (data, value);
+}
+
+(int, int, int)parse_data_package(slice data) {
+  int dp_count = data~slice_int(DATA_POINTS_COUNT_BITS);
+
+  throw_unless(ERR_DATA_NOT_SUPPORTED_BASE + dp_count, dp_count == 1);
+
+  int value_size = data~slice_int(DATA_POINT_VALUE_BYTE_SIZE_BITS);
+  int timestamp = data~slice_int(TIMESTAMP_BITS);
+  int value = data~slice_int(value_size * 8);
+  int feed_id = data~slice_int(DATA_FEED_ID_BITS);
+
+  throw_unless(ERR_DATA_NOT_EMPTY, data.slice_data_empty?());
+
+  return (feed_id, value, timestamp);
+}
+
+(int)get_data_package_address(slice data, slice signature) {
   var hash = keccak(data, 1);
 
-  return recover_address(hash, signature.begin_parse());
+  return recover_address(hash, signature);
 }
+
+
+(int)recover_data_package_address(cell data_package) method_id {
+  slice data_package_cell = data_package.begin_parse();
+  cell data_cell = data_package_cell~load_ref();
+
+  return get_data_package_address(data_cell.begin_parse(), data_package_cell);
+}
+
+
+(int, int, int, int)get_data_package_values(cell data_package) {
+  slice data_package_cell = data_package.begin_parse();
+  cell data_cell = data_package_cell~load_ref();
+  slice data = data_cell.begin_parse();
+
+  int address = get_data_package_address(data, data_package_cell);
+  var (feed_id, value, timestamp) = parse_data_package(data);
+
+  return (address, feed_id, value, timestamp);
+}
+
+const DATA_PACKAGES_COUNT_BITS = 8 * 2;
+const REDSTONE_MARKER_BITS = 8 * 9;
+const REDSTONE_MARKER = 0x000002ed57011e0000;
+
+const ADDRESS_BITS = 8 * 20;
+const ERR_WRONG_MARKER = 500;
+const ERR_WRONG_DATA_PACKAGE_COUNT_BASE = 100;
+
+(cell)verify_payload(cell payload) method_id {
+  slice payload_slice = payload.begin_parse();
+
+  builder res = begin_cell();
+  int k = 0;
+
+  int dp_count = payload_slice~load_int(DATA_PACKAGES_COUNT_BITS);
+  slice marker_slice = payload_slice.slice_last(REDSTONE_MARKER_BITS);
+  int marker = marker_slice~load_int(REDSTONE_MARKER_BITS);
+
+  throw_unless(ERR_WRONG_MARKER, marker == REDSTONE_MARKER);
+
+  while (payload_slice.slice_refs_empty?() != true) {
+    cell inner_cell = payload_slice~load_ref();
+    slice inner_slice = inner_cell.begin_parse();
+
+    builder res_inner = begin_cell();
+
+    while(inner_slice.slice_refs_empty?() != true) {
+      cell dp_cell = inner_slice~load_ref();
+      k += 1;
+
+      var (address, feed_id, value, timestamp) = get_data_package_values(dp_cell);
+
+      cell values = begin_cell()
+              .store_ref(begin_cell().store_int(address, ADDRESS_BITS).end_cell())
+              .store_ref(begin_cell().store_int(feed_id, 256).end_cell())
+              .store_ref(begin_cell().store_int(value, 256).end_cell())
+              .store_ref(begin_cell().store_int(timestamp, 256).end_cell())
+              .end_cell();
+
+      res_inner = res_inner.store_ref(values);
+    }
+
+    res = res.store_ref(res_inner.end_cell());
+  }
+
+  throw_unless(ERR_WRONG_DATA_PACKAGE_COUNT_BASE + k, dp_count == k);
+
+  return res.store_int(k, 32).end_cell();
+}
+

@@ -7,7 +7,7 @@ export const TIMESTAMP_BS = 6;
 // Number of bytes reserved to store the number of data points
 export const DATA_POINTS_COUNT_BS = 3;
 
-// Number of bytes reserved to store datapoints byte size
+// Number of bytes reserved to store data points byte size
 export const DATA_POINT_VALUE_BYTE_SIZE_BS = 4;
 
 // Default value byte size for numeric values
