@@ -1,212 +1,118 @@
 #include "stdlib.fc";
 #include "crypto.fc";
 #include "utils.fc";
+#include "processor.fc";
+#include "redstone.fc";
 
 ;; =============== storage =============================
 
 cell load_data() impure {
-  cell data = get_data();
-  slice ds = data.begin_parse();
-  if (ds.slice_bits() == 0) {
-    return new_dict();
-  } else {
-    return data;
-  }
+    cell data = get_data();
+    slice ds = data.begin_parse();
+    if (ds.slice_bits() == 0) {
+        return new_dict();
+    } else {
+        return data;
+    }
 }
 
 ;; =============== messages =============================
 
 () recv_internal(int balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
-  int op = in_msg_body~load_uint(32);
-  int query_id = in_msg_body~load_uint(64);
-
-  cell dic = load_data();
-
-  if (op == 1) {
-      repeat (in_msg_body.slice_refs()) {
-        cell c = in_msg_body~load_ref();
-        slice s = c.begin_parse();
-
-        int key = s~load_uint(256);
-        ~strdump(key);
-
-        int val = s~load_uint(256);
-        slice v = begin_cell().store_uint(val, 256).end_cell().begin_parse();
-
-        dic~udict_set(256, key, v);
-      }
-
-    set_data(dic);
-
-    return ();
-  }
-
-  if (op == 2) {
-    int key = -1;
-    do {
-      (key, slice cs, int f) = dic.udict_get_next?(256, key);
-      if (f) {
-        int valid_until = cs~load_uint(256);
-        if (valid_until < now()) {
-          dic~udict_delete?(256, key);
-        }
-      }
-    } until (~ f);
-
-    if (dic.dict_empty?()) {
-      set_data(begin_cell().end_cell());
-    } else {
-      set_data(dic);
-    }
-
-    return ();
-  }
-
-  if (op == 101) {
-    int key = in_msg_body~load_uint(256);
-
-    var cs = in_msg_full.begin_parse();
-    var flags = cs~load_uint(4);
-    slice s_addr = cs~load_msg_addr();
-
-    var address = parse_work_addr(s_addr);
-    ~strdump(address);
+    int op = in_msg_body~load_uint(32);
+    int query_id = in_msg_body~load_uint(64);
 
     cell dic = load_data();
-    (slice payload, int success) = dic.udict_get?(256, key);
-    throw_unless(98, success);
 
-    int value = payload~load_uint(256);
-    slice v = begin_cell().store_uint(value * 2, 256).end_cell().begin_parse();
-    dic~udict_set(256, key, v);
-    set_data(dic);
+    if (op == 1) {
+        repeat (in_msg_body.slice_refs()) {
+            cell c = in_msg_body~load_ref();
+            slice s = c.begin_parse();
 
-    send_message(op, s_addr, begin_cell().store_uint(value * 2, 256));
+            int key = s~load_uint(256);
+            ~strdump(key);
 
-    return ();
-  }
+            int val = s~load_uint(256);
+            slice v = begin_cell().store_uint(val, 256).end_cell().begin_parse();
 
-  throw (1001);
+            dic~udict_set(256, key, v);
+        }
+
+        set_data(dic);
+
+        return ();
+    }
+
+    if (op == 2) {
+        int key = -1;
+        do {
+            (key, slice cs, int f) = dic.udict_get_next?(256, key);
+            if (f) {
+                int valid_until = cs~load_uint(256);
+                if (valid_until < now()) {
+                    dic~udict_delete?(256, key);
+                }
+            }
+        } until (~ f);
+
+        if (dic.dict_empty?()) {
+            set_data(begin_cell().end_cell());
+        } else {
+            set_data(dic);
+        }
+
+        return ();
+    }
+
+    if (op == 101) {
+        int key = in_msg_body~load_uint(256);
+
+        var cs = in_msg_full.begin_parse();
+        var flags = cs~load_uint(4);
+        slice s_addr = cs~load_msg_addr();
+
+        var address = parse_work_addr(s_addr);
+        ~strdump(address);
+
+        cell dic = load_data();
+        (slice payload, int success) = dic.udict_get?(256, key);
+        throw_unless(98, success);
+
+        int value = payload~load_uint(256);
+        slice v = begin_cell().store_uint(value * 2, 256).end_cell().begin_parse();
+        dic~udict_set(256, key, v);
+        set_data(dic);
+
+        send_message(op, s_addr, begin_cell().store_uint(value * 2, 256));
+
+        return ();
+    }
+
+    throw (1001);
 }
 
 ;; =============== getters =============================
 
 (int, slice) get_key(int key) method_id {
-  cell dic = load_data();
-  (slice payload, int success) = dic.udict_get?(256, key);
-  ~strdump("x");
-  ~strdump(success);
-  throw_unless(98, success);
+    cell dic = load_data();
+    (slice payload, int success) = dic.udict_get?(256, key);
+    ~strdump("x");
+    ~strdump(success);
+    throw_unless(98, success);
 
-  int value = payload~load_uint(256);
+    int value = payload~load_uint(256);
 
-  return (value, payload);
+    return (value, payload);
 }
-
-const DATA_POINTS_COUNT_BITS = 8 * 3;
-const DATA_POINT_VALUE_BYTE_SIZE_BITS = 8 * 4;
-const ERR_DATA_NOT_SUPPORTED_BASE = 600;
-const DATA_FEED_ID_BITS = 8 * 32;
-const ERR_DATA_NOT_EMPTY = 1000;
-const TIMESTAMP_BITS = 8 * 6;
-
-(slice, int)slice_int(slice data, int len) {
-  slice num_slice = data.slice_last(len);
-  int value = num_slice~load_int(len);
-
-  data~skip_last_bits(len);
-
-  return (data, value);
-}
-
-(int, int, int)parse_data_package(slice data) {
-  int dp_count = data~slice_int(DATA_POINTS_COUNT_BITS);
-
-  throw_unless(ERR_DATA_NOT_SUPPORTED_BASE + dp_count, dp_count == 1);
-
-  int value_size = data~slice_int(DATA_POINT_VALUE_BYTE_SIZE_BITS);
-  int timestamp = data~slice_int(TIMESTAMP_BITS);
-  int value = data~slice_int(value_size * 8);
-  int feed_id = data~slice_int(DATA_FEED_ID_BITS);
-
-  throw_unless(ERR_DATA_NOT_EMPTY, data.slice_data_empty?());
-
-  return (feed_id, value, timestamp);
-}
-
-(int)get_data_package_address(slice data, slice signature) {
-  var hash = keccak(data, 1);
-
-  return recover_address(hash, signature);
-}
-
 
 (int)recover_data_package_address(cell data_package) method_id {
-  slice data_package_cell = data_package.begin_parse();
-  cell data_cell = data_package_cell~load_ref();
+    slice data_package_cell = data_package.begin_parse();
+    cell data_cell = data_package_cell~load_ref();
 
-  return get_data_package_address(data_cell.begin_parse(), data_package_cell);
+    return get_data_package_signer_address(data_cell.begin_parse(), data_package_cell);
 }
-
-
-(int, int, int, int)get_data_package_values(cell data_package) {
-  slice data_package_cell = data_package.begin_parse();
-  cell data_cell = data_package_cell~load_ref();
-  slice data = data_cell.begin_parse();
-
-  int address = get_data_package_address(data, data_package_cell);
-  var (feed_id, value, timestamp) = parse_data_package(data);
-
-  return (address, feed_id, value, timestamp);
-}
-
-const DATA_PACKAGES_COUNT_BITS = 8 * 2;
-const REDSTONE_MARKER_BITS = 8 * 9;
-const REDSTONE_MARKER = 0x000002ed57011e0000;
-
-const ADDRESS_BITS = 8 * 20;
-const ERR_WRONG_MARKER = 500;
-const ERR_WRONG_DATA_PACKAGE_COUNT_BASE = 100;
 
 (cell)verify_payload(cell payload) method_id {
-  slice payload_slice = payload.begin_parse();
-
-  builder res = begin_cell();
-  int k = 0;
-
-  int dp_count = payload_slice~load_int(DATA_PACKAGES_COUNT_BITS);
-  slice marker_slice = payload_slice.slice_last(REDSTONE_MARKER_BITS);
-  int marker = marker_slice~load_int(REDSTONE_MARKER_BITS);
-
-  throw_unless(ERR_WRONG_MARKER, marker == REDSTONE_MARKER);
-
-  while (payload_slice.slice_refs_empty?() != true) {
-    cell inner_cell = payload_slice~load_ref();
-    slice inner_slice = inner_cell.begin_parse();
-
-    builder res_inner = begin_cell();
-
-    while(inner_slice.slice_refs_empty?() != true) {
-      cell dp_cell = inner_slice~load_ref();
-      k += 1;
-
-      var (address, feed_id, value, timestamp) = get_data_package_values(dp_cell);
-
-      cell values = begin_cell()
-              .store_ref(begin_cell().store_int(address, ADDRESS_BITS).end_cell())
-              .store_ref(begin_cell().store_int(feed_id, 256).end_cell())
-              .store_ref(begin_cell().store_int(value, 256).end_cell())
-              .store_ref(begin_cell().store_int(timestamp, 256).end_cell())
-              .end_cell();
-
-      res_inner = res_inner.store_ref(values);
-    }
-
-    res = res.store_ref(res_inner.end_cell());
-  }
-
-  throw_unless(ERR_WRONG_DATA_PACKAGE_COUNT_BASE + k, dp_count == k);
-
-  return res.store_int(k, 32).end_cell();
+    return process_payload(payload);
 }
 

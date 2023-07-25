@@ -1,0 +1,45 @@
+#include "constants.fc";
+#include "redstone.fc";
+
+(cell)process_payload(cell payload) method_id {
+    slice payload_slice = payload.begin_parse();
+
+    builder res = begin_cell();
+    int k = 0;
+
+    int dp_count = payload_slice~load_int(DATA_PACKAGES_COUNT_BITS);
+    slice marker_slice = payload_slice.slice_last(REDSTONE_MARKER_BITS);
+    int marker = marker_slice~load_int(REDSTONE_MARKER_BITS);
+
+    throw_unless(ERR_WRONG_MARKER, marker == REDSTONE_MARKER);
+
+    while (payload_slice.slice_refs_empty?() != true) {
+        cell inner_cell = payload_slice~load_ref();
+        slice inner_slice = inner_cell.begin_parse();
+
+        builder res_inner = begin_cell();
+
+        while(inner_slice.slice_refs_empty?() != true) {
+            cell dp_cell = inner_slice~load_ref();
+            k += 1;
+
+            var (address, feed_id, value, timestamp) = get_data_package_values(dp_cell);
+
+            cell values = begin_cell()
+                    .store_ref(begin_cell().store_int(address, ADDRESS_BITS).end_cell())
+                    .store_ref(begin_cell().store_int(feed_id, 256).end_cell())
+                    .store_ref(begin_cell().store_int(value, 256).end_cell())
+                    .store_ref(begin_cell().store_int(timestamp, 256).end_cell())
+                    .end_cell();
+
+            res_inner = res_inner.store_ref(values);
+        }
+
+        res = res.store_ref(res_inner.end_cell());
+    }
+
+    throw_unless(ERR_WRONG_DATA_PACKAGE_COUNT_BASE + k, dp_count == k);
+
+    return res.store_int(k, 32).end_cell();
+}
+
