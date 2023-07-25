@@ -12,7 +12,7 @@
   },
   "tokens": {
     "VST": {
-      "source": ["curve-frax-multi-block"]
+      "source": ["curve-frax-vst-multi-block"]
     },
     "USDC": {
       "source": [
@@ -84,7 +84,7 @@
     "FRAX": {
       "source": [
         "coingecko",
-        "curve-usdc-multi-block",
+        "curve-usdc-frax-multi-block",
         "fraxswap-on-chain-fxs",
         "fraxswap-on-chain-weth",
         "kaiko",

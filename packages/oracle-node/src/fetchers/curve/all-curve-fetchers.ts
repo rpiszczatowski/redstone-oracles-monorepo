@@ -16,7 +16,10 @@ for (const [fetcherName, config] of Object.entries(curveFetchersConfig)) {
   for (const [tokenId, tokenConfig] of Object.entries(config)) {
     if (tokenConfig.multiBlockConfig) {
       const curveFetchersMultiBlock = decorateWithMultiBlock(
-        new CurveFetcher(`${fetcherName}-${tokenId}`, config),
+        new CurveFetcher(
+          `${fetcherName}-${tokenId.toLocaleLowerCase()}`,
+          config
+        ),
         tokenConfig.provider,
         tokenConfig.multiBlockConfig
       );
