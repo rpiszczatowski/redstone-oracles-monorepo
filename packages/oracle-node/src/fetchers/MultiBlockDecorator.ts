@@ -1,76 +1,74 @@
 import { providers } from "ethers";
-import { Fetcher, FetcherOpts, PriceDataFetched } from "../types";
-import { terminateWithManifestConfigError } from "../Terminator";
-import { MathUtils, SafeNumber } from "redstone-utils";
-
-export type Class<T> = {
-  new (...args: any[]): T;
-};
+import { SafeNumber } from "redstone-utils";
+import { FetcherOpts, PriceDataFetched } from "../types";
+import { BaseFetcher } from "./BaseFetcher";
 
 export type MultiBlockConfig = {
   sequenceStep: number;
   intervalLength: number;
 };
 
-export function decorateWithMultiBlock<T extends Fetcher>(
-  fetcherClass: Class<Fetcher>,
+export function decorateWithMultiBlock<T extends BaseFetcher>(
+  fetcher: T,
   provider: providers.Provider,
   multiblockConfig: MultiBlockConfig
-) {
-  const FetcherDecoratedWithMultiBlock = class FetcherWithMultiBlock extends fetcherClass {
-    constructor(...args: any[]) {
-      super(...args);
-      if (!fetcherClass.prototype.fetchAll) {
-        throw new Error(
-          `Can not decorate ${fetcherClass.name} with MultiBlock because it doesn't implement Fetcher interface`
+): T {
+  const oldGetName = fetcher.getName.bind(fetcher);
+  (fetcher as any).getName = () => {
+    return `${oldGetName()}-multi-block`;
+  };
+
+  const oldFetchAll = fetcher.fetchAll.bind(fetcher);
+
+  fetcher.fetchAll = async (
+    tokens: string[],
+    opts: FetcherOpts
+  ): Promise<PriceDataFetched[]> => {
+    const currentBlockNumber = Number(
+      opts?.blockTag ?? (await provider.getBlockNumber())
+    );
+    const blockSequence = generateRoundedStepSequence(
+      currentBlockNumber,
+      multiblockConfig.intervalLength,
+      multiblockConfig.sequenceStep
+    );
+
+    const responsePerBlock = (await Promise.all(
+      blockSequence.map((blockTag) =>
+        oldFetchAll(tokens, {
+          ...opts,
+          blockTag,
+        })
+      )
+    )) as PriceDataFetched[][];
+
+    const groupedByToken: Record<string, SafeNumber.ISafeNumber[]> = {};
+
+    for (const response of responsePerBlock) {
+      for (const token of response) {
+        if (!groupedByToken[token.symbol]) {
+          groupedByToken[token.symbol] = [];
+        }
+        // if single value will be invalid we fail fast
+        if (!token.value) {
+          throw new Error(
+            `MultiBlock: value for at least one of tokens is not defined. Missing token: ${token} blockTag ${opts.blockTag}`
+          );
+        }
+
+        groupedByToken[token.symbol].push(
+          SafeNumber.createSafeNumber(token.value)
         );
       }
     }
 
-    async fetchAll(
-      tokens: string[],
-      opts?: FetcherOpts
-    ): Promise<PriceDataFetched[]> {
-      const currentBlockNumber = Number(
-        opts?.blockTag ?? (await provider.getBlockNumber())
-      );
-      const blockSequence = generateRoundedStepSequence(
-        currentBlockNumber,
-        multiblockConfig.intervalLength,
-        multiblockConfig.sequenceStep
-      );
-
-      const responsePerBlock = (await Promise.all(
-        blockSequence.map((blockTag) =>
-          fetcherClass.prototype.fetchAll.call(this, tokens, {
-            ...opts,
-            blockTag,
-          })
-        )
-      )) as PriceDataFetched[][];
-
-      const groupedByToken: Record<string, SafeNumber.ISafeNumber[]> = {};
-
-      for (const response of responsePerBlock) {
-        for (const token of response) {
-          if (!groupedByToken[token.symbol]) {
-            groupedByToken[token.symbol] = [];
-          }
-          // if single value will be invalid we fail fast
-          groupedByToken[token.symbol].push(
-            SafeNumber.createSafeNumber(token.value)
-          );
-        }
-      }
-
-      return Object.entries(groupedByToken).map(([symbol, values]) => ({
-        symbol,
-        value: SafeNumber.getMedian(values),
-      }));
-    }
+    return Object.entries(groupedByToken).map(([symbol, values]) => ({
+      symbol,
+      value: SafeNumber.getMedian(values).unsafeToNumber(),
+    }));
   };
 
-  return FetcherDecoratedWithMultiBlock;
+  return fetcher;
 }
 
 export function generateRoundedStepSequence(

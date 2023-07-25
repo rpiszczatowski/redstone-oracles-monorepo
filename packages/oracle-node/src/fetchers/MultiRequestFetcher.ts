@@ -1,5 +1,5 @@
 import { BaseFetcher } from "./BaseFetcher";
-import { PricesObj } from "../types";
+import { FetcherOpts, PricesObj } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 
 export interface RequestIdToResponse {
@@ -59,12 +59,15 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
     }
   }
 
-  override fetchData(dataFeedIds: string[]): Promise<ExtendedPromiseResult[]> {
+  override fetchData(
+    dataFeedIds: string[],
+    opts: FetcherOpts
+  ): Promise<ExtendedPromiseResult[]> {
     const promises: Promise<any>[] = [];
     const requestIds = this.prepareRequestIds(dataFeedIds);
 
     for (const requestId of requestIds) {
-      promises.push(this.makeSafeRequest(requestId));
+      promises.push(this.makeSafeRequest(requestId, opts.blockTag));
     }
 
     return Promise.all(promises);

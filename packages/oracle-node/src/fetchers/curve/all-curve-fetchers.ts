@@ -1,7 +1,7 @@
-import { CurveFetcher, CurveFetcherResponse } from "./CurveFetcher";
-import { curveFetchersConfig } from "./curve-fetchers-config";
-import { MultiBlockCurveFetcher } from "./MultiBlockCurveFetcher";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
+import { decorateWithMultiBlock } from "../MultiBlockDecorator";
+import { curveFetchersConfig } from "./curve-fetchers-config";
+import { CurveFetcher, CurveFetcherResponse } from "./CurveFetcher";
 
 const curveFetchers: Record<
   string,
@@ -13,16 +13,15 @@ for (const [fetcherName, config] of Object.entries(curveFetchersConfig)) {
 }
 
 for (const [lpName, config] of Object.entries(curveFetchersConfig)) {
-  const fetcherName = `${lpName}-multi-block`;
-
-  const hasTokenConfiguredMultiBlock = Object.values(config).every(
-    (poolConfig) => poolConfig.multiBlockConfig
-  );
-  if (hasTokenConfiguredMultiBlock) {
-    curveFetchers[fetcherName] = new MultiBlockCurveFetcher(
-      fetcherName,
-      curveFetchers[lpName] as CurveFetcher
+  const multiBlockConfig = config[lpName].multiBlockConfig;
+  if (multiBlockConfig) {
+    const curveFetchersMultiBlock = decorateWithMultiBlock(
+      new CurveFetcher(lpName, config),
+      config[lpName].provider,
+      multiBlockConfig
     );
+
+    curveFetchers[curveFetchersMultiBlock.getName()] = curveFetchersMultiBlock;
   }
 }
 
