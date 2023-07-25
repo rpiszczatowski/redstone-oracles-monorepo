@@ -8,8 +8,7 @@
     int k = 0;
 
     int dp_count = payload_slice~load_int(DATA_PACKAGES_COUNT_BITS);
-    slice marker_slice = payload_slice.slice_last(REDSTONE_MARKER_BITS);
-    int marker = marker_slice~load_int(REDSTONE_MARKER_BITS);
+    int marker = payload_slice~slice_int(REDSTONE_MARKER_BITS);
 
     throw_unless(ERR_WRONG_MARKER, marker == REDSTONE_MARKER);
 
@@ -27,9 +26,9 @@
 
             cell values = begin_cell()
                     .store_ref(begin_cell().store_int(address, ADDRESS_BITS).end_cell())
-                    .store_ref(begin_cell().store_int(feed_id, 256).end_cell())
+                    .store_ref(begin_cell().store_int(feed_id, DATA_FEED_ID_BITS).end_cell())
                     .store_ref(begin_cell().store_int(value, 256).end_cell())
-                    .store_ref(begin_cell().store_int(timestamp, 256).end_cell())
+                    .store_ref(begin_cell().store_int(timestamp, TIMESTAMP_BITS).end_cell())
                     .end_cell();
 
             res_inner = res_inner.store_ref(values);
