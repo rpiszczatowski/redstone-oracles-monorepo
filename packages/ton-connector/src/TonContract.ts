@@ -5,6 +5,7 @@ import {
   Contract,
   contractAddress,
   ContractProvider,
+  Sender,
 } from "ton-core";
 import fs from "fs";
 import { Ton } from "./Ton";
@@ -47,8 +48,7 @@ export class TonContract extends Ton implements Contract {
       fs.readFileSync(`contracts/${this.getName()}.cell`)
     )[0];
 
-    const data = beginCell().endCell();
-    const address = contractAddress(workchain, { code, data });
+    const { address, contract } = this.openContractCode(code, workchain);
 
     fs.writeFile(
       `deploy/${this.getName()}.address`,
@@ -60,11 +60,17 @@ export class TonContract extends Ton implements Contract {
       }
     );
 
-    const contract = new this(address, { code, data });
-
     await contract.connect(networkProvider);
 
     return contract.openedContract;
+  }
+
+  static openForTest<T>(code: Cell, sender: Sender, workchain: number = 0) {
+    const { contract } = this.openContractCode(code, workchain);
+
+    contract.walletSender = sender;
+
+    return contract as unknown as T;
   }
 
   override async connect(networkProvider: NetworkProvider): Promise<this> {
@@ -82,5 +88,16 @@ export class TonContract extends Ton implements Contract {
     }
 
     await this.internalMessage(provider, 0.02, undefined);
+  }
+
+  async sendTestDeploy(provider: ContractProvider) {
+    await provider.internal(this.walletSender!, { value: "0.02" });
+  }
+
+  private static openContractCode(code: Cell, workchain: number) {
+    const data = beginCell().endCell();
+    const address = contractAddress(workchain, { code, data });
+    const contract = new this(address, { code, data });
+    return { address, contract };
   }
 }
