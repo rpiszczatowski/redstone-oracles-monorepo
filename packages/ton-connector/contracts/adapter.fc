@@ -113,6 +113,6 @@ cell load_data() impure {
 }
 
 (cell)verify_payload(cell payload) method_id {
-    return process_payload(payload);
+    return process_payload(payload, now());
 }
 
