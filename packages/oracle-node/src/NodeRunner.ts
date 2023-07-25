@@ -1,31 +1,37 @@
-import git from "git-last-commit";
-import { ethers } from "ethers";
 import { Consola } from "consola";
-import ManifestHelper, { TokensBySource } from "./manifest/ManifestHelper";
-import ArweaveService from "./arweave/ArweaveService";
-import { promiseTimeout, TimeoutError } from "./utils/promise-timeout";
-import { mergeObjects } from "./utils/objects";
+import { ethers } from "ethers";
+import git from "git-last-commit";
 import { ExpressAppRunner } from "./ExpressAppRunner";
+import { AggregatedPriceHandler } from "./aggregated-price-handlers/AggregatedPriceHandler";
+import { AggregatedPriceLocalDBSaver } from "./aggregated-price-handlers/AggregatedPriceLocalDBSaver";
+import { DataPackageBroadcastPerformer } from "./aggregated-price-handlers/DataPackageBroadcastPerformer";
+import { ManifestDataProvider } from "./aggregated-price-handlers/ManifestDataProvider";
+import { PriceDataBroadcastPerformer } from "./aggregated-price-handlers/PriceDataBroadcastPerformer";
+import ArweaveService from "./arweave/ArweaveService";
+import { config } from "./config";
+import { connectToDb } from "./db/remote-mongo/db-connector";
+import PricesService, {
+  PricesBeforeAggregation,
+  PricesDataFetched,
+} from "./fetchers/PricesService";
+import ManifestHelper, { TokensBySource } from "./manifest/ManifestHelper";
+import { IterationContext } from "./schedulers/IScheduler";
+import {
+  Manifest,
+  NodeConfig,
+  NotSanitizedPriceDataBeforeAggregation,
+  PriceDataAfterAggregation,
+  PriceDataFetchedValue,
+} from "./types";
+import { stringifyError } from "./utils/error-stringifier";
+import { fetchIp } from "./utils/ip-fetcher";
+import { mergeObjects } from "./utils/objects";
 import {
   printTrackingState,
   trackEnd,
   trackStart,
 } from "./utils/performance-tracker";
-import PricesService, {
-  PricesBeforeAggregation,
-  PricesDataFetched,
-} from "./fetchers/PricesService";
-import { Manifest, NodeConfig, PriceDataAfterAggregation } from "./types";
-import { fetchIp } from "./utils/ip-fetcher";
-import { config } from "./config";
-import { connectToDb } from "./db/remote-mongo/db-connector";
-import { AggregatedPriceHandler } from "./aggregated-price-handlers/AggregatedPriceHandler";
-import { AggregatedPriceLocalDBSaver } from "./aggregated-price-handlers/AggregatedPriceLocalDBSaver";
-import { DataPackageBroadcastPerformer } from "./aggregated-price-handlers/DataPackageBroadcastPerformer";
-import { PriceDataBroadcastPerformer } from "./aggregated-price-handlers/PriceDataBroadcastPerformer";
-import { ManifestDataProvider } from "./aggregated-price-handlers/ManifestDataProvider";
-import { IterationContext } from "./schedulers/IScheduler";
-import { stringifyError } from "./utils/error-stringifier";
+import { TimeoutError, promiseTimeout } from "./utils/promise-timeout";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -210,7 +216,6 @@ export default class NodeRunner {
 
     if (aggregatedPrices.length === 0) {
       logger.info("No aggregated prices to process");
-
       return;
     }
 
@@ -232,7 +237,7 @@ export default class NodeRunner {
       this.tokensBySource!
     );
     const pricesData: PricesDataFetched = mergeObjects(fetchedPrices);
-    const pricesBeforeAggregation: PricesBeforeAggregation =
+    const pricesBeforeAggregation: PricesBeforeAggregation<PriceDataFetchedValue> =
       PricesService.groupPricesByToken(
         iterationContext,
         pricesData,
@@ -322,6 +327,7 @@ export default class NodeRunner {
   }
 
   private useNewManifest(newManifest: Manifest) {
+    ManifestHelper.validateManifest(newManifest);
     this.currentManifest = newManifest;
     this.pricesService = new PricesService(newManifest);
     this.tokensBySource = ManifestHelper.groupTokensBySource(newManifest);

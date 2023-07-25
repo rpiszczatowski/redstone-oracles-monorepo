@@ -37,6 +37,10 @@ export abstract class BaseFetcher implements Fetcher {
     return this.name;
   }
 
+  serializeResponse(response: any): string {
+    return JSON.stringify(response);
+  }
+
   async fetchAll(
     symbols: string[],
     opts?: FetcherOpts
@@ -59,7 +63,7 @@ export abstract class BaseFetcher implements Fetcher {
     // Validating response
     const isValid = this.validateResponse(response);
     if (!isValid) {
-      throw new Error(`Response is invalid: ` + JSON.stringify(response));
+      throw new Error(`Response is invalid: ${this.serializeResponse(response)}`);
     }
 
     // Extracting prices from response
@@ -138,10 +142,10 @@ export abstract class BaseFetcher implements Fetcher {
           continue;
         }
 
-        pricesObj[pricePair.id] = pricePair.value as number;
+        pricesObj[pricePair.id] = pricePair.value!;
       } catch (e: unknown) {
         this.logger.error(
-          `Extracting price failed for id: ${id} error: ${stringifyError(e)}`
+          `Extracting price failed for id: ${id}, error: ${stringifyError(e)}, item that failed: ${JSON.stringify(item)}`
         );
       }
     }

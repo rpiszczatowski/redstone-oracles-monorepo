@@ -3,6 +3,7 @@ import { CronScheduler } from "../schedulers/CronScheduler";
 import { OnBlockScheduler } from "../schedulers/OnBlockScheduler";
 import { Manifest } from "../types";
 import { arbitrumProvider } from "../utils/blockchain-providers";
+import { validateManifest } from "./validate-manifest";
 
 export type TokensBySource = { [source: string]: string[] };
 
@@ -46,19 +47,15 @@ export default class ManifestHelper {
     return result;
   }
 
-  static getTimeoutForSource(
-    source: string,
-    manifest: Manifest
-  ): number | null {
-    if (!source.length) {
-      throw new Error("Source for timeout not defined");
-    }
-    const timeoutConfiguration = manifest.sourceTimeout;
-    if (!timeoutConfiguration || typeof timeoutConfiguration !== "number") {
-      return null;
-    }
+  static validateManifest(manifest: Manifest) {
+    validateManifest(manifest);
+  }
 
-    return timeoutConfiguration;
+  static getTimeoutForSource(source: string, manifest: Manifest) {
+    if (!source.length) {
+      throw new Error("Timeout for source not defined");
+    }
+    return manifest.sourceTimeout;
   }
 
   static getDeviationCheckConfigForSymbol(symbol: string, manifest: Manifest) {

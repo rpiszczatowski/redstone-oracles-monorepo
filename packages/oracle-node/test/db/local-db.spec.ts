@@ -18,11 +18,12 @@ const source = {};
 const id = "mock-id";
 const timestamp = Date.now();
 const version = "mock-version";
-const defaultPriceProps = {
+const defaultPriceProps: Omit<PriceDataAfterAggregation, "value" | "symbol"> = {
   source,
   timestamp,
   id,
   version,
+  sourceMetadata: {},
 };
 const prices: PriceDataAfterAggregation[] = [
   {

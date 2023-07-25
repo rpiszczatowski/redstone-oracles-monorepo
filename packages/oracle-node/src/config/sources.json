@@ -359,6 +359,11 @@
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
+  "uniswap-v3-on-chain-usdt-3000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
   "uniswap-v3-on-chain-wbtc-100": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
@@ -474,6 +479,11 @@
     "url": "https://curve.fi/",
     "color": "#78151d"
   },
+  "curve-crvusd": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
+    "url": "https://curve.fi/",
+    "color": "#78151d"
+  },
   "camelot-weth": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/camelot.png",
     "url": "https://excalibur.exchange/",
@@ -514,12 +524,17 @@
     "url": "https://balancer.fi",
     "color": "#232326"
   },
-  "balancer-bb-a-weth-using-eth": {
+  "balancer-lusd": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
     "url": "https://balancer.fi",
     "color": "#232326"
   },
-  "balancer-bb-a-weth": {
+  "balancer-multi-weth": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
+    "url": "https://balancer.fi",
+    "color": "#232326"
+  },
+  "balancer-multi-dai": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
     "url": "https://balancer.fi",
     "color": "#232326"

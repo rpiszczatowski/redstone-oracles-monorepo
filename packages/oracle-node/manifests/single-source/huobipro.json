@@ -84,7 +84,7 @@
     "HBAR": {},
     "NEXO": {},
     "YFI": {},
-    "IOTA": {},
+    "MIOTA": {},
     "ICX": {},
     "NULS": {},
     "USDC": {},
@@ -205,6 +205,7 @@
     "GMX": {},
     "UFT": {},
     "JOE": {},
-    "EUROC": {}
+    "EUROC": {},
+    "STETH": {}
   }
 }

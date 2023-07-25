@@ -14,6 +14,7 @@ export interface PoolsConfig {
     ratioMultiplier: number;
     functionName: string;
     multiBlockConfig?: { sequenceStep: number; intervalLength: number };
+    fee: number;
   };
 }
 
@@ -35,6 +36,10 @@ const ARBITRUM_MULTI_BLOCK_CONFIG = {
   intervalLength: 1000,
 };
 
+/* 
+  Fee parameter is a sum of the fee taken from the contract f.g. https://etherscan.io/address/0x828b154032950C8ff7CF8085D841723Db2696056#readContract#F13
+  and DAO fee which is 0.0015%, 0.01% or 0.02%, it can be taken from Curve app in the pool details f.g. https://curve.fi/#/ethereum/pools/3pool/deposit
+*/
 export const curveFetchersConfig: Record<string, PoolsConfig> = {
   "curve-frax": {
     VST: {
@@ -46,6 +51,18 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       ratioMultiplier: 1,
       functionName: "get_dy",
       multiBlockConfig: ARBITRUM_MULTI_BLOCK_CONFIG,
+      fee: 0.0006,
+    },
+    crvUSD: {
+      address: "0x0CD6f267b2086bea681E922E19D40512511BE538",
+      tokenIndex: 1,
+      pairedTokenIndex: 0,
+      pairedToken: "FRAX",
+      provider: ethereumProvider,
+      ratioMultiplier: 1,
+      functionName: "get_dy",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.00015,
     },
   },
   "curve-usdc": {
@@ -58,6 +75,7 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.00015,
     },
     DAI: {
       address: "0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7",
@@ -68,6 +86,18 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy_underlying",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.00015,
+    },
+    crvUSD: {
+      address: "0x4dece678ceceb27446b35c672dc7d61f30bad69e",
+      tokenIndex: 1,
+      pairedTokenIndex: 0,
+      pairedToken: "USDC",
+      provider: ethereumProvider,
+      ratioMultiplier: 10 ** 12,
+      functionName: "get_dy",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.00015,
     },
   },
   "curve-usdt": {
@@ -80,6 +110,18 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       ratioMultiplier: 10 ** 12,
       functionName: "get_dy_underlying",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.00015,
+    },
+    crvUSD: {
+      address: "0x390f3595bCa2Df7d23783dFd126427CCeb997BF4",
+      tokenIndex: 1,
+      pairedTokenIndex: 0,
+      pairedToken: "USDT",
+      provider: ethereumProvider,
+      ratioMultiplier: 10 ** 12,
+      functionName: "get_dy",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.00015,
     },
   },
   "curve-eth": {
@@ -92,6 +134,7 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       ratioMultiplier: 1,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.00015,
     },
     FRXETH: {
       address: "0xa1f8a6807c402e4a15ef4eba36528a3fed24e577",
@@ -102,6 +145,7 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       ratioMultiplier: 1,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.0003,
     },
     ALETH: {
       address: "0xc4c319e2d4d66cca4464c0c2b32c9bd23ebe784e",
@@ -112,6 +156,7 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       ratioMultiplier: 1,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.0006,
     },
   },
   "curve-weth": {
@@ -124,6 +169,7 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       ratioMultiplier: 1,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.0006,
     },
   },
   "curve-frxeth": {
@@ -135,6 +181,7 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       provider: ethereumProvider,
       ratioMultiplier: 1,
       functionName: "get_dy",
+      fee: 0.0006,
     },
   },
   "curve-crvfrax": {
@@ -145,8 +192,9 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedToken: "crvFRAX",
       provider: ethereumProvider,
       ratioMultiplier: 1,
-      functionName: "get_dy_underlying",
+      functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.0006,
     },
   },
   "curve-3crv": {
@@ -157,8 +205,9 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedToken: "3Crv",
       provider: ethereumProvider,
       ratioMultiplier: 1,
-      functionName: "get_dy_underlying",
+      functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.0006,
     },
     LUSD: {
       address: "0xed279fdd11ca84beef15af5d39bb4d4bee23f0ca",
@@ -167,8 +216,22 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedToken: "3Crv",
       provider: ethereumProvider,
       ratioMultiplier: 1,
-      functionName: "get_dy_underlying",
+      functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.0006,
+    },
+  },
+  "curve-crvusd": {
+    GHO: {
+      address: "0x86152df0a0e321afb3b0b9c4deb813184f365ada",
+      tokenIndex: 0,
+      pairedTokenIndex: 1,
+      pairedToken: "crvUSD",
+      provider: ethereumProvider,
+      ratioMultiplier: 1,
+      functionName: "get_dy",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.0006,
     },
   },
 };

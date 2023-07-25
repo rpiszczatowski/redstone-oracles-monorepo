@@ -26,4 +26,9 @@ export const steakHutTokensContractDetails = {
     abi: SteakHutLBVaultAbi,
     tokensToFetch: ["EUROC", "USDC"],
   },
+  "SHLB_GMX-AVAX_B": {
+    address: "0x638F969675822DFAe4566B44d0f2A11362FbeD52",
+    abi: SteakHutLBVaultAbi,
+    tokensToFetch: ["GMX", "AVAX"],
+  },
 };

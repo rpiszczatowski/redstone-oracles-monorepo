@@ -123,9 +123,18 @@
       ],
       "skipSigning": true
     },
+    "WSTETH": {
+      "source": [
+        "balancer-weth",
+        "coingecko",
+        "maverick",
+        "uniswap-v3-on-chain-weth-500"
+      ]
+    },
     "SWETH": {
       "source": [
-        "balancer-multi-sweth",
+        "balancer-multi-weth",
+        "balancer-multi-wsteth",
         "maverick",
         "uniswap-v3-on-chain-weth-500"
       ]
@@ -134,7 +143,7 @@
       "source": ["curve-eth", "uniswap-v3-on-chain-weth-500"]
     },
     "ALETH": {
-      "source": ["curve-eth", "curve-frxeth"]
+      "source": ["curve-eth", "curve-frxeth", "velodrome-on-chain-weth"]
     },
     "crvFRAX": {
       "source": ["ethereum-evm-fetcher"]
@@ -143,25 +152,24 @@
       "source": ["ethereum-evm-fetcher"]
     },
     "ALUSD": {
-      "source": ["curve-crvfrax", "curve-3crv"]
+      "source": ["curve-crvfrax", "curve-3crv", "velodrome-on-chain-usdc"]
     },
     "LUSD": {
       "source": [
         "curve-3crv",
         "maverick",
         "uniswap-v3-on-chain-usdc-500",
-        "uniswap-v3-optimism-on-chain-usdc-500"
+        "uniswap-v3-optimism-on-chain-usdc-500",
+        "velodrome-on-chain-usdc"
       ]
     },
     "AAVE": {
       "source": [
         "binance",
-        "binanceus",
         "binanceusdm",
         "bitget",
         "bitmart",
         "bitfinex2",
-        "bittrex",
         "bybit",
         "coinbaseprime",
         "coinbasepro",
@@ -180,6 +188,32 @@
         "uniswap-v3-on-chain-weth-3000",
         "xt"
       ]
+    },
+    "C3M": {
+      "source": ["twelve-data"]
+    },
+    "SONIA": {
+      "source": ["stlouisfed"]
+    },
+    "SOFR": {
+      "source": ["newyorkfed"]
+    },
+    "SOFR_EFFECTIVE_DATE": {
+      "source": ["newyorkfed"],
+      "decimals": 0
+    },
+    "SOFRAI": {
+      "source": ["newyorkfed"]
+    },
+    "SOFRAI_EFFECTIVE_DATE": {
+      "source": ["newyorkfed"],
+      "decimals": 0
+    },
+    "USDC.USDT": {
+      "source": ["non-usd-based"]
+    },
+    "USDC.DAI": {
+      "source": ["non-usd-based"]
     }
   }
 }

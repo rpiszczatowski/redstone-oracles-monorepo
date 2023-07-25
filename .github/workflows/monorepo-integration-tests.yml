@@ -15,8 +15,26 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15
-      - name: Run core tests
-        run: bash integration-test-core.sh
+      - name: Install deps
+        run: yarn
+      - name: Run core tests - simple propagation
+        run: yarn run-ts src/simple-price-propagation-core.ts
+        env:
+          NODE_ENV: test
+  core-with-node-failure:
+    runs-on: LargeRunner
+    defaults:
+      run:
+        working-directory: packages/integration
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15
+      - name: Install deps
+        run: yarn
+      - name: Run core tests - node failure
+        run: yarn run-ts src/prices-updates-core-node-failure.ts
         env:
           NODE_ENV: test
   classic:
@@ -29,7 +47,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.15
-      - name: Run clasic tests
-        run: bash integration-test-classic.sh
+      - name: Install deps
+        run: yarn
+      - name: Run clasic tests - simple propagation
+        run: yarn run-ts src/simple-price-propagation-classic.ts
         env:
           NODE_ENV: test

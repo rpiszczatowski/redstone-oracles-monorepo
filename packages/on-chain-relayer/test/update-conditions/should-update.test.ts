@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { ValuesForDataFeeds } from "redstone-sdk";
+import { config } from "../../src/config";
 import { shouldUpdate } from "../../src/core/update-conditions/should-update";
 import {
   createNumberFromContract,
@@ -19,11 +20,15 @@ describe("should-update", () => {
       BTC: createNumberFromContract(23011.68),
     };
     const lastUpdateTimestamp = Date.now() - 1;
-    const { shouldUpdatePrices, warningMessage } = shouldUpdate({
-      dataPackages,
-      valuesFromContract: smallerValueDiff,
-      lastUpdateTimestamp,
-    });
+    const { shouldUpdatePrices, warningMessage } = await shouldUpdate(
+      {
+        dataPackages,
+        valuesFromContract: smallerValueDiff,
+        lastUpdateTimestamp,
+        uniqueSignersThreshold: 2,
+      },
+      config()
+    );
     expect(shouldUpdatePrices).to.be.false;
     expect(JSON.parse(warningMessage)[0]).to.match(
       /Not enough time has passed to update prices/
@@ -41,11 +46,15 @@ describe("should-update", () => {
       BTC: createNumberFromContract(13011.68),
     };
     const lastUpdateTimestamp = Date.now() - 1;
-    const { shouldUpdatePrices, warningMessage } = shouldUpdate({
-      dataPackages,
-      valuesFromContract: biggerValueDiff,
-      lastUpdateTimestamp,
-    });
+    const { shouldUpdatePrices, warningMessage } = await shouldUpdate(
+      {
+        dataPackages,
+        valuesFromContract: biggerValueDiff,
+        lastUpdateTimestamp,
+        uniqueSignersThreshold: 2,
+      },
+      config()
+    );
     expect(shouldUpdatePrices).to.be.true;
     expect(JSON.parse(warningMessage)).to.match(
       /Not enough time has passed to update prices/
@@ -59,11 +68,15 @@ describe("should-update", () => {
       BTC: createNumberFromContract(23011.68),
     };
     const lastUpdateTimestamp = Date.now() - 100000;
-    const { shouldUpdatePrices, warningMessage } = shouldUpdate({
-      dataPackages,
-      valuesFromContract: smallerValueDiff,
-      lastUpdateTimestamp,
-    });
+    const { shouldUpdatePrices, warningMessage } = await shouldUpdate(
+      {
+        dataPackages,
+        valuesFromContract: smallerValueDiff,
+        lastUpdateTimestamp,
+        uniqueSignersThreshold: 2,
+      },
+      config()
+    );
     expect(shouldUpdatePrices).to.be.true;
     expect(JSON.parse(warningMessage)).to.match(
       /Value has not deviated enough to be updated/
@@ -82,11 +95,15 @@ describe("should-update", () => {
     };
 
     const lastUpdateTimestamp = Date.now() - 100000;
-    const { warningMessage } = shouldUpdate({
-      dataPackages,
-      valuesFromContract: sameValue,
-      lastUpdateTimestamp,
-    });
+    const { warningMessage } = await shouldUpdate(
+      {
+        dataPackages,
+        valuesFromContract: sameValue,
+        lastUpdateTimestamp,
+        uniqueSignersThreshold: 2,
+      },
+      config()
+    );
     expect(warningMessage).to.match(
       /Value has not deviated enough to be updated/
     );
@@ -102,11 +119,15 @@ describe("should-update", () => {
     };
 
     const lastUpdateTimestamp = Date.now() - 100000;
-    const { warningMessage } = shouldUpdate({
-      dataPackages,
-      valuesFromContract: sameValue,
-      lastUpdateTimestamp,
-    });
+    const { warningMessage } = await shouldUpdate(
+      {
+        dataPackages,
+        valuesFromContract: sameValue,
+        lastUpdateTimestamp,
+        uniqueSignersThreshold: 2,
+      },
+      config()
+    );
     expect(warningMessage).to.match(/Enough time passed to updated price/);
   });
 });

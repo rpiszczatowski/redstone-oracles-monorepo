@@ -7,8 +7,26 @@ import { WrapperBuilder } from "../../src/index";
 import { SampleRedstoneConsumerNumericMockManyDataFeeds } from "../../typechain-types";
 import { expectedNumericValues } from "../tests-common";
 import { server } from "./mock-server";
+import { DataServiceWrapper } from "../../src/wrappers/DataServiceWrapper";
 
 chai.use(chaiAsPromised);
+
+const dataFeedIdsB32 = [
+  utils.convertStringToBytes32("ETH"),
+  utils.convertStringToBytes32("BTC"),
+];
+
+const checkExpectedValues = async (contract: Contract) => {
+  const firstValueFromContract = await contract.firstValue();
+  const secondValueFromContract = await contract.secondValue();
+
+  expect(firstValueFromContract.toNumber()).to.be.equal(
+    expectedNumericValues["ETH"]
+  );
+  expect(secondValueFromContract.toNumber()).to.be.equal(
+    expectedNumericValues["BTC"]
+  );
+}
 
 const runTest = async (
   contract: Contract,
@@ -23,22 +41,20 @@ const runTest = async (
     urls,
   });
 
-  const tx = await wrappedContract.save2ValuesInStorage([
-    utils.convertStringToBytes32("ETH"),
-    utils.convertStringToBytes32("BTC"),
-  ]);
+  const tx = await wrappedContract.save2ValuesInStorage(dataFeedIdsB32);
   await tx.wait();
 
-  const firstValueFromContract = await contract.firstValue();
-  const secondValueFromContract = await contract.secondValue();
-
-  expect(firstValueFromContract.toNumber()).to.be.equal(
-    expectedNumericValues["ETH"]
-  );
-  expect(secondValueFromContract.toNumber()).to.be.equal(
-    expectedNumericValues["BTC"]
-  );
+  await checkExpectedValues(contract);
 };
+
+const runTestWithManualPayload = async (contract: Contract, payload: string) => {
+  const tx = await contract.save2ValuesInStorageWithManualPayload(
+    dataFeedIdsB32,
+    payload
+  );
+  await tx.wait();
+  await checkExpectedValues(contract);
+}
 
 describe("DataServiceWrapper", () => {
   before(() => server.listen());
@@ -80,14 +96,6 @@ describe("DataServiceWrapper", () => {
       );
     });
 
-    it("Should properly execute with one invalid and one slower cache", async () => {
-      await runTest(
-        contract,
-        ["http://invalid-cache.com", "http://slower-cache.com"],
-        "mock-data-service-tests"
-      );
-    });
-
     it("Should get urls from redstone-protocol if not provided", async () => {
       await runTest(contract, undefined, "mock-data-service-tests");
     });
@@ -97,27 +105,7 @@ describe("DataServiceWrapper", () => {
     });
 
     it("Should throw error when multiple invalid caches", async () => {
-      const expectedErrorMessage = `All redstone payloads do not pass dry run verification, aggregated errors: {
-  "reason": null,
-  "code": "CALL_EXCEPTION",
-  "method": "save2ValuesInStorage(bytes32[])",
-  "data": "0xec459bc000000000000000000000000041e13e6e0a8b13f8539b71f3c07d3f97f887f573",
-  "errorArgs": [
-    "0x41e13E6e0A8B13F8539B71f3c07d3f97F887F573"
-  ],
-  "errorName": "SignerNotAuthorised",
-  "errorSignature": "SignerNotAuthorised(address)"
-},{
-  "reason": null,
-  "code": "CALL_EXCEPTION",
-  "method": "save2ValuesInStorage(bytes32[])",
-  "data": "0xec459bc000000000000000000000000041e13e6e0a8b13f8539b71f3c07d3f97f887f573",
-  "errorArgs": [
-    "0x41e13E6e0A8B13F8539B71f3c07d3f97F887F573"
-  ],
-  "errorName": "SignerNotAuthorised",
-  "errorSignature": "SignerNotAuthorised(address)"
-}`;
+      const expectedErrorMessage = `VM Exception while processing transaction: reverted with custom error 'SignerNotAuthorised("0x41e13E6e0A8B13F8539B71f3c07d3f97F887F573")`;
       await expect(
         runTest(
           contract,
@@ -125,6 +113,17 @@ describe("DataServiceWrapper", () => {
           "mock-data-service-tests"
         )
       ).to.be.rejectedWith(expectedErrorMessage);
+    });
+
+    it("Should work with manual payload with all params passed", async () => {
+      const wrapper = new DataServiceWrapper({
+        dataServiceId: "mock-data-service-tests",
+        uniqueSignersCount: 10,
+        dataFeeds: ["ETH", "BTC"],
+        urls: ["http://valid-cache.com"],
+      });
+      const payload = await wrapper.getRedstonePayloadForManualUsage(contract);
+      await runTestWithManualPayload(contract, payload);
     });
   });
 
@@ -143,7 +142,7 @@ describe("DataServiceWrapper", () => {
       await runTest(contract, ["http://valid-cache.com"]);
     });
 
-    it("Should work with out passed urls", async () => {
+    it("Should work without passed urls", async () => {
       await runTest(contract);
     });
 
@@ -159,12 +158,20 @@ describe("DataServiceWrapper", () => {
       await runTest(contract, undefined, "mock-data-service-tests");
     });
 
-    it("Should work with dataServiceId  and urls passed explicit", async () => {
+    it("Should work with dataServiceId and urls passed explicit", async () => {
       await runTest(
         contract,
         ["http://valid-cache.com"],
         "mock-data-service-tests"
       );
+    });
+
+    it("Should work with manual payload without passed params", async () => {
+      const wrapper = new DataServiceWrapper({
+        dataFeeds: ["ETH", "BTC"],
+      });
+      const payload = await wrapper.getRedstonePayloadForManualUsage(contract);
+      await runTestWithManualPayload(contract, payload);
     });
   });
 });

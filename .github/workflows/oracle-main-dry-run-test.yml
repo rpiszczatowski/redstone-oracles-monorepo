@@ -27,3 +27,5 @@ jobs:
           TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
           KAIKO_API_KEY: ${{ secrets.KAIKO_API_KEY }}
           STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
+          SKIPPED_SOURCES: '["binance", "binancecoinm", "binanceusdm"]'
+          SKIPPED_TOKENS: '[]'

@@ -1,0 +1,660 @@
+{
+  "query": {
+    "start_time": "2023-07-10T09:25:50Z",
+    "end_time": "2023-07-10T09:40:42.825Z",
+    "base_asset": "qi",
+    "quote_asset": "usd",
+    "interval": "10s",
+    "sort": "desc",
+    "sources": false,
+    "page_size": 90,
+    "include_exchanges": [],
+    "exclude_exchanges": [],
+    "request_time": "2023-07-10T09:40:42.819413485Z",
+    "data_version": "v1",
+    "commodity": "trades",
+    "extrapolate_missing_values": true,
+    "instruments": ["cbse:spot:qi-usd"]
+  },
+  "time": "2023-07-10T09:40:42.841Z",
+  "timestamp": 1688982042,
+  "data": [
+    {
+      "timestamp": 1688982040000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688982030000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688982020000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688982010000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688982000000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981990000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981980000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981970000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981960000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981950000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981940000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981930000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981920000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981910000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981900000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981890000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981880000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981870000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981860000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981850000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981840000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981830000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981820000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981810000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981800000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981790000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981780000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981770000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981760000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981750000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981740000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981730000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981720000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981710000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981700000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981690000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981680000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981670000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981660000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981650000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981640000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981630000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981620000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981610000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981600000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981590000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981580000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981570000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981560000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": true
+    },
+    {
+      "timestamp": 1688981550000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981540000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981530000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981520000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981510000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981500000,
+      "price": "0.00653",
+      "volume": "153",
+      "count": 1,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981490000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981480000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981470000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981460000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981450000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981440000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981430000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981420000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981410000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981400000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981390000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981380000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981370000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981360000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981350000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981340000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981330000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981320000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981310000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981300000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981290000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981280000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981270000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981260000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981250000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981240000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981230000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981220000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981210000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981200000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981190000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981180000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981170000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981160000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    },
+    {
+      "timestamp": 1688981150000,
+      "price": null,
+      "volume": "",
+      "count": 0,
+      "extrapolate_missing_values": false
+    }
+  ],
+  "result": "success",
+  "continuation_token": "XmJAAJ1dTWTRFRCYmQ65QqSN77DMm1ixXH56ZyzBtDKGpJ2egbxD79FFPtwnitTPsx8k3z3VM2eQWok6t69PNZ7nDM5dwEfxzLxBoTpanyh6DKzFtrAPuf9dUwkt9UZwEVrNQufLH2EmLN1hJtmcchnYBTevGN4TwLjYDUXVA8kQJB1TDqh63WPLiDJfdp73J95yUjBNQKWYF8e9HJhBhtYh5BHeWJ42upQjGDTvZs1Z",
+  "next_url": "https://eu.market-api.kaiko.io/v2/data/trades.v1/robust_pair_price/qi/usd?continuation_token=XmJAAJ1dTWTRFRCYmQ65QqSN77DMm1ixXH56ZyzBtDKGpJ2egbxD79FFPtwnitTPsx8k3z3VM2eQWok6t69PNZ7nDM5dwEfxzLxBoTpanyh6DKzFtrAPuf9dUwkt9UZwEVrNQufLH2EmLN1hJtmcchnYBTevGN4TwLjYDUXVA8kQJB1TDqh63WPLiDJfdp73J95yUjBNQKWYF8e9HJhBhtYh5BHeWJ42upQjGDTvZs1Z",
+  "access": {
+    "access_range": { "start_timestamp": 1671667200000, "end_timestamp": null },
+    "data_range": { "start_timestamp": 1666396800000, "end_timestamp": null }
+  }
+}

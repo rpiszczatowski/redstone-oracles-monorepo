@@ -1,16 +1,25 @@
 import { timeUpdateCondition } from "./time-condition";
+import {
+  ConditionCheckNames,
+  ConditionCheckResponse,
+  Context,
+  RelayerConfig,
+} from "../../types";
 import { valueDeviationCondition } from "./value-deviation-condition";
-import { config } from "../../config";
-import { ConditionCheckResponse, Context } from "../../types";
 
-export const shouldUpdate = (context: Context): ConditionCheckResponse => {
-  const { updateConditions } = config;
+export const shouldUpdate = async (
+  context: Context,
+  config: RelayerConfig
+): Promise<ConditionCheckResponse> => {
   const warningMessages: string[] = [];
   let shouldUpdatePrices = false;
-  for (const conditionName of updateConditions) {
-    const conditionCheck = checkConditionByName(context)[conditionName];
-    shouldUpdatePrices =
-      shouldUpdatePrices || conditionCheck.shouldUpdatePrices;
+  for (const conditionName of config.updateConditions) {
+    const conditionCheck = await checkConditionByName(
+      conditionName,
+      context,
+      config
+    );
+    shouldUpdatePrices ||= conditionCheck.shouldUpdatePrices;
     if (conditionCheck.warningMessage.length > 0) {
       warningMessages.push(conditionCheck.warningMessage);
     }
@@ -18,8 +27,8 @@ export const shouldUpdate = (context: Context): ConditionCheckResponse => {
 
   console.log(
     `Update condition ${
-      shouldUpdatePrices ? "" : "NOT"
-    } satisfied: ${warningMessages.join("; ")}`
+      shouldUpdatePrices ? "" : "NOT "
+    }satisfied: ${warningMessages.join("; ")}`
   );
 
   return {
@@ -28,10 +37,21 @@ export const shouldUpdate = (context: Context): ConditionCheckResponse => {
   };
 };
 
-const checkConditionByName = (context: Context) => ({
-  time: timeUpdateCondition(context.lastUpdateTimestamp),
-  "value-deviation": valueDeviationCondition(
-    context.dataPackages,
-    context.valuesFromContract
-  ),
-});
+const checkConditionByName = async (
+  name: ConditionCheckNames,
+  context: Context,
+  config: RelayerConfig
+) => {
+  switch (name) {
+    case "time":
+      return timeUpdateCondition(context.lastUpdateTimestamp, config);
+
+    case "value-deviation":
+      return await valueDeviationCondition(
+        context.dataPackages,
+        context.uniqueSignersThreshold,
+        context.valuesFromContract,
+        config
+      );
+  }
+};

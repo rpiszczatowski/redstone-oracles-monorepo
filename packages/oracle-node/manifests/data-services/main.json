@@ -34,6 +34,7 @@
         "hollaex",
         "huobipro",
         "kaiko",
+        "kaiko-v2",
         "kraken",
         "kucoin",
         "lbank",
@@ -65,6 +66,7 @@
         "hollaex",
         "huobipro",
         "kaiko",
+        "kaiko-v2",
         "kraken",
         "kucoin",
         "lbank",
@@ -85,6 +87,7 @@
         "coingecko",
         "currencycom",
         "kaiko",
+        "kaiko-v2",
         "kraken",
         "uniswap"
       ]
@@ -105,6 +108,7 @@
         "hitbtc",
         "huobipro",
         "kaiko",
+        "kaiko-v2",
         "kucoin",
         "mexc",
         "lbank",
@@ -127,6 +131,7 @@
         "currencycom",
         "huobipro",
         "kaiko",
+        "kaiko-v2",
         "kraken",
         "kucoin",
         "lbank",
@@ -153,7 +158,6 @@
         "hitbtc",
         "hollaex",
         "huobipro",
-        "kaiko",
         "kraken",
         "kucoin",
         "lbank",
@@ -319,17 +323,22 @@
         "binanceusdm",
         "bitcoincom",
         "bitfinex2",
-        "bittrex",
+        "bitget",
+        "bitrue",
         "btcturk",
+        "bybit",
         "cex",
         "coingecko",
+        "gate",
         "hitbtc",
         "hollaex",
         "huobipro",
         "kraken",
         "kucoin",
         "lbank",
+        "mexc",
         "okx",
+        "phemex",
         "poloniex",
         "probit"
       ]
@@ -392,6 +401,7 @@
         "coingecko",
         "huobipro",
         "kaiko",
+        "kaiko-v2",
         "kucoin",
         "lbank",
         "okx"
@@ -420,6 +430,7 @@
         "hollaex",
         "huobipro",
         "kaiko",
+        "kaiko-v2",
         "kraken",
         "kucoin",
         "lbank",
@@ -491,6 +502,7 @@
         "hitbtc",
         "huobipro",
         "kaiko",
+        "kaiko-v2",
         "kraken",
         "kucoin",
         "lbank",
@@ -684,12 +696,10 @@
     "AAVE": {
       "source": [
         "binance",
-        "binanceus",
         "binanceusdm",
         "bitget",
         "bitmart",
         "bitfinex2",
-        "bittrex",
         "bybit",
         "coinbaseprime",
         "coinbasepro",
@@ -698,6 +708,7 @@
         "hitbtc",
         "huobipro",
         "kaiko",
+        "kaiko-v2",
         "kraken",
         "kucoin",
         "lbank",
@@ -807,9 +818,6 @@
       "source": ["newyorkfed"],
       "decimals": 0
     },
-    "WSTETH": {
-      "source": ["coingecko"]
-    },
     "JUSDC": {
       "source": ["camelot-weth"]
     },
@@ -817,13 +825,31 @@
       "source": ["camelot-usdc"]
     },
     "STETH": {
-      "source": ["kaiko", "curve-eth", "curve-weth", "uniswap-v2-on-chain-weth"]
+      "source": [
+        "bitget",
+        "bybit",
+        "curve-eth",
+        "curve-weth",
+        "huobipro",
+        "kaiko",
+        "kaiko-v2",
+        "mexc",
+        "uniswap-v2-on-chain-weth"
+      ]
+    },
+    "WSTETH": {
+      "source": [
+        "balancer-weth",
+        "coingecko",
+        "maverick",
+        "uniswap-v3-on-chain-weth-500"
+      ]
     },
     "PLS": {
       "source": ["bitget", "bkex", "coingecko", "camelot-weth"]
     },
     "CMP": {
-      "source": ["coingecko", "xt"]
+      "source": ["bybit", "coingecko", "xt"]
     },
     "VST/ETH": {
       "source": ["non-usd-based"]
@@ -850,7 +876,6 @@
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
-        "coinmarketcap",
         "huobipro",
         "trader-joe-v2-on-chain-usdc",
         "uniswap-v3-on-chain-usdc-500"
@@ -885,36 +910,134 @@
       "source": ["curve-eth", "uniswap-v3-on-chain-weth-500"]
     },
     "ALETH": {
-      "source": ["curve-eth", "curve-frxeth"]
+      "source": ["curve-eth", "curve-frxeth", "velodrome-on-chain-weth"]
     },
     "ALUSD": {
-      "source": ["curve-crvfrax", "curve-3crv"]
+      "source": ["curve-crvfrax", "curve-3crv", "velodrome-on-chain-usdc"]
     },
     "LUSD": {
       "source": [
         "curve-3crv",
         "maverick",
         "uniswap-v3-on-chain-usdc-500",
-        "uniswap-v3-optimism-on-chain-usdc-500"
+        "uniswap-v3-optimism-on-chain-usdc-500",
+        "velodrome-on-chain-usdc"
       ]
     },
-    "AUD": {
-      "source": ["binance", "currencycom", "ecb", "kraken"]
+    "crvUSD": {
+      "source": ["curve-usdt", "curve-usdc", "curve-frax"]
+    },
+    "GHO": {
+      "source": [
+        "balancer-multi-dai",
+        "balancer-lusd",
+        "curve-crvusd",
+        "uniswap-v3-on-chain-usdc-3000",
+        "uniswap-v3-on-chain-usdt-3000"
+      ]
+    },
+    "USDC.USDT": {
+      "source": ["non-usd-based"]
+    },
+    "USDC.DAI": {
+      "source": ["non-usd-based"]
     },
     "ANS": {
       "source": ["permaswap"]
-    },
-    "GBP": {
-      "source": ["binance", "currencycom", "ecb", "kraken"]
-    },
-    "EUR": {
-      "source": ["binance", "currencycom", "kaiko", "kraken"]
     },
     "ARDRIVE": {
       "source": ["permaswap"]
     },
     "ACNH": {
       "source": ["permaswap"]
+    },
+    "AUD": {
+      "source": ["binance", "currencycom", "ecb", "kraken", "twelve-data"]
+    },
+    "GBP": {
+      "source": ["binance", "currencycom", "ecb", "kraken", "twelve-data"]
+    },
+    "EUR": {
+      "source": [
+        "binance",
+        "currencycom",
+        "ecb",
+        "kaiko",
+        "kraken",
+        "twelve-data"
+      ]
+    },
+    "JPY": {
+      "source": ["ecb", "twelve-data"]
+    },
+    "CHF": {
+      "source": ["ecb", "twelve-data"]
+    },
+    "NOK": {
+      "source": ["currencycom", "ecb", "twelve-data"]
+    },
+    "MXN": {
+      "source": ["ecb", "twelve-data"]
+    },
+    "NZD": {
+      "source": ["currencycom", "ecb", "twelve-data"]
+    },
+    "CAD": {
+      "source": ["ecb", "twelve-data"]
+    },
+    "CNH": {
+      "source": ["twelve-data"]
+    },
+    "SGD": {
+      "source": ["ecb", "twelve-data"]
+    },
+    "SEK": {
+      "source": ["ecb", "twelve-data"]
+    },
+    "ZAR": {
+      "source": ["ecb", "twelve-data"]
+    },
+    "TRY": {
+      "source": ["ecb", "twelve-data"]
+    },
+    "PLN": {
+      "source": ["ecb", "twelve-data"]
+    },
+    "HUF": {
+      "source": ["ecb", "twelve-data"]
+    },
+    "SPY": {
+      "source": ["twelve-data", "yf-unofficial"]
+    },
+    "QQQ": {
+      "source": ["twelve-data", "yf-unofficial"]
+    },
+    "IWM": {
+      "source": ["twelve-data", "yf-unofficial"]
+    },
+    "DIA.ETF": {
+      "source": ["twelve-data", "yf-unofficial"]
+    },
+    "SPX": {
+      "source": ["twelve-data", "yf-unofficial"]
+    },
+    "EUROSTOXX50": {
+      "source": ["twelve-data"]
+    },
+    "NASDAQ": {
+      "source": ["twelve-data", "yf-unofficial"]
+    },
+    "GOLD": {
+      "source": ["currencycom", "twelve-data", "yf-unofficial"]
+    },
+    "SILVER": {
+      "source": ["currencycom", "twelve-data", "yf-unofficial"]
+    },
+    "CRUDE": {
+      "source": ["currencycom", "twelve-data", "yf-unofficial"]
+    },
+    "COPPER": {
+      "source": ["currencycom", "twelve-data", "yf-unofficial"]
     },
     "IBM": {
       "source": ["twelve-data"]
@@ -949,16 +1072,7 @@
     "TDOC": {
       "source": ["twelve-data"]
     },
-    "SPY": {
-      "source": ["twelve-data"]
-    },
-    "QQQ": {
-      "source": ["twelve-data"]
-    },
     "ONEQ": {
-      "source": ["twelve-data"]
-    },
-    "IWM": {
       "source": ["twelve-data"]
     },
     "EFA": {
@@ -976,82 +1090,7 @@
     "C3M": {
       "source": ["twelve-data"]
     },
-    "ZC=F": {
-      "source": ["yf-unofficial"]
-    },
-    "ZS=F": {
-      "source": ["yf-unofficial"]
-    },
-    "ZM=F": {
-      "source": ["yf-unofficial"]
-    },
-    "ZW=F": {
-      "source": ["yf-unofficial"]
-    },
-    "KE=F": {
-      "source": ["yf-unofficial"]
-    },
-    "ZO=F": {
-      "source": ["yf-unofficial"]
-    },
-    "ZR=F": {
-      "source": ["yf-unofficial"]
-    },
-    "CL=F": {
-      "source": ["yf-unofficial"]
-    },
-    "RB=F": {
-      "source": ["yf-unofficial"]
-    },
-    "NG=F": {
-      "source": ["yf-unofficial"]
-    },
-    "EH=F": {
-      "source": ["yf-unofficial"]
-    },
-    "GC=F": {
-      "source": ["yf-unofficial"]
-    },
-    "SI=F": {
-      "source": ["yf-unofficial"]
-    },
-    "HG=F": {
-      "source": ["yf-unofficial"]
-    },
-    "PL=F": {
-      "source": ["yf-unofficial"]
-    },
-    "PA=F": {
-      "source": ["yf-unofficial"]
-    },
-    "LE=F": {
-      "source": ["yf-unofficial"]
-    },
-    "GF=F": {
-      "source": ["yf-unofficial"]
-    },
-    "HE=F": {
-      "source": ["yf-unofficial"]
-    },
-    "PRK=F": {
-      "source": ["yf-unofficial"]
-    },
-    "DC=F": {
-      "source": ["yf-unofficial"]
-    },
-    "GNF=F": {
-      "source": ["yf-unofficial"]
-    },
-    "CB=F": {
-      "source": ["yf-unofficial"]
-    },
-    "CSC=F": {
-      "source": ["yf-unofficial"]
-    },
     "PEN": {
-      "source": ["twelve-data"]
-    },
-    "MXN": {
       "source": ["twelve-data"]
     },
     "ARS": {
@@ -1182,6 +1221,159 @@
     },
     "IBTA.L": {
       "source": ["twelve-data-etf-uk"]
+    },
+    "USDCf": {
+      "source": ["twelve-data-etf-uk"]
+    },
+    "ZC=F": {
+      "source": ["yf-unofficial"]
+    },
+    "ZS=F": {
+      "source": ["yf-unofficial"]
+    },
+    "ZM=F": {
+      "source": ["yf-unofficial"]
+    },
+    "ZW=F": {
+      "source": ["yf-unofficial"]
+    },
+    "KE=F": {
+      "source": ["yf-unofficial"]
+    },
+    "ZO=F": {
+      "source": ["yf-unofficial"]
+    },
+    "ZR=F": {
+      "source": ["yf-unofficial"]
+    },
+    "RB=F": {
+      "source": ["yf-unofficial"]
+    },
+    "NG=F": {
+      "source": ["yf-unofficial"]
+    },
+    "EH=F": {
+      "source": ["yf-unofficial"]
+    },
+    "PL=F": {
+      "source": ["yf-unofficial"]
+    },
+    "PA=F": {
+      "source": ["yf-unofficial"]
+    },
+    "LE=F": {
+      "source": ["yf-unofficial"]
+    },
+    "GF=F": {
+      "source": ["yf-unofficial"]
+    },
+    "HE=F": {
+      "source": ["yf-unofficial"]
+    },
+    "PRK=F": {
+      "source": ["yf-unofficial"]
+    },
+    "DC=F": {
+      "source": ["yf-unofficial"]
+    },
+    "GNF=F": {
+      "source": ["yf-unofficial"]
+    },
+    "CB=F": {
+      "source": ["yf-unofficial"]
+    },
+    "CSC=F": {
+      "source": ["yf-unofficial"]
+    },
+    "ABNB": {
+      "source": ["currencycom"]
+    },
+    "AMD": {
+      "source": ["currencycom"]
+    },
+    "ARKK": {
+      "source": ["currencycom"]
+    },
+    "BABA": {
+      "source": ["currencycom"]
+    },
+    "BILI": {
+      "source": ["currencycom"]
+    },
+    "BNTX": {
+      "source": ["currencycom"]
+    },
+    "COIN": {
+      "source": ["currencycom"]
+    },
+    "CRON": {
+      "source": ["currencycom"]
+    },
+    "GOOGL": {
+      "source": ["currencycom"]
+    },
+    "MRNA": {
+      "source": ["currencycom"]
+    },
+    "NIO": {
+      "source": ["currencycom"]
+    },
+    "NVDA": {
+      "source": ["currencycom"]
+    },
+    "PFE": {
+      "source": ["currencycom"]
+    },
+    "PYPL": {
+      "source": ["currencycom"]
+    },
+    "SQ": {
+      "source": ["currencycom"]
+    },
+    "TSM": {
+      "source": ["currencycom"]
+    },
+    "UBER": {
+      "source": ["currencycom"]
+    },
+    "ZM": {
+      "source": ["currencycom"]
+    },
+    "DKNG": {
+      "source": ["currencycom"]
+    },
+    "TLRY": {
+      "source": ["currencycom"]
+    },
+    "ENTROPY": {
+      "source": ["drand"]
+    },
+    "AAPL": {
+      "source": ["currencycom", "twelve-data"]
+    },
+    "AMZN": {
+      "source": ["currencycom", "twelve-data"]
+    },
+    "BYND": {
+      "source": ["currencycom", "twelve-data"]
+    },
+    "GME": {
+      "source": ["currencycom", "twelve-data"]
+    },
+    "NFLX": {
+      "source": ["currencycom", "twelve-data"]
+    },
+    "TSLA": {
+      "source": ["currencycom", "twelve-data"]
+    },
+    "META": {
+      "source": ["currencycom", "twelve-data"]
+    },
+    "ROOK": {
+      "source": ["poloniex"]
+    },
+    "CUSDT": {
+      "source": ["poloniex"]
     },
     "lensprotocol": {
       "source": ["lens"]
@@ -1464,7 +1656,8 @@
     },
     "SWETH": {
       "source": [
-        "balancer-multi-sweth",
+        "balancer-multi-weth",
+        "balancer-multi-wsteth",
         "maverick",
         "uniswap-v3-on-chain-weth-500"
       ]
@@ -1484,146 +1677,14 @@
     "crvUSDBTCETH": {
       "source": ["avalanche-evm-fetcher"]
     },
+    "SHLB_GMX-AVAX_B": {
+      "source": ["avalanche-evm-fetcher"]
+    },
     "crvFRAX": {
       "source": ["ethereum-evm-fetcher"]
     },
     "3Crv": {
       "source": ["ethereum-evm-fetcher"]
-    },
-    "ABNB": {
-      "source": ["currencycom"]
-    },
-    "AMD": {
-      "source": ["currencycom"]
-    },
-    "ARKK": {
-      "source": ["currencycom"]
-    },
-    "BABA": {
-      "source": ["currencycom"]
-    },
-    "BILI": {
-      "source": ["currencycom"]
-    },
-    "BNTX": {
-      "source": ["currencycom"]
-    },
-    "COIN": {
-      "source": ["currencycom"]
-    },
-    "CRON": {
-      "source": ["currencycom"]
-    },
-    "GOOGL": {
-      "source": ["currencycom"]
-    },
-    "MRNA": {
-      "source": ["currencycom"]
-    },
-    "NIO": {
-      "source": ["currencycom"]
-    },
-    "NOK": {
-      "source": ["currencycom"]
-    },
-    "NVDA": {
-      "source": ["currencycom"]
-    },
-    "PFE": {
-      "source": ["currencycom"]
-    },
-    "PYPL": {
-      "source": ["currencycom"]
-    },
-    "SQ": {
-      "source": ["currencycom"]
-    },
-    "TSM": {
-      "source": ["currencycom"]
-    },
-    "UBER": {
-      "source": ["currencycom"]
-    },
-    "ZM": {
-      "source": ["currencycom"]
-    },
-    "DKNG": {
-      "source": ["currencycom"]
-    },
-    "TLRY": {
-      "source": ["currencycom"]
-    },
-    "ENTROPY": {
-      "source": ["drand"]
-    },
-    "JPY": {
-      "source": ["ecb"]
-    },
-    "AAPL": {
-      "source": ["currencycom", "twelve-data"]
-    },
-    "AMZN": {
-      "source": ["currencycom", "twelve-data"]
-    },
-    "BYND": {
-      "source": ["currencycom", "twelve-data"]
-    },
-    "GME": {
-      "source": ["currencycom", "twelve-data"]
-    },
-    "NFLX": {
-      "source": ["currencycom", "twelve-data"]
-    },
-    "TSLA": {
-      "source": ["currencycom", "twelve-data"]
-    },
-    "META": {
-      "source": ["currencycom", "twelve-data"]
-    },
-    "CHF": {
-      "source": ["ecb", "twelve-data"]
-    },
-    "BEAR": {
-      "source": ["poloniex"]
-    },
-    "ETHBULL": {
-      "source": ["poloniex"]
-    },
-    "ADABULL": {
-      "source": ["poloniex"]
-    },
-    "BCHBULL": {
-      "source": ["poloniex"]
-    },
-    "LINKBULL": {
-      "source": ["poloniex"]
-    },
-    "ROOK": {
-      "source": ["poloniex"]
-    },
-    "ZAP": {
-      "source": ["poloniex"]
-    },
-    "CUSDT": {
-      "source": ["poloniex"]
-    },
-    "BCHBEAR": {
-      "source": ["poloniex"]
-    },
-    "BSVBEAR": {
-      "source": ["poloniex"]
-    },
-    "IBVOL": {
-      "source": ["poloniex"]
-    },
-    "TRXBULL": {
-      "source": ["poloniex"]
-    },
-    "XLMBEAR": {
-      "source": ["poloniex"]
-    },
-    "XLMBULL": {
-      "source": ["poloniex"]
     },
     "BAT": {},
     "MKR": {},
@@ -1679,7 +1740,6 @@
     "SRM": {},
     "CRO": {},
     "ONE": {},
-    "IOTA": {},
     "THETA": {},
     "JST": {},
     "REEF": {},
@@ -1988,7 +2048,6 @@
     "DPI": {},
     "CREAM": {},
     "BAO": {},
-    "sUSD": {},
     "MPH": {},
     "SFI": {},
     "MAPS": {},

@@ -377,7 +377,7 @@
   "SPELLFIRE": "SPELLFIRE/USDT",
   "FUSE": "FUSE/USDT",
   "XRP": "XRP/USDT",
-  "IOTA": "IOTA/USDT",
+  "MIOTA": "IOTA/USDT",
   "ARV": "ARV/USDT",
   "MASK": "MASK/USDT",
   "BTC1S": "BTC1S/USDT",
@@ -501,5 +501,6 @@
   "GMX": "GMX/USDT",
   "UFT": "UFT/USDT",
   "JOE": "JOE/USDT",
-  "EUROC": "EUROC/USDT"
+  "EUROC": "EUROC/USDT",
+  "STETH": "STETH/USDT"
 }

@@ -1,7 +1,4 @@
 import { TransactionResponse } from "@ethersproject/providers";
-import { WrapperBuilder } from "@redstone-finance/evm-connector";
-import { Contract } from "ethers";
-import { DataPackagesResponse } from "redstone-sdk";
 import { config } from "../../config";
 import {
   MentoContracts,
@@ -10,64 +7,38 @@ import {
 
 import { getSortedOraclesContractAtAddress } from "./get-contract";
 import { TransactionDeliveryMan } from "redstone-rpc-providers";
+import { UpdatePricesArgs } from "../../args/get-update-prices-args";
 
-interface UpdatePricesArgs {
-  adapterContract: Contract;
-  wrapContract(adapterContract: Contract): Contract;
-  proposedTimestamp: number;
-}
-
-const TX_CONFIG = { gasLimit: config.gasLimit };
-
-const deliveryMan = new TransactionDeliveryMan({
-  expectedDeliveryTimeMs: config.expectedTxDeliveryTimeInMS,
-});
-
-export const updatePrices = async (
-  dataPackages: DataPackagesResponse,
-  adapterContract: Contract,
-  lastUpdateTimestamp: number
-): Promise<void> => {
-  const dataPackagesTimestamps = Object.values(dataPackages).flatMap(
-    (dataPackages) =>
-      dataPackages.map(
-        (dataPackage) => dataPackage.dataPackage.timestampMilliseconds
-      )
-  );
-  const minimalTimestamp = Math.min(...dataPackagesTimestamps);
-
-  if (lastUpdateTimestamp >= minimalTimestamp) {
-    console.log(
-      `Cannot update prices, proposed prices are not newer ${JSON.stringify({
-        lastUpdateTimestamp,
-        dataPackageTimestamp: minimalTimestamp,
-      })}`
-    );
-  } else {
-    const wrapContract = (adapterContract: Contract) =>
-      WrapperBuilder.wrap(adapterContract).usingDataPackages(dataPackages);
-    const updateTx = await updatePriceInAdapterContract({
-      adapterContract,
-      wrapContract,
-      proposedTimestamp: minimalTimestamp,
+let deliveryMan: TransactionDeliveryMan | undefined = undefined;
+const getDeliveryMan = () => {
+  deliveryMan =
+    deliveryMan ??
+    new TransactionDeliveryMan({
+      expectedDeliveryTimeMs: config().expectedTxDeliveryTimeInMS,
+      gasLimit: config().gasLimit,
+      twoDimensionFees: config().isArbitrumNetwork,
     });
-    console.log(`Update prices tx sent: ${updateTx.hash}`);
-    await updateTx.wait();
-    console.log(`Successfully updated prices: ${updateTx.hash}`);
-  }
+  return deliveryMan;
+};
+
+export const updatePrices = async (updatePricesArgs: UpdatePricesArgs) => {
+  const updateTx = await updatePriceInAdapterContract(updatePricesArgs);
+  console.log(`Update prices tx sent: ${updateTx.hash}`);
+  await updateTx.wait();
+  console.log(`Successfully updated prices: ${updateTx.hash}`);
 };
 
 const updatePriceInAdapterContract = async (
   args: UpdatePricesArgs
 ): Promise<TransactionResponse> => {
-  switch (config.adapterContractType) {
+  switch (config().adapterContractType) {
     case "price-feeds":
       return await updatePricesInPriceFeedsAdapter(args);
     case "mento":
       return await updatePricesInMentoAdapter(args);
     default:
       throw new Error(
-        `Unsupported adapter contract type: ${config.adapterContractType}`
+        `Unsupported adapter contract type: ${config().adapterContractType}`
       );
   }
 };
@@ -79,11 +50,10 @@ const updatePricesInPriceFeedsAdapter = async ({
 }: UpdatePricesArgs): Promise<TransactionResponse> => {
   const wrappedContract = wrapContract(adapterContract);
 
-  const deliveryResult = await deliveryMan.deliver(
+  const deliveryResult = await getDeliveryMan().deliver(
     wrappedContract,
     "updateDataFeedsValues",
-    [proposedTimestamp],
-    TX_CONFIG.gasLimit ? Number(TX_CONFIG.gasLimit) : undefined
+    [proposedTimestamp]
   );
 
   return deliveryResult;

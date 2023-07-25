@@ -1,55 +1,30 @@
 import { AsyncTask, SimpleIntervalJob, ToadScheduler } from "toad-scheduler";
-import { ValuesForDataFeeds, requestDataPackages } from "redstone-sdk";
-import { shouldUpdate } from "./core/update-conditions/should-update";
+import { getIterationArgs } from "./args/get-iteration-args";
 import { updatePrices } from "./core/contract-interactions/update-prices";
-import { getLastRoundParamsFromContract } from "./core/contract-interactions/get-last-round-params";
 import { getAdapterContract } from "./core/contract-interactions/get-contract";
-import { getValuesForDataFeeds } from "./core/contract-interactions/get-values-for-data-feeds";
 import { sendHealthcheckPing } from "./core/monitoring/send-healthcheck-ping";
-import { config } from "./config";
+import { config, setConfigProvider } from "./config";
+import { fileSystemConfigProvider } from "./FilesystemConfigProvider";
 
-const { relayerIterationInterval } = config;
+setConfigProvider(fileSystemConfigProvider);
+const relayerConfig = config();
 
 console.log(
-  `Starting contract prices updater with interval ${relayerIterationInterval}`
+  `Starting contract prices updater with interval ${relayerConfig.relayerIterationInterval}`
 );
 
 const runIteration = async () => {
-  const { dataServiceId, uniqueSignersCount, dataFeeds } = config;
   const adapterContract = getAdapterContract();
-
-  const { lastUpdateTimestamp } = await getLastRoundParamsFromContract(
-    adapterContract
-  );
-
-  // We fetch latest values from contract only if we want to check value deviation
-  let valuesFromContract: ValuesForDataFeeds = {};
-  if (config.updateConditions.includes("value-deviation")) {
-    valuesFromContract = await getValuesForDataFeeds(
-      adapterContract,
-      dataFeeds
-    );
-  }
-
-  const dataPackages = await requestDataPackages({
-    dataServiceId,
-    uniqueSignersCount,
-    dataFeeds,
-    valuesToCompare: valuesFromContract,
-  });
-
-  const { shouldUpdatePrices } = shouldUpdate({
-    dataPackages,
-    valuesFromContract,
-    lastUpdateTimestamp,
-  });
-
-  if (!shouldUpdatePrices) {
-  } else {
-    await updatePrices(dataPackages, adapterContract, lastUpdateTimestamp);
-  }
-
+  const iterationArgs = await getIterationArgs(adapterContract);
   await sendHealthcheckPing();
+  
+  if (iterationArgs.shouldUpdatePrices) {
+    if (!iterationArgs.args) {
+      return console.log(iterationArgs.message);
+    } else {
+      await updatePrices(iterationArgs.args);
+    }
+  }
 };
 
 const task = new AsyncTask(
@@ -59,7 +34,10 @@ const task = new AsyncTask(
 );
 
 const job = new SimpleIntervalJob(
-  { milliseconds: relayerIterationInterval, runImmediately: true },
+  {
+    milliseconds: relayerConfig.relayerIterationInterval,
+    runImmediately: true,
+  },
   task,
   { preventOverrun: true }
 );
