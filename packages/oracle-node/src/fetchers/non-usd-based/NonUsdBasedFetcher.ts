@@ -28,7 +28,7 @@ export class NonUsdBasedFetcher extends MultiRequestFetcher {
   }
 
   extractTokensFromId(id: string) {
-    const tokensRegex = /([a-zA-Z0-9_]+)\/([a-zA-Z0-9_]+)/;
+    const tokensRegex = /([a-zA-Z0-9_]+)(?:\/|\.)([a-zA-Z0-9_]+)/;
     const tokens = id.match(tokensRegex);
     if (!tokens) {
       throw new Error(
