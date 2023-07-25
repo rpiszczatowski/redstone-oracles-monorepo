@@ -67,7 +67,7 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
     const requestIds = this.prepareRequestIds(dataFeedIds);
 
     for (const requestId of requestIds) {
-      promises.push(this.makeSafeRequest(requestId, opts.blockTag));
+      promises.push(this.makeSafeRequest(requestId, opts?.blockTag));
     }
 
     return Promise.all(promises);
