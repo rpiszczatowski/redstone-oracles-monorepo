@@ -13,7 +13,6 @@ export interface ProviderWithAgreementConfig {
   numberOfProvidersThatHaveToAgree: number;
   getBlockNumberTimeoutMS: number;
   sleepBetweenBlockSync: number;
-  blockNumberCacheTTLInMS: number;
 }
 
 const defaultConfig: Omit<
@@ -23,7 +22,6 @@ const defaultConfig: Omit<
   numberOfProvidersThatHaveToAgree: 2,
   getBlockNumberTimeoutMS: 2_000,
   sleepBetweenBlockSync: 500,
-  blockNumberCacheTTLInMS: 50,
 };
 
 export class ProviderWithAgreement extends ProviderWithFallback {
@@ -52,12 +50,24 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     }
   }
 
+  /**
+   * We try to take blockNumber only from first provider however if we fail we fallback to next provider
+   * After fetching we change back to firstProvider, because he is privileged
+   * @returns blockNumber
+   */
+  private async electBlockNumber() {
+    this.useProvider(0);
+    const blockNumber = await this.getBlockNumber();
+    this.useProvider(0);
+    return blockNumber;
+  }
+
   override async call(
     transaction: Deferrable<TransactionRequest>,
     blockTag?: BlockTag
   ): Promise<string> {
     const electedBlockTag = utils.hexlify(
-      blockTag ?? (await this.getBlockNumber())
+      blockTag ?? (await this.electBlockNumber())
     );
     const callResult = this.executeCallWithAgreement(
       transaction,

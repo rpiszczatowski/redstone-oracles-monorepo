@@ -182,7 +182,7 @@ export class ProviderWithFallback
     }
   }
 
-  private useProvider(providerIndex: number) {
+  protected useProvider(providerIndex: number) {
     this.currentProvider.removeAllListeners();
     this.providerIndex = providerIndex;
     const newProvider = this.providers[this.providerIndex];
