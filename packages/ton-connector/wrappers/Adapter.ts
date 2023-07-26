@@ -1,4 +1,4 @@
-import { beginCell, ContractProvider } from "ton-core";
+import { beginCell, ContractProvider, TupleBuilder } from "ton-core";
 import { TonContract } from "../src/TonContract";
 import { hexlify } from "ethers/lib/utils";
 import { createDataPackageCell, createPayloadCell } from "../src/create-cell";
@@ -62,5 +62,19 @@ export class Adapter extends TonContract {
     ]);
 
     return stack.readCell();
+  }
+
+  async getSort(provider: ContractProvider, items: number[]) {
+    const tuple = new TupleBuilder();
+
+    items.forEach((value) => {
+      tuple.writeNumber(value);
+    });
+
+    const { stack } = await provider.get("perform_sort", [
+      { type: "tuple", items: tuple.build() },
+    ]);
+
+    return stack;
   }
 }

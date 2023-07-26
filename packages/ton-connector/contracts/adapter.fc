@@ -3,6 +3,7 @@
 #include "utils.fc";
 #include "processor.fc";
 #include "redstone.fc";
+#include "sort.fc";
 
 ;; =============== storage =============================
 
@@ -116,3 +117,6 @@ cell load_data() impure {
     return process_payload(payload, now());
 }
 
+()perform_sort(tuple t) method_id {
+    ~dump(sort(t));
+}

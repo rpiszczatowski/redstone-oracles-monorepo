@@ -30,7 +30,7 @@ describe("Test", () => {
     // });
   });
 
-  it("should deploy", async () => {
+  it("should verify", async () => {
     const reqParams = {
       dataServiceId: "redstone-avalanche-prod",
       uniqueSignersCount: 1,
@@ -40,5 +40,13 @@ describe("Test", () => {
     const payloadHex = await requestRedstonePayload(reqParams);
     console.log(payloadHex);
     console.log(await sut.getVerify(payloadHex));
+  });
+
+  it("should sort", async () => {
+    let numbers = [1, 5, 4, 9, 3, 4];
+    console.log(await sut.getSort(numbers));
+
+    numbers = [2, 3, 1];
+    console.log(await sut.getSort(numbers));
   });
 });

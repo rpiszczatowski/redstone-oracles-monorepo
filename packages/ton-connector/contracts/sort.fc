@@ -1,0 +1,24 @@
+#include "stdlib.fc";
+
+(int) tlen (tuple t) asm "TLEN";
+forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
+
+(tuple)sort(tuple vec) impure {
+    tuple res = empty_tuple();
+
+    repeat (vec.tlen()) {
+        tuple tmp = empty_tuple();
+        int min_elt = vec~tpop();
+
+        while (vec.tlen() > 0) {
+            (min_elt, int b) = minmax(min_elt, vec~tpop());
+
+            tmp~tpush(b);
+        }
+
+        res~tpush(min_elt);
+        vec = tmp;
+    }
+
+    return res;
+}
