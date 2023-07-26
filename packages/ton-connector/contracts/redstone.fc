@@ -21,12 +21,13 @@
 
 (int, int, int)parse_data_package(slice data) {
     int dp_count = data~slice_int(DATA_POINTS_COUNT_BITS);
-
     throw_unless(ERR_DATA_NOT_SUPPORTED_BASE + dp_count, dp_count == 1);
 
-    int value_size = data~slice_int(DATA_POINT_VALUE_BYTE_SIZE_BITS);
+    int value_size_bits = data~slice_int(DATA_POINT_VALUE_BYTE_SIZE_BITS) * 8;
+    throw_unless(ERR_DATA_NOT_SUPPORTED_BASE + value_size_bits, value_size_bits <= MAX_VALUE_SIZE_BITS);
+
     int timestamp = data~slice_int(TIMESTAMP_BITS);
-    int value = data~slice_int(value_size * 8);
+    int value = data~slice_int(value_size_bits);
     int feed_id = data~slice_int(DATA_FEED_ID_BITS);
 
     while(feed_id == (feed_id / 256) * 256) {

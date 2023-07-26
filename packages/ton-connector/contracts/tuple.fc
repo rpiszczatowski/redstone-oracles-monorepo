@@ -4,6 +4,19 @@
 (int) tlen (tuple t) asm "TLEN";
 forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
 
+(int)index_of(tuple vec, int value) {
+    int k = 0;
+    while (vec.tlen() > 0) {
+        if (vec~tpop() == value) {
+            return k;
+        }
+        k += 1;
+    }
+
+    return -1;
+}
+
+
 (tuple)sort(tuple vec) {
     tuple res = empty_tuple();
 

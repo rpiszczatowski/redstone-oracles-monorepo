@@ -113,8 +113,12 @@ cell load_data() impure {
     return get_data_package_signer_address(data_cell.begin_parse(), data_package_cell);
 }
 
-(cell)verify_payload(cell payload) method_id {
-    return process_payload(payload, now());
+(cell)get_prices(tuple data_feed_ids, cell payload) method_id {
+    (tuple result, builder logs) = process_payload(payload, data_feed_ids, now());
+
+    ~dump(result);
+
+    return logs.store_int(result.tlen(), 8).end_cell();
 }
 
 ()perform_sort(tuple t) method_id {

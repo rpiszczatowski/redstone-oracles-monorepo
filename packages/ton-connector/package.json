@@ -15,7 +15,7 @@
     "init-adapter": "yarn run-script runAdapterInit",
     "fetch-feed-value": "yarn run-script runFeedFetchFeedValue",
     "get-feed-value": "yarn run-script runFeedGetFeedValue",
-    "verify": "yarn run-script runAdapterVerify"
+    "get-prices": "yarn run-script runAdapterGetPrices"
   },
   "dependencies": {
     "@orbs-network/ton-access": "^2.3.3",

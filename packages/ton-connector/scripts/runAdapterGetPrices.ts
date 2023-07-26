@@ -8,12 +8,13 @@ export async function run(provider: NetworkProvider) {
 
   const contract = await Adapter.openForExecute<Adapter>(provider);
 
+  const dataFeeds = ["ETH", "BTC"];
   const reqParams = {
     dataServiceId: "redstone-avalanche-prod",
     uniqueSignersCount: 3,
-    dataFeeds: ["ETH", "BTC"],
+    dataFeeds,
   };
   const payloadHex = await requestRedstonePayload(reqParams);
 
-  console.log(await contract.getVerify(payloadHex));
+  console.log(await contract.getPrices(dataFeeds, payloadHex));
 }

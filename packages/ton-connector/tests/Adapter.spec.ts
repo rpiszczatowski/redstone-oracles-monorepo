@@ -30,16 +30,16 @@ describe("Test", () => {
     // });
   });
 
-  it("should verify", async () => {
+  it("should get prices", async () => {
+    const dataFeeds = ["ETH", "BTC", "AVAX"];
     const reqParams = {
       dataServiceId: "redstone-avalanche-prod",
       uniqueSignersCount: 5,
-      dataFeeds: ["ETH", "BTC", "AVAX"],
+      dataFeeds,
     };
 
     const payloadHex = await requestRedstonePayload(reqParams);
-    console.log(payloadHex);
-    console.log(await sut.getVerify(payloadHex));
+    console.log(await sut.getPrices(dataFeeds, payloadHex));
   });
 
   it("should sort", async () => {

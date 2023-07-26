@@ -1,8 +1,9 @@
 #include "constants.fc";
 #include "redstone.fc";
 #include "validation.fc";
+#include "tuple.fc";
 
-(cell)process_payload(cell payload, int current_timestamp) method_id {
+(tuple, builder)process_payload(cell payload, tuple data_feed_ids, int current_timestamp) method_id {
     slice payload_slice = payload.begin_parse();
 
     builder res = begin_cell();
@@ -12,6 +13,14 @@
     int marker = payload_slice~slice_int(REDSTONE_MARKER_BITS);
 
     throw_unless(ERR_WRONG_MARKER, marker == REDSTONE_MARKER);
+    tuple SIGNERS = empty_tuple()
+            .tpush(0x109B4A318A4F5DDCBCA6349B45F881B4137DEAFB)
+            .tpush(0x12470F7ABA85C8B81D63137DD5925D6EE114952B)
+            .tpush(0x1EA62D73EDF8AC05DFCEA1A34B9796E937A29EFF)
+            .tpush(0x2C59617248994D12816EE1FA77CE0A64EEB456BF)
+            .tpush(0x83CBA8C619FB629B81A65C2E67FE15CF3E3C9747);
+
+    cell dic = new_dict();
 
     while (payload_slice.slice_refs_empty?() != true) {
         cell inner_cell = payload_slice~load_ref();
@@ -25,11 +34,16 @@
             var (address, feed_id, value, timestamp) = get_data_package_values(dp_cell);
 
             validate_timestamp(k, timestamp / 1000, current_timestamp);
+            int signer_index = SIGNERS.index_of(address);
+            int feed_index = data_feed_ids.index_of(feed_id);
+            int index = SIGNERS.tlen() * feed_index + signer_index;
+
+            dic~udict_set(8, index, begin_cell().store_int(value, MAX_VALUE_SIZE_BITS).end_cell().begin_parse());
 
             cell values = begin_cell()
-                    .store_ref(begin_cell().store_int(address, ADDRESS_BITS + 8).end_cell()) ;; wtf
-                    .store_ref(begin_cell().store_int(feed_id, DATA_FEED_ID_BITS).end_cell())
-                    .store_ref(begin_cell().store_int(value, 256).end_cell())
+                    .store_ref(begin_cell().store_int(signer_index, 8).store_int(address, ADDRESS_BITS + 8).end_cell()) ;; wtf
+                    .store_ref(begin_cell().store_int(feed_index, 8).store_int(feed_id, DATA_FEED_ID_BITS).end_cell())
+                    .store_ref(begin_cell().store_int(value, MAX_VALUE_SIZE_BITS).end_cell())
                     .store_ref(begin_cell().store_int(timestamp / 1000, TIMESTAMP_BITS).store_int(current_timestamp, TIMESTAMP_BITS).end_cell())
                     .end_cell();
 
@@ -40,8 +54,27 @@
         res = res.store_ref(res_inner.end_cell());
     }
 
+    tuple result = empty_tuple();
+    int feed_index = 0;
+    while(feed_index < data_feed_ids.tlen()) {
+        ~dump(data_feed_ids.at(feed_index));
+        int signer_index = 0;
+        tuple values = empty_tuple();
+        while(signer_index < SIGNERS.tlen()) {
+            (slice payl, int success) = dic.udict_get?(8, SIGNERS.tlen() * feed_index + signer_index);
+            if(success == true) {
+                values~tpush(payl~load_int(MAX_VALUE_SIZE_BITS));
+            }
+            signer_index += 1;
+        }
+
+        ~dump(values);
+        result~tpush(values.median());
+        feed_index += 1;
+    }
+
     throw_unless(ERR_WRONG_DATA_PACKAGE_COUNT_BASE + k, dp_count == k);
 
-    return res.store_int(k, 32).end_cell();
+    return (result, res);
 }
 

@@ -1,8 +1,8 @@
-import { beginCell, ContractProvider, TupleBuilder } from "ton-core";
+import { beginCell, ContractProvider } from "ton-core";
 import { TonContract } from "../src/TonContract";
-import { hexlify } from "ethers/lib/utils";
 import { createDataPackageCell, createPayloadCell } from "../src/create-cell";
 import { splitPayloadHex } from "../src/split-payload-hex";
+import { getTuple } from "../src/ton-utils";
 
 export class Adapter extends TonContract {
   static getName(): string {
@@ -45,7 +45,11 @@ export class Adapter extends TonContract {
     return stack.readBigNumber();
   }
 
-  async getVerify(provider: ContractProvider, payloadHex: string) {
+  async getPrices(
+    provider: ContractProvider,
+    dataFeeds: string[],
+    payloadHex: string
+  ) {
     const payloadCell = createPayloadCell(payloadHex);
     const { dataPackageChunks } = splitPayloadHex(payloadHex);
     for (let i = 0; i < dataPackageChunks.length; i++) {
@@ -57,7 +61,8 @@ export class Adapter extends TonContract {
       // console.log(`${i} ${hexlify(st.readBigNumber())}`);
     }
 
-    const { stack } = await provider.get("verify_payload", [
+    const { stack } = await provider.get("get_prices", [
+      { type: "tuple", items: getTuple(dataFeeds) },
       { type: "cell", cell: payloadCell },
     ]);
 
@@ -65,14 +70,8 @@ export class Adapter extends TonContract {
   }
 
   async getSort(provider: ContractProvider, items: number[]) {
-    const tuple = new TupleBuilder();
-
-    items.forEach((value) => {
-      tuple.writeNumber(value);
-    });
-
     const { stack } = await provider.get("perform_sort", [
-      { type: "tuple", items: tuple.build() },
+      { type: "tuple", items: getTuple(items) },
     ]);
 
     return stack;
