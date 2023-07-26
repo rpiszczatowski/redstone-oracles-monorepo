@@ -2,7 +2,8 @@ import { BlockTag, TransactionRequest } from "@ethersproject/abstract-provider";
 import { Deferrable } from "@ethersproject/properties";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { utils } from "ethers";
-import { sleepMS, timeout } from "./common";
+import { sleepMS } from "./common";
+import _ from "lodash";
 import {
   ProviderWithFallback,
   ProviderWithFallbackConfig,
@@ -13,19 +14,7 @@ export interface ProviderWithAgreementConfig {
   getBlockNumberTimeoutMS: number;
   sleepBetweenBlockSync: number;
   blockNumberCacheTTLInMS: number;
-  electBlockFn: (blocks: number[], numberOfAgreeingNodes: number) => number;
 }
-
-const convertMsToNanoseconds = (ms: number) => BigInt(ms * 1e6);
-
-const DEFAULT_ELECT_BLOCK_FN = (blockNumbers: number[]): number => {
-  const mid = Math.floor(blockNumbers.length / 2);
-  blockNumbers.sort((a, b) => a - b);
-
-  return blockNumbers.length % 2 !== 0
-    ? blockNumbers[mid]
-    : Math.round((blockNumbers[mid - 1] + blockNumbers[mid]) / 2);
-};
 
 const defaultConfig: Omit<
   ProviderWithAgreementConfig,
@@ -33,14 +22,12 @@ const defaultConfig: Omit<
 > = {
   numberOfProvidersThatHaveToAgree: 2,
   getBlockNumberTimeoutMS: 2_000,
-  sleepBetweenBlockSync: 100,
+  sleepBetweenBlockSync: 500,
   blockNumberCacheTTLInMS: 50,
-  electBlockFn: DEFAULT_ELECT_BLOCK_FN,
 };
 
 export class ProviderWithAgreement extends ProviderWithFallback {
   private readonly agreementConfig: ProviderWithAgreementConfig;
-  private blockNumberCache = { value: 0, lastUpdate: 0n };
 
   constructor(
     providers: JsonRpcProvider[],
@@ -65,16 +52,12 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     }
   }
 
-  override getBlockNumber(): Promise<number> {
-    return this.electBlockNumber();
-  }
-
   override async call(
     transaction: Deferrable<TransactionRequest>,
     blockTag?: BlockTag
   ): Promise<string> {
     const electedBlockTag = utils.hexlify(
-      blockTag ?? (await this.electBlockNumber())
+      blockTag ?? (await this.getBlockNumber())
     );
     const callResult = this.executeCallWithAgreement(
       transaction,
@@ -82,49 +65,6 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     );
 
     return callResult;
-  }
-
-  private async electBlockNumber(): Promise<number> {
-    if (
-      process.hrtime.bigint() - this.blockNumberCache.lastUpdate <
-      convertMsToNanoseconds(this.agreementConfig.blockNumberCacheTTLInMS)
-    ) {
-      return this.blockNumberCache.value;
-    }
-
-    // collect block numbers
-    const blockNumbersResults = await Promise.allSettled(
-      this.providers.map((provider) =>
-        timeout(
-          provider.getBlockNumber(),
-          this.agreementConfig.getBlockNumberTimeoutMS
-        )
-      )
-    );
-
-    const blockNumbers = blockNumbersResults
-      .filter((result) => result.status === "fulfilled")
-      .map((result) => (result as PromiseFulfilledResult<number>).value);
-
-    if (blockNumbers.length === 0) {
-      throw new AggregateError(
-        `Failed to getBlockNumber from at least one provider: ${blockNumbersResults.map(
-          (result) => (result as PromiseRejectedResult).reason
-        )}`
-      );
-    }
-
-    const electedBlockNumber = this.agreementConfig.electBlockFn(
-      blockNumbers,
-      this.providers.length
-    );
-
-    this.blockNumberCache = {
-      value: electedBlockNumber,
-      lastUpdate: process.hrtime.bigint(),
-    };
-
-    return electedBlockNumber;
   }
 
   private executeCallWithAgreement(
@@ -194,8 +134,21 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         }
       };
 
-      this.providers.forEach((_, providerIndex) => syncThenCall(providerIndex));
+      this.pickProviders().forEach((_, providerIndex) =>
+        syncThenCall(providerIndex)
+      );
     });
+  }
+
+  private pickProviders() {
+    const freeProviders = this.providers.slice(1);
+
+    // it doesn't have to shuffle providers if we don't have enough of them
+    if (freeProviders.length > 3) {
+      _.shuffle(freeProviders).slice(Math.floor(freeProviders.length / 2));
+    }
+
+    return [this.providers[0], ...freeProviders];
   }
 }
 

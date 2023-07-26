@@ -48,7 +48,7 @@ describe("ProviderWithAgreement", () => {
     });
   });
 
-  describe("elected block number cache", () => {
+  describe.skip("elected block number cache", () => {
     it("should omit cache when TTL passed", async () => {
       const providerWithAgreement = new ProviderWithAgreement(
         [hardhat.ethers.provider, hardhat.ethers.provider],
@@ -198,7 +198,7 @@ describe("ProviderWithAgreement", () => {
       });
     });
 
-    it("should respect getBlockNumber timeout", async () => {
+    it.skip("should respect getBlockNumber timeout", async () => {
       const firstProvider = new providers.StaticJsonRpcProvider(
         "http://blabla.xd"
       );
