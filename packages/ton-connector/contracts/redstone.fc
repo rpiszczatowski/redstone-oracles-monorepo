@@ -29,6 +29,10 @@
     int value = data~slice_int(value_size * 8);
     int feed_id = data~slice_int(DATA_FEED_ID_BITS);
 
+    while(feed_id == (feed_id / 256) * 256) {
+        feed_id = feed_id / 256;
+    }
+
     throw_unless(ERR_DATA_NOT_EMPTY, data.slice_data_empty?());
 
     return (feed_id, value, timestamp);

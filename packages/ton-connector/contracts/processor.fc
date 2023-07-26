@@ -24,13 +24,13 @@
 
             var (address, feed_id, value, timestamp) = get_data_package_values(dp_cell);
 
-            validate_timestamp(k, timestamp /~ 1000, current_timestamp);
+            validate_timestamp(k, timestamp / 1000, current_timestamp);
 
             cell values = begin_cell()
                     .store_ref(begin_cell().store_int(address, ADDRESS_BITS + 8).end_cell()) ;; wtf
                     .store_ref(begin_cell().store_int(feed_id, DATA_FEED_ID_BITS).end_cell())
                     .store_ref(begin_cell().store_int(value, 256).end_cell())
-                    .store_ref(begin_cell().store_int(timestamp /~ 1000, TIMESTAMP_BITS).store_int(current_timestamp, TIMESTAMP_BITS).end_cell())
+                    .store_ref(begin_cell().store_int(timestamp / 1000, TIMESTAMP_BITS).store_int(current_timestamp, TIMESTAMP_BITS).end_cell())
                     .end_cell();
 
             k += 1;
