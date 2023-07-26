@@ -3,7 +3,7 @@
 #include "utils.fc";
 #include "processor.fc";
 #include "redstone.fc";
-#include "sort.fc";
+#include "tuple.fc";
 
 ;; =============== storage =============================
 
@@ -118,5 +118,7 @@ cell load_data() impure {
 }
 
 ()perform_sort(tuple t) method_id {
-    ~dump(t.sort());
+    var s = t.sort();
+    ~dump(s);
+    ~dump(s.median());
 }

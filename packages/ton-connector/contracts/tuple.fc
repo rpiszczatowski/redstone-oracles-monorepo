@@ -1,4 +1,5 @@
 #include "stdlib.fc";
+#include "constants.fc";
 
 (int) tlen (tuple t) asm "TLEN";
 forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
@@ -21,4 +22,23 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
     }
 
     return res;
+}
+
+(int)median(tuple vec) {
+    int n = vec.tlen();
+
+    throw_unless(ERR_TUPLE_EMPTY, n > 0);
+
+    if(n == 1) {
+        return vec.first();
+    } else {
+        var (q, r) = (n / 2, n % 2);
+        tuple sorted = vec.sort();
+
+        if (r == 1) {
+            return sorted.at(q);
+        } else {
+            return (sorted.at(q) + sorted.at(q - 1)) / 2;
+        }
+    }
 }

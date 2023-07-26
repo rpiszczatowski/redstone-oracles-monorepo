@@ -43,7 +43,7 @@ describe("Test", () => {
   });
 
   it("should sort", async () => {
-    let numbers = [1, 5, 4, 9, 3, 4];
+    let numbers = [1, 6, 4, 9, 3, 7];
     console.log(await sut.getSort(numbers));
 
     numbers = [2, 3, 1];
