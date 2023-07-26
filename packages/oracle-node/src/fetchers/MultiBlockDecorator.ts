@@ -14,7 +14,7 @@ export function decorateWithMultiBlock<T extends BaseFetcher>(
   multiblockConfig: MultiBlockConfig
 ): T {
   const oldGetName = fetcher.getName.bind(fetcher);
-  (fetcher as any).getName = () => {
+  fetcher.getName = () => {
     return `${oldGetName()}-multi-block`;
   };
 
@@ -33,14 +33,14 @@ export function decorateWithMultiBlock<T extends BaseFetcher>(
       multiblockConfig.sequenceStep
     );
 
-    const responsePerBlock = (await Promise.all(
+    const responsePerBlock = await Promise.all(
       blockSequence.map((blockTag) =>
         oldFetchAll(tokens, {
           ...opts,
           blockTag,
         })
       )
-    )) as PriceDataFetched[][];
+    );
 
     const groupedByToken: Record<string, SafeNumber.ISafeNumber[]> = {};
 
@@ -71,11 +71,11 @@ export function decorateWithMultiBlock<T extends BaseFetcher>(
   return fetcher;
 }
 
-export function generateRoundedStepSequence(
+export const generateRoundedStepSequence = (
   start: number,
   intervalLength: number,
   step: number
-) {
+) => {
   const sequence = [start];
 
   if (intervalLength === 1) {
@@ -84,12 +84,12 @@ export function generateRoundedStepSequence(
 
   const stepsCount = Math.ceil(intervalLength / step);
 
-  const scaledSecond = Math.floor((start - 1) / step) * step;
-  sequence.push(scaledSecond);
+  const secondValue = Math.floor((start - 1) / step) * step;
+  sequence.push(secondValue);
 
   for (let i = 1; i < stepsCount - 1; i++) {
-    const next = scaledSecond - i * step;
+    const next = secondValue - i * step;
     sequence.push(next);
   }
   return sequence;
-}
+};
