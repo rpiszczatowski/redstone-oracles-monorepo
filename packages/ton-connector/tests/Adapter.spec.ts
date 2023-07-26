@@ -33,8 +33,8 @@ describe("Test", () => {
   it("should verify", async () => {
     const reqParams = {
       dataServiceId: "redstone-avalanche-prod",
-      uniqueSignersCount: 1,
-      dataFeeds: ["ETH"],
+      uniqueSignersCount: 5,
+      dataFeeds: ["ETH", "BTC", "AVAX"],
     };
 
     const payloadHex = await requestRedstonePayload(reqParams);

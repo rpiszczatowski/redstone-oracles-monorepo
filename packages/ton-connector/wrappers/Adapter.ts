@@ -50,11 +50,11 @@ export class Adapter extends TonContract {
     const { dataPackageChunks } = splitPayloadHex(payloadHex);
     for (let i = 0; i < dataPackageChunks.length; i++) {
       const dpCell = createDataPackageCell(dataPackageChunks[i]);
-      const { stack: st } = await provider.get("recover_data_package_address", [
-        { type: "cell", cell: dpCell },
-      ]);
-
-      console.log(`${i} ${hexlify(st.readBigNumber())}`);
+      // const { stack: st } = await provider.get("recover_data_package_address", [
+      //   { type: "cell", cell: dpCell },
+      // ]);
+      //
+      // console.log(`${i} ${hexlify(st.readBigNumber())}`);
     }
 
     const { stack } = await provider.get("verify_payload", [

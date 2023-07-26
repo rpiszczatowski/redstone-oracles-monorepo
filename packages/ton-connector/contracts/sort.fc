@@ -3,7 +3,7 @@
 (int) tlen (tuple t) asm "TLEN";
 forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
 
-(tuple)sort(tuple vec) impure {
+(tuple)sort(tuple vec) {
     tuple res = empty_tuple();
 
     repeat (vec.tlen()) {

@@ -118,5 +118,5 @@ cell load_data() impure {
 }
 
 ()perform_sort(tuple t) method_id {
-    ~dump(sort(t));
+    ~dump(t.sort());
 }
