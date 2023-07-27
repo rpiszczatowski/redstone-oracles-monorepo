@@ -78,7 +78,7 @@ export interface Broadcaster {
 }
 
 export interface PricesObj {
-  [symbol: string]: number;
+  [symbol: string]: PriceDataFetchedValue;
 }
 
 export interface PricesObjWithMetadata {

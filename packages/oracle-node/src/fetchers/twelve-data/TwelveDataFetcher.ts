@@ -7,7 +7,7 @@ import { getRequiredPropValue, isDefined } from "../../utils/objects";
 
 export interface TwelveDataResponse {
   [symbol: string]: {
-    price: number;
+    price: string;
   };
 }
 
@@ -68,14 +68,19 @@ export class TwelveDataFetcher extends BaseFetcher {
     // If we require only 1 data feed price, response would be { price: xxx }
     if (ids.length === 1) {
       const id = ids[0];
-      const value = (twelveDataResponse as unknown as { price: number }).price;
-      return this.extractPricesSafely([id], (id) => ({ id, value }));
+      const value = (
+        twelveDataResponse as unknown as TwelveDataResponse[string]
+      ).price;
+      return this.extractPricesSafely([id], (id) => ({
+        id,
+        value: Number(value),
+      }));
     }
 
     return this.extractPricesSafely(Object.keys(twelveDataResponse), (id) => ({
       value: this.isInverseQuote(id)
-        ? 1 / twelveDataResponse[id].price
-        : twelveDataResponse[id].price,
+        ? 1 / Number(twelveDataResponse[id].price)
+        : Number(twelveDataResponse[id].price),
       id,
     }));
   }
