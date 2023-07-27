@@ -1,8 +1,16 @@
-import { DexOnChainFetcher } from "../../../dex-on-chain/DexOnChainFetcher";
-import { ethers } from "ethers";
-import { BigNumber, providers } from "ethers";
-import abi from "./abi.json";
+import { Decimal } from "decimal.js";
+import {
+  CallReturnContext,
+  ContractCallContext,
+  ContractCallResults,
+  Multicall,
+} from "ethereum-multicall";
+import { BigNumber, ethers, providers } from "ethers";
+import { RedstoneTypes } from "redstone-utils";
 import { getLastPrice } from "../../../../db/local-db";
+import { DexOnChainFetcher } from "../../../dex-on-chain/DexOnChainFetcher";
+import { TEN_AS_BASE_OF_POWER } from "../../shared/contants";
+import abi from "./abi.json";
 import {
   MulticallParams,
   MulticallResult,
@@ -11,15 +19,6 @@ import {
   SlippageParams,
   TokenConfig,
 } from "./types";
-import {
-  Multicall,
-  ContractCallContext,
-  ContractCallResults,
-  CallReturnContext,
-} from "ethereum-multicall";
-import { Decimal } from "decimal.js";
-import { TEN_AS_BASE_OF_POWER } from "../../shared/contants";
-import { parseSlippageDataFeedId } from "../../../liquidity/utils";
 
 type PriceAction = "buy" | "sell";
 export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> {
@@ -84,10 +83,10 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
         assetId,
         poolConfig
       );
-      for (const slippageAmount of poolConfig.slippage) {
+      for (const slippageInfo of poolConfig.slippage) {
         this.prepareSlippageParams(
           slippageParams,
-          slippageAmount,
+          slippageInfo.simulationValueInUsd,
           pairedTokenPrice.value,
           quoteToken,
           "buy"
@@ -95,7 +94,7 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
         if (currentTokenPrice) {
           this.prepareSlippageParams(
             slippageParams,
-            slippageAmount,
+            slippageInfo.simulationValueInUsd,
             currentTokenPrice.value,
             currentToken,
             "sell"
@@ -338,17 +337,27 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
   override calculateSlippage(
     assetId: string,
     response: MulticallResult
-  ): number {
-    const { priceAction, amount } = parseSlippageDataFeedId(assetId);
-    const normalizedAmount =
-      VelodromeOnChainFetcher.dataFeedIdAmountToNumber(amount);
-    const normalizedPriceAction = priceAction.toLowerCase() as PriceAction;
-    return response.slippage[
-      VelodromeOnChainFetcher.createSlippageLabel(
-        normalizedAmount,
-        normalizedPriceAction
-      )
-    ];
+  ): RedstoneTypes.SlippageData[] {
+    if (!this.poolsConfig[assetId].slippage) {
+      throw new Error(
+        `Slippage is not configured for fetcher ${this.getName()} assetId: ${assetId} in pool config`
+      );
+    }
+    const slippageResponse: RedstoneTypes.SlippageData[] = [];
+    for (const slippageInfo of this.poolsConfig[assetId].slippage!) {
+      const slippageLabel = VelodromeOnChainFetcher.createSlippageLabel(
+        slippageInfo.simulationValueInUsd,
+        slippageInfo.direction
+      );
+      const slippageAsPercent = response.slippage[slippageLabel].toString();
+
+      slippageResponse.push({
+        direction: slippageInfo.direction,
+        simulationValueInUsd: slippageInfo.simulationValueInUsd.toString(),
+        slippageAsPercent,
+      });
+    }
+    return slippageResponse;
   }
 
   private static getLastPriceOrThrow(outAssetId: string) {

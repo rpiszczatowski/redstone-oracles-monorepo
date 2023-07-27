@@ -1,5 +1,11 @@
 import { Consola } from "consola";
-import { Fetcher, PriceDataFetched, FetcherOpts, PricesObj } from "../types";
+import {
+  Fetcher,
+  PriceDataFetched,
+  FetcherOpts,
+  PricesObj,
+  PricesObjWithMetadata,
+} from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 import createLogger from "../utils/logger";
 import { isDefined } from "../utils/objects";
@@ -26,7 +32,7 @@ export abstract class BaseFetcher implements Fetcher {
     response: any,
     ids?: string[],
     opts?: FetcherOpts
-  ): PricesObj;
+  ): PricesObjWithMetadata | PricesObj;
 
   // This method may be overridden to extend validation
   validateResponse(response: any): boolean {
@@ -63,7 +69,9 @@ export abstract class BaseFetcher implements Fetcher {
     // Validating response
     const isValid = this.validateResponse(response);
     if (!isValid) {
-      throw new Error(`Response is invalid: ${this.serializeResponse(response)}`);
+      throw new Error(
+        `Response is invalid: ${this.serializeResponse(response)}`
+      );
     }
 
     // Extracting prices from response
@@ -87,10 +95,10 @@ export abstract class BaseFetcher implements Fetcher {
   }
 
   private convertPricesObjToResultPriceArray(
-    pricesObj: PricesObj,
+    pricesObj: PricesObjWithMetadata | PricesObj,
     requiredIds: string[]
   ): PriceDataFetched[] {
-    const prices = [];
+    const prices: PriceDataFetched[] = [];
     for (const id of requiredIds) {
       if (pricesObj[id] === undefined) {
         this.logger.warn(
@@ -99,7 +107,7 @@ export abstract class BaseFetcher implements Fetcher {
       } else {
         prices.push({
           symbol: this.convertIdToSymbol(id),
-          value: pricesObj[id],
+          ...normalizePriceObj(pricesObj[id]),
         });
       }
     }
@@ -145,7 +153,9 @@ export abstract class BaseFetcher implements Fetcher {
         pricesObj[pricePair.id] = pricePair.value!;
       } catch (e: unknown) {
         this.logger.error(
-          `Extracting price failed for id: ${id}, error: ${stringifyError(e)}, item that failed: ${JSON.stringify(item)}`
+          `Extracting price failed for id: ${id}, error: ${stringifyError(
+            e
+          )}, item that failed: ${JSON.stringify(item)}`
         );
       }
     }
@@ -153,3 +163,14 @@ export abstract class BaseFetcher implements Fetcher {
     return pricesObj;
   }
 }
+
+export const normalizePriceObj = (
+  pricesObjValue: PricesObjWithMetadata[string] | PricesObj[string]
+): PricesObjWithMetadata[string] => {
+  if (typeof pricesObjValue === "object") {
+    return pricesObjValue;
+  }
+  return {
+    value: pricesObjValue,
+  };
+};

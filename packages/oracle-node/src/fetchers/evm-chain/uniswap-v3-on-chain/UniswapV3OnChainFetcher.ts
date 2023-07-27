@@ -1,9 +1,15 @@
-import { DexOnChainFetcher } from "../../dex-on-chain/DexOnChainFetcher";
-import { ethers } from "ethers";
-import { BigNumber, providers } from "ethers";
-import UniswapV3Pool from "./UniswapV3Pool.abi.json";
-import UniswapV3Quoter from "./UniswapV3Quoter.abi.json";
+import { Decimal } from "decimal.js";
+import {
+  CallReturnContext,
+  ContractCallContext,
+  ContractCallResults,
+  Multicall,
+} from "ethereum-multicall";
+import { BigNumber, ethers, providers } from "ethers";
+import { RedstoneTypes } from "redstone-utils";
 import { getLastPrice } from "../../../db/local-db";
+import { DexOnChainFetcher } from "../../dex-on-chain/DexOnChainFetcher";
+import { TEN_AS_BASE_OF_POWER } from "../shared/contants";
 import {
   MulticallParams,
   MulticallResult,
@@ -12,17 +18,10 @@ import {
   SlippageParams,
   TokenConfig,
 } from "./types";
-import {
-  Multicall,
-  ContractCallContext,
-  ContractCallResults,
-  CallReturnContext,
-} from "ethereum-multicall";
-import { Decimal } from "decimal.js";
-import { TEN_AS_BASE_OF_POWER } from "../shared/contants";
-import { parseSlippageDataFeedId } from "../../liquidity/utils";
+import UniswapV3Pool from "./UniswapV3Pool.abi.json";
+import UniswapV3Quoter from "./UniswapV3Quoter.abi.json";
 
-type PriceAction = "buy" | "sell";
+export type PriceAction = "buy" | "sell";
 export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> {
   constructor(
     name: string,
@@ -30,6 +29,69 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     private readonly provider: providers.Provider
   ) {
     super(name);
+  }
+
+  async makeRequest(assetId: string): Promise<MulticallResult | null> {
+    const multicallParams = this.prepareMulticallParams(assetId);
+    const multicallContext = this.buildContractCallContext(
+      assetId,
+      multicallParams
+    );
+    const multicallResult = await this.createMulticallInstance().call(
+      multicallContext
+    );
+    const poolConfig = this.poolsConfig[assetId];
+
+    return {
+      priceRatio: UniswapV3OnChainFetcher.extractPriceRatio(
+        multicallResult,
+        poolConfig
+      ),
+      slippage: UniswapV3OnChainFetcher.extractSlippage(multicallResult),
+      pairedToken: UniswapV3OnChainFetcher.getPairedTokenSymbol(
+        assetId,
+        poolConfig
+      ),
+    };
+  }
+
+  override calculateSpotPrice(
+    assetId: string,
+    multicallResult: MulticallResult
+  ) {
+    const otherAssetLastPrice = UniswapV3OnChainFetcher.getLastPriceOrThrow(
+      multicallResult.pairedToken
+    );
+    const isSymbol1Current = this.poolsConfig[assetId].token1Symbol === assetId;
+    const priceMultiplier = isSymbol1Current
+      ? 1.0 / multicallResult.priceRatio
+      : multicallResult.priceRatio;
+    return otherAssetLastPrice * priceMultiplier;
+  }
+
+  override calculateSlippage(
+    assetId: string,
+    response: MulticallResult
+  ): RedstoneTypes.SlippageData[] {
+    if (!this.poolsConfig[assetId].slippage) {
+      throw new Error(
+        `Slippage is not configured for fetcher ${this.getName()} assetId: ${assetId} in pool config`
+      );
+    }
+    const slippageResponse: RedstoneTypes.SlippageData[] = [];
+    for (const slippageInfo of this.poolsConfig[assetId].slippage!) {
+      const slippageLabel = UniswapV3OnChainFetcher.createSlippageLabel(
+        slippageInfo.simulationValueInUsd,
+        slippageInfo.direction
+      );
+      const slippageAsPercent = response.slippage[slippageLabel].toString();
+      slippageResponse.push({
+        direction: slippageInfo.direction,
+        simulationValueInUsd: slippageInfo.simulationValueInUsd.toString(),
+        slippageAsPercent,
+      });
+    }
+    return slippageResponse;
   }
 
   private static convertDollars2Tokens(
@@ -62,9 +124,9 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
         assetId,
         poolConfig
       );
-      for (const slippageAmount of poolConfig.slippage) {
+      for (const slippageInfo of poolConfig.slippage) {
         const swapAmount = UniswapV3OnChainFetcher.convertDollars2Tokens(
-          slippageAmount,
+          slippageInfo.simulationValueInUsd,
           pairedTokenPrice.value,
           quoteToken.decimals
         );
@@ -76,17 +138,21 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
           sqrtPriceLimitX96: 0,
         };
         const sellSlippageParams = {
+          ...buySlippageParams,
           tokenIn: currentToken.address,
           tokenOut: quoteToken.address,
-          fee: poolConfig.fee,
-          amountOut: swapAmount,
-          sqrtPriceLimitX96: 0,
         };
         slippageParams[
-          UniswapV3OnChainFetcher.createSlippageLabel(slippageAmount, "buy")
+          UniswapV3OnChainFetcher.createSlippageLabel(
+            slippageInfo.simulationValueInUsd,
+            "buy"
+          )
         ] = buySlippageParams;
         slippageParams[
-          UniswapV3OnChainFetcher.createSlippageLabel(slippageAmount, "sell")
+          UniswapV3OnChainFetcher.createSlippageLabel(
+            slippageInfo.simulationValueInUsd,
+            "sell"
+          )
         ] = sellSlippageParams;
       }
     }
@@ -144,30 +210,6 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     return {
       slippageAmount: regexResult[1],
       priceAction: regexResult[2] as PriceAction,
-    };
-  }
-
-  async makeRequest(assetId: string): Promise<MulticallResult | null> {
-    const multicallParams = this.prepareMulticallParams(assetId);
-    const multicallContext = this.buildContractCallContext(
-      assetId,
-      multicallParams
-    );
-    const multicallResult = await this.createMulticallInstance().call(
-      multicallContext
-    );
-    const poolConfig = this.poolsConfig[assetId];
-
-    return {
-      priceRatio: UniswapV3OnChainFetcher.extractPriceRatio(
-        multicallResult,
-        poolConfig
-      ),
-      slippage: UniswapV3OnChainFetcher.extractSlippage(multicallResult),
-      pairedToken: UniswapV3OnChainFetcher.getPairedTokenSymbol(
-        assetId,
-        poolConfig
-      ),
     };
   }
 
@@ -241,42 +283,12 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     return priceRatio; // as defined by uniswap v3 protocol (i.e. token1_amount/token0_amount)
   }
 
-  override calculateSpotPrice(
-    assetId: string,
-    multicallResult: MulticallResult
-  ) {
-    const otherAssetLastPrice = UniswapV3OnChainFetcher.getLastPriceOrThrow(
-      multicallResult.pairedToken
-    );
-    const isSymbol1Current = this.poolsConfig[assetId].token1Symbol === assetId;
-    const priceMultiplier = isSymbol1Current
-      ? 1.0 / multicallResult.priceRatio
-      : multicallResult.priceRatio;
-    return otherAssetLastPrice * priceMultiplier;
-  }
-
   private static dataFeedIdAmountToNumber(amount: string): number {
     if (amount.endsWith("K")) {
       return 1000 * Number(amount.slice(0, -1));
     } else {
       return Number(amount);
     }
-  }
-
-  override calculateSlippage(
-    assetId: string,
-    response: MulticallResult
-  ): number {
-    const { priceAction, amount } = parseSlippageDataFeedId(assetId);
-    const normalizedAmount =
-      UniswapV3OnChainFetcher.dataFeedIdAmountToNumber(amount);
-    const normalizedPriceAction = priceAction.toLowerCase() as PriceAction;
-    return response.slippage[
-      UniswapV3OnChainFetcher.createSlippageLabel(
-        normalizedAmount,
-        normalizedPriceAction
-      )
-    ];
   }
 
   private static getLastPriceOrThrow(outAssetId: string) {

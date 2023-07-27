@@ -14,6 +14,7 @@ jest.mock("@balancer-labs/sdk", () => ({
     interface Token {}
     class Pool {
       public tokens: Token[] = [];
+      public totalLiquidity = 100;
 
       constructor() {
         this.tokens = [
@@ -62,6 +63,8 @@ describe("balancer-dai fetcher", () => {
     // When
     const result = await sut.fetchAll(["OHM"]);
     // Then
-    expect(result).toEqual([{ symbol: "OHM", value: 9.9 }]);
+    expect(result).toEqual([
+      { symbol: "OHM", value: 9.9, metadata: { liquidity: "100" } },
+    ]);
   });
 });
