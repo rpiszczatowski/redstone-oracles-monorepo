@@ -1,19 +1,22 @@
 #include "stdlib.fc";
 #include "constants.fc";
 
+const UNKNOWN_INDEX = -100;
+
 (int) tlen (tuple t) asm "TLEN";
 forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
 
 (int)index_of(tuple vec, int value) {
+    int n = vec.tlen() - 1;
     int k = 0;
     while (vec.tlen() > 0) {
         if (vec~tpop() == value) {
-            return k;
+            return n - k;
         }
         k += 1;
     }
 
-    return -1;
+    return UNKNOWN_INDEX;
 }
 
 

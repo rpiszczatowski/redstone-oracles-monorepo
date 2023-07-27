@@ -1,6 +1,5 @@
 import { Cell, TupleBuilder } from "ton-core";
 import { hexlify, toUtf8Bytes } from "ethers/lib/utils";
-import { DEFAULT_NUM_VALUE_BS } from "redstone-protocol/dist/src/common/redstone-constants";
 
 export function getTuple<T>(items: T[]) {
   const tuple = new TupleBuilder();

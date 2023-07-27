@@ -12,7 +12,7 @@
     int dp_count = payload_slice~load_int(DATA_PACKAGES_COUNT_BITS);
     int marker = payload_slice~slice_int(REDSTONE_MARKER_BITS);
 
-    throw_unless(ERR_WRONG_MARKER, marker == REDSTONE_MARKER);
+    throw_unless(ERR_WRONG_REDSTONE_MARKER, marker == REDSTONE_MARKER);
     tuple SIGNERS = empty_tuple()
             .tpush(0x109B4A318A4F5DDCBCA6349B45F881B4137DEAFB)
             .tpush(0x12470F7ABA85C8B81D63137DD5925D6EE114952B)
@@ -36,9 +36,11 @@
             validate_timestamp(k, timestamp / 1000, current_timestamp);
             int signer_index = SIGNERS.index_of(address);
             int feed_index = data_feed_ids.index_of(feed_id);
-            int index = SIGNERS.tlen() * feed_index + signer_index;
 
-            dic~udict_set(8, index, begin_cell().store_int(value, MAX_VALUE_SIZE_BITS).end_cell().begin_parse());
+            if ((signer_index != UNKNOWN_INDEX) & (feed_index != UNKNOWN_INDEX)) {
+                int index = SIGNERS.tlen() * feed_index + signer_index;
+                dic~udict_set(8, index, begin_cell().store_int(value, MAX_VALUE_SIZE_BITS).end_cell().begin_parse());
+            }
 
             cell values = begin_cell()
                     .store_ref(begin_cell().store_int(signer_index, 8).store_int(address, ADDRESS_BITS + 8).end_cell()) ;; wtf
