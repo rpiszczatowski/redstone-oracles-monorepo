@@ -9,12 +9,12 @@ export async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export abstract class Ton {
+export abstract class TonConnector {
   walletContract?: OpenedContract<WalletContractV4>;
   walletSender?: Sender;
   client?: TonClient;
 
-  async connect(networkProvider: NetworkProvider): Promise<Ton> {
+  async connect(networkProvider: NetworkProvider): Promise<TonConnector> {
     const key = await mnemonicToWalletKey(config.mnemonic);
     const wallet = WalletContractV4.create({
       publicKey: key.publicKey,

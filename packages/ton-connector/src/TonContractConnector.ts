@@ -7,16 +7,16 @@ import {
   ContractProvider,
   Sender,
 } from "ton-core";
-import fs from "fs";
-import { Ton } from "./Ton";
+import * as fs from "fs";
+import { TonConnector } from "./TonConnector";
 import { OpenedContract } from "ton";
 import { NetworkProvider } from "@ton-community/blueprint";
 
-export class TonContract extends Ton implements Contract {
-  private openedContract!: OpenedContract<this>;
+export class TonContractConnector extends TonConnector implements Contract {
+  protected openedContract!: OpenedContract<this>;
 
   static getName(): string {
-    throw "Must be overridden";
+    throw "Must be overridden; Return the contract-filename here;";
   }
 
   constructor(
