@@ -1,5 +1,6 @@
-import { TupleBuilder } from "ton-core";
+import { Cell, TupleBuilder } from "ton-core";
 import { hexlify, toUtf8Bytes } from "ethers/lib/utils";
+import { DEFAULT_NUM_VALUE_BS } from "redstone-protocol/dist/src/common/redstone-constants";
 
 export function getTuple<T>(items: T[]) {
   const tuple = new TupleBuilder();
@@ -18,4 +19,21 @@ export function getTuple<T>(items: T[]) {
   });
 
   return tuple.build();
+}
+
+export function loadCellAsArray(cell: Cell, value_size_bits: number = 256) {
+  let values: bigint[] = [];
+
+  const slice = cell.beginParse();
+  while (slice.remainingBits > 0) {
+    const value = slice.loadIntBig(value_size_bits);
+    values.push(value);
+  }
+
+  while (slice.remainingRefs > 0) {
+    const c = slice.loadRef();
+    values = values.concat(loadCellAsArray(c));
+  }
+
+  return values;
 }

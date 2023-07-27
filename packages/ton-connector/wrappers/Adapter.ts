@@ -2,7 +2,8 @@ import { beginCell, ContractProvider } from "ton-core";
 import { TonContract } from "../src/TonContract";
 import { createDataPackageCell, createPayloadCell } from "../src/create-cell";
 import { splitPayloadHex } from "../src/split-payload-hex";
-import { getTuple } from "../src/ton-utils";
+import { getTuple, loadCellAsArray } from "../src/ton-utils";
+import { DEFAULT_NUM_VALUE_BS } from "redstone-protocol/dist/src/common/redstone-constants";
 
 export class Adapter extends TonContract {
   static getName(): string {
@@ -66,7 +67,9 @@ export class Adapter extends TonContract {
       { type: "cell", cell: payloadCell },
     ]);
 
-    return stack.readCell();
+    const result = stack.readCell();
+
+    return loadCellAsArray(result, DEFAULT_NUM_VALUE_BS * 8);
   }
 
   async getSort(provider: ContractProvider, items: number[]) {

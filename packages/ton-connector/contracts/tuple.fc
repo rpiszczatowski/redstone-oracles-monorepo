@@ -57,10 +57,10 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
 }
 
 (cell)tuple_to_cell(tuple t, int value_size) {
-    builder res = begin_cell();
-    builder tmp = begin_cell();
     int values_per_cell = (1023 / value_size);
+    builder res = begin_cell();
 
+    builder tmp = begin_cell();
     int i = 0;
     while (i < t.tlen()) {
         tmp~store_int(t.at(i), value_size);
