@@ -4,6 +4,8 @@ import { createDataPackageCell, createPayloadCell } from "../src/create-cell";
 import { splitPayloadHex } from "../src/split-payload-hex";
 import { getTuple, loadCellAsArray } from "../src/ton-utils";
 import { DEFAULT_NUM_VALUE_BS } from "redstone-protocol/dist/src/common/redstone-constants";
+import { ContractParamsProvider } from "redstone-sdk";
+import { hexlify } from "ethers/lib/utils";
 
 export class Adapter extends TonContract {
   static getName(): string {
@@ -46,24 +48,33 @@ export class Adapter extends TonContract {
     return stack.readBigNumber();
   }
 
-  async getPrices(
+  async getAddresses(
     provider: ContractProvider,
-    dataFeeds: string[],
-    payloadHex: string
+    paramsProvider: ContractParamsProvider
   ) {
-    const payloadCell = createPayloadCell(payloadHex);
-    const { dataPackageChunks } = splitPayloadHex(payloadHex);
+    const { dataPackageChunks } = splitPayloadHex(
+      await paramsProvider.getPayloadHex(false)
+    );
     for (let i = 0; i < dataPackageChunks.length; i++) {
       const dpCell = createDataPackageCell(dataPackageChunks[i]);
-      // const { stack: st } = await provider.get("recover_data_package_address", [
-      //   { type: "cell", cell: dpCell },
-      // ]);
-      //
-      // console.log(`${i} ${hexlify(st.readBigNumber())}`);
+      const { stack: st } = await provider.get("recover_data_package_address", [
+        { type: "cell", cell: dpCell },
+      ]);
+
+      console.log(`${i} ${hexlify(st.readBigNumber())}`);
     }
+  }
+
+  async getPrices(
+    provider: ContractProvider,
+    paramsProvider: ContractParamsProvider
+  ) {
+    const payloadCell = createPayloadCell(
+      await paramsProvider.getPayloadHex(false)
+    );
 
     const { stack } = await provider.get("get_prices_ts", [
-      { type: "tuple", items: getTuple(dataFeeds) },
+      { type: "tuple", items: getTuple(paramsProvider.getHexlifiedFeedIds()) },
       { type: "cell", cell: payloadCell },
     ]);
 

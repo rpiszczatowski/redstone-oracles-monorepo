@@ -1,7 +1,7 @@
 import { Cell, TupleBuilder } from "ton-core";
-import { hexlify, toUtf8Bytes } from "ethers/lib/utils";
 
-export function getTuple<T>(items: T[]) {
+export function getTuple(items: (number | string)[]) {
+  console.warn("Tuple-parameters are not supported yet on real chains");
   const tuple = new TupleBuilder();
 
   items.forEach((value) => {
@@ -10,10 +10,8 @@ export function getTuple<T>(items: T[]) {
         tuple.writeNumber(value);
         break;
       case "string":
-        tuple.writeNumber(BigInt(hexlify(toUtf8Bytes(value))));
+        tuple.writeNumber(BigInt(value));
         break;
-      default:
-        throw `Not implemented for '${typeof value}'`;
     }
   });
 

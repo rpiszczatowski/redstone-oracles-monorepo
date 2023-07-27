@@ -3,7 +3,7 @@ import { Cell } from "ton-core";
 import { compile } from "@ton-community/blueprint";
 import { Adapter } from "../wrappers/Adapter";
 import "@ton-community/test-utils";
-import { requestRedstonePayload } from "redstone-sdk";
+import { ContractParamsProvider } from "redstone-sdk";
 
 describe("Test", () => {
   let code: Cell;
@@ -31,15 +31,13 @@ describe("Test", () => {
   });
 
   it("should get prices", async () => {
-    const dataFeeds = ["ETH", "BTC", "AVAX", "USDT"];
-    const reqParams = {
+    const paramsProvider = new ContractParamsProvider({
       dataServiceId: "redstone-avalanche-prod",
       uniqueSignersCount: 4,
-      dataFeeds,
-    };
+      dataFeeds: ["ETH", "BTC", "AVAX", "USDT"],
+    });
 
-    const payloadHex = await requestRedstonePayload(reqParams);
-    console.log(await sut.getPrices(dataFeeds, payloadHex));
+    console.log(await sut.getPrices(paramsProvider));
   });
 
   it("should sort", async () => {
