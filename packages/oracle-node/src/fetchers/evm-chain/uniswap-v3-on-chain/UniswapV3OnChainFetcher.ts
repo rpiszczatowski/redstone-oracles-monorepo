@@ -15,6 +15,8 @@ import {
   MulticallResult,
   PoolConfig,
   PoolsConfig,
+  QuoterInSingleParams,
+  QuoterOutSingleParams,
   SlippageParams,
   TokenConfig,
 } from "./types";
@@ -22,6 +24,7 @@ import UniswapV3Pool from "./UniswapV3Pool.abi.json";
 import UniswapV3Quoter from "./UniswapV3Quoter.abi.json";
 
 export type PriceAction = "buy" | "sell";
+
 export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> {
   constructor(
     name: string,
@@ -130,18 +133,13 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
           pairedTokenPrice.value,
           quoteToken.decimals
         );
-        const buySlippageParams = {
-          tokenIn: quoteToken.address,
-          tokenOut: currentToken.address,
-          fee: poolConfig.fee,
-          amountIn: swapAmount,
-          sqrtPriceLimitX96: 0,
-        };
-        const sellSlippageParams = {
-          ...buySlippageParams,
-          tokenIn: currentToken.address,
-          tokenOut: quoteToken.address,
-        };
+        const { buySlippageParams, sellSlippageParams } =
+          UniswapV3OnChainFetcher.createQuoterSingleParam(
+            quoteToken,
+            currentToken,
+            poolConfig,
+            swapAmount
+          );
         slippageParams[
           UniswapV3OnChainFetcher.createSlippageLabel(
             slippageInfo.simulationValueInUsd,
@@ -159,6 +157,32 @@ export class UniswapV3OnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     return {
       slippageParams,
     };
+  }
+
+  private static createQuoterSingleParam(
+    quoteToken: TokenConfig,
+    currentToken: TokenConfig,
+    poolConfig: PoolConfig,
+    swapAmount: string
+  ): {
+    buySlippageParams: QuoterInSingleParams;
+    sellSlippageParams: QuoterOutSingleParams;
+  } {
+    const buySlippageParams = {
+      tokenIn: quoteToken.address,
+      tokenOut: currentToken.address,
+      fee: poolConfig.fee,
+      amountIn: swapAmount,
+      sqrtPriceLimitX96: 0,
+    };
+    const sellSlippageParams = {
+      tokenOut: quoteToken.address,
+      tokenIn: currentToken.address,
+      fee: poolConfig.fee,
+      amountOut: swapAmount,
+      sqrtPriceLimitX96: 0,
+    };
+    return { buySlippageParams, sellSlippageParams };
   }
 
   private static getTokenConfig(
