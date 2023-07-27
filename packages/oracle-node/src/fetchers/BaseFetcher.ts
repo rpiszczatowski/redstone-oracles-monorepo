@@ -1,8 +1,9 @@
 import { Consola } from "consola";
 import {
   Fetcher,
-  PriceDataFetched,
   FetcherOpts,
+  PriceDataFetched,
+  PriceDataFetchedValue,
   PricesObj,
   PricesObjWithMetadata,
 } from "../types";
@@ -13,7 +14,7 @@ import { isDefined } from "../utils/objects";
 const MAX_RESPONSE_TIME_TO_RETRY_FETCHING_MS = 3000;
 export type ExtractPricePairFn<T> = (item: T) => {
   id: string;
-  value: number | undefined | null;
+  value: PriceDataFetchedValue;
 };
 
 export abstract class BaseFetcher implements Fetcher {
@@ -167,7 +168,9 @@ export abstract class BaseFetcher implements Fetcher {
 export const normalizePriceObj = (
   pricesObjValue: PricesObjWithMetadata[string] | PricesObj[string]
 ): PricesObjWithMetadata[string] => {
-  if (typeof pricesObjValue === "object") {
+  if (pricesObjValue === null) {
+    return { value: null };
+  } else if (typeof pricesObjValue === "object") {
     return pricesObjValue;
   }
   return {
