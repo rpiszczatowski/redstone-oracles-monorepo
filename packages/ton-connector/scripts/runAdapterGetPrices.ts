@@ -1,12 +1,12 @@
-import { Adapter } from "../wrappers/Adapter";
 import { NetworkProvider } from "@ton-community/blueprint";
 import * as dotenv from "dotenv";
 import { ContractParamsProvider } from "redstone-sdk";
+import { TonPricesContractConnector } from "../src/prices/TonPricesContractConnector";
 
 export async function run(provider: NetworkProvider) {
   dotenv.config();
 
-  const contract = await Adapter.openForExecute<Adapter>(provider);
+  const contract = await new TonPricesContractConnector(provider).getAdapter();
 
   const paramsProvider = new ContractParamsProvider({
     dataServiceId: "redstone-avalanche-prod",
@@ -14,5 +14,5 @@ export async function run(provider: NetworkProvider) {
     dataFeeds: ["ETH", "BTC"],
   });
 
-  console.log(await contract.getPrices(paramsProvider));
+  console.log(await contract.getPricesFromPayload(paramsProvider));
 }

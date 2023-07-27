@@ -1,11 +1,11 @@
 import { beginCell, ContractProvider } from "ton-core";
-import { TonContractConnector } from "../src/TonContractConnector";
 import { createDataPackageCell, createPayloadCell } from "../src/create-cell";
 import { splitPayloadHex } from "../src/split-payload-hex";
 import { getTuple, loadCellAsArray } from "../src/ton-utils";
 import { DEFAULT_NUM_VALUE_BS } from "redstone-protocol/dist/src/common/redstone-constants";
 import { ContractParamsProvider } from "redstone-sdk";
 import { hexlify } from "ethers/lib/utils";
+import { TonContractConnector } from "../src/TonContractConnector";
 
 export class Adapter extends TonContractConnector {
   static getName(): string {

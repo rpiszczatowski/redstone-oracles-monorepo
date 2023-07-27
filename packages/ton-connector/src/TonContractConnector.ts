@@ -7,37 +7,28 @@ import {
   ContractProvider,
   Sender,
 } from "ton-core";
+import { NetworkProvider } from "@ton-community/blueprint";
 import * as fs from "fs";
 import { TonConnector } from "./TonConnector";
-import { OpenedContract } from "ton";
-import { NetworkProvider } from "@ton-community/blueprint";
 
-export class TonContractConnector extends TonConnector implements Contract {
-  protected openedContract!: OpenedContract<this>;
-
+export class TonContractConnector extends TonConnector {
   static getName(): string {
     throw "Must be overridden; Return the contract-filename here;";
   }
 
-  constructor(
-    readonly address: Address,
-    readonly init?: { code: Cell; data: Cell }
-  ) {
+  constructor(readonly address: Address) {
     super();
   }
 
-  static async openForExecute<T>(
-    networkProvider: NetworkProvider
-  ): Promise<OpenedContract<T>> {
+  static async openForExecute<T>(): Promise<T> {
     const address = await fs.promises.readFile(
       `deploy/${this.getName()}.address`,
       "utf8"
     );
 
     const contract = new this(Address.parse(address));
-    await contract.connect(networkProvider);
 
-    return contract.openedContract as unknown as OpenedContract<T>;
+    return contract as unknown as T;
   }
 
   static async openForDeploy(
@@ -60,9 +51,7 @@ export class TonContractConnector extends TonConnector implements Contract {
       }
     );
 
-    await contract.connect(networkProvider);
-
-    return contract.openedContract;
+    return contract;
   }
 
   static openForTest<T>(code: Cell, sender: Sender, workchain: number = 0) {
@@ -73,16 +62,9 @@ export class TonContractConnector extends TonConnector implements Contract {
     return contract as unknown as T;
   }
 
-  override async connect(networkProvider: NetworkProvider): Promise<this> {
-    await super.connect(networkProvider);
-
-    this.openedContract = this.client!.open(this);
-
-    return this;
-  }
-
   async sendDeploy(provider: ContractProvider) {
     console.log("contract address:", this.address.toString());
+
     // if (await this.client!.isContractDeployed(this.address)) {
     //   throw "Contract already deployed";
     // }
@@ -94,10 +76,14 @@ export class TonContractConnector extends TonConnector implements Contract {
     await provider.internal(this.walletSender!, { value: "0.02" });
   }
 
-  private static openContractCode(code: Cell, workchain: number) {
+  private static openContractCode<T extends Contract>(
+    code: Cell,
+    workchain: number
+  ) {
     const data = beginCell().endCell();
     const address = contractAddress(workchain, { code, data });
-    const contract = new this(address, { code, data });
+    const contract = new this(address);
+
     return { address, contract };
   }
 }

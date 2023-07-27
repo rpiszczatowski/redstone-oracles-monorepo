@@ -1,7 +1,7 @@
 import { TonContractConnector } from "../src/TonContractConnector";
-import { beginCell, ContractProvider } from "ton-core";
+import { beginCell, Contract, ContractProvider } from "ton-core";
 
-export class Feed extends TonContractConnector {
+export class Feed extends TonContractConnector implements Contract {
   static getName(): string {
     return "feed";
   }

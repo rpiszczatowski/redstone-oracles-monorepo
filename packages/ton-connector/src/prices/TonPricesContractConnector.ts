@@ -1,22 +1,18 @@
 import { IPricesContractAdapter } from "redstone-sdk";
-import { TonContractConnector } from "../TonContractConnector";
 import { TonPricesContractAdapter } from "./TonPricesContractAdapter";
 import { OpenedContract } from "ton";
 import { Adapter } from "../../wrappers/Adapter";
 import { NetworkProvider } from "@ton-community/blueprint";
-import { Address, Cell } from "ton-core";
 
-export class TonPricesContractConnector extends TonContractConnector {
-  constructor(
-    private networkProvider: NetworkProvider,
-    address: Address,
-    init?: { code: Cell; data: Cell }
-  ) {
-    super(address, init);
-  }
+export class TonPricesContractConnector {
+  constructor(private networkProvider: NetworkProvider) {}
 
   async getContract(): Promise<OpenedContract<Adapter>> {
-    return Adapter.openForExecute<Adapter>(this.networkProvider);
+    const contract = await Adapter.openForExecute<Adapter>();
+
+    await contract.connect(this.networkProvider);
+
+    return contract.client!.open(contract);
   }
 
   async getAdapter(): Promise<IPricesContractAdapter> {

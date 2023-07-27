@@ -1,9 +1,12 @@
 import { ContractParamsProvider, IPricesContractAdapter } from "redstone-sdk";
 import { Adapter } from "../../wrappers/Adapter";
 import { OpenedContract } from "ton";
+import { SandboxContract } from "@ton-community/sandbox";
 
 export class TonPricesContractAdapter implements IPricesContractAdapter {
-  constructor(private contract: OpenedContract<Adapter>) {}
+  constructor(
+    private contract: OpenedContract<Adapter> | SandboxContract<Adapter>
+  ) {}
 
   async getPricesFromPayload(
     paramsProvider: ContractParamsProvider

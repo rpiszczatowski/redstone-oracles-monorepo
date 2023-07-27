@@ -5,7 +5,7 @@ import * as dotenv from "dotenv";
 export async function run(provider: NetworkProvider) {
   dotenv.config();
 
-  const contract = await Adapter.openForDeploy(provider);
+  const contract = await Adapter.connectForDeploy(provider);
 
   await contract.sendDeploy();
 }

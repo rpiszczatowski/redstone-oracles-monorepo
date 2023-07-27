@@ -5,7 +5,7 @@ import { Feed } from "../wrappers/Feed";
 export async function run(provider: NetworkProvider) {
   dotenv.config();
 
-  const contract = await Feed.openForExecute<Feed>(provider);
+  const contract = await Feed.connectForExecute<Feed>(provider);
 
   console.log(await contract.getFeedValue());
 }
