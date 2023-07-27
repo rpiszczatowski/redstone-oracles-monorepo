@@ -1,3 +1,5 @@
+import { SlippageInfo } from "../../uniswap-v3-on-chain/types";
+
 export interface PoolConfig {
   poolAddress: string;
   token0Symbol: string;
@@ -8,7 +10,7 @@ export interface PoolConfig {
   token1Decimals: number;
   stable: boolean;
   pairedToken?: string;
-  slippage?: number[];
+  slippage?: SlippageInfo[];
 }
 
 export interface PoolsConfig {

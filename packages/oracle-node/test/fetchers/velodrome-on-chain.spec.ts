@@ -9,6 +9,12 @@ import { PoolsConfig } from "../../src/fetchers/evm-chain/optimism/velodrome/typ
 
 jest.setTimeout(10000);
 
+jest.mock("../../src/Terminator", () => ({
+  terminateWithManifestConfigError: (details: string) => {
+    throw new Error(`Mock manifest config termination: ${details}`);
+  },
+}));
+
 jest.mock("ethereum-multicall", () => {
   return {
     Multicall: jest.fn().mockImplementation(() => {
@@ -25,27 +31,17 @@ jest.mock("ethereum-multicall", () => {
                   success: true,
                 },
                 {
-                  returnValues: [
-                    { type: "BigNumber", hex: "0xa" },
-                  ],
+                  returnValues: [{ type: "BigNumber", hex: "0xa" }],
                   reference: "1_buy",
                   methodName: "getAmountOut",
-                  methodParameters: [
-                    1,
-                    MOCK_TOKEN2_ADDRESS
-                  ],
+                  methodParameters: [1, MOCK_TOKEN2_ADDRESS],
                   success: true,
                 },
                 {
-                  returnValues: [
-                    { type: "BigNumber", hex: "0x1" },
-                  ],
+                  returnValues: [{ type: "BigNumber", hex: "0x1" }],
                   reference: "1_sell",
                   methodName: "getAmountOut",
-                  methodParameters: [
-                    10,
-                    MOCK_TOKEN_ADDRESS
-                  ],
+                  methodParameters: [10, MOCK_TOKEN_ADDRESS],
                   success: true,
                 },
               ],
@@ -81,7 +77,10 @@ describe("velodrome fetcher", () => {
         token0Decimals: 1,
         token1Decimals: 0,
         stable: false,
-        slippage: [1],
+        slippage: [
+          { direction: "buy", simulationValueInUsd: 1 },
+          { direction: "sell", simulationValueInUsd: 1 },
+        ],
       },
       MockTokenStable: {
         poolAddress: poolContract.address,
@@ -92,7 +91,10 @@ describe("velodrome fetcher", () => {
         token0Decimals: 1,
         token1Decimals: 0,
         stable: true,
-        slippage: [1],
+        slippage: [
+          { direction: "buy", simulationValueInUsd: 1 },
+          { direction: "sell", simulationValueInUsd: 1 },
+        ],
       },
     };
   });
@@ -121,26 +123,54 @@ describe("velodrome fetcher", () => {
     expect(result[0]).toEqual({
       symbol: "MockToken",
       value: 1,
+      metadata: {
+        slippage: [
+          {
+            direction: "buy",
+            simulationValueInUsd: "1",
+            slippageAsPercent: "0.2222222222",
+          },
+          {
+            direction: "sell",
+            simulationValueInUsd: "1",
+            slippageAsPercent: "0.1818181818",
+          },
+        ],
+      },
     });
     expect(result[1]).toEqual({
       symbol: "MockToken_test-source_BUY_1_slippage",
-      value: 0.2222222222,
+      value: "0.2222222222",
     });
     expect(result[2]).toEqual({
       symbol: "MockToken_test-source_SELL_1_slippage",
-      value: 0.1818181818,
+      value: "0.1818181818",
     });
     expect(result[3]).toEqual({
       symbol: "MockTokenStable",
       value: 1,
+      metadata: {
+        slippage: [
+          {
+            direction: "buy",
+            simulationValueInUsd: "1",
+            slippageAsPercent: "0.002002002",
+          },
+          {
+            direction: "sell",
+            simulationValueInUsd: "1",
+            slippageAsPercent: "0.001998002",
+          },
+        ],
+      },
     });
     expect(result[4]).toEqual({
       symbol: "MockTokenStable_test-source_BUY_1_slippage",
-      value: 0.002002002,
+      value: "0.002002002",
     });
     expect(result[5]).toEqual({
       symbol: "MockTokenStable_test-source_SELL_1_slippage",
-      value: 0.001998002,
+      value: "0.001998002",
     });
   });
 });

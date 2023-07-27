@@ -10,6 +10,12 @@ import { PoolsConfig } from "../../src/fetchers/evm-chain/uniswap-v3-on-chain/ty
 
 jest.setTimeout(10000);
 
+jest.mock("../../src/Terminator", () => ({
+  terminateWithManifestConfigError: (details: string) => {
+    throw new Error(`Mock manifest config termination: ${details}`);
+  },
+}));
+
 jest.mock("ethereum-multicall", () => {
   return {
     Multicall: jest.fn().mockImplementation(() => {
@@ -100,7 +106,10 @@ describe("uniswap V3 fetcher", () => {
         token0Decimals: 6,
         token1Decimals: 8,
         fee: 5000,
-        slippage: [1000],
+        slippage: [
+          { direction: "buy", simulationValueInUsd: 1000 },
+          { direction: "sell", simulationValueInUsd: 1000 },
+        ],
       },
     };
   });
@@ -118,21 +127,35 @@ describe("uniswap V3 fetcher", () => {
     await saveMockPriceInLocalDb(1, "MockToken2");
     const result = await fetcher.fetchAll([
       "MockToken",
-      "MockToken_test-source_BUY_1K_slippage",
-      "MockToken_test-source_SELL_1K_slippage",
-      "MockToken_no-config_SELL_10K_slippage", // no config for 10K so no value should be returned
+      "MockToken_test-source_BUY_1000_slippage",
+      "MockToken_test-source_SELL_1000_slippage",
+      "MockToken_no-config_SELL_10000_slippage", // no config for 10K so no value should be returned
     ]);
     expect(result[0]).toEqual({
       symbol: "MockToken",
       value: 100,
+      metadata: {
+        slippage: [
+          {
+            direction: "buy",
+            simulationValueInUsd: "1000",
+            slippageAsPercent: "0.0201",
+          },
+          {
+            direction: "sell",
+            simulationValueInUsd: "1000",
+            slippageAsPercent: "0.0137027344",
+          },
+        ],
+      },
     });
     expect(result[1]).toEqual({
-      symbol: "MockToken_test-source_BUY_1K_slippage",
-      value: 0.0201,
+      symbol: "MockToken_test-source_BUY_1000_slippage",
+      value: "0.0201",
     });
     expect(result[2]).toEqual({
-      symbol: "MockToken_test-source_SELL_1K_slippage",
-      value: 0.0137027344,
+      symbol: "MockToken_test-source_SELL_1000_slippage",
+      value: "0.0137027344",
     });
     expect(result[3]).toBeUndefined();
   });

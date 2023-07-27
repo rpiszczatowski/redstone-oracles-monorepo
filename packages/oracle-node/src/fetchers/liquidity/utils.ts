@@ -1,3 +1,5 @@
+import { PriceAction } from "../evm-chain/uniswap-v3-on-chain/UniswapV3OnChainFetcher";
+
 export const buildLiquidityDataFeedId = (
   tokenName: string,
   sourceName: string
@@ -25,7 +27,7 @@ export const buildSlippageDataFeedId = (
   tokenName: string,
   sourceName: string,
   direction: string,
-  amount: string,
+  amount: string
 ) => `${tokenName}_${sourceName}_${direction}_${amount}_slippage`;
 
 const runSlippageRegex = (assetId: string) => {
@@ -41,7 +43,7 @@ export const parseSlippageDataFeedId = (assetId: string) => {
   return {
     dataFeedId: regexResult[1],
     source: regexResult[2],
-    priceAction: regexResult[3],
+    priceAction: regexResult[3].toLowerCase() as PriceAction,
     amount: regexResult[4],
   };
 };

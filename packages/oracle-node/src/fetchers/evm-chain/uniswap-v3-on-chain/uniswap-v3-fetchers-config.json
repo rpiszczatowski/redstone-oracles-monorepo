@@ -231,7 +231,12 @@
       "token1Decimals": 18,
       "fee": 500,
       "pairedToken": "ETH",
-      "slippage": [10000, 100000]
+      "slippage": [
+        { "direction": "buy", "simulationValueInUsd": 10000 },
+        { "direction": "buy", "simulationValueInUsd": 100000 },
+        { "direction": "sell", "simulationValueInUsd": 10000 },
+        { "direction": "sell", "simulationValueInUsd": 100000 }
+      ]
     },
     "FRXETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",

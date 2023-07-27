@@ -81,13 +81,25 @@ export interface PricesObj {
   [symbol: string]: number;
 }
 
+export interface PricesObjWithMetadata {
+  [symbol: string]: {
+    value: PriceDataFetchedValue;
+    metadata?: RedstoneTypes.MetadataPerSource;
+  };
+}
+
 export interface PriceDataFetched {
   symbol: string;
   value: PriceDataFetchedValue; // usually it is a positive number, but it may also be 0, null, undefined or "error"
   metadata?: RedstoneTypes.MetadataPerSource;
 }
 
-export type PriceDataFetchedValue = number | null | undefined | "error";
+export type PriceDataFetchedValue =
+  | number
+  | string
+  | null
+  | undefined
+  | "error";
 
 export interface PriceDataBeforeAggregation<T = number> {
   id: string;

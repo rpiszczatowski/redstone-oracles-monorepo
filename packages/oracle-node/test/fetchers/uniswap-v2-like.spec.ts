@@ -57,7 +57,13 @@ describe("UniswapV2Like", () => {
     ]);
 
     expect(result).toEqual([
-      { symbol: "USDC", value: 1.0062063053522414 },
+      {
+        symbol: "USDC",
+        value: 1.0062063053522414,
+        metadata: {
+          liquidity: "74943571.7469365",
+        },
+      },
       {
         symbol: "USDC_uniswap-v2-like-mock_liquidity",
         value: 74943571.7469365,
