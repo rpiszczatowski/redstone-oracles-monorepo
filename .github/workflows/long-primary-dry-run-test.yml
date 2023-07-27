@@ -1,0 +1,34 @@
+name: Long primary dry run test
+on:
+  push:
+    branches: "main"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  long-primary:
+    runs-on: LargeRunner
+    defaults:
+      run:
+        working-directory: packages/integration
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15
+      - name: Install deps
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Run long primary dry run tests
+        run: node dist/primary-long-price-propagation-core.js
+        env:
+          NODE_ENV: test
+          COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
+          KAIKO_API_KEY: ${{ secrets.KAIKO_API_KEY }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
