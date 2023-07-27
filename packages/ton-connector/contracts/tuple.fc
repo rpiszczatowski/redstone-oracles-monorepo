@@ -55,3 +55,30 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
         }
     }
 }
+
+(cell)tuple_to_cell(tuple t, int value_size) {
+    builder res = begin_cell();
+    builder tmp = begin_cell();
+    int values_per_cell = (1023 / value_size);
+
+    int i = 0;
+    while (i < t.tlen()) {
+        tmp~store_int(t.at(i), value_size);
+        i += 1;
+
+        if(i % values_per_cell == 0) {
+            if (i > values_per_cell) {
+                res = res.store_ref(tmp.end_cell());
+            } else {
+                res = res.store_builder(tmp);
+            }
+            tmp = begin_cell();
+        }
+    }
+
+    if (i > values_per_cell) {
+        res = res.store_ref(tmp.end_cell());
+    }
+
+    return res.end_cell();
+}

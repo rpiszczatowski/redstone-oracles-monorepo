@@ -4,6 +4,7 @@
 #include "processor.fc";
 #include "redstone.fc";
 #include "tuple.fc";
+#include "constants.fc";
 
 ;; =============== storage =============================
 
@@ -113,12 +114,16 @@ cell load_data() impure {
     return get_data_package_signer_address(data_cell.begin_parse(), data_package_cell);
 }
 
-(cell)get_prices(tuple data_feed_ids, cell payload) method_id {
+(tuple)get_prices(tuple data_feed_ids, cell payload) method_id {
     (tuple result, builder logs) = process_payload(payload, data_feed_ids, now());
 
     ~dump(result);
 
-    return logs.store_int(result.tlen(), 8).end_cell();
+    return result;
+}
+
+(cell)get_prices_ts(tuple data_feed_ids, cell payload) method_id {
+    return get_prices(data_feed_ids, payload).tuple_to_cell(MAX_VALUE_SIZE_BITS);
 }
 
 ()perform_sort(tuple t) method_id {

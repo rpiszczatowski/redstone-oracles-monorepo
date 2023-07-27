@@ -1,6 +1,5 @@
 import { TupleBuilder } from "ton-core";
-import { arrayify, hexlify, toUtf8Bytes } from "ethers/lib/utils";
-import { BigNumber } from "ethers";
+import { hexlify, toUtf8Bytes } from "ethers/lib/utils";
 
 export function getTuple<T>(items: T[]) {
   const tuple = new TupleBuilder();

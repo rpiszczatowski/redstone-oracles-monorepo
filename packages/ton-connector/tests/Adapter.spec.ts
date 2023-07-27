@@ -31,10 +31,10 @@ describe("Test", () => {
   });
 
   it("should get prices", async () => {
-    const dataFeeds = ["ETH", "BTC", "AVAX"];
+    const dataFeeds = ["ETH", "BTC", "AVAX", "USDT"];
     const reqParams = {
       dataServiceId: "redstone-avalanche-prod",
-      uniqueSignersCount: 5,
+      uniqueSignersCount: 4,
       dataFeeds,
     };
 

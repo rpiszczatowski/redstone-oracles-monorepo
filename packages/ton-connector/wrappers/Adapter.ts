@@ -61,7 +61,7 @@ export class Adapter extends TonContract {
       // console.log(`${i} ${hexlify(st.readBigNumber())}`);
     }
 
-    const { stack } = await provider.get("get_prices", [
+    const { stack } = await provider.get("get_prices_ts", [
       { type: "tuple", items: getTuple(dataFeeds) },
       { type: "cell", cell: payloadCell },
     ]);
