@@ -1,6 +1,6 @@
-import { BaseFetcher } from "./BaseFetcher";
-import { FetcherOpts, PricesObj } from "../types";
+import { PricesObj, PricesObjWithMetadata, FetcherOpts } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
+import { BaseFetcher, normalizePriceObj } from "./BaseFetcher";
 
 export interface RequestIdToResponse {
   [requestId: string]: any;
@@ -20,7 +20,7 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
   abstract extractPrice(
     dataFeedId: string,
     responses: RequestIdToResponse
-  ): number | undefined;
+  ): PricesObjWithMetadata[string] | PricesObj[string] | undefined;
 
   // This function can be overriden to fetch more custom data
   // e.g. base prices required for final prices calculation
@@ -76,8 +76,8 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
   override extractPrices(
     promisesResult: ExtendedPromiseResult[],
     dataFeedIds: string[]
-  ): PricesObj {
-    let pricesObj: PricesObj = {};
+  ): PricesObjWithMetadata {
+    const pricesObj: PricesObjWithMetadata = {};
     const validResponses: RequestIdToResponse = {};
 
     // Building a mapping from successful request ids to corresponding responses
@@ -94,7 +94,7 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
         // We don't log any error message if extractedPrice is undefined
         // Because the error will be logged by the BaseFetcher
         if (extractedPrice !== undefined) {
-          pricesObj[dataFeedId] = extractedPrice;
+          pricesObj[dataFeedId] = normalizePriceObj(extractedPrice);
         }
       } catch (e: any) {
         this.logger.error(

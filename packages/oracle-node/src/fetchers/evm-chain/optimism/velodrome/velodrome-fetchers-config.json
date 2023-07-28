@@ -9,7 +9,12 @@
       "token0Decimals": 6,
       "token1Decimals": 18,
       "stable": true,
-      "slippage": [10000, 100000]
+      "slippage": [
+        { "direction": "buy", "simulationValueInUsd": 10000 },
+        { "direction": "buy", "simulationValueInUsd": 100000 },
+        { "direction": "sell", "simulationValueInUsd": 10000 },
+        { "direction": "sell", "simulationValueInUsd": 100000 }
+      ]
     },
     "OP": {
       "poolAddress": "0x47029bc8f5CBe3b464004E87eF9c9419a48018cd",
@@ -20,7 +25,12 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "stable": false,
-      "slippage": [10000, 100000]
+      "slippage": [
+        { "direction": "buy", "simulationValueInUsd": 10000 },
+        { "direction": "buy", "simulationValueInUsd": 100000 },
+        { "direction": "sell", "simulationValueInUsd": 10000 },
+        { "direction": "sell", "simulationValueInUsd": 100000 }
+      ]
     },
     "LUSD": {
       "poolAddress": "0x207AddB05C548F262219f6bFC6e11c02d0f7fDbe",
@@ -31,7 +41,12 @@
       "token0Decimals": 6,
       "token1Decimals": 18,
       "stable": true,
-      "slippage": [10000, 100000]
+      "slippage": [
+        { "direction": "buy", "simulationValueInUsd": 10000 },
+        { "direction": "buy", "simulationValueInUsd": 100000 },
+        { "direction": "sell", "simulationValueInUsd": 10000 },
+        { "direction": "sell", "simulationValueInUsd": 100000 }
+      ]
     }
   },
   "velodrome-on-chain-weth": {
@@ -45,7 +60,12 @@
       "token1Decimals": 18,
       "pairedToken": "ETH",
       "stable": true,
-      "slippage": [10000, 100000]
+      "slippage": [
+        { "direction": "buy", "simulationValueInUsd": 10000 },
+        { "direction": "buy", "simulationValueInUsd": 100000 },
+        { "direction": "sell", "simulationValueInUsd": 10000 },
+        { "direction": "sell", "simulationValueInUsd": 100000 }
+      ]
     }
   }
 }

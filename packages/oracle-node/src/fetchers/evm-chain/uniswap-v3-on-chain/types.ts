@@ -1,3 +1,5 @@
+import { PriceAction } from "./UniswapV3OnChainFetcher";
+
 export interface PoolConfig {
   quoterAddress: string;
   poolAddress: string;
@@ -9,7 +11,12 @@ export interface PoolConfig {
   token1Decimals: number;
   fee: number;
   pairedToken?: string;
-  slippage?: number[]
+  slippage?: SlippageInfo[];
+}
+
+export interface SlippageInfo {
+  direction: PriceAction;
+  simulationValueInUsd: number;
 }
 
 export interface PoolsConfig {
@@ -38,7 +45,9 @@ export interface QuoterOutSingleParams {
   sqrtPriceLimitX96: number;
 }
 
-export type SlippageParams = { [key: string] : (QuoterInSingleParams | QuoterOutSingleParams) };
+export type SlippageParams = {
+  [key: string]: QuoterInSingleParams | QuoterOutSingleParams;
+};
 export interface MulticallParams {
   slippageParams: SlippageParams;
 }

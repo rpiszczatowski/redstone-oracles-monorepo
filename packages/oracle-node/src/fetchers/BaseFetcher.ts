@@ -1,5 +1,12 @@
 import { Consola } from "consola";
-import { Fetcher, PriceDataFetched, FetcherOpts, PricesObj } from "../types";
+import {
+  Fetcher,
+  FetcherOpts,
+  PriceDataFetched,
+  PriceDataFetchedValue,
+  PricesObj,
+  PricesObjWithMetadata,
+} from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 import createLogger from "../utils/logger";
 import { isDefined } from "../utils/objects";
@@ -7,7 +14,7 @@ import { isDefined } from "../utils/objects";
 const MAX_RESPONSE_TIME_TO_RETRY_FETCHING_MS = 3000;
 export type ExtractPricePairFn<T> = (item: T) => {
   id: string;
-  value: number | undefined | null;
+  value: PriceDataFetchedValue;
 };
 
 export abstract class BaseFetcher implements Fetcher {
@@ -26,7 +33,7 @@ export abstract class BaseFetcher implements Fetcher {
     response: any,
     ids?: string[],
     opts?: FetcherOpts
-  ): PricesObj;
+  ): PricesObjWithMetadata | PricesObj;
 
   // This method may be overridden to extend validation
   validateResponse(response: any): boolean {
@@ -89,10 +96,10 @@ export abstract class BaseFetcher implements Fetcher {
   }
 
   private convertPricesObjToResultPriceArray(
-    pricesObj: PricesObj,
+    pricesObj: PricesObjWithMetadata | PricesObj,
     requiredIds: string[]
   ): PriceDataFetched[] {
-    const prices = [];
+    const prices: PriceDataFetched[] = [];
     for (const id of requiredIds) {
       if (pricesObj[id] === undefined) {
         this.logger.warn(
@@ -101,7 +108,7 @@ export abstract class BaseFetcher implements Fetcher {
       } else {
         prices.push({
           symbol: this.convertIdToSymbol(id),
-          value: pricesObj[id],
+          ...normalizePriceObj(pricesObj[id]),
         });
       }
     }
@@ -157,3 +164,16 @@ export abstract class BaseFetcher implements Fetcher {
     return pricesObj;
   }
 }
+
+export const normalizePriceObj = (
+  pricesObjValue: PricesObjWithMetadata[string] | PricesObj[string]
+): PricesObjWithMetadata[string] => {
+  if (pricesObjValue === null) {
+    return { value: null };
+  } else if (typeof pricesObjValue === "object") {
+    return pricesObjValue;
+  }
+  return {
+    value: pricesObjValue,
+  };
+};

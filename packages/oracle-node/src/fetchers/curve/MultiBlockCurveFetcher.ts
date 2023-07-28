@@ -1,4 +1,4 @@
-import { MathUtils } from "redstone-utils";
+import { MathUtils, RedstoneTypes } from "redstone-utils";
 import { terminateWithManifestConfigError } from "../../Terminator";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { CurveFetcher, CurveFetcherResponse } from "./CurveFetcher";
@@ -42,7 +42,10 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     };
   }
 
-  calculateSlippage(assetId: string, response: CurveFetcherResponse): number {
+  calculateSlippage(
+    assetId: string,
+    response: CurveFetcherResponse
+  ): RedstoneTypes.SlippageData[] {
     return this.curveFetcher.calculateSlippage(assetId, response);
   }
 

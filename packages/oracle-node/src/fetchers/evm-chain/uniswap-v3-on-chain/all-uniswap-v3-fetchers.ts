@@ -5,6 +5,7 @@ import {
   ethereumProvider,
   optimismProvider,
 } from "../../../utils/blockchain-providers";
+import { PoolsConfig, SlippageInfo } from "./types";
 
 const uniswapV3Fetchers: Record<string, UniswapV3OnChainFetcher> = {};
 
@@ -13,7 +14,7 @@ for (const [fetcherName, fetcherConfig] of Object.entries(
 )) {
   uniswapV3Fetchers[fetcherName] = new UniswapV3OnChainFetcher(
     fetcherName,
-    fetcherConfig,
+    fetcherConfig as PoolsConfig,
     ethereumProvider
   );
 }
