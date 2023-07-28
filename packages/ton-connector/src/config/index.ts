@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const API_ENDPOINT = "https://testnet.toncenter.com/api/v2/jsonRPC";
+const API_ENDPOINT = "https://sandbox-v4.tonhubapi.com";
 // getHttpEndpoint({network: "testnet" })
 
 const getFromEnv = (name: string) => {

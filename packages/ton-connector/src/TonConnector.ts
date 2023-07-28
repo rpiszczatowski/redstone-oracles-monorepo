@@ -1,4 +1,4 @@
-import { OpenedContract, TonClient, WalletContractV4 } from "ton";
+import { OpenedContract, TonClient, TonClient4, WalletContractV4 } from "ton";
 import { Cell, ContractProvider, Sender } from "ton-core";
 import { mnemonicToWalletKey } from "ton-crypto";
 import { config } from "./config";
@@ -12,7 +12,7 @@ export async function sleep(ms: number) {
 export abstract class TonConnector {
   walletContract?: OpenedContract<WalletContractV4>;
   walletSender?: Sender;
-  client?: TonClient;
+  client?: TonClient4;
 
   async connect(networkProvider: NetworkProvider): Promise<TonConnector> {
     const key = await mnemonicToWalletKey(config.mnemonic);
@@ -21,9 +21,8 @@ export abstract class TonConnector {
       workchain: 0,
     });
 
-    this.client = new TonClient({
+    this.client = new TonClient4({
       endpoint: config.apiEndpoint,
-      apiKey: config.apiKey,
     });
 
     this.walletContract = this.client.open(wallet);

@@ -82,10 +82,10 @@ export class TonContractConnector extends TonConnector implements Contract {
   }
 
   async sendDeploy(provider: ContractProvider) {
-    console.log("contract address:", this.openedContract.address.toString());
-    if (await this.client!.isContractDeployed(this.openedContract.address)) {
-      throw "Contract already deployed";
-    }
+    console.log("contract address:", this.address.toString());
+    // if (await this.client!.isContractDeployed(this.address)) {
+    //   throw "Contract already deployed";
+    // }
 
     await this.internalMessage(provider, 0.02, undefined);
   }

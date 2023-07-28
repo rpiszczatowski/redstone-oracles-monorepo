@@ -1,7 +1,6 @@
 import { Cell, TupleBuilder } from "ton-core";
 
 export function getTuple(items: (number | string)[]) {
-  console.warn("Tuple-parameters are not supported yet on real chains");
   const tuple = new TupleBuilder();
 
   items.forEach((value) => {
