@@ -33,8 +33,7 @@
     "type": "function",
     "name": "decimals",
     "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "gas": "288"
+    "outputs": [{ "name": "", "type": "uint256" }]
   },
   {
     "stateMutability": "nonpayable",
@@ -44,8 +43,7 @@
       { "name": "_to", "type": "address" },
       { "name": "_value", "type": "uint256" }
     ],
-    "outputs": [{ "name": "", "type": "bool" }],
-    "gas": "77340"
+    "outputs": [{ "name": "", "type": "bool" }]
   },
   {
     "stateMutability": "nonpayable",
@@ -56,8 +54,7 @@
       { "name": "_to", "type": "address" },
       { "name": "_value", "type": "uint256" }
     ],
-    "outputs": [{ "name": "", "type": "bool" }],
-    "gas": "115282"
+    "outputs": [{ "name": "", "type": "bool" }]
   },
   {
     "stateMutability": "nonpayable",
@@ -67,8 +64,7 @@
       { "name": "_spender", "type": "address" },
       { "name": "_value", "type": "uint256" }
     ],
-    "outputs": [{ "name": "", "type": "bool" }],
-    "gas": "37821"
+    "outputs": [{ "name": "", "type": "bool" }]
   },
   {
     "stateMutability": "nonpayable",
@@ -78,8 +74,7 @@
       { "name": "_spender", "type": "address" },
       { "name": "_added_value", "type": "uint256" }
     ],
-    "outputs": [{ "name": "", "type": "bool" }],
-    "gas": "40365"
+    "outputs": [{ "name": "", "type": "bool" }]
   },
   {
     "stateMutability": "nonpayable",
@@ -89,8 +84,7 @@
       { "name": "_spender", "type": "address" },
       { "name": "_subtracted_value", "type": "uint256" }
     ],
-    "outputs": [{ "name": "", "type": "bool" }],
-    "gas": "40389"
+    "outputs": [{ "name": "", "type": "bool" }]
   },
   {
     "stateMutability": "nonpayable",
@@ -100,8 +94,7 @@
       { "name": "_to", "type": "address" },
       { "name": "_value", "type": "uint256" }
     ],
-    "outputs": [{ "name": "", "type": "bool" }],
-    "gas": "79579"
+    "outputs": [{ "name": "", "type": "bool" }]
   },
   {
     "stateMutability": "nonpayable",
@@ -111,16 +104,14 @@
       { "name": "_to", "type": "address" },
       { "name": "_value", "type": "uint256" }
     ],
-    "outputs": [{ "name": "", "type": "bool" }],
-    "gas": "79597"
+    "outputs": [{ "name": "", "type": "bool" }]
   },
   {
     "stateMutability": "nonpayable",
     "type": "function",
     "name": "set_minter",
     "inputs": [{ "name": "_minter", "type": "address" }],
-    "outputs": [],
-    "gas": "37785"
+    "outputs": []
   },
   {
     "stateMutability": "nonpayable",
@@ -130,32 +121,28 @@
       { "name": "_name", "type": "string" },
       { "name": "_symbol", "type": "string" }
     ],
-    "outputs": [],
-    "gas": "181606"
+    "outputs": []
   },
   {
     "stateMutability": "view",
     "type": "function",
     "name": "name",
     "inputs": [],
-    "outputs": [{ "name": "", "type": "string" }],
-    "gas": "12990"
+    "outputs": [{ "name": "", "type": "string" }]
   },
   {
     "stateMutability": "view",
     "type": "function",
     "name": "symbol",
     "inputs": [],
-    "outputs": [{ "name": "", "type": "string" }],
-    "gas": "10743"
+    "outputs": [{ "name": "", "type": "string" }]
   },
   {
     "stateMutability": "view",
     "type": "function",
     "name": "balanceOf",
     "inputs": [{ "name": "arg0", "type": "address" }],
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "gas": "2963"
+    "outputs": [{ "name": "", "type": "uint256" }]
   },
   {
     "stateMutability": "view",
@@ -165,23 +152,20 @@
       { "name": "arg0", "type": "address" },
       { "name": "arg1", "type": "address" }
     ],
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "gas": "3208"
+    "outputs": [{ "name": "", "type": "uint256" }]
   },
   {
     "stateMutability": "view",
     "type": "function",
     "name": "totalSupply",
     "inputs": [],
-    "outputs": [{ "name": "", "type": "uint256" }],
-    "gas": "2808"
+    "outputs": [{ "name": "", "type": "uint256" }]
   },
   {
     "stateMutability": "view",
     "type": "function",
     "name": "minter",
     "inputs": [],
-    "outputs": [{ "name": "", "type": "address" }],
-    "gas": "2838"
+    "outputs": [{ "name": "", "type": "address" }]
   }
 ]
