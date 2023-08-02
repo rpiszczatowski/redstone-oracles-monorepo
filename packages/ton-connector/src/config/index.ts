@@ -1,8 +1,11 @@
 import dotenv from "dotenv";
+import { getHttpV4Endpoint } from "@orbs-network/ton-access";
 
 dotenv.config();
 
-const API_ENDPOINT = "https://sandbox-v4.tonhubapi.com";
+const API_ENDPOINT = getHttpV4Endpoint({
+  network: "testnet",
+});
 // getHttpEndpoint({network: "testnet" })
 
 const getFromEnv = (name: string) => {

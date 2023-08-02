@@ -15,7 +15,7 @@ export class TonPricesContractConnector {
     return contract.client!.open(contract);
   }
 
-  async getAdapter(): Promise<IPricesContractAdapter> {
+  async getAdapter(): Promise<TonPricesContractAdapter> {
     return new TonPricesContractAdapter(await this.getContract());
   }
 }

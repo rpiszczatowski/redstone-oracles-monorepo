@@ -21,9 +21,7 @@ export abstract class TonConnector {
       workchain: 0,
     });
 
-    this.client = new TonClient4({
-      endpoint: config.apiEndpoint,
-    });
+    this.client = networkProvider.api();
 
     this.walletContract = this.client.open(wallet);
     this.walletSender = networkProvider.sender();

@@ -8,6 +8,18 @@ export class TonPricesContractAdapter implements IPricesContractAdapter {
     private contract: OpenedContract<Adapter> | SandboxContract<Adapter>
   ) {}
 
+  async getKey(value: number): Promise<bigint> {
+    return this.contract.getKey(value);
+  }
+
+  async sendInit(): Promise<any> {
+    return this.contract.sendInit();
+  }
+
+  async sendDeploy(): Promise<any> {
+    return this.contract.sendDeploy();
+  }
+
   async getPricesFromPayload(
     paramsProvider: ContractParamsProvider
   ): Promise<number[]> {
