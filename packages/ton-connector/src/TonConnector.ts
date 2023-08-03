@@ -34,7 +34,7 @@ export abstract class TonConnector {
     await this.wait(() => {
       provider.internal(this.networkProvider.sender(), {
         value: `${coins}`,
-        bounce: false,
+        body,
         sendMode: SendMode.PAY_GAS_SEPARATELY,
       });
     });

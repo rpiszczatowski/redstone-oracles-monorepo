@@ -7,7 +7,7 @@ import {
   ContractProvider,
   Sender,
 } from "ton-core";
-import { NetworkProvider } from "@ton-community/blueprint";
+import { compile, NetworkProvider } from "@ton-community/blueprint";
 import * as fs from "fs";
 import { TonConnector } from "./TonConnector";
 
@@ -37,9 +37,7 @@ export class TonContractConnector extends TonConnector {
     networkProvider: NetworkProvider,
     workchain: number = 0
   ) {
-    const code = Cell.fromBoc(
-      fs.readFileSync(`contracts/${this.getName()}.cell`)
-    )[0];
+    const code = await compile("Adapter");
 
     const { address, contract } = this.openContractCode(code, workchain);
 
@@ -73,7 +71,7 @@ export class TonContractConnector extends TonConnector {
       throw "Contract already deployed";
     }
 
-    await this.internalMessage(provider, 0.05, undefined);
+    await this.internalMessage(provider, 0.05, beginCell().endCell());
   }
 
   private static openContractCode<T extends Contract>(
