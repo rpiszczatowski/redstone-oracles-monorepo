@@ -122,6 +122,12 @@ cell load_data() impure {
     return result;
 }
 
+(cell)get_test(cell payload) method_id {
+    builder  x = begin_cell();
+    x~store_int(424, 16);
+    return x.end_cell();
+}
+
 (cell)get_prices_ts(tuple data_feed_ids, cell payload) method_id {
     return get_prices(data_feed_ids, payload).tuple_to_cell(MAX_VALUE_SIZE_BITS);
 }
@@ -132,6 +138,6 @@ cell load_data() impure {
     ~dump(s.median());
 }
 
-(int)get_value() method_id {
-    return 555;
+(int)get_value(int k) method_id {
+    return 556 * k;
 }

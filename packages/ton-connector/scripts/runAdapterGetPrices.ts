@@ -10,8 +10,8 @@ export async function run(provider: NetworkProvider) {
 
   const paramsProvider = new ContractParamsProvider({
     dataServiceId: "redstone-avalanche-prod",
-    uniqueSignersCount: 3,
-    dataFeeds: ["ETH", "BTC"],
+    uniqueSignersCount: 1,
+    dataFeeds: ["ETH"],
   });
 
   console.log(await contract.getPricesFromPayload(paramsProvider));

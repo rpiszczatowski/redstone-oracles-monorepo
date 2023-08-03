@@ -10,13 +10,17 @@ import {
 import { compile, NetworkProvider } from "@ton-community/blueprint";
 import * as fs from "fs";
 import { TonConnector } from "./TonConnector";
+import { Maybe } from "ton-core/src/utils/maybe";
 
-export class TonContractConnector extends TonConnector {
+export class TonContractConnector extends TonConnector implements Contract {
   static getName(): string {
     throw "Must be overridden; Return the contract-filename here;";
   }
 
-  constructor(readonly address: Address) {
+  constructor(
+    readonly address: Address,
+    readonly init?: Maybe<{ code: Cell; data: Cell }>
+  ) {
     super();
   }
 
@@ -80,7 +84,7 @@ export class TonContractConnector extends TonConnector {
   ) {
     const data = beginCell().endCell();
     const address = contractAddress(workchain, { code, data });
-    const contract = new this(address);
+    const contract = new this(address, { code, data });
 
     return { address, contract };
   }

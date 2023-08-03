@@ -73,14 +73,17 @@ export class Adapter extends TonContractConnector {
       await paramsProvider.getPayloadHex(false)
     );
 
-    const { stack } = await provider.get("get_prices_ts", [
-      { type: "tuple", items: getTuple(paramsProvider.getHexlifiedFeedIds()) },
+    const { stack } = await provider.get("get_test", [
+      // { type: "tuple", items: getTuple(paramsProvider.getHexlifiedFeedIds()) },
       { type: "cell", cell: payloadCell },
     ]);
 
     const result = stack.readCell();
 
-    return loadCellAsArray(result, DEFAULT_NUM_VALUE_BS * 8);
+    console.log(result);
+
+    return [];
+    //return loadCellAsArray(result, DEFAULT_NUM_VALUE_BS * 8);
   }
 
   async getSort(provider: ContractProvider, items: number[]) {
