@@ -22,7 +22,7 @@ export class TestTonPricesContractConnector {
 
     const openedContract = this.blockchain.openContract(contract);
 
-    await openedContract.sendTestDeploy();
+    await openedContract.sendDeploy();
 
     return openedContract;
   }

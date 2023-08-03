@@ -8,11 +8,25 @@ export class TonPricesContractConnector {
   constructor(private networkProvider: NetworkProvider) {}
 
   async getContract(): Promise<OpenedContract<Adapter>> {
-    const contract = await Adapter.openForExecute<Adapter>();
+    const contract = await Adapter.openForExecute<Adapter>(
+      this.networkProvider
+    );
 
-    await contract.connect(this.networkProvider);
+    return this.networkProvider.open(contract);
+  }
 
-    return contract.client!.open(contract);
+  async getAdapter(): Promise<TonPricesContractAdapter> {
+    return new TonPricesContractAdapter(await this.getContract());
+  }
+}
+
+export class TonPricesContractDeployer {
+  constructor(private networkProvider: NetworkProvider) {}
+
+  async getContract(): Promise<OpenedContract<Adapter>> {
+    const contract = await Adapter.openForDeploy<Adapter>(this.networkProvider);
+
+    return this.networkProvider.open(contract);
   }
 
   async getAdapter(): Promise<TonPricesContractAdapter> {

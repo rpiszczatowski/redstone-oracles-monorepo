@@ -1,7 +1,5 @@
-import { OpenedContract, TonClient, TonClient4, WalletContractV4 } from "ton";
-import { Cell, ContractProvider, Sender } from "ton-core";
-import { mnemonicToWalletKey } from "ton-crypto";
-import { config } from "./config";
+import { SendMode, TonClient4 } from "ton";
+import { Cell, ContractProvider } from "ton-core";
 import { Maybe } from "ton/dist/utils/maybe";
 import { NetworkProvider } from "@ton-community/blueprint";
 
@@ -10,26 +8,17 @@ export async function sleep(ms: number) {
 }
 
 export abstract class TonConnector {
-  walletContract?: OpenedContract<WalletContractV4>;
-  walletSender?: Sender;
+  networkProvider!: NetworkProvider;
   client?: TonClient4;
 
   async connect(networkProvider: NetworkProvider): Promise<TonConnector> {
-    const key = await mnemonicToWalletKey(config.mnemonic);
-    const wallet = WalletContractV4.create({
-      publicKey: key.publicKey,
-      workchain: 0,
-    });
-
-    this.client = networkProvider.api();
-
-    this.walletContract = this.client.open(wallet);
-    this.walletSender = networkProvider.sender();
+    this.networkProvider = networkProvider;
 
     // make sure wallet is deployed
+    const walletAddress = this.networkProvider.sender().address;
     if (
-      !this.walletSender.address ||
-      !(await networkProvider.isContractDeployed(this.walletSender.address))
+      !walletAddress ||
+      !(await networkProvider.isContractDeployed(walletAddress))
     ) {
       throw "wallet is not deployed";
     }
@@ -43,15 +32,16 @@ export abstract class TonConnector {
     body?: Maybe<Cell | string>
   ): Promise<void> {
     await this.wait(() => {
-      provider.internal(this.walletSender!, {
+      provider.internal(this.networkProvider.sender(), {
         value: `${coins}`,
-        body,
+        bounce: false,
+        sendMode: SendMode.PAY_GAS_SEPARATELY,
       });
     });
   }
 
   private async wait(callback: () => void): Promise<void> {
-    const seqno = await this.walletContract!.getSeqno();
+    const seqno = (await this.networkProvider.api().getLastBlock()).last.seqno;
 
     await callback();
 
@@ -60,7 +50,8 @@ export abstract class TonConnector {
     while (currentSeqno == seqno) {
       console.log("waiting for transaction to confirm...");
       await sleep(1500);
-      currentSeqno = await this.walletContract!.getSeqno();
+      currentSeqno = (await this.networkProvider.api().getLastBlock()).last
+        .seqno;
     }
 
     console.log("transaction confirmed!");

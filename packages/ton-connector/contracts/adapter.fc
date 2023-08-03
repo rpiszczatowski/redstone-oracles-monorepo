@@ -131,3 +131,7 @@ cell load_data() impure {
     ~dump(s);
     ~dump(s.median());
 }
+
+(int)get_value() method_id {
+    return 555;
+}

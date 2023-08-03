@@ -20,7 +20,7 @@ export class TonContractConnector extends TonConnector {
     super();
   }
 
-  static async openForExecute<T>(): Promise<T> {
+  static async openForExecute<T>(networkProvider: NetworkProvider): Promise<T> {
     const address = await fs.promises.readFile(
       `deploy/${this.getName()}.address`,
       "utf8"
@@ -28,10 +28,12 @@ export class TonContractConnector extends TonConnector {
 
     const contract = new this(Address.parse(address));
 
+    await contract.connect(networkProvider);
+
     return contract as unknown as T;
   }
 
-  static async openForDeploy(
+  static async openForDeploy<T>(
     networkProvider: NetworkProvider,
     workchain: number = 0
   ) {
@@ -51,13 +53,15 @@ export class TonContractConnector extends TonConnector {
       }
     );
 
-    return contract;
+    await contract.connect(networkProvider);
+
+    return contract as unknown as T;
   }
 
   static openForTest<T>(code: Cell, sender: Sender, workchain: number = 0) {
     const { contract } = this.openContractCode(code, workchain);
 
-    contract.walletSender = sender;
+    // contract.walletSender = sender;
 
     return contract as unknown as T;
   }
@@ -65,15 +69,11 @@ export class TonContractConnector extends TonConnector {
   async sendDeploy(provider: ContractProvider) {
     console.log("contract address:", this.address.toString());
 
-    // if (await this.client!.isContractDeployed(this.address)) {
-    //   throw "Contract already deployed";
-    // }
+    if (await this.networkProvider.isContractDeployed(this.address)) {
+      throw "Contract already deployed";
+    }
 
-    await this.internalMessage(provider, 0.02, undefined);
-  }
-
-  async sendTestDeploy(provider: ContractProvider) {
-    await provider.internal(this.walletSender!, { value: "0.02" });
+    await this.internalMessage(provider, 0.05, undefined);
   }
 
   private static openContractCode<T extends Contract>(
