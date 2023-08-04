@@ -7079,6 +7079,11 @@ big-integer@^1.6.16:
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.51.tgz#0df92a5d9880560d3ff2d5fd20245c889d130686"
   integrity sha512-GPEid2Y9QU1Exl1rpO9B2IPJGHPSupF5GnVIP0blYvNOMer2bTvSWs1jGOUg04hTmu67nmLsQ9TBo1puaotBHg==
 
+big.js@^6.2.1:
+  version "6.2.1"
+  resolved "https://registry.yarnpkg.com/big.js/-/big.js-6.2.1.tgz#7205ce763efb17c2e41f26f121c420c6a7c2744f"
+  integrity sha512-bCtHMwL9LeDIozFn+oNhhFoq+yQ3BNdnsLSASUxLciOb1vgvpHsIO1dsENiGMgbb4SkP5TrzWzRiLddn8ahVOQ==
+
 bigint-buffer@^1.1.5:
   version "1.1.5"
   resolved "https://registry.yarnpkg.com/bigint-buffer/-/bigint-buffer-1.1.5.tgz#d038f31c8e4534c1f8d0015209bf34b4fa6dd442"
@@ -18046,6 +18051,15 @@ redstone-prettier-config@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/redstone-prettier-config/-/redstone-prettier-config-1.0.0.tgz#154b28bf79f41826a4b47421db653d867aa3c241"
   integrity sha512-39BBmwrw+5L4MgV1TLGAlIwmRFvAzZ4iq8xshHdBhiiAgl0J6PeIYrkUkU5l6nMIilua4zkWoEz+58enT0pbhw==
+
+redstone-sdk@1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/redstone-sdk/-/redstone-sdk-1.0.7.tgz#ca03b81db77d60a4d75b7bf4c90ed7fb7bac00cd"
+  integrity sha512-pjSNWLoWvaol73kJO58YHqy3VUfDN2hMTeQW4wccQAPWY2OhnM7Ody9TL8l2DxXgXMAUscuqVRHBmUNjT3Q2rw==
+  dependencies:
+    axios "^0.27.2"
+    redstone-oracles-smartweave-contracts "*"
+    redstone-protocol "*"
 
 redstone-wasm-json-toolkit@1.0.5:
   version "1.0.5"

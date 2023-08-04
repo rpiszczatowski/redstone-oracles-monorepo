@@ -35,18 +35,7 @@ const arweaveJwkKeyForArchiving = getEnv(
 );
 
 const config = {
-  appPort: Number(getEnv("APP_PORT", false) || DEFAULT_APP_PORT),
   mongoDbUrl: getEnv("MONGO_DB_URL", false),
-  enableStreamrListening: getEnv("ENABLE_STREAMR_LISTENING") === "true",
-  enableDirectPostingRoutes: getEnv("ENABLE_DIRECT_POSTING_ROUTES") === "true",
-  apiKeyForAccessToAdminRoutes: getEnv("API_KEY_FOR_ACCESS_TO_ADMIN_ROUTES"),
-  enableArchivingOnArweave: !!arweaveJwkKeyForArchiving,
-  bundlrNodeUrl: getEnv("BUNDLR_NODE_URL", false) || DEFAULT_BUNDLR_NODE_URL,
-  mockDataServiceIdForPackages:
-    getEnv("MOCK_DATA_SERVICE_ID_FOR_PACKAGES", false) === "true",
-  allowedStreamrDataServiceIds: JSON.parse(
-    getEnv("ALLOWED_STREAMR_DATA_SERVICE_IDS", false) || "[]"
-  ),
 } as CacheServiceConfig;
 
 if (config.enableArchivingOnArweave) {
