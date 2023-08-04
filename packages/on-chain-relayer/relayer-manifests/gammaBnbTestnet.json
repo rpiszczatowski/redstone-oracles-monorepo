@@ -1,0 +1,10 @@
+{
+  "network": "Smart Chain - Testnet",
+  "minDeviationPercentage": 0.2,
+  "maxTimeIntervalMilliseconds": 600000,
+  "adapterContract": "0xF43a01A39Fd28950031a42861faD703147d5C8e7",
+  "dataServiceId": "redstone-primary-prod",
+  "priceFeeds": {
+    "TRX": "0xCa8b247304767619fCcF5b0829D0a5AAf414BA7D"
+  }
+}
