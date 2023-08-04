@@ -12,15 +12,14 @@
     "allowJs": true,
     "declarationMap": true,
     "incremental": true,
-    "composite": true
+    "composite": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "strictPropertyInitialization": false
   },
   "ts-node": {
     "files": true
   },
-  "include": [
-    "src/**/*",
-    "src/**/*.json",
-    "./package.json",
-  ],
-  "exclude": ["node_modules"],
+  "include": ["src/**/*", "src/**/*.json", "./package.json"],
+  "exclude": ["node_modules"]
 }
