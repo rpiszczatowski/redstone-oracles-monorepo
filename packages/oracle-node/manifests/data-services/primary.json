@@ -208,6 +208,30 @@
     "SOFRAI_EFFECTIVE_DATE": {
       "source": ["newyorkfed"],
       "decimals": 0
+    },
+    "TRX": {
+      "source": [
+        "ascendex",
+        "bequant",
+        "binance",
+        "binancecoinm",
+        "binanceusdm",
+        "bitcoincom",
+        "bitget",
+        "bitrue",
+        "bybit",
+        "coingecko",
+        "gate",
+        "hitbtc",
+        "huobipro",
+        "kraken",
+        "kucoin",
+        "lbank",
+        "mexc",
+        "okx",
+        "phemex",
+        "poloniex"
+      ]
     }
   }
 }
