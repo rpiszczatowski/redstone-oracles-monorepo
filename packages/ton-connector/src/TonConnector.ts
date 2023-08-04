@@ -9,7 +9,6 @@ export async function sleep(ms: number) {
 
 export abstract class TonConnector {
   networkProvider!: NetworkProvider;
-  client?: TonClient4;
 
   async connect(networkProvider: NetworkProvider): Promise<TonConnector> {
     this.networkProvider = networkProvider;

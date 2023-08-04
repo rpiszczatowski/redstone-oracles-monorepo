@@ -139,5 +139,5 @@ cell load_data() impure {
 }
 
 (int)get_value(int k) method_id {
-    return 556 * k;
+    return 557 * k;
 }
