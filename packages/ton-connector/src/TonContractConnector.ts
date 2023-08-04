@@ -11,6 +11,7 @@ import { compile, NetworkProvider } from "@ton-community/blueprint";
 import * as fs from "fs";
 import { TonConnector } from "./TonConnector";
 import { Maybe } from "ton-core/src/utils/maybe";
+import { SendMode } from "ton";
 
 export class TonContractConnector extends TonConnector implements Contract {
   static getName(): string {
@@ -55,6 +56,10 @@ export class TonContractConnector extends TonConnector implements Contract {
       }
     );
 
+    if (await networkProvider.isContractDeployed(address)) {
+      throw "Contract already deployed";
+    }
+
     await contract.connect(networkProvider);
 
     return contract as unknown as T;
@@ -63,17 +68,13 @@ export class TonContractConnector extends TonConnector implements Contract {
   static openForTest<T>(code: Cell, sender: Sender, workchain: number = 0) {
     const { contract } = this.openContractCode(code, workchain);
 
-    // contract.walletSender = sender;
+    contract.sender = sender;
 
     return contract as unknown as T;
   }
 
   async sendDeploy(provider: ContractProvider) {
     console.log("contract address:", this.address.toString());
-
-    if (await this.networkProvider.isContractDeployed(this.address)) {
-      throw "Contract already deployed";
-    }
 
     await this.internalMessage(provider, 0.05, beginCell().endCell());
   }

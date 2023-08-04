@@ -1,5 +1,5 @@
 import { SendMode, TonClient4 } from "ton";
-import { Cell, ContractProvider } from "ton-core";
+import { Cell, ContractProvider, Sender } from "ton-core";
 import { Maybe } from "ton/dist/utils/maybe";
 import { NetworkProvider } from "@ton-community/blueprint";
 
@@ -8,13 +8,14 @@ export async function sleep(ms: number) {
 }
 
 export abstract class TonConnector {
-  networkProvider!: NetworkProvider;
+  sender!: Sender;
+  api?: TonClient4;
 
   async connect(networkProvider: NetworkProvider): Promise<TonConnector> {
-    this.networkProvider = networkProvider;
+    this.sender = networkProvider.sender();
+    this.api = networkProvider.api();
 
-    // make sure wallet is deployed
-    const walletAddress = this.networkProvider.sender().address;
+    const walletAddress = this.sender.address;
     if (
       !walletAddress ||
       !(await networkProvider.isContractDeployed(walletAddress))
@@ -28,19 +29,26 @@ export abstract class TonConnector {
   async internalMessage(
     provider: ContractProvider,
     coins: number,
-    body?: Maybe<Cell | string>
+    body?: Cell,
+    sendMode = SendMode.PAY_GAS_SEPARATELY
   ): Promise<void> {
-    await this.wait(() => {
-      provider.internal(this.networkProvider.sender(), {
+    await this.wait(async () => {
+      await provider.internal(this.sender, {
         value: `${coins}`,
         body,
-        sendMode: SendMode.PAY_GAS_SEPARATELY,
+        sendMode,
       });
     });
   }
 
-  private async wait(callback: () => void): Promise<void> {
-    const seqno = (await this.networkProvider.api().getLastBlock()).last.seqno;
+  private async wait(callback: () => Promise<void>): Promise<void> {
+    if (!this.api) {
+      await callback();
+
+      return;
+    }
+
+    const seqno = (await this.api.getLastBlock()).last.seqno;
 
     await callback();
 
@@ -49,8 +57,7 @@ export abstract class TonConnector {
     while (currentSeqno == seqno) {
       console.log("waiting for transaction to confirm...");
       await sleep(1500);
-      currentSeqno = (await this.networkProvider.api().getLastBlock()).last
-        .seqno;
+      currentSeqno = (await this.api.getLastBlock()).last.seqno;
     }
 
     console.log("transaction confirmed!");
