@@ -11,7 +11,6 @@ import { compile, NetworkProvider } from "@ton-community/blueprint";
 import * as fs from "fs";
 import { TonConnector } from "./TonConnector";
 import { Maybe } from "ton-core/src/utils/maybe";
-import { SendMode } from "ton";
 
 export class TonContractConnector extends TonConnector implements Contract {
   static getName(): string {
@@ -23,6 +22,12 @@ export class TonContractConnector extends TonConnector implements Contract {
     readonly init?: Maybe<{ code: Cell; data: Cell }>
   ) {
     super();
+  }
+
+  async sendDeploy(provider: ContractProvider) {
+    console.log("contract address:", this.address.toString());
+
+    await this.internalMessage(provider, 0.05, beginCell().endCell());
   }
 
   static async openForExecute<T>(networkProvider: NetworkProvider): Promise<T> {
@@ -71,12 +76,6 @@ export class TonContractConnector extends TonConnector implements Contract {
     contract.sender = sender;
 
     return contract as unknown as T;
-  }
-
-  async sendDeploy(provider: ContractProvider) {
-    console.log("contract address:", this.address.toString());
-
-    await this.internalMessage(provider, 0.05, beginCell().endCell());
   }
 
   private static openContractCode<T extends Contract>(

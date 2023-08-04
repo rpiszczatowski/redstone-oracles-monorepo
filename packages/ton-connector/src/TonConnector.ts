@@ -1,6 +1,5 @@
 import { SendMode, TonClient4 } from "ton";
 import { Cell, ContractProvider, Sender } from "ton-core";
-import { Maybe } from "ton/dist/utils/maybe";
 import { NetworkProvider } from "@ton-community/blueprint";
 
 export async function sleep(ms: number) {
