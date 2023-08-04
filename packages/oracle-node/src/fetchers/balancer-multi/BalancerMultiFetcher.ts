@@ -25,9 +25,8 @@ type BalancerPoolsConfigs = Record<
     swapAmountForSwaps: BigNumber;
     swaps: SwapConfig[];
     tokenAddresses: string[];
-    tokenInForSwaps: string;
-    tokenOutFromSwaps: string;
     tokenToFetch?: string;
+    priceMultiplier?: number;
   }
 >;
 
@@ -82,9 +81,12 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<DeltaResponse> {
     dataFeedId: string,
     response: DeltaResponse
   ): number {
-    const { tokenOut, swapAmount } = this.configs[dataFeedId];
+    const { tokenOut, swapAmount, priceMultiplier } = this.configs[dataFeedId];
     const ratio = new Decimal(response[tokenOut]);
-    const ratioSerialized = ratio.div(swapAmount.toHexString());
+    let ratioSerialized = ratio.div(swapAmount.toHexString());
+    if (priceMultiplier) {
+      ratioSerialized = ratioSerialized.mul(priceMultiplier);
+    }
     const tokenToFetch =
       this.configs[dataFeedId].tokenToFetch ?? this.underlyingToken;
     const tokenPrice = getLastPrice(tokenToFetch);
