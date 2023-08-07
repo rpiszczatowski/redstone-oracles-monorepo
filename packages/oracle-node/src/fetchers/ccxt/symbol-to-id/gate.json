@@ -8,5 +8,11 @@
   "UFT": "UFT/USDT",
   "BNB": "BNB/USDT",
   "CRV": "CRV/USDT",
-  "TRX": "TRX/USDT"
+  "TRX": "TRX/USDT",
+  "SHIB": "SHIB/USDT",
+  "PEPE": "PEPE/USDT",
+  "ARB": "ARB/USDT",
+  "OP": "OP/USDT",
+  "DYDX": "DYDX/USDT",
+  "ALCX": "ALCX/USDT"
 }

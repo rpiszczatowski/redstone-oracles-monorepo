@@ -11,5 +11,32 @@
       "token1Decimals": 18,
       "fee": 500
     }
+  },
+  "uniswap-v3-optimism-on-chain-weth-3000": {
+    "OP": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x68F5C0A2DE713a54991E01858Fd27a3832401849",
+      "token0Symbol": "WETH",
+      "token1Symbol": "OP",
+      "token0Address": "0x4200000000000000000000000000000000000006",
+      "token1Address": "0x4200000000000000000000000000000000000042",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "fee": 3000,
+      "pairedToken": "ETH"
+    }
+  },
+  "uniswap-v3-optimism-on-chain-usdc-3000": {
+    "OP": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x1C3140aB59d6cAf9fa7459C6f83D4B52ba881d36",
+      "token0Symbol": "OP",
+      "token1Symbol": "USDC",
+      "token0Address": "0x4200000000000000000000000000000000000042",
+      "token1Address": "0x7f5c764cbc14f9669b88837ca1490cca17c31607",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 3000
+    }
   }
 }

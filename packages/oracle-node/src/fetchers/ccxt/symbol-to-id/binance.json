@@ -403,5 +403,8 @@
   "LDO": "LDO/USDT",
   "UFT": "UFT/BUSD",
   "APT": "APT/USDT",
-  "GMX": "GMX/USDT"
+  "GMX": "GMX/USDT",
+  "PEPE": "PEPE/USDT",
+  "ARB": "ARB/USDT",
+  "OP": "OP/USDT"
 }

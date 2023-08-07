@@ -160,5 +160,7 @@
   "YGG": "YGG/USD",
   "EUR": "EUR/USD",
   "GBP": "GBP/USD",
-  "ZRX": "ZRX/USD"
+  "ZRX": "ZRX/USD",
+  "PEPE": "PEPE/USD",
+  "ARB": "ARB/USD"
 }

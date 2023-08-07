@@ -66,7 +66,8 @@ export class CcxtFetcher extends BaseFetcher {
       throw new Error(`Price not returned for: ${pairSymbol}`);
     }
     const lastPrice = ticker.last!;
-    if (pairSymbol.endsWith("/USD")) {
+    // Second condition is special case for binancecoinm
+    if (pairSymbol.endsWith("/USD") || pairSymbol.includes("/USD:")) {
       return { value: lastPrice, id: pairSymbol };
     }
     const stableCoinSymbol = pairSymbol.slice(-4);
@@ -74,9 +75,7 @@ export class CcxtFetcher extends BaseFetcher {
     if (lastUsdInStablePrice) {
       return { value: lastPrice * lastUsdInStablePrice, id: pairSymbol };
     }
-    throw new Error(
-      `Cannot get last price from cache for ${stableCoinSymbol}`
-    );
+    throw new Error(`Cannot get last price from cache for ${stableCoinSymbol}`);
   }
 
   async handleRequestsForBybit(ids: string[]) {
@@ -91,8 +90,16 @@ export class CcxtFetcher extends BaseFetcher {
       }
     }
 
-    const oldTypeIdsResponse = await this.exchange.fetchTickers(oldTypeIds);
-    const newTypeIdsResponse = await this.exchange.fetchTickers(newTypeIds);
-    return { ...oldTypeIdsResponse, ...newTypeIdsResponse };
+    let responses = {};
+    if (oldTypeIds.length > 0) {
+      responses = await this.exchange.fetchTickers(oldTypeIds);
+    }
+    if (newTypeIds.length > 0) {
+      responses = {
+        ...responses,
+        ...(await this.exchange.fetchTickers(newTypeIds)),
+      };
+    }
+    return responses;
   }
 }

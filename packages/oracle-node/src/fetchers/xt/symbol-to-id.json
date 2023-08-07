@@ -5,5 +5,7 @@
   "JOE": "joe_usdt",
   "BNB": "bnb_usdt",
   "CRV": "crv_usdt",
-  "AAVE": "aave_usdt"
+  "AAVE": "aave_usdt",
+  "OP": "op_usdt",
+  "DYDX": "dydx_usdt"
 }

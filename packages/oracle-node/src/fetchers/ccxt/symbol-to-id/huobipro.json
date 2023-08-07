@@ -502,5 +502,8 @@
   "UFT": "UFT/USDT",
   "JOE": "JOE/USDT",
   "EUROC": "EUROC/USDT",
-  "STETH": "STETH/USDT"
+  "STETH": "STETH/USDT",
+  "PEPE": "PEPE/USDT",
+  "ARB": "ARB/USDT",
+  "OP": "OP/USDT"
 }

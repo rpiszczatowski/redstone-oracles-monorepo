@@ -32,6 +32,12 @@ export const balancerFetchersConfig = {
           rpcUrl: config.arbitrumRpcUrls[0],
         },
       },
+      AURA: {
+        poolId:
+          "0xcfca23ca9ca720b6e98e3eb9b6aa0ffc4a5c08b9000200000000000000000274",
+        tokenIn: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        tokenOut: "0xc0c293ce456ff0ed870add98a0828dd4d2903dbf",
+      },
     },
   },
   "balancer-lusd": {

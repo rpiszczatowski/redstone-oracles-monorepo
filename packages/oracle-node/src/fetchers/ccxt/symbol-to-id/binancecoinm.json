@@ -39,5 +39,6 @@
   "ZIL": "ZIL/USD:ZIL",
   "KNC": "KNC/USD:KNC",
   "XMR": "XMR/USD:XMR",
-  "GMT": "GMT/USD:GMT"
+  "GMT": "GMT/USD:GMT",
+  "OP": "OP/USD:OP"
 }
