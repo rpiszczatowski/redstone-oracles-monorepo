@@ -2,6 +2,8 @@ name: Long primary dry run test
 on:
   push:
     branches: "main"
+    paths:
+      - packages/integration
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

@@ -5,7 +5,6 @@ import {
   RequestIdToResponse,
 } from "../MultiRequestFetcher";
 import { pools } from "./permaswap-pools-config";
-import { isNaN } from "lodash";
 
 type PermaswapResponse = {
   currentPriceUp: string;
@@ -62,7 +61,7 @@ export class PermaswapFetcher extends MultiRequestFetcher {
     let { pairedToken } = this.getPool(assetId);
 
     const lastPriceFromCache = getLastPrice(pairedToken);
-    if (!lastPriceFromCache || isNaN(lastPriceFromCache.value)) {
+    if (!lastPriceFromCache) {
       throw new Error(`Cannot get last price from cache for: ${pairedToken}`);
     }
 

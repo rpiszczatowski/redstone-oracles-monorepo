@@ -33,8 +33,8 @@ jobs:
           node-version: 18.15
       - name: Install deps
         run: yarn
-      - name: Run core tests - node failure
-        run: yarn run-ts src/prices-updates-core-node-failure.ts
+      - name: Run tests - node failures
+        run: yarn run-ts src/prices-updates-node-failures.ts
         env:
           NODE_ENV: test
   classic:
