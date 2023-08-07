@@ -300,5 +300,8 @@
   "BTC3L": "BTC3L/USDT",
   "GAL": "GAL/USDT",
   "EFI": "EFI/USDT",
-  "ENJ": "ENJ/USDT"
+  "ENJ": "ENJ/USDT",
+  "ARB": "ARB/USDT",
+  "OP": "OP/USDT",
+  "DYDX": "DYDX/USDT"
 }

@@ -181,6 +181,54 @@
       "token1Decimals": 18,
       "fee": 3000,
       "pairedToken": "ETH"
+    },
+    "SHIB": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x2F62f2B4c5fcd7570a709DeC05D68EA19c82A9ec",
+      "token0Symbol": "SHIB",
+      "token1Symbol": "WETH",
+      "token0Address": "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "fee": 3000,
+      "pairedToken": "ETH"
+    },
+    "PEPE": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x11950d141EcB863F01007AdD7D1A342041227b58",
+      "token0Symbol": "PEPE",
+      "token1Symbol": "WETH",
+      "token0Address": "0x6982508145454Ce325dDbE47a25d4ec3d2311933",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "fee": 3000,
+      "pairedToken": "ETH"
+    },
+    "DYDX": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0xd8de6af55f618a7bc69835d55ddc6582220c36c0",
+      "token0Symbol": "DYDX",
+      "token1Symbol": "WETH",
+      "token0Address": "0x92D6C1e31e14520e676a687F0a93788B716BEff5",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "fee": 3000,
+      "pairedToken": "ETH"
+    },
+    "AURA": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x4be410e2ff6a5f1718ada572afa9e8d26537242b",
+      "token0Symbol": "WETH",
+      "token1Symbol": "AURA",
+      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token1Address": "0xC0c293ce456fF0ED870ADd98a0828Dd4d2903DBF",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "fee": 3000,
+      "pairedToken": "ETH"
     }
   },
   "uniswap-v3-on-chain-weth-500": {

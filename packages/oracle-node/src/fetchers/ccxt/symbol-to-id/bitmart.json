@@ -1,5 +1,7 @@
 {
   "BNB": "BNB/USDT",
   "EUROC": "EUROC/USDC",
-  "AAVE": "AAVE/USDT"
+  "AAVE": "AAVE/USDT",
+  "ARB": "ARB/USDT",
+  "OP": "OP/USDT"
 }

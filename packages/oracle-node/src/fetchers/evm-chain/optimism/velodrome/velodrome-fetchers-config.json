@@ -17,7 +17,7 @@
       ]
     },
     "OP": {
-      "poolAddress": "0x47029bc8f5CBe3b464004E87eF9c9419a48018cd",
+      "poolAddress": "0x0df083de449f75691fc5a36477a6f3284c269108",
       "token0Symbol": "OP",
       "token1Symbol": "USDC",
       "token0Address": "0x4200000000000000000000000000000000000042",
@@ -51,11 +51,45 @@
   },
   "velodrome-on-chain-weth": {
     "ALETH": {
-      "poolAddress": "0x6fD5BEe1Ddb4dbBB0b7368B080Ab99b8BA765902",
+      "poolAddress": "0xa1055762336F92b4B8d2eDC032A0Ce45ead6280a",
       "token0Symbol": "ALETH",
       "token1Symbol": "WETH",
-      "token0Address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
-      "token1Address": "0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A",
+      "token0Address": "0x3E29D3A9316dAB217754d13b28646B76607c5f04",
+      "token1Address": "0x4200000000000000000000000000000000000006",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "pairedToken": "ETH",
+      "stable": true,
+      "slippage": [
+        { "direction": "buy", "simulationValueInUsd": 10000 },
+        { "direction": "buy", "simulationValueInUsd": 100000 },
+        { "direction": "sell", "simulationValueInUsd": 10000 },
+        { "direction": "sell", "simulationValueInUsd": 100000 }
+      ]
+    },
+    "OP": {
+      "poolAddress": "0xd25711edfbf747efce181442cc1d8f5f8fc8a0d3",
+      "token0Symbol": "WETH",
+      "token1Symbol": "OP",
+      "token0Address": "0x4200000000000000000000000000000000000006",
+      "token1Address": "0x4200000000000000000000000000000000000042",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "pairedToken": "ETH",
+      "stable": false,
+      "slippage": [
+        { "direction": "buy", "simulationValueInUsd": 10000 },
+        { "direction": "buy", "simulationValueInUsd": 100000 },
+        { "direction": "sell", "simulationValueInUsd": 10000 },
+        { "direction": "sell", "simulationValueInUsd": 100000 }
+      ]
+    },
+    "FRXETH": {
+      "poolAddress": "0x63642a192bab08b09a70a997bb35b36b9286b01e",
+      "token0Symbol": "WETH",
+      "token1Symbol": "FRXETH",
+      "token0Address": "0x4200000000000000000000000000000000000006",
+      "token1Address": "0x6806411765Af15Bddd26f8f544A34cC40cb9838B",
       "token0Decimals": 18,
       "token1Decimals": 18,
       "pairedToken": "ETH",

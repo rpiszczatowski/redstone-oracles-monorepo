@@ -4,7 +4,7 @@ import { saveJSON } from "../common/fs-utils";
 import UniswapV3Factory from "./UniswapV3Factory.abi.json";
 import ERC20Token from "./ERC20Token.abi.json";
 
-const POOL_CONFIGS_FILE_PATH = "uniswap-v3-fetchers-config.json";
+const POOL_CONFIGS_FILE_PATH = "uniswap-v3-ethereum-fetchers-config.json";
 const UNISWAP_NAME_PREFIX = "uniswap-v3-on-chain-";
 
 const TOKEN_ADDRESSES = [
@@ -20,7 +20,7 @@ const FACTORY_ADDRESS = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
 
 const FEE_AMOUNTS = [10000, 3000, 500, 100];
 
-const provider = new ethers.providers.JsonRpcProvider(config.ethMainRpcUrl);
+const provider = new ethers.providers.JsonRpcProvider(config.ethMainRpcUrls[0]);
 
 interface TokenParams {
   symbol: string;

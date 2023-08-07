@@ -18921,7 +18921,7 @@
       "name": "Curve.fi DAI/USDC"
     }
   ],
-  "CRVFRAX": [
+  "crvFRAX": [
     {
       "id": "curve-fi-frax-usdc",
       "name": "Curve.fi FRAX/USDC"

@@ -2,5 +2,11 @@
   "JOE": "JOE/BUSD",
   "UFT": "UFT/USDT",
   "FXS": "FXS/USDT",
-  "TRX": "TRX/USDT"
+  "TRX": "TRX/USDT",
+  "SHIB": "SHIB/USDT",
+  "PEPE": "PEPE/USDT",
+  "ARB": "ARB/USDT",
+  "OP": "OP/BUSD",
+  "DYDX": "DYDX/USDT",
+  "ALCX": "ALCX/USDT"
 }

@@ -6,5 +6,10 @@
   "CRV": "CRV/USDT:USDT",
   "AAVE": "AAVE/USDT:USDT",
   "STETH": "STETH/USDT",
-  "TRX": "TRX/USDT"
+  "TRX": "TRX/USDT",
+  "SHIB": "SHIB/USDT",
+  "PEPE": "PEPE/USDT",
+  "ARB": "ARB/USDT:USDT",
+  "OP": "OP/USDT:USDT",
+  "DYDX": "DYDX/USDT:USDT"
 }
