@@ -92,5 +92,5 @@ export default {
   ...fraxswapOnChainFetchers,
   ...balancerMultiFetchers,
   ...traderJoeV2OnChainFetchers,
-  ...velodromeFetchers
+  ...velodromeFetchers,
 } as { [name: string]: Fetcher };

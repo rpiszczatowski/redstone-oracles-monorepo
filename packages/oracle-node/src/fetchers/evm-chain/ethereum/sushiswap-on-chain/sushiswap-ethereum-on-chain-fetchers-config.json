@@ -1,5 +1,5 @@
 {
-  "sushiswap-on-chain-dai": {
+  "sushiswap-ethereum-on-chain-dai": {
     "OHM": {
       "address": "0x055475920a8c93cffb64d039a8205f7acc7722d3",
       "symbol0": "OHM",
@@ -9,7 +9,7 @@
       "pairedToken": "DAI"
     }
   },
-  "sushiswap-on-chain-weth": {
+  "sushiswap-ethereum-on-chain-weth": {
     "DAI": {
       "address": "0xC3D03e4F041Fd4cD388c549Ee2A29a9E5075882f",
       "symbol0": "DAI",
@@ -21,6 +21,14 @@
     "LINK": {
       "address": "0xc40d16476380e4037e6b1a2594caf6a6cc8da967",
       "symbol0": "LINK",
+      "symbol0Decimals": 18,
+      "symbol1": "WETH",
+      "symbol1Decimals": 18,
+      "pairedToken": "ETH"
+    },
+    "PREMIA": {
+      "address": "0x93e2f3a8277e0360081547d711446e4a1f83546d",
+      "symbol0": "PREMIA",
       "symbol0Decimals": 18,
       "symbol1": "WETH",
       "symbol1Decimals": 18,

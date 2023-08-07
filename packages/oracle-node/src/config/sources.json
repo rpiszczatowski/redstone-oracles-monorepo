@@ -264,12 +264,17 @@
     "url": "https://sushi.com/",
     "color": "#e45d9d"
   },
-  "sushiswap-on-chain-dai": {
+  "sushiswap-ethereum-on-chain-dai": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/sushiswap.png",
     "url": "https://sushi.com/",
     "color": "#e45d9d"
   },
-  "sushiswap-on-chain-weth": {
+  "sushiswap-ethereum-on-chain-weth": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/sushiswap.png",
+    "url": "https://sushi.com/",
+    "color": "#e45d9d"
+  },
+  "sushiswap-arbitrum-on-chain-weth": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/sushiswap.png",
     "url": "https://sushi.com/",
     "color": "#e45d9d"
