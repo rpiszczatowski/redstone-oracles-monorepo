@@ -1,28 +1,42 @@
 {
-  "uniswap-v3-arbitrum-on-chain-eth-500": {
+  "uniswap-v3-arbitrum-on-chain-weth-500": {
     "ARB": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xC6F780497A95e246EB9449f5e4770916DCd6396A",
-      "token0Symbol": "ETH",
+      "token0Symbol": "WETH",
       "token1Symbol": "ARB",
       "token0Address": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
       "token1Address": "0x912CE59144191C1204E64559FE8253a0e49E6548",
       "token0Decimals": 18,
       "token1Decimals": 18,
-      "fee": 500
+      "fee": 500,
+      "pairedToken": "ETH"
     }
   },
-  "uniswap-v3-arbitrum-on-chain-eth-3000": {
+  "uniswap-v3-arbitrum-on-chain-weth-3000": {
     "ARB": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x92c63d0e701CAAe670C9415d91C474F686298f00",
-      "token0Symbol": "ETH",
+      "token0Symbol": "WETH",
       "token1Symbol": "ARB",
       "token0Address": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
       "token1Address": "0x912CE59144191C1204E64559FE8253a0e49E6548",
       "token0Decimals": 18,
       "token1Decimals": 18,
-      "fee": 3000
+      "fee": 3000,
+      "pairedToken": "ETH"
+    },
+    "PREMIA": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x4d834a9b910e6392460ebcfb59f8eef27d5c19ff",
+      "token0Symbol": "PREMIA",
+      "token1Symbol": "WETH",
+      "token0Address": "0x51fC0f6660482Ea73330E414eFd7808811a57Fa2",
+      "token1Address": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "fee": 3000,
+      "pairedToken": "ETH"
     }
   },
   "uniswap-v3-arbitrum-on-chain-usdc-500": {

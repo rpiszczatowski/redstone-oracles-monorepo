@@ -1,0 +1,12 @@
+{
+  "sushiswap-arbitrum-on-chain-weth": {
+    "PREMIA": {
+      "address": "0x42e9dc3f1a7dd582e81d2edf7e5c4869007ce14a",
+      "symbol0": "PREMIA",
+      "symbol0Decimals": 18,
+      "symbol1": "WETH",
+      "symbol1Decimals": 18,
+      "pairedToken": "ETH"
+    }
+  }
+}
