@@ -12,5 +12,5 @@ process.env.COINMARKETCAP_API_KEY = "coinmarketcap-api-key";
 process.env.MOCK_PRICES_URL_OR_PATH = "http://mock-fetcher";
 process.env.MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE = "50";
 if (!process.env.DRY_RUN_TEST_TYPE) {
-  process.env.AVALANCHE_RPC_URL = "http://mock-avalanche-rpc-url";
+  process.env.AVALANCHE_RPC_URLS = '["http://mock-avalanche-rpc-url"]';
 }
