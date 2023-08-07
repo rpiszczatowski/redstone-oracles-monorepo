@@ -603,6 +603,17 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "fee": 500
+    },
+    "FRAX": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x97e7d56A0408570bA1a7852De36350f7713906ec",
+      "token0Symbol": "DAI",
+      "token1Symbol": "FRAX",
+      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token1Address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "fee": 500
     }
   },
   "uniswap-v3-on-chain-dai-100": {
@@ -752,6 +763,17 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "fee": 500
+    },
+    "FRAX": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0xc63b0708e2f7e69cb8a1df0e1389a98c35a76d52",
+      "token0Symbol": "FRAX",
+      "token1Symbol": "USDC",
+      "token0Address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+      "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 500
     }
   },
   "uniswap-v3-on-chain-usdc-10000": {
@@ -835,6 +857,19 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "fee": 3000
+    }
+  },
+  "uniswap-v3-on-chain-usdt-500": {
+    "FRAX": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0xc2a856c3aff2110c1171b8f942256d40e980c726",
+      "token0Symbol": "FRAX",
+      "token1Symbol": "USDT",
+      "token0Address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+      "token1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 500
     }
   }
 }
