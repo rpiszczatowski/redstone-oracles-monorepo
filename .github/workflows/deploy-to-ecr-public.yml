@@ -13,8 +13,8 @@ on:
     paths:
       - packages/oracle-node/**
       - packages/cache-service/**
-      - .github/workflows/oracle-tests.yaml
-      - .github/workflows/deploy-to-ecr-public.yaml
+      - .github/workflows/oracle-tests.yml
+      - .github/workflows/deploy-to-ecr-public.yml
 
 jobs:
   deploy:

@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - packages/oracle-node/**
-      - .github/workflows/oracle-stocks-dry-run-test.yaml
+      - .github/workflows/oracle-stocks-dry-run-test.yml
 
 jobs:
   stocks-dry-run-test:

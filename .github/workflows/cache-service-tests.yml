@@ -5,7 +5,7 @@ on:
       - packages/cache-service/**
       - packages/protocol/**
       - packages/sdk/**
-      - .github/workflows/**
+      - .github/workflows/cache-service-tests.yml
 
 jobs:
   build:

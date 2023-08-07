@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - packages/oracle-node/**
-      - .github/workflows/oracle-rapid-dry-run-test.yaml
+      - .github/workflows/oracle-rapid-dry-run-test.yml
 
 jobs:
   rapid-dry-run-test:

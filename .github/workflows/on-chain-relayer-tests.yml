@@ -3,8 +3,8 @@ on:
   push:
     paths:
       - packages/on-chain-relayer/**
-      - .github/workflows/on-chain-relayer-tests.yaml
-      - .github/workflows/on-chain-relayer-deploy-to-ecr-public.yaml
+      - .github/workflows/on-chain-relayer-tests.yml
+      - .github/workflows/on-chain-relayer-deploy-to-ecr.yml
 
 jobs:
   run-tests:
