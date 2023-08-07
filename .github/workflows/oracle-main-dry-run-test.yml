@@ -19,7 +19,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run dry run test
-        run: yarn test:main-dry-run
+        run: yarn test:main-dry-run 2>&1 | tee logs.log
         env:
           NODE_ENV: test
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
@@ -30,3 +30,6 @@ jobs:
           STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
           SKIPPED_SOURCES: '["binance", "binancecoinm", "binanceusdm"]'
           SKIPPED_TOKENS: "[]"
+      - name: Summary
+        if: ${{ !cancelled() }}
+        run: grep 'Fetching failed for source:\|Request failed:' logs.log >> $GITHUB_STEP_SUMMARY || true
