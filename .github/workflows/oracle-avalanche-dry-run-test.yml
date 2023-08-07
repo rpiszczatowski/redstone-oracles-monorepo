@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - packages/oracle-node/**
-      - .github/workflows/oracle-avalanche-dry-run-test.yaml
+      - .github/workflows/oracle-avalanche-dry-run-test.yml
 
 jobs:
   avalanche-dry-run-test:

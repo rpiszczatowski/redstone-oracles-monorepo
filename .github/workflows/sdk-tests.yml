@@ -5,7 +5,7 @@ on:
       - packages/oracles-smartweave-contracts/**
       - packages/protocol/**
       - packages/sdk/**
-      - .github/workflows/**
+      - .github/workflows/sdk-tests.yml
 
 jobs:
   build:
