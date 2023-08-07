@@ -11,14 +11,10 @@ const mongoDbUrl = process.env.MONGO_DB_URL || "";
 
 // USAGE: ts-node scripts/analyze-data-packages.ts
 
-const symbol = "LINK";
-const periodInDays = 3;
 const THRESHOLDS = [1, 0.5, 0.2, 0.1]; // in percent
 const DATA_SERVICE_ID = "redstone-avalanche-prod";
 const API_PROVIDER = "redstone-avalanche"; // redstone-rapid
 const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
-
-main(symbol, periodInDays);
 
 interface DataPackagesGroupedBySigner {
   [signer: string]: CachedDataPackage[];
@@ -274,3 +270,9 @@ function handleDeviationsCalculationsFromApi(
     );
   }
 }
+
+const symbol: string = process.argv[2];
+const periodInDaysArg = process.argv[3];
+const periodInDays: number = periodInDaysArg ? parseInt(periodInDaysArg) : 30;
+
+main(symbol, periodInDays);
