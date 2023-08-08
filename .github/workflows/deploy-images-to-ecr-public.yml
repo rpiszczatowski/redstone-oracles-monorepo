@@ -1,0 +1,81 @@
+name: Deploy images to AWS ECR Public
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  oracle-node-deploy:
+    runs-on: LargeRunner
+    name: Deploy oracle node image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Build and Push Docker images to ECR public
+        id: build-and-push
+        run: |
+          # Build images (for node)
+          ORACLE_NODE_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-oracle-node
+          TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
+          docker build -t "$ORACLE_NODE_DOCKER_NAME:$TAG" \
+            -f packages/oracle-node/Dockerfile . \
+
+          # Push images to ECR Public
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+          docker push $ORACLE_NODE_DOCKER_NAME:$TAG
+
+  cache-service-deploy:
+    runs-on: LargeRunner
+    name: Deploy cache service image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Build and Push Docker images to ECR public
+        id: build-and-push
+        run: |
+          # Build images (for cache-service)
+          CACHE_SERVICE_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-cache-service
+          TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
+          docker build -t "$CACHE_SERVICE_DOCKER_NAME:$TAG" \
+            -f packages/cache-service/Dockerfile . \
+
+          # Push images to ECR Public
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+          docker push $CACHE_SERVICE_DOCKER_NAME:$TAG
+
+  on-chain-relayer-deploy:
+    runs-on: LargeRunner
+    name: Deploy on-chain relayer image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Build and Push Docker images to ECR public
+        id: build-and-push
+        run: |
+          # Build images (for on-chain relayer)
+          ON_CHAIN_RELAYER_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-on-chain-relayer
+          TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
+          docker build -t "$ON_CHAIN_RELAYER_DOCKER_NAME:$TAG" -f packages/on-chain-relayer/Dockerfile .
+
+          # Push images to ECR Public
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+          docker push $ON_CHAIN_RELAYER_DOCKER_NAME:$TAG

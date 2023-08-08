@@ -19,6 +19,7 @@ tmp.out
 lib
 
 dist
+oracle-node-obfuscated
 
 yarn-error.log
 .clinic/
