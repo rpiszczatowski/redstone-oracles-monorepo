@@ -352,5 +352,6 @@
   "BNB": "BNB/USDT",
   "PEPE": "PEPE/USDT",
   "ARB": "ARB/USDT",
-  "OP": "OP/USDT"
+  "OP": "OP/USDT",
+  "STETH": "STETH/USDT"
 }
