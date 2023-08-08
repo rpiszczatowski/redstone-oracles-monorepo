@@ -15,9 +15,6 @@ import {
 } from "../broadcasters";
 import { config } from "../config";
 import ManifestHelper from "../manifest/ManifestHelper";
-import { value } from "jsonpath";
-import { DEFAULT_NUM_VALUE_DECIMALS } from "redstone-protocol/src/common/redstone-constants";
-import { convertNumberToBytes } from "redstone-protocol/src/common/utils";
 import { createMetadataForRedstonePrice } from "../fetchers/MetadataForRedstonePrice";
 import { IterationContext } from "../schedulers/IScheduler";
 import { validateDataPointsForBigPackage } from "../validators/validate-data-feed-for-big-package";

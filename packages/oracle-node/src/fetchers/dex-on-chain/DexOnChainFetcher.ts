@@ -1,6 +1,5 @@
 import { appendFileSync, writeFileSync } from "fs";
 import { RedstoneCommon, RedstoneTypes } from "redstone-utils";
-import { SlippageData } from "redstone-utils/src/types";
 import { PricesObjWithMetadata } from "../../types";
 import {
   isLiquidity,
@@ -20,7 +19,10 @@ export abstract class DexOnChainFetcher<T> extends MultiRequestFetcher {
       `liquidity calculation not implemented for ${this.getName()}`
     );
   }
-  calculateSlippage(_assetId: string, _response: T): SlippageData[] {
+  calculateSlippage(
+    _assetId: string,
+    _response: T
+  ): RedstoneTypes.SlippageData[] {
     throw new Error(
       `slippage calculation not implemented for ${this.getName()}`
     );
