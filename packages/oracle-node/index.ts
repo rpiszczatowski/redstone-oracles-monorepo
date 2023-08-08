@@ -2,7 +2,9 @@ import { Consola } from "consola";
 import { config } from "./src/config";
 import NodeRunner from "./src/NodeRunner";
 import { closeLocalLevelDB, setupLocalDb } from "./src/db/local-db";
+import Decimal from "decimal.js";
 
+Decimal.set({ toExpPos: 9e15 });
 const logger = require("./src/utils/logger")("index") as Consola;
 
 async function start() {
