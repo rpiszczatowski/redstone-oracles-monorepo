@@ -1,5 +1,5 @@
 {
-  "uniswap-v3-on-chain-ohm-10000": {
+  "uniswap-v3-ethereum-on-chain-ohm-10000": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x584eC2562b937C4AC0452184D8d83346382B5D3a",
@@ -23,7 +23,7 @@
       "fee": 10000
     }
   },
-  "uniswap-v3-on-chain-ohm-3000": {
+  "uniswap-v3-ethereum-on-chain-ohm-3000": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x88051B0eea095007D3bEf21aB287Be961f3d8598",
@@ -58,7 +58,7 @@
       "fee": 3000
     }
   },
-  "uniswap-v3-on-chain-ohm-500": {
+  "uniswap-v3-ethereum-on-chain-ohm-500": {
     "USDC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x58557CFA7dcfe3A67E9A13080c90655E89cc1f11",
@@ -71,7 +71,7 @@
       "fee": 500
     }
   },
-  "uniswap-v3-on-chain-weth-10000": {
+  "uniswap-v3-ethereum-on-chain-weth-10000": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x584eC2562b937C4AC0452184D8d83346382B5D3a",
@@ -121,7 +121,7 @@
       "pairedToken": "ETH"
     }
   },
-  "uniswap-v3-on-chain-weth-3000": {
+  "uniswap-v3-ethereum-on-chain-weth-3000": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x88051B0eea095007D3bEf21aB287Be961f3d8598",
@@ -231,7 +231,7 @@
       "pairedToken": "ETH"
     }
   },
-  "uniswap-v3-on-chain-weth-500": {
+  "uniswap-v3-ethereum-on-chain-weth-500": {
     "WBTC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x4585FE77225b41b697C938B018E2Ac67Ac5a20c0",
@@ -311,7 +311,7 @@
       "pairedToken": "ETH"
     }
   },
-  "uniswap-v3-on-chain-weth-100": {
+  "uniswap-v3-ethereum-on-chain-weth-100": {
     "WBTC": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xe6ff8b9A37B0fab776134636D9981Aa778c4e718",
@@ -349,7 +349,7 @@
       "pairedToken": "ETH"
     }
   },
-  "uniswap-v3-on-chain-wbtc-10000": {
+  "uniswap-v3-ethereum-on-chain-wbtc-10000": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x9Fd3D0979c6019Fc673FAB0158AFE7D2F055eCe0",
@@ -395,7 +395,7 @@
       "fee": 10000
     }
   },
-  "uniswap-v3-on-chain-wbtc-3000": {
+  "uniswap-v3-ethereum-on-chain-wbtc-3000": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xCBCdF9626bC03E24f779434178A73a0B4bad62eD",
@@ -430,7 +430,7 @@
       "fee": 3000
     }
   },
-  "uniswap-v3-on-chain-wbtc-500": {
+  "uniswap-v3-ethereum-on-chain-wbtc-500": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x4585FE77225b41b697C938B018E2Ac67Ac5a20c0",
@@ -465,7 +465,7 @@
       "fee": 500
     }
   },
-  "uniswap-v3-on-chain-wbtc-100": {
+  "uniswap-v3-ethereum-on-chain-wbtc-100": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xe6ff8b9A37B0fab776134636D9981Aa778c4e718",
@@ -489,7 +489,7 @@
       "fee": 100
     }
   },
-  "uniswap-v3-on-chain-dai-3000": {
+  "uniswap-v3-ethereum-on-chain-dai-3000": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x2A4AED78CE95ac63F127C38B11C62FBEAf2939c0",
@@ -535,7 +535,7 @@
       "fee": 3000
     }
   },
-  "uniswap-v3-on-chain-dai-10000": {
+  "uniswap-v3-ethereum-on-chain-dai-10000": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xa80964C5bBd1A0E95777094420555fead1A26c1e",
@@ -570,7 +570,7 @@
       "fee": 10000
     }
   },
-  "uniswap-v3-on-chain-dai-500": {
+  "uniswap-v3-ethereum-on-chain-dai-500": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x60594a405d53811d3BC4766596EFD80fd545A270",
@@ -616,7 +616,7 @@
       "fee": 500
     }
   },
-  "uniswap-v3-on-chain-dai-100": {
+  "uniswap-v3-ethereum-on-chain-dai-100": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xD8dEC118e1215F02e10DB846DCbBfE27d477aC19",
@@ -640,7 +640,7 @@
       "fee": 100
     }
   },
-  "uniswap-v3-on-chain-usdc-3000": {
+  "uniswap-v3-ethereum-on-chain-usdc-3000": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x893f503FaC2Ee1e5B78665db23F9c94017Aae97D",
@@ -697,7 +697,7 @@
       "fee": 3000
     }
   },
-  "uniswap-v3-on-chain-usdc-500": {
+  "uniswap-v3-ethereum-on-chain-usdc-500": {
     "OHM": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x58557CFA7dcfe3A67E9A13080c90655E89cc1f11",
@@ -776,7 +776,7 @@
       "fee": 500
     }
   },
-  "uniswap-v3-on-chain-usdc-10000": {
+  "uniswap-v3-ethereum-on-chain-usdc-10000": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x7BeA39867e4169DBe237d55C8242a8f2fcDcc387",
@@ -811,7 +811,7 @@
       "fee": 10000
     }
   },
-  "uniswap-v3-on-chain-usdc-100": {
+  "uniswap-v3-ethereum-on-chain-usdc-100": {
     "WETH": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xE0554a476A092703abdB3Ef35c80e0D76d32939F",
@@ -846,7 +846,7 @@
       "fee": 100
     }
   },
-  "uniswap-v3-on-chain-usdt-3000": {
+  "uniswap-v3-ethereum-on-chain-usdt-3000": {
     "GHO": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xBBec426df87537AD0bec0E899007bE441427d0F8",
@@ -859,7 +859,7 @@
       "fee": 3000
     }
   },
-  "uniswap-v3-on-chain-usdt-500": {
+  "uniswap-v3-ethereum-on-chain-usdt-500": {
     "FRAX": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xc2a856c3aff2110c1171b8f942256d40e980c726",
