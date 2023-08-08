@@ -8,15 +8,20 @@ export interface PoolsConfig {
   [symbol: string]: {
     address: string;
     tokenIndex: number;
+    tokenDecimalsMultiplier: number;
     pairedToken: string;
     pairedTokenIndex: number;
+    pairedTokenDecimalsMultiplier: number;
     provider: providers.Provider;
-    ratioMultiplier: number;
     functionName: string;
     multiBlockConfig?: { sequenceStep: number; intervalLength: number };
     fee: number;
   };
 }
+
+export const CURVE_SLIPPAGE_PARAMS = {
+  amountInUsd: 10_000,
+};
 
 // 144 blocks = 30 min
 // 72 blocks = 15 min
@@ -45,10 +50,11 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
     VST: {
       address: "0x59bF0545FCa0E5Ad48E13DA269faCD2E8C886Ba4",
       tokenIndex: 0,
+      tokenDecimalsMultiplier: 1e18,
       pairedTokenIndex: 1,
       pairedToken: "FRAX",
+      pairedTokenDecimalsMultiplier: 1e18,
       provider: arbitrumProvider,
-      ratioMultiplier: 1,
       functionName: "get_dy",
       multiBlockConfig: ARBITRUM_MULTI_BLOCK_CONFIG,
       fee: 0.0006,
@@ -56,10 +62,11 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
     crvUSD: {
       address: "0x0CD6f267b2086bea681E922E19D40512511BE538",
       tokenIndex: 1,
+      tokenDecimalsMultiplier: 1e18,
       pairedTokenIndex: 0,
       pairedToken: "FRAX",
       provider: ethereumProvider,
-      ratioMultiplier: 1,
+      pairedTokenDecimalsMultiplier: 1e18,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.00015,
@@ -69,10 +76,11 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
     FRAX: {
       address: "0xDcEF968d416a41Cdac0ED8702fAC8128A64241A2",
       tokenIndex: 0,
+      tokenDecimalsMultiplier: 1e18,
       pairedTokenIndex: 1,
       pairedToken: "USDC",
       provider: ethereumProvider,
-      ratioMultiplier: 10 ** 12,
+      pairedTokenDecimalsMultiplier: 1e6,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.00015,
@@ -83,7 +91,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 1,
       pairedToken: "USDC",
       provider: ethereumProvider,
-      ratioMultiplier: 10 ** 12,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e6,
       functionName: "get_dy_underlying",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.00015,
@@ -94,7 +103,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 0,
       pairedToken: "USDC",
       provider: ethereumProvider,
-      ratioMultiplier: 10 ** 12,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e6,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.00015,
@@ -107,7 +117,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 2,
       pairedToken: "USDT",
       provider: ethereumProvider,
-      ratioMultiplier: 10 ** 12,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e6,
       functionName: "get_dy_underlying",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.00015,
@@ -118,7 +129,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 0,
       pairedToken: "USDT",
       provider: ethereumProvider,
-      ratioMultiplier: 10 ** 12,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e6,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.00015,
@@ -131,7 +143,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 0,
       pairedToken: "ETH",
       provider: ethereumProvider,
-      ratioMultiplier: 1,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e18,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.00015,
@@ -142,7 +155,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 0,
       pairedToken: "ETH",
       provider: ethereumProvider,
-      ratioMultiplier: 1,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e18,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.0003,
@@ -153,7 +167,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 0,
       pairedToken: "ETH",
       provider: ethereumProvider,
-      ratioMultiplier: 1,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e18,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.0006,
@@ -166,7 +181,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 0,
       pairedToken: "ETH",
       provider: ethereumProvider,
-      ratioMultiplier: 1,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e18,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.0006,
@@ -179,7 +195,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 1,
       pairedToken: "FRXETH",
       provider: ethereumProvider,
-      ratioMultiplier: 1,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e18,
       functionName: "get_dy",
       fee: 0.0006,
     },
@@ -191,7 +208,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 1,
       pairedToken: "crvFRAX",
       provider: ethereumProvider,
-      ratioMultiplier: 1,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e18,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.0006,
@@ -204,7 +222,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 1,
       pairedToken: "3Crv",
       provider: ethereumProvider,
-      ratioMultiplier: 1,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e18,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.0006,
@@ -215,7 +234,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 1,
       pairedToken: "3Crv",
       provider: ethereumProvider,
-      ratioMultiplier: 1,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e18,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.0006,
@@ -228,7 +248,8 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       pairedTokenIndex: 1,
       pairedToken: "crvUSD",
       provider: ethereumProvider,
-      ratioMultiplier: 1,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e18,
       functionName: "get_dy",
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.0006,

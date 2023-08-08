@@ -141,6 +141,16 @@ export const getLastPrice = (
   };
 };
 
+export const getRawPriceOrFail = (symbol: string) => {
+  const lastPrice = getRawPrice(symbol);
+
+  if (!lastPrice) {
+    throw new Error(`Missing price for ${symbol} in local DB`);
+  }
+
+  return lastPrice;
+};
+
 export const clearLastPricesCache = () => {
   for (const symbol of Object.keys(lastPrices)) {
     delete lastPrices[symbol];

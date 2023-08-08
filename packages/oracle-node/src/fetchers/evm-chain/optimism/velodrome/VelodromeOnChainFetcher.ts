@@ -326,14 +326,6 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     return otherAssetLastPrice * priceMultiplier;
   }
 
-  private static dataFeedIdAmountToNumber(amount: string): number {
-    if (amount.endsWith("K")) {
-      return 1000 * Number(amount.slice(0, -1));
-    } else {
-      return Number(amount);
-    }
-  }
-
   override calculateSlippage(
     assetId: string,
     response: MulticallResult

@@ -34,10 +34,11 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
       )
     );
 
-    const ratios = responsesPerBlock.map((response) => response.ratio);
+    const ratios = responsesPerBlock.map((response) => response.sellRatio);
 
     return {
-      ratio: new Decimal(MathUtils.getMedian(ratios)),
+      ...responsesPerBlock[0],
+      sellRatio: new Decimal(MathUtils.getMedian(ratios)),
       assetId: assetId,
     };
   }
@@ -49,7 +50,7 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     return this.curveFetcher.calculateSlippage(assetId, response);
   }
 
-  calculateLiquidity(assetId: string, response: CurveFetcherResponse): number {
+  calculateLiquidity(assetId: string, response: CurveFetcherResponse): string {
     return this.curveFetcher.calculateLiquidity(assetId, response);
   }
 

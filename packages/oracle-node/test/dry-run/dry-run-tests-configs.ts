@@ -5,6 +5,9 @@ import stocksManifest from "../../manifests/data-services/stocks.json";
 import avalancheManifest from "../../manifests/data-services/avalanche.json";
 import rapidManifest from "../../manifests/data-services/rapid.json";
 import { Manifest } from "../../src/types";
+import Decimal from "decimal.js";
+
+Decimal.set({ toExpPos: 9e15 });
 
 interface DryRunTestConfig {
   manifest: Manifest;
