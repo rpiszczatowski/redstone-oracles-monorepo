@@ -309,102 +309,137 @@
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-dai-100": {
+  "uniswap-v3-ethereum-on-chain-dai-100": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-dai-10000": {
+  "uniswap-v3-ethereum-on-chain-dai-10000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-dai-3000": {
+  "uniswap-v3-ethereum-on-chain-dai-3000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-dai-500": {
+  "uniswap-v3-ethereum-on-chain-dai-500": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-ohm-10000": {
+  "uniswap-v3-ethereum-on-chain-ohm-10000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-ohm-3000": {
+  "uniswap-v3-ethereum-on-chain-ohm-3000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-ohm-500": {
+  "uniswap-v3-ethereum-on-chain-ohm-500": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-usdc-100": {
+  "uniswap-v3-ethereum-on-chain-usdc-100": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-usdc-10000": {
+  "uniswap-v3-ethereum-on-chain-usdc-10000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-usdc-3000": {
+  "uniswap-v3-ethereum-on-chain-usdc-3000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-usdc-500": {
+  "uniswap-v3-ethereum-on-chain-usdc-500": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-usdt-3000": {
+  "uniswap-v3-ethereum-on-chain-usdt-3000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-wbtc-100": {
+  "uniswap-v3-ethereum-on-chain-wbtc-100": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-wbtc-10000": {
+  "uniswap-v3-ethereum-on-chain-wbtc-10000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-wbtc-3000": {
+  "uniswap-v3-ethereum-on-chain-wbtc-3000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-wbtc-500": {
+  "uniswap-v3-ethereum-on-chain-wbtc-500": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-weth-100": {
+  "uniswap-v3-ethereum-on-chain-weth-100": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-weth-10000": {
+  "uniswap-v3-ethereum-on-chain-weth-10000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-weth-3000": {
+  "uniswap-v3-ethereum-on-chain-weth-3000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
-  "uniswap-v3-on-chain-weth-500": {
+  "uniswap-v3-ethereum-on-chain-weth-500": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-optimism-on-chain-usdc-500": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-optimism-on-chain-weth-3000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-optimism-on-chain-usdc-3000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-arbitrum-on-chain-weth-500": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-arbitrum-on-chain-weth-3000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-arbitrum-on-chain-usdc-500": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-arbitrum-on-chain-usdc-3000": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
     "color": "#e23275"
