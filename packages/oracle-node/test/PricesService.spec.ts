@@ -1,6 +1,7 @@
 import { SafeNumber } from "redstone-utils";
 import emptyManifest from "../manifests/dev/empty.json";
 import {
+  PriceValueInLocalDB,
   clearPricesSublevel,
   closeLocalLevelDB,
   savePrices,
@@ -12,11 +13,13 @@ import PricesService, {
   PricesDataFetched,
 } from "../src/fetchers/PricesService";
 import {
+  NotSanitizedPriceDataBeforeAggregation,
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
   PriceDataFetchedValue,
 } from "../src/types";
 import { preparePrice, preparePrices } from "./fetchers/_helpers";
+import { config } from "../src/config";
 
 jest.mock("../src/Terminator", () => ({
   terminateWithManifestConfigError: (details: string) => {
@@ -310,6 +313,25 @@ describe("PricesService", () => {
   });
 
   describe("sanitizeSourceValues", () => {
+    const checkSourceValuesSanitization = (
+      price: NotSanitizedPriceDataBeforeAggregation,
+      recentPrices: PriceValueInLocalDB[],
+      expectedValuesBySource: Record<string, string>
+    ) => {
+      const priceWithExcludedSources = pricesService.sanitizeSourceValues(
+        price,
+        recentPrices,
+        emptyManifest.deviationCheck
+      );
+      const comparableSources: Record<string, string> = {};
+      Object.entries(priceWithExcludedSources.source).forEach(
+        ([key, value]) => {
+          comparableSources[key] = value.toString() as any;
+        }
+      );
+      expect(comparableSources).toEqual(expectedValuesBySource);
+    };
+
     it("should exclude invalid sources", () => {
       const price = preparePrice({
         source: {
@@ -322,18 +344,7 @@ describe("PricesService", () => {
           src7: 123,
         } as any,
       });
-      const priceWithExcludedSources = pricesService.sanitizeSourceValues(
-        price,
-        [],
-        emptyManifest.deviationCheck
-      );
-      const comparableSources: Record<string, string> = {};
-      Object.entries(priceWithExcludedSources.source).forEach(
-        ([key, value]) => {
-          comparableSources[key] = value.toString() as any;
-        }
-      );
-      expect(comparableSources).toEqual({ src3: "42", src7: "123" });
+      checkSourceValuesSanitization(price, [], { src3: "42", src7: "123" });
     });
 
     it("should exclude deviated sources", async () => {
@@ -348,21 +359,92 @@ describe("PricesService", () => {
         },
       });
       const recentPrices = [{ value: "42", timestamp: price.timestamp }];
-      const priceWithExcludedSources = pricesService.sanitizeSourceValues(
-        price,
-        recentPrices,
-        emptyManifest.deviationCheck
-      );
-      const comparableSources: Record<string, string> = {};
-      Object.entries(priceWithExcludedSources.source).forEach(
-        ([key, value]) => {
-          comparableSources[key] = value.toString() as any;
-        }
-      );
-      expect(comparableSources).toEqual({
+      checkSourceValuesSanitization(price, recentPrices, {
         src2: "44",
         src4: "41",
         src5: "42",
+      });
+    });
+
+    it("should exclude sources with too high slippage", async () => {
+      const simulationValueInUsd = config.simulationValueInUsdForSlippageCheck;
+      const price = preparePrice({
+        symbol: "ETH",
+        source: {
+          src1: SafeNumber.createSafeNumber(100),
+          src2: SafeNumber.createSafeNumber(101),
+          src3: SafeNumber.createSafeNumber(102),
+          src4: SafeNumber.createSafeNumber(103),
+          src5: SafeNumber.createSafeNumber(105),
+        },
+        sourceMetadata: {
+          // src1 should be excluded due to lack of "buy direction"
+          src1: {
+            slippage: [
+              {
+                direction: "sell",
+                simulationValueInUsd,
+                slippageAsPercent: "3", // valid, cause less than 10
+              },
+            ],
+          },
+
+          // src2 should stay, it's valid
+          src2: {
+            slippage: [
+              {
+                direction: "buy",
+                simulationValueInUsd,
+                slippageAsPercent: "9.9", // valid, cause less than 10
+              },
+              {
+                direction: "sell",
+                simulationValueInUsd,
+                slippageAsPercent: "3", // valid, cause less than 10
+              },
+            ],
+          },
+
+          // src3 should be excluded, due to too high slippage
+          src3: {
+            slippage: [
+              {
+                direction: "buy",
+                simulationValueInUsd,
+                slippageAsPercent: "1", // valid, cause less than 10
+              },
+              {
+                direction: "sell",
+                simulationValueInUsd,
+                slippageAsPercent: "10.001", // too big slippage, >10
+              },
+            ],
+          },
+
+          // src4 is not presented here, e.g. if it doesn't support slippage,
+          // so it also should be considered valid
+
+          // src5 should be exluded due to presented slippage data, but missing
+          // required simualtion amount
+          src5: {
+            slippage: [
+              {
+                direction: "buy",
+                simulationValueInUsd: "100",
+                slippageAsPercent: "1",
+              },
+              {
+                direction: "sell",
+                simulationValueInUsd: "100",
+                slippageAsPercent: "2",
+              },
+            ],
+          },
+        },
+      });
+      checkSourceValuesSanitization(price, [], {
+        src2: "101",
+        src4: "103",
       });
     });
   });
