@@ -251,9 +251,11 @@ export default class PricesService {
           recentPrices: recentPricesInLocalDBForSymbol,
         });
 
+        this.assertAcceptableSlippageForSource(price, sourceName);
+
         newSources[sourceName] = valueFromSourceNum;
       } catch (e: any) {
-        if (valueFromSource as any as string !== VALUE_FOR_FAILED_FETCHER) {
+        if ((valueFromSource as any as string) !== VALUE_FOR_FAILED_FETCHER) {
           logger.error(
             `Excluding token: "${price.symbol}", value: "${valueFromSource}" for source: "${sourceName}", reason: "${e.message}"`
           );
@@ -284,6 +286,54 @@ export default class PricesService {
 
     if (deviationPercent.gt(deviationWithRecentValues.maxPercent)) {
       throw new Error(`Value is too deviated (${deviationPercent}%)`);
+    }
+  }
+
+  assertAcceptableSlippageForSource(
+    price: NotSanitizedPriceDataBeforeAggregation,
+    sourceName: string
+  ) {
+    const slippages = price.sourceMetadata[sourceName]?.slippage;
+    const amountToCheck = config.simulationValueInUsdForSlippageCheck;
+    const maxSlippage = config.maxAllowedSlippagePercent;
+    const checkedDirections: { buy: boolean; sell: boolean } = {
+      buy: false,
+      sell: false,
+    };
+    const errors: string[] = [];
+
+    // We always check slippage if it's available, but if it's not - we don't
+    // throw here. We need to throw on the fetcher level if slippage is not
+    // fetched properly
+    if (!slippages) {
+      return;
+    }
+
+    for (const slippage of slippages) {
+      if (slippage.simulationValueInUsd === amountToCheck) {
+        const { direction, slippageAsPercent } = slippage;
+        if (SafeNumber.createSafeNumber(slippageAsPercent).gt(maxSlippage)) {
+          errors.push(
+            `Slippage is too big (${direction}): ${slippageAsPercent}`
+          );
+        }
+        checkedDirections[direction] = true;
+      }
+    }
+
+    // We need to check both trade directions
+    for (const direction of ["buy", "sell"]) {
+      if (!checkedDirections[direction as "buy" | "sell"]) {
+        errors.push(`Missing slippage check for direction: ${direction}`);
+      }
+    }
+
+    if (errors.length > 0) {
+      const errContext =
+        `Failed slippage check for ${price.symbol} from ${sourceName}. ` +
+        `Max allowed slippage: ${maxSlippage}% ` +
+        `for ${amountToCheck} USD amount. `;
+      throw new Error(`${errContext}. ${errors.join(", ")}`);
     }
   }
 

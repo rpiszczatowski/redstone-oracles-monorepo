@@ -192,6 +192,8 @@ export interface NodeConfig {
   enableHttpServer: boolean;
   pricesHardLimitsUrls: string[];
   newyorkfedRatesUrl: string;
+  simulationValueInUsdForSlippageCheck: string;
+  maxAllowedSlippagePercent: number;
 }
 
 export interface MulticallRequest {

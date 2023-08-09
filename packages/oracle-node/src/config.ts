@@ -25,6 +25,8 @@ const DEFAULT_COINGECKO_API_URL =
   "https://api.coingecko.com/api/v3/simple/price";
 const DEFAULT_COINGECKO_API_KEY = "";
 const DEFAULT_ENABLE_HTTP_SERVER = "false";
+const DEFAULT_MAX_ALLOWED_SLIPPAGE_PERCENT = "10";
+const DEFAULT_SIMULATION_VALUE_IN_USD_FOR_SLIPPAGE_CHECK = "10000";
 const DEFAULT_PRICES_HARD_LIMITS_URLS = "[]";
 const DEFAULT_NEWYORKFED_RATES_URL =
   "https://markets.newyorkfed.org/api/rates/all/latest.json";
@@ -217,6 +219,16 @@ export const config: NodeConfig = Object.freeze({
   coingeckoApiKey: getFromEnv("COINGECKO_API_KEY", DEFAULT_COINGECKO_API_KEY),
   enableHttpServer: parserFromString.boolean(
     getFromEnv("ENABLE_HTTP_SERVER", DEFAULT_ENABLE_HTTP_SERVER)
+  ),
+  maxAllowedSlippagePercent: parserFromString.number(
+    getFromEnv(
+      "MAX_ALLOWED_SLIPPAGE_PERCENT",
+      DEFAULT_MAX_ALLOWED_SLIPPAGE_PERCENT
+    )
+  ),
+  simulationValueInUsdForSlippageCheck: getFromEnv(
+    "SIMULATION_VALUE_IN_USD_FOR_SLIPPAGE_CHECK",
+    DEFAULT_SIMULATION_VALUE_IN_USD_FOR_SLIPPAGE_CHECK
   ),
   pricesHardLimitsUrls: getHardLimitsUrls(),
   newyorkfedRatesUrl: getFromEnv(

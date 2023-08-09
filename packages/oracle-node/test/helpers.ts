@@ -54,6 +54,8 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   arbitrumRpcUrls: ["https://mock-rpc.url"],
   optimismRpcUrls: ["https://mock-rpc.url"],
   newyorkfedRatesUrl: "",
+  simulationValueInUsdForSlippageCheck: "10000",
+  maxAllowedSlippagePercent: 5,
 };
 
 export const mockHardLimits = {
