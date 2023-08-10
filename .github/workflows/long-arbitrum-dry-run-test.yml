@@ -1,4 +1,4 @@
-name: Long primary dry run test
+name: Long arbitrum dry run test
 on:
   push:
     branches: "main"
@@ -8,7 +8,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  long-primary:
+  long-arbitrum:
     runs-on: LargeRunner
     defaults:
       run:
@@ -22,13 +22,11 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
-      - name: Run long primary dry run tests
-        run: node dist/primary-long-price-propagation-core.js
+      - name: Run long arbitrum dry run tests
+        run: node dist/arbitrum-long-price-propagation-core.js
         env:
           NODE_ENV: test
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
           COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
           COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
-          KAIKO_API_KEY: ${{ secrets.KAIKO_API_KEY }}
           TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
-          STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
