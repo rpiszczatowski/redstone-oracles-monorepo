@@ -2,8 +2,6 @@ name: Long avalanche dry run test
 on:
   push:
     branches: "main"
-    paths:
-      - packages/integration
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -31,5 +29,3 @@ jobs:
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
           COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
           COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
-          KAIKO_API_KEY: ${{ secrets.KAIKO_API_KEY }}
-          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
