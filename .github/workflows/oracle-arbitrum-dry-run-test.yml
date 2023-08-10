@@ -1,12 +1,12 @@
-name: Oracle avalanche dry run test
+name: Oracle arbitrum dry run test
 on:
   push:
     paths:
       - packages/oracle-node/**
-      - .github/workflows/oracle-avalanche-dry-run-test.yml
+      - .github/workflows/oracle-arbitrum-dry-run-test.yml
 
 jobs:
-  avalanche-dry-run-test:
+  arbitrum-dry-run-test:
     runs-on: LargeRunner
     defaults:
       run:
@@ -18,7 +18,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run dry run test
-        run: yarn test:avalanche-dry-run 2>&1 | tee logs.log
+        run: yarn test:arbitrum-dry-run 2>&1 | tee logs.log
         env:
           NODE_ENV: test
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price

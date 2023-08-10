@@ -1,11 +1,13 @@
+import Decimal from "decimal.js";
 import { getTokensFromManifest } from "./helpers";
 import mainManifest from "../../manifests/data-services/main.json";
 import wideSupportTokensManifest from "../../manifests/dev/main-wide-support.json";
 import stocksManifest from "../../manifests/data-services/stocks.json";
 import avalancheManifest from "../../manifests/data-services/avalanche.json";
 import rapidManifest from "../../manifests/data-services/rapid.json";
+import primaryManifest from "../../manifests/data-services/primary.json";
+import arbitrumManifest from "../../manifests/data-services/arbitrum.json";
 import { Manifest } from "../../src/types";
-import Decimal from "decimal.js";
 
 Decimal.set({ toExpPos: 9e15 });
 
@@ -20,6 +22,8 @@ enum DryRunTestType {
   "stocks" = "stocks",
   "avalanche" = "avalanche",
   "rapid" = "rapid",
+  "primary" = "primary",
+  "arbitrum" = "arbitrum",
 }
 
 const config: Record<DryRunTestType, DryRunTestConfig> = {
@@ -43,6 +47,18 @@ const config: Record<DryRunTestType, DryRunTestConfig> = {
   [DryRunTestType.rapid]: {
     manifest: rapidManifest,
     nodeIterations: 3,
+  },
+  [DryRunTestType.primary]: {
+    manifest: primaryManifest,
+    nodeIterations: 3,
+    additionalCheck:
+      assertAllRequiredTokensAreProperlyFetched(avalancheManifest),
+  },
+  [DryRunTestType.arbitrum]: {
+    manifest: arbitrumManifest,
+    nodeIterations: 3,
+    additionalCheck:
+      assertAllRequiredTokensAreProperlyFetched(avalancheManifest),
   },
 };
 
