@@ -2,8 +2,8 @@ import { PricesObj, PricesObjWithMetadata } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 import { BaseFetcher, normalizePriceObj } from "./BaseFetcher";
 
-export interface RequestIdToResponse {
-  [requestId: string]: any;
+export interface RequestIdToResponse<T = any> {
+  [requestId: string]: T;
 }
 
 interface ExtendedPromiseResult {

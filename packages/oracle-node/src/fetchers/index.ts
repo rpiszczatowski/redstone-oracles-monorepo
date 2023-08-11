@@ -45,6 +45,7 @@ import balancerMultiFetchers from "./balancer-multi/all-balancers-multi-fetchers
 import traderJoeV2OnChainFetchers from "./evm-chain/avalanche/trader-joe-on-chain/trader-joe-v2/trader-joe-v2-on-chain-fetchers";
 import { FixedValueFetcher } from "./fixed-value-fetcher/fixed-value-fetcher";
 import { KaikoV2Fetcher } from "./kaiko-v2/KaikoV2Fetcher";
+import { twapCacheServicesMinuteFetchers } from "./twap-cache-service-minute/all-twap-cache-service-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -93,4 +94,5 @@ export default {
   ...balancerMultiFetchers,
   ...traderJoeV2OnChainFetchers,
   ...velodromeFetchers,
+  ...twapCacheServicesMinuteFetchers,
 } as { [name: string]: Fetcher };
