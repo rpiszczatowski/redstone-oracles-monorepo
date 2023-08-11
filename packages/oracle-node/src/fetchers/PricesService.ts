@@ -305,7 +305,7 @@ export default class PricesService {
     // We always check slippage if it's available, but if it's not - we don't
     // throw here. We need to throw on the fetcher level if slippage is not
     // fetched properly
-    if (!slippages) {
+    if (!slippages || slippages.length === 0) {
       return;
     }
 
