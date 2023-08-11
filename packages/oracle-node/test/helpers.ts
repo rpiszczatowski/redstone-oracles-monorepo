@@ -56,6 +56,7 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   newyorkfedRatesUrl: "",
   simulationValueInUsdForSlippageCheck: "10000",
   maxAllowedSlippagePercent: 5,
+  historicalDataPackagesUrl: "",
 };
 
 export const mockHardLimits = {

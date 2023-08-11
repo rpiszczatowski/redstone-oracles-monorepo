@@ -59,6 +59,8 @@ const DEFAULT_OPTIMISM_RPC_URLS = [
   "https://1rpc.io/op",
   "https://optimism.blockpi.network/v1/rpc/public",
 ];
+const DEFAULT_HISTORICAL_DATA_PACKAGES_URL =
+  "https://oracle-gateway-1.b.redstone.finance/data-packages/historical";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -242,4 +244,8 @@ export const config: NodeConfig = Object.freeze({
   arbitrumRpcUrls: getRpcUrls("ARBITRUM_RPC_URLS", DEFAULT_ARBITRUM_RPC_URLS),
   ethMainRpcUrls: getRpcUrls("ETH_MAIN_RPC_URLS", DEFAULT_ETH_MAIN_RPC_URLS),
   optimismRpcUrls: getRpcUrls("OPTIMISM_RPC_URLS", DEFAULT_OPTIMISM_RPC_URLS),
+  historicalDataPackagesUrl: getFromEnv(
+    "HISTORICAL_DATA_PACKAGES_URL",
+    DEFAULT_HISTORICAL_DATA_PACKAGES_URL
+  ),
 });

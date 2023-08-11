@@ -194,6 +194,7 @@ export interface NodeConfig {
   newyorkfedRatesUrl: string;
   simulationValueInUsdForSlippageCheck: string;
   maxAllowedSlippagePercent: number;
+  historicalDataPackagesUrl: string;
 }
 
 export interface MulticallRequest {

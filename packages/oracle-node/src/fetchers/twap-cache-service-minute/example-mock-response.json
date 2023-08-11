@@ -1,0 +1,2224 @@
+{
+  "PREMIA-TWAP-60": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691582400000,
+            "signature": "rPiESu1hDzGYTpkru7e2IjKpvG9n8o7IV8/uxPqM6aIoMY1s6BU8I+TZa7w4A8XkBbTTRcV3l1m5Bj+BabAHhRw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5052626283119137,
+                "metadata": {
+                  "value": "0.5052626283119137",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668452.2339420798",
+                      "value": "0.5045309988945039"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5070600464347483"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26345.110883829082",
+                      "value": "0.5052626283119137"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691582340000,
+            "signature": "jv5qbF6I2etc84I8PCIQvv8X/D/fnw0qlEDRnu4os3ckPdgCUer2esBvkRyHJ6OLzEpta6UH0Y+j+dybkJMw+Bw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5053014585121319,
+                "metadata": {
+                  "value": "0.5053014585121319",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668503.6055112912",
+                      "value": "0.5045697728678905"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5070990147692787"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26347.13554560509",
+                      "value": "0.5053014585121319"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691582280000,
+            "signature": "zFVxplnNJHVtXhiLkXsFtUTdnuvYvWkL3Oag6Z8eDGs0kAtUiB4riMNznrBsiUrLjjYXLGypDVOn0TIqblXLlBs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5054344306992798,
+                "metadata": {
+                  "value": "0.5054344306992798",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668679.5250243732",
+                      "value": "0.5047025525089082"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5072324599908558"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26354.06890425578",
+                      "value": "0.5054344306992798"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691582220000,
+            "signature": "27ZtEOsMyfNR23qnfU1jF5E03msFbMF8YYJ9GbWSpplA8u+6fA4APnVgXP6M/+5NTvCaDIEnQk17kPYdIGwShhs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.505400764446695,
+                "metadata": {
+                  "value": "0.505400764446695",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668634.9852533952",
+                      "value": "0.5046689350056656"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.507198673974154"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26352.31349804188",
+                      "value": "0.505400764446695"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691582160000,
+            "signature": "S15169JlW/0t8d/GE5dsgdHhn5x4a+LROG3vXkaMn6hMrI9g66NoZwXQ/URFUQwH29//0zG62rIkx4IHisJPTRs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5054920438009787,
+                "metadata": {
+                  "value": "0.5054920438009787",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668755.7459921966",
+                      "value": "0.5047600821857945"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5072902780450433"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26357.072933185624",
+                      "value": "0.5054920438009787"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691582100000,
+            "signature": "dh5WyBIew95F5gWlyvISVR5W5ojaTAjfPSVkKpHCW4AesoOIxlT5stZiDyq4VNNpyDuDGsMrWhR6FIPN5bj4nBw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5055554768006221,
+                "metadata": {
+                  "value": "0.5055554768006221",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668839.6665672428",
+                      "value": "0.504823423333308"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.507353936700844"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26360.38041985821",
+                      "value": "0.5055554768006221"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691582040000,
+            "signature": "wRbTBRcp4f1UYSf01/jj/+hJf4SQ4biRbKRUKwr9OBtrSXSVcK74FoVnxHrTtYlKe3afzre43oQQEaXDmApWGhs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5055475444279974,
+                "metadata": {
+                  "value": "0.5055475444279974",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668829.1721987613",
+                      "value": "0.5048155024469022"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5073459761096465"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26359.96681468605",
+                      "value": "0.5055475444279974"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581980000,
+            "signature": "Oq7ke9tKL7MGv6Gv8kQ8KqnizlpocyXznQXfSsQy9X4DVSWk+fweiWl9shqWHS5ECOGAKXfP/b49So8Dd2U77Rs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.505562542614865,
+                "metadata": {
+                  "value": "0.505562542614865",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668849.0144965189",
+                      "value": "0.5048304789161242"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5073610276509705"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26360.748841445886",
+                      "value": "0.505562542614865"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581920000,
+            "signature": "TSFA447/ITg27svidTRPH5vJzAunu+PF1JZpOtXTepZJejZ36Rdyie+qSndByf7DG7FVZyPkCCRSAn4jLTjGHxs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5055863195732148,
+                "metadata": {
+                  "value": "0.5055863195732148",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668880.4709313206",
+                      "value": "0.5048542214450086"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5073848891933236"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26361.988605816146",
+                      "value": "0.5055863195732148"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581860000,
+            "signature": "e8W5rQOj2yTv6LngxuX0uknCp6nyuD+cQlFV+lUpNGtmqI9hc+ksi51lasWXnIkYkm/zMROeUbd/lU60ajFjkBs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5055437976807937,
+                "metadata": {
+                  "value": "0.5055437976807937",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668824.2153280213",
+                      "value": "0.5048117611250562"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5073422160337877"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26359.77145396669",
+                      "value": "0.5055437976807937"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581800000,
+            "signature": "M8FlGQQpo+MOnyJjwJGKKkvAWXpgwsOxUA5GD/W8YWUh31J+v7PFxQ5re2I2MqLd51ygTxZ8i2SqUXox06e2OBw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5053741460975247,
+                "metadata": {
+                  "value": "0.5053741460975247",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668599.7697160296",
+                      "value": "0.504642355200346"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5071719609330344"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26350.92557951963",
+                      "value": "0.5053741460975247"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581740000,
+            "signature": "kW/00qXpyVITEunNj0Y3sRGk3FJTeawnYMH+yNE9FR8YmZTa63FSfP0U/1c3y6AYXHAVpyOm7GoZZ2In40I23Bs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5051580745600837,
+                "metadata": {
+                  "value": "0.5051580745600837",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668313.9114439142",
+                      "value": "0.5044265965383962"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5069551207440536"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26339.659302748394",
+                      "value": "0.5051580745600837"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581680000,
+            "signature": "vyqz9EDKkBePUb59kH8Qj9rjOuLE2x7Zt1cjDq8I0LEvNd9lQt9hVZjfCtumYgIWCRYazudXphe/0XpSzBCvDhw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5050089155625266,
+                "metadata": {
+                  "value": "0.5050089155625266",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668116.5771081792",
+                      "value": "0.5042776535257633"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5068054311292088"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26331.881940818635",
+                      "value": "0.5050089155625266"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581620000,
+            "signature": "950hjjAl2XIkZ2EAf5b0h7DPRaeIB9dFPdgiMm39lWZpVc9m5HOCZ+AJPt4P1rcEVimbgOafZaPUx2h8QyH7Rxs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5049480683222051,
+                "metadata": {
+                  "value": "0.5049480683222051",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668036.0774403965",
+                      "value": "0.5042168943933454"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.506744367431294"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26328.709279308718",
+                      "value": "0.5049480683222051"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581560000,
+            "signature": "+JiGUTIf/n5y9ITmAAKBAQttRFPtuFoq9ZRClkLntLxp5QO4y3pIC3MOQCzYy8GhZpPjkBQGIBWl8hK7QwWfyxs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5050345997020995,
+                "metadata": {
+                  "value": "0.5050345997020995",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668150.5567051499",
+                      "value": "0.5043033004742379"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5068312066373797"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26333.221148325956",
+                      "value": "0.5050345997020995"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581500000,
+            "signature": "JNQOMJ7SYi3x4Cw9oBeYRsRj/JClQbGT64AdJkmbTN9S/+oMhTeDl/+vC48zDD1xQVvczXaolhTzjZ3106tq9Rw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5047673726690926,
+                "metadata": {
+                  "value": "0.5047673726690926",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667797.0207474639",
+                      "value": "0.5040364603908043"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5065630289725921"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26319.287551378075",
+                      "value": "0.5047673726690926"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581440000,
+            "signature": "CU/pOE+8icAtouMV1BpIQfgWq2JGTJoRdwHGQns78SA+4ijEeRXELpYaIPx5kYLMmoe57ZcPehrAKactXmu/jhw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5045698819096716,
+                "metadata": {
+                  "value": "0.5045698819096716",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667535.7444687118",
+                      "value": "0.5038392556015723"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5063648356607753"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26308.990102756437",
+                      "value": "0.5045698819096716"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581380000,
+            "signature": "HoCb26ilY5P7M0K9VIh/lfqCQecUaugxGSN1xEVRfy4LtI8VDfry6e80gf9sLYAfsBlAQFNrpxyt88KFZibXexs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5045991234106705,
+                "metadata": {
+                  "value": "0.5045991234106705",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667574.4303828706",
+                      "value": "0.5038684547603492"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5063941811853074"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26310.514796139756",
+                      "value": "0.5045991234106705"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581320000,
+            "signature": "rXkAx1FTSxzNpW7ehHoR3bqeoI6CqaiZqCm86J8bH3EK4TR+WD3bPYKgYb9RxYFMw63fHTjYsT+P+ljrT2CLuhw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5046410137859552,
+                "metadata": {
+                  "value": "0.5046410137859552",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667629.8505017764",
+                      "value": "0.5039102844776134"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5064362205811519"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26312.699019789005",
+                      "value": "0.5046410137859552"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581260000,
+            "signature": "bzgTNcU1uSeYfTWoMksrxLqSDcQujhfE9bZgB85RUukbA9EjyyZuimoIC89ADxfJ6TLMArVlbdK55mmoOMh+CBs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.504638030902741,
+                "metadata": {
+                  "value": "0.504638030902741",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667625.9042076386",
+                      "value": "0.503907305913668"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5064332270866475"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26312.54348802269",
+                      "value": "0.504638030902741"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581200000,
+            "signature": "hBuwt9qPKy55HWHeaa38htQdEEBg2ktt2//RkNlLgiR1mxA8tMsUF2AF3Ksy02ULnzmmxvNYPZcSOpaMakaGYxs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.504632650113704,
+                "metadata": {
+                  "value": "0.504632650113704",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667618.7855326158",
+                      "value": "0.5039019329161107"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5064278271560252"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26312.262926041894",
+                      "value": "0.504632650113704"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581140000,
+            "signature": "74tqyzpLtGP9J/suMKDooUEF1XthbsxGjfQn3DigEkMaPTj4jKwwVtlK4yxhZfsTFAUE2OPeV+r817wqk5IaFxs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5047236438951346,
+                "metadata": {
+                  "value": "0.5047236438951346",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667739.1684643109",
+                      "value": "0.5039927949369014"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5065191446381664"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26317.007471011584",
+                      "value": "0.5047236438951346"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581080000,
+            "signature": "pnzDMrSlu+QRYwFiS17GpB1eNaVT4CpLkX6UYdo6lBtBWPHXBuREK0/bxYaJ8oZBcuQ7QZgfFQmK0QTzfA+pXBs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5047102996439122,
+                "metadata": {
+                  "value": "0.5047102996439122",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667721.5142899469",
+                      "value": "0.5039794700083959"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5065057529161879"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26316.31168280479",
+                      "value": "0.5047102996439122"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691581020000,
+            "signature": "2xwB3z07irIkoSVJ1Z/WMSAGlJUyj1VVap/bOyfG+shGgS4VFqcETfRT/obdeWYZjoogJID0sGa5tZmabGKMIxw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5047322516527727,
+                "metadata": {
+                  "value": "0.5047322516527727",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667750.5563534996",
+                      "value": "0.5040013902303508"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5065277830169878"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26317.45629171735",
+                      "value": "0.5047322516527727"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580960000,
+            "signature": "kuqYvYkoo/wQtZoFC2Xk/+4SDOZUIVWz+L9O4JBTtkpd1XliaRLdsKPRbuGXYoQxzrAtc5Kkd9blPTLUUf8Nahw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5048418519116635,
+                "metadata": {
+                  "value": "0.5048418519116635",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667895.5552783973",
+                      "value": "0.504110831786086"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5066377731671561"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26323.171004841934",
+                      "value": "0.5048418519116635"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580900000,
+            "signature": "gC8CsF9pIHy2NpdQBj7VA/aBwCA1UHrPUJtXV/ZdHjIEmI762LUDj2cv2ZjJIZCPQiSwNw1VCkXdBXjPT4PXoxw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5048149213369593,
+                "metadata": {
+                  "value": "0.5048149213369593",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667859.9266729677",
+                      "value": "0.5040839402073406"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5066107467897933"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26321.766806436997",
+                      "value": "0.5048149213369593"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580840000,
+            "signature": "z/1tTl6276Ccrv7uS7zUXGhNNXu4piZn6N6NA3ZBTp8JcXKzbSmAw/2h9qcRIefKG3AnY7WCz93TMHay50LMTBw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5047643119150587,
+                "metadata": {
+                  "value": "0.5047643119150587",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667792.9714318074",
+                      "value": "0.5040334040687976"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5065599573302509"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26319.12795931666",
+                      "value": "0.5047643119150587"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580780000,
+            "signature": "5QLh0aJLALG2GDrVD2GS4njGM2am7Bx4lT3YmarG7oQ7TzSJ2OZ9BM1ynaDJxwZcnaO1gHyvV+1lOAhl03NAuhs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5048087548037806,
+                "metadata": {
+                  "value": "0.5048087548037806",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667851.768474344",
+                      "value": "0.5040777826034135"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5066045583198281"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26321.445274640948",
+                      "value": "0.5048087548037806"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580720000,
+            "signature": "MnIfZsEdXWzpSMpsPGKqgHvPFUmbQpRp9RArqLz64g0XXD3u8hhJR55vVU63P11Xgg1Yji0BH7KLTQl1rVne+Bs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5048087548037806,
+                "metadata": {
+                  "value": "0.5048087548037806",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667851.768474344",
+                      "value": "0.5040777826034135"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5066045583198281"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26321.445274640948",
+                      "value": "0.5048087548037806"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580660000,
+            "signature": "LJB9KGDjDOH69xh2krAkUUOxinB0CTUst3yZJB4O6hdhUYzDGwuzWZTADMr1otNC9DQqXXD+HrwxlKfXbY0tXhs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5047892271658786,
+                "metadata": {
+                  "value": "0.5047892271658786",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667825.9338045153",
+                      "value": "0.5040582832418841"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5065849612144288"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26320.42707587262",
+                      "value": "0.5047892271658786"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580600000,
+            "signature": "xyjC6nRaRMv37lx5Pu3nl0yScdz56RrydqWUlcw3YAJIev+bJJybw4sjbJY2waGj9VE59L0DYdXS12JZuhHr/Rw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.504876548536839,
+                "metadata": {
+                  "value": "0.504876548536839",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667941.4582114646",
+                      "value": "0.5041454781699212"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5066725932218896"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26324.980136145783",
+                      "value": "0.504876548536839"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580540000,
+            "signature": "xYNOjOvYyw0RxpsdtO3sbEY5rg/u91qIQAJKXEMdL2xGqX+VbfZBk25w6PJVu1ZSDyVCNXCnFloBPk8C/GoV7xw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.504913292717598,
+                "metadata": {
+                  "value": "0.504913292717598",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "667990.0700191392",
+                      "value": "0.5041821691444422"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.506709468116168"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26326.896029905158",
+                      "value": "0.504913292717598"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580480000,
+            "signature": "RL7zd8AdCFEdnVSldSowf4tEdAuH9kpo8IGquGnWRst0KXQ1fUb9DXsGAtzpW4+YpQ1XU/YBKtZjzZPx7LllSxw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5049407533505802,
+                "metadata": {
+                  "value": "0.5049407533505802",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668026.3998809454",
+                      "value": "0.5042095900139316"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5067370264374347"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26328.32786630136",
+                      "value": "0.5049407533505802"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580420000,
+            "signature": "bEoDs3BiiKDpld+6otVkvAcd4Vwi2Y+yjb6beax6vJYYLPqwD1EG8VqzQgrDr526RezrPFom3H33ZxpFGvW6uhs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5049539994049845,
+                "metadata": {
+                  "value": "0.5049539994049845",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668043.9241429062",
+                      "value": "0.5042228168878098"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5067503196132704"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26329.01853438663",
+                      "value": "0.5049539994049845"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580360000,
+            "signature": "KEyIZtybKVLUsGAeRbAXxtlHpC51tVqM12nJCTA0lpw7oXHoH8pNjCk46j01Zt/NHkDY86iXkVKLnMXW/n5JRBs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5049852857303954,
+                "metadata": {
+                  "value": "0.5049852857303954",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668085.3153183877",
+                      "value": "0.504254057910056"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5067817172364601"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26330.64984781832",
+                      "value": "0.5049852857303954"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580300000,
+            "signature": "+tHVxHTZSg1KIlM5BfmijSZASa3Th5es/xknQPg9y4MKZ/vqu1fsoYBFQMH12znNYb3JAHrUHMW1tlz3tP6a0Bw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5049678186035516,
+                "metadata": {
+                  "value": "0.5049678186035516",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668062.2066629974",
+                      "value": "0.5042366160759276"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5067641879721683"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26329.73908702238",
+                      "value": "0.5049678186035516"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580240000,
+            "signature": "8IXLAsUoltmfzcrVScAbM+cnPoTxLjG/I5ac8LN7D2lEAhf7U0jNMpq09vnAzEH5wRiWwW3php24hekUx5IePRw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5049969569303993,
+                "metadata": {
+                  "value": "0.5049969569303993",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668100.7560798418",
+                      "value": "0.5042657122099514"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5067934299555181"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26331.25840075895",
+                      "value": "0.5049969569303993"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580180000,
+            "signature": "00P0d4eYTQFfGE0tj3/xlmno9AbG4c2D5QYNGY8eMCB6vGcPJ07CS8KBkaoaWsCVC7pVJzcUUg38CgSGWp1N8Bs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5050696256565863,
+                "metadata": {
+                  "value": "0.5050696256565863",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668196.8953342326",
+                      "value": "0.5043382757105096"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5068663571929786"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26335.047451327726",
+                      "value": "0.5050696256565863"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580120000,
+            "signature": "I7C21NDKt5e3Z2GU9FwcZUJY1IDSTz7bA/5vbristLBT+ddJ6icXofAP/QHvXok2rYiHzMmE2HPJR0wXrBfx0Bs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5050796834376791,
+                "metadata": {
+                  "value": "0.5050796834376791",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668210.2015751125",
+                      "value": "0.5043483189277536"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.506876450753559"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26335.571878315364",
+                      "value": "0.5050796834376791"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580060000,
+            "signature": "5hTX8QuAqSltEiG7Wp0ni7slL5VJ95N1b8sk7mmhypc9JtLhdy1O9G3jH2KbGkpvwxFo8mcmGpGWuJ3qgFjxxRw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5051024383206719,
+                "metadata": {
+                  "value": "0.5051024383206719",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668240.3058248975",
+                      "value": "0.5043710408612646"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5068992865846308"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26336.75835022523",
+                      "value": "0.5051024383206719"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691580000000,
+            "signature": "5XSaIITy5d5zYsRD4deKJ/+wdD2LYHJnhbyi0YeZoc8stpBsPlMUlYzNMX1LetC/qX4ig3ZFnKEXOCL9cIuRvhw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5051404379882368,
+                "metadata": {
+                  "value": "0.5051404379882368",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668290.5786162133",
+                      "value": "0.5044089855046241"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5069374214319761"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26338.73970684939",
+                      "value": "0.5051404379882368"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579940000,
+            "signature": "3m/Emyh8DBrQs2R6zBT6HbORkO9TYbNmHTMKky/ApYEw6AqxeloZbwk5bgfRfUBcLoZ8tds09vsLvpHk1ye6LBw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.505181231266505,
+                "metadata": {
+                  "value": "0.505181231266505",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668344.5472979647",
+                      "value": "0.5044497197134882"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.506978359827998"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26340.866726302385",
+                      "value": "0.505181231266505"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579880000,
+            "signature": "KDOHsxrcGm+fMUxQkjYFBMp6H1N/7fyPnHAt56odDeMpUL5BTS+95VnR1AJ3BY/AfNqJawGEA2F/KQErGgO9QBw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5052137707030571,
+                "metadata": {
+                  "value": "0.5052137707030571",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668387.5963141309",
+                      "value": "0.5044822120323479"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5070110150201387"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26342.563378728322",
+                      "value": "0.5052137707030571"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579820000,
+            "signature": "nWWRzKFdabBzlatbb5hKhLdqxOy9Im8SXVsjrXSoG30rGNCaWJaKlQ2Q6mMSV2xE2eTIns9R3jySGDoBNjxiTRw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5053161335226162,
+                "metadata": {
+                  "value": "0.5053161335226162",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668523.0202532326",
+                      "value": "0.5045844266286943"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5071137419845536"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26347.9007214894",
+                      "value": "0.5053161335226162"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579760000,
+            "signature": "kpLigdq3dsTAR3EGLbIkRfG3argxNj2A3WERntXYIR40PA5AZG2sZdW54xPjL/eNF97lOR2lM43/tULjbFNoDRs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5053797207277604,
+                "metadata": {
+                  "value": "0.5053797207277604",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668607.1448390363",
+                      "value": "0.5046479217584163"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5071775553944249"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26351.216248655768",
+                      "value": "0.5053797207277604"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579700000,
+            "signature": "Pw0nqYT0cMw6SwYXF8Q+YuPT/3/cyNim+P5GuOGvu5lHewWqdKqjw+HnPVwU7FF9fhL0w1eDO3kdNK+/1Dx6Nxs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5053557005621445,
+                "metadata": {
+                  "value": "0.5053557005621445",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668575.3666459423",
+                      "value": "0.5046239363744343"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5071534497796216"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26349.96380311331",
+                      "value": "0.5053557005621445"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579640000,
+            "signature": "sDKMF2uqUUbdtJnDU6ZrtqGH66uOszwQpvL/mrV512ICx//O6c2VOau32684R+xMbMAGb9kcvOIiq5pZed+3yxw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5054502159060427,
+                "metadata": {
+                  "value": "0.5054502159060427",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668700.4085335279",
+                      "value": "0.5047183148584063"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5072483013518148"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26354.89196735047",
+                      "value": "0.5054502159060427"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579580000,
+            "signature": "xvX0yGINMdK6FKd6h1lgXLIQo7cY0syaGjlKMnonAEpU4mqGFCkcLVmlmsORuu05mEOLRJHx9IaNh4ItmwSl2Rw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5054138522915945,
+                "metadata": {
+                  "value": "0.5054138522915945",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668652.3002073822",
+                      "value": "0.5046820038991291"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5072118083776713"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26352.99591685892",
+                      "value": "0.5054138522915945"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579520000,
+            "signature": "xKshYcxmluVn1PBXi5ZXzInw2ZpedUsKkouTNsZRa5MXemSFbXGFzOgJsCRSLU7i711vcswX9+XkGpsj+iIx4Rs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5054498508907305,
+                "metadata": {
+                  "value": "0.5054498508907305",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668699.9256256553",
+                      "value": "0.5047179503716428"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5072479350379993"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26354.872934933792",
+                      "value": "0.5054498508907305"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579460000,
+            "signature": "fR2OyZlYlBr0YocJ9hGJ7UxSNqRZRTQg2PxzhM9aQuweYXXWc85QbAwkGuf2+jReWqdGwW2sVTwpu2+kohU1BRs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5054807742363928,
+                "metadata": {
+                  "value": "0.5054807742363928",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668740.8365862742",
+                      "value": "0.5047488289397418"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5072789683901787"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26356.485322085988",
+                      "value": "0.5054807742363928"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579400000,
+            "signature": "0m5gM55GVOxVvk7hR/Mn1/EnOEhPhOsm7xCaEhtzaCdd/FpHfIp8RAiKD/FVJuiEIW8vDqG4CNREpmzdmCEy9xw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5054477299262528,
+                "metadata": {
+                  "value": "0.5054477299262528",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668697.1196325663",
+                      "value": "0.50471583247836"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5072458065284159"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26354.762344834282",
+                      "value": "0.5054477299262528"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579340000,
+            "signature": "TjT9P+TmjAcmdzHhvJ4Y1rLwFRwOZ2q6d0kURaTqbe8mJ2HXo1UrwNFAL+LLQMFQbl/L9ZYtDDoI+NyVJkWEIhw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5055011833689962,
+                "metadata": {
+                  "value": "0.5055011833689962",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668767.8374557567",
+                      "value": "0.5047692085195523"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5072994501261031"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26357.549483239713",
+                      "value": "0.5055011833689962"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579280000,
+            "signature": "9g7C2k+KDwwmVMaQ27SeuASHL2ecW5FQxmQIdXnQeox6SQhi78JAXdXzgPdmZy6nh1gJuJ+h0HVkEv1dosXJOxs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.505457046583038,
+                "metadata": {
+                  "value": "0.505457046583038",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668709.4453809831",
+                      "value": "0.5047251356444579"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5072551563282178"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26355.248128548177",
+                      "value": "0.505457046583038"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579220000,
+            "signature": "OEbODkE4NsGjqyHvZ0nX6V2W6H8CbOFIPpU3/DxGRBpEt2w8t8wKxAt4cUGcSJUPsCqkRSiqCHMX46b9xA5u2Bw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5054965436244727,
+                "metadata": {
+                  "value": "0.5054965436244727",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668761.6991676313",
+                      "value": "0.5047645754934628"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5072947938761814"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26357.30756037209",
+                      "value": "0.5054965436244727"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579160000,
+            "signature": "H2j/6CrQaygq04KpWio4YjtprF9t8r8jjhCawY8MMFJGWoCoHk4/OVi/9VKhAR8dvAGWWibO0K2gkv7yb1RSjxw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5056034416805671,
+                "metadata": {
+                  "value": "0.5056034416805671",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668903.1231329048",
+                      "value": "0.50487131875924"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5074020722107538"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26362.881376805897",
+                      "value": "0.5056034416805671"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579100000,
+            "signature": "oGwX/GLJBmUN0fq7eY6PuSOtBryW5eeZ74Pi3f7yXD9ItXH5NBhSJ0G34xvX7yx51ALt3SzfOmV6Nb9ElYXlpRs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5056229252177851,
+                "metadata": {
+                  "value": "0.5056229252177851",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668928.8994584208",
+                      "value": "0.504890774083944"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5074216250585857"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26363.897276101936",
+                      "value": "0.5056229252177851"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691579040000,
+            "signature": "9Z0fHqMQAPa4MOeDb4/ypfA4QNrja2aLkuISTjndlVosmCciM1hDlEXUTsAoWJTvrmTPnAD77m9bt6aJXH5NSxs=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.505517235404017,
+                "metadata": {
+                  "value": "0.505517235404017",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668789.073973298",
+                      "value": "0.5047852373109364"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5073155592645333"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26358.386459138663",
+                      "value": "0.505517235404017"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691578980000,
+            "signature": "kbsLdorUD5BwvyBnkSPmbB4foYzZNwO2zd6/jTeSikAYhj6o5xJW/29cLSEyOqg4pP/gD4CTWwRW4ji6hkXXzRw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5055251200035454,
+                "metadata": {
+                  "value": "0.5055251200035454",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "668799.5051389396",
+                      "value": "0.5047931104934221"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5073234719126868"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26358.797573353742",
+                      "value": "0.5055251200035454"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691578920000,
+            "signature": "EhhlgB0YsnB4HSI/1iVkz9vN3vKjyrwUP/MkeJerAhxwWANKuWAwvFXphBzH3dL5WNHMP2S6EBpcDOSM/F5GRhw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5057322926839597,
+                "metadata": {
+                  "value": "0.5057322926839597",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "669073.5904032651",
+                      "value": "0.5049999831840509"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5075313815879022"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26369.599851083738",
+                      "value": "0.5057322926839597"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "PREMIA": [
+          {
+            "timestampMilliseconds": 1691578860000,
+            "signature": "Lk516G89Y10dr2esFSmfCRkJFHvbbw25ueK8iSK9Hbo0MgANe5xdopi6BGYZsNy1O6GEH/7UC6Yk4ZQD5ZHT0xw=",
+            "dataPoints": [
+              {
+                "dataFeedId": "PREMIA",
+                "value": 0.5057045826271774,
+                "metadata": {
+                  "value": "0.5057045826271774",
+                  "sourceMetadata": {
+                    "sushiswap-ethereum-on-chain-weth": {
+                      "liquidity": "669036.9305588183",
+                      "value": "0.5049723132519317"
+                    },
+                    "uniswap-v3-arbitrum-on-chain-weth-3000": {
+                      "value": "0.5075035729555369"
+                    },
+                    "sushiswap-arbitrum-on-chain-weth": {
+                      "liquidity": "26368.15500937644",
+                      "value": "0.5057045826271774"
+                    }
+                  }
+                }
+              }
+            ],
+            "dataServiceId": "redstone-main-demo",
+            "dataFeedId": "PREMIA",
+            "isSignatureValid": true,
+            "signerAddress": "0x0C39486f770B26F5527BBBf942726537986Cd7eb"
+          }
+        ]
+      }
+    }
+  ]
+}
