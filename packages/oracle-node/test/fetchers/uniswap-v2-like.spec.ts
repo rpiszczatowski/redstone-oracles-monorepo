@@ -50,6 +50,7 @@ describe("UniswapV2Like", () => {
     );
 
     await saveMockPriceInLocalDb(2085.39, "ETH");
+    await saveMockPriceInLocalDb(1.0062063053522414, "USDC");
 
     const result = await fetcher.fetchAll([
       "USDC",
@@ -59,14 +60,26 @@ describe("UniswapV2Like", () => {
     expect(result).toEqual([
       {
         symbol: "USDC",
-        value: 1.0062063053522414,
+        value: "1.0062063053522427861",
         metadata: {
-          liquidity: "74943571.7469365",
+          liquidity: "74943571.746936499295",
+          slippage: [
+            {
+              direction: "buy",
+              simulationValueInUsd: "10000",
+              slippageAsPercent: "0.021120342609802036234",
+            },
+            {
+              direction: "sell",
+              simulationValueInUsd: "10000",
+              slippageAsPercent: "0.026684059117760280233",
+            },
+          ],
         },
       },
       {
         symbol: "USDC_uniswap-v2-like-mock_liquidity",
-        value: 74943571.7469365,
+        value: "74943571.746936499295",
       },
     ]);
   });

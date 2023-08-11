@@ -58,7 +58,7 @@ describe("Curve Multi Block", () => {
 
   beforeEach(async () => {
     await saveMockPriceInLocalDb(2104.09, "ETH");
-    await saveMockPriceInLocalDb(1000, "STETH");
+    await saveMockPriceInLocalDb(2104.6812582497123, "STETH");
     await clearPricesSublevel();
     provider = new MockProvider();
     const [wallet] = provider.getWallets();
@@ -92,7 +92,7 @@ describe("Curve Multi Block", () => {
             {
               direction: "sell",
               simulationValueInUsd: "10000",
-              slippageAsPercent: "89.99999999999999944",
+              slippageAsPercent: "78.953187417502875822",
             },
           ],
         },
@@ -114,7 +114,7 @@ describe("Curve Multi Block", () => {
         symbol: "STETH",
         value: 2104.6812582497178,
         metadata: {
-          liquidity: "214676.30582497178",
+          liquidity: "214676.30582497123",
           slippage: [
             {
               direction: "buy",
@@ -124,7 +124,7 @@ describe("Curve Multi Block", () => {
             {
               direction: "sell",
               simulationValueInUsd: "10000",
-              slippageAsPercent: "90.000000000000023437",
+              slippageAsPercent: "78.953187417502926328",
             },
           ],
         },
@@ -162,7 +162,7 @@ describe("Curve Multi Block", () => {
             {
               direction: "sell",
               simulationValueInUsd: "10000",
-              slippageAsPercent: "89.99999999999999944",
+              slippageAsPercent: "78.953187417502875822",
             },
           ],
         },
@@ -189,7 +189,7 @@ describe("Curve Multi Block", () => {
         symbol: "STETH",
         value: 1063.0004561293995,
         metadata: {
-          liquidity: "110508.22561293995",
+          liquidity: "214676.30582497123",
           slippage: [
             {
               direction: "buy",
@@ -199,7 +199,7 @@ describe("Curve Multi Block", () => {
             {
               direction: "sell",
               simulationValueInUsd: "10000",
-              slippageAsPercent: "80.200561099349999982",
+              slippageAsPercent: "58.328492021941657519",
             },
           ],
         },

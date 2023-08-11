@@ -50,7 +50,10 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     return this.curveFetcher.calculateSlippage(assetId, response);
   }
 
-  calculateLiquidity(assetId: string, response: CurveFetcherResponse): string {
+  calculateLiquidity(
+    assetId: string,
+    response: CurveFetcherResponse
+  ): string | undefined {
     return this.curveFetcher.calculateLiquidity(assetId, response);
   }
 
