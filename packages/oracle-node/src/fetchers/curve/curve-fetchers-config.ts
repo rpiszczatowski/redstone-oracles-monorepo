@@ -19,10 +19,6 @@ export interface PoolsConfig {
   };
 }
 
-export const CURVE_SLIPPAGE_PARAMS = {
-  amountInUsd: 10_000,
-};
-
 // 144 blocks = 30 min
 // 72 blocks = 15 min
 // 48 blocks = 10 min

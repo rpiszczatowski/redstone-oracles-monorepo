@@ -14,7 +14,10 @@ export interface Responses<T> {
 }
 
 export abstract class DexOnChainFetcher<T> extends MultiRequestFetcher {
-  calculateLiquidity(_assetId: string, _response: T): number | string {
+  calculateLiquidity(
+    _assetId: string,
+    _response: T
+  ): number | string | undefined {
     throw new Error(
       `liquidity calculation not implemented for ${this.getName()}`
     );
@@ -48,7 +51,7 @@ export abstract class DexOnChainFetcher<T> extends MultiRequestFetcher {
       metadata.liquidity = this.calculateLiquidity(
         dataFeedId,
         response
-      ).toString();
+      )?.toString();
     } catch (e) {}
 
     // return undefined instead of empty metadata

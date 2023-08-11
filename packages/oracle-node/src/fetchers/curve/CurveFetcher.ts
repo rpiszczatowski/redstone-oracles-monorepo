@@ -1,9 +1,14 @@
 import { Decimal } from "decimal.js";
 import { BigNumber, Contract } from "ethers";
 import { RedstoneCommon, RedstoneTypes } from "redstone-utils";
-import { getRawPriceOrFail } from "../../db/local-db";
+import { getRawPrice, getRawPriceOrFail } from "../../db/local-db";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
-import { CURVE_SLIPPAGE_PARAMS, PoolsConfig } from "./curve-fetchers-config";
+import {
+  calculateSlippage,
+  convertUsdToTokenAmount,
+  DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,
+} from "../SlippageAndLiquidityCommons";
+import { PoolsConfig } from "./curve-fetchers-config";
 import abi from "./CurveFactory.abi.json";
 
 const ONE_AS_DECIMAL = new Decimal("1");
@@ -28,20 +33,16 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
     assetId: string,
     blockTag?: string | number
   ): Promise<CurveFetcherResponse> {
-    const {
-      address,
-      provider,
-      pairedToken,
-      pairedTokenDecimalsMultiplier: pairedTokenDecimals,
-    } = this.poolsConfig[assetId];
+    const { address, provider, pairedToken, pairedTokenDecimalsMultiplier } =
+      this.poolsConfig[assetId];
 
     const curvePool = new Contract(address, abi, provider);
 
-    const amountInBaseToken = await this.getAmountInBaseToken(assetId);
-
-    const amountInPairedToken = this.convertUsdToTokenAmount(
+    const amountInBaseToken = this.getAmountInBaseToken(assetId);
+    const amountInPairedToken = convertUsdToTokenAmount(
       pairedToken,
-      pairedTokenDecimals
+      pairedTokenDecimalsMultiplier,
+      DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
 
     const multicallHandler = new MultiCallHandler(
@@ -60,13 +61,19 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
     return multicallHandler.parseResponse(multicallResponse);
   }
 
-  calculateLiquidity(assetId: string, response: CurveFetcherResponse): string {
-    const baseTokenPrice = this.calculateSpotPrice(assetId, response);
+  calculateLiquidity(
+    assetId: string,
+    response: CurveFetcherResponse
+  ): string | undefined {
+    const baseTokenPrice = getRawPrice(assetId);
+    if (!baseTokenPrice) {
+      return undefined;
+    }
     const pairedTokenPrice = this.getPairedTokenPrice(assetId);
 
     const baseTokenLiquidity = new Decimal(
       response.baseTokenSupply.toString()
-    ).mul(baseTokenPrice);
+    ).mul(baseTokenPrice.value);
     const pairedTokenLiquidity = new Decimal(
       response.pairedTokenSupply.toString()
     ).mul(pairedTokenPrice);
@@ -84,27 +91,19 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
     const smallSell = response.sellRatio;
     const smallBuy = new Decimal(1).div(response.sellRatio);
 
-    const buySlippage = smallBuy
-      .sub(response.bigBuyRatio)
-      .abs()
-      .div(smallBuy)
-      .mul(100);
-    const sellSlippage = smallSell
-      .sub(response.bigSellRatio)
-      .abs()
-      .div(smallSell)
-      .mul(100);
+    const buySlippage = calculateSlippage(smallBuy, response.bigBuyRatio);
+    const sellSlippage = calculateSlippage(smallSell, response.bigSellRatio);
 
     return [
       {
         slippageAsPercent: buySlippage.toString(),
         direction: "buy",
-        simulationValueInUsd: CURVE_SLIPPAGE_PARAMS.amountInUsd.toString(),
+        simulationValueInUsd: DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
       },
       {
         slippageAsPercent: sellSlippage.toString(),
         direction: "sell",
-        simulationValueInUsd: CURVE_SLIPPAGE_PARAMS.amountInUsd.toString(),
+        simulationValueInUsd: DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
       },
     ];
   }
@@ -113,23 +112,18 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
     return this.calculateSpotPriceUsingRatio(assetId, response.sellRatio);
   }
 
-  private async getAmountInBaseToken(assetId: string) {
+  private getAmountInBaseToken(assetId: string) {
     const { tokenDecimalsMultiplier: tokenDecimals } =
       this.poolsConfig[assetId];
     try {
-      return this.convertUsdToTokenAmount(assetId, tokenDecimals);
-      // if this is first iteration of fetcher we won't have assetId price in DB yet, thus we have to fetch it additionally
+      return convertUsdToTokenAmount(
+        assetId,
+        tokenDecimals,
+        DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
+      );
     } catch (e) {
       return undefined;
     }
-  }
-
-  private convertUsdToTokenAmount(assetId: string, decimals: number): string {
-    return new Decimal(CURVE_SLIPPAGE_PARAMS.amountInUsd)
-      .div(getRawPriceOrFail(assetId).value)
-      .mul(decimals)
-      .round()
-      .toString();
   }
 
   private calculateSpotPriceUsingRatio(
