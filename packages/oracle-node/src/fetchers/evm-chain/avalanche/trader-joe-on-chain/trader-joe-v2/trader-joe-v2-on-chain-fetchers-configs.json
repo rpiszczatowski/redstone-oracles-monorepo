@@ -1,9 +1,12 @@
 {
-  "trader-joe-v2-on-chain-usdc": {
+  "trader-joe-v2-avalanche-on-chain-usdc": {
     "EUROC": {
-      "address": "0xe6C7E4142b0cB24F2bFa7b9a50911375f8EE8DB9",
+      "routerAddress": "0xb4315e873dBcf96Ffd0acd8EA43f689D8c20fB30",
+      "pairAddress": "0xe6C7E4142b0cB24F2bFa7b9a50911375f8EE8DB9",
       "symbolX": "EUROC",
-      "symbolY": "USDC"
+      "symbolXDecimals": 6,
+      "symbolY": "USDC",
+      "symbolYDecimals": 6
     }
   }
 }
