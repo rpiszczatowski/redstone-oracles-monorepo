@@ -7,8 +7,6 @@ import symbolToId from "./symbol-to-id.json";
 import { config } from "../../config";
 const idToSymbol = _.invert(symbolToId);
 
-const url = "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest";
-
 export class CoinMarketCapFetcher extends BaseFetcher {
   constructor() {
     super("coinmarketcap");
@@ -27,7 +25,7 @@ export class CoinMarketCapFetcher extends BaseFetcher {
     if (!apiKey) {
       throw new Error("Missing Coinmarketcap API Key");
     }
-    const response = await axios.get(url, {
+    const response = await axios.get(config.coinmarketcapApiUrl, {
       params: {
         id: ids.join(","),
       },
