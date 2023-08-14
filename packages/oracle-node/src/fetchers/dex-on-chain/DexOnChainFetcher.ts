@@ -48,10 +48,10 @@ export abstract class DexOnChainFetcher<T> extends MultiRequestFetcher {
     } catch (e) {}
 
     try {
-      metadata.liquidity = this.calculateLiquidity(
-        dataFeedId,
-        response
-      )?.toString();
+      const liquidity = this.calculateLiquidity(dataFeedId, response);
+      if (liquidity) {
+        metadata.liquidity = liquidity.toString();
+      }
     } catch (e) {}
 
     // return undefined instead of empty metadata
