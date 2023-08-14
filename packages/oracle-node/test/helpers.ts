@@ -46,6 +46,7 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   enableStreamrBroadcasting: false,
   mockPricesUrlOrPath: "",
   minDataFeedsPercentageForBigPackage: 50,
+  coinmarketcapApiUrl: "https://coinmarketcap-mock.url",
   coingeckoApiUrl: "",
   enableHttpServer: false,
   pricesHardLimitsUrls: ["mock-hard-prices-limits-url"],

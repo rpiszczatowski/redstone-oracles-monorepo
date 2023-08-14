@@ -16,6 +16,8 @@ const DEFAULT_ETHERSCAN_API_KEY = "";
 const DEFAULT_MOCK_PRICES_URL_OR_PATH =
   "https://raw.githubusercontent.com/redstone-finance/redstone-mock-prices/main/mock-prices.json";
 const DEFAULT_COINBASE_INDEXER_MONGODB_URL = "";
+const DEFAULT_COINMARKETCAP_API_URL =
+  "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest";
 const DEFAULT_COINMARKETCAP_API_KEY = "";
 const DEFAULT_KAIKO_API_KEY = "";
 const DEFAULT_MIN_DATA_FEEDS_PERCENTAGE_FOR_BIG_PACKAGE = "90";
@@ -170,6 +172,10 @@ export const config: NodeConfig = Object.freeze({
   twelveDataApiKey: getFromEnv(
     "TWELVE_DATA_API_KEY",
     DEFAULT_TWELVE_DATA_API_KEY
+  ),
+  coinmarketcapApiUrl: getFromEnv(
+    "COINMARKETCAP_API_URL",
+    DEFAULT_COINMARKETCAP_API_URL
   ),
   coinmarketcapApiKey: getFromEnv(
     "COINMARKETCAP_API_KEY",

@@ -182,6 +182,7 @@ export interface NodeConfig {
   enableStreamrBroadcasting: boolean;
   mockPricesUrlOrPath: string;
   twelveDataApiKey?: string;
+  coinmarketcapApiUrl: string;
   coinmarketcapApiKey?: string;
   kaikoApiKey?: string;
   stlouisfedApiKey?: string;
