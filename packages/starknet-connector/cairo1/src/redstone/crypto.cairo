@@ -3,7 +3,7 @@ use ecdsa::check_ecdsa_signature;
 use hash::LegacyHash;
 use array::SpanTrait;
 use array::ArrayTrait;
-use integer::u8_to_felt252;
+use integer::{u8_to_felt252, u128_byte_reverse};
 use option::OptionTrait;
 
 use starknet::secp256k1::{recover_public_key_u32, public_key_point_to_eth_address};
@@ -48,9 +48,7 @@ impl VerifiableU8Array of VerifiableTrait<u8> {
             ref input: keccak_input, last_input_word: value, last_input_num_bytes: size
         );
 
-        res.print();
-
-        res
+        u256 { high: u128_byte_reverse(res.low), low: u128_byte_reverse(res.high) }
     }
 }
 
