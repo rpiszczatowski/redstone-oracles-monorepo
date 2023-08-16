@@ -5,6 +5,6 @@ export const getLastRoundParamsFromContract = async (
 ) => {
   const timestamps = await adapterContract.getTimestampsFromLatestUpdate();
   return {
-    lastUpdateTimestamp: timestamps.blockTimestamp.toNumber() * 1000,
+    lastUpdateTimestamp: timestamps.dataTimestamp.toNumber(),
   };
 };
