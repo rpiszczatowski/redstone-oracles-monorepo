@@ -17,8 +17,10 @@ jobs:
           node-version: 18.15
       - name: Install deps
         run: yarn
+      - name: Build
+        run: yarn build
       - name: Run core tests - simple propagation
-        run: yarn run-ts src/simple-price-propagation-core.ts
+        run: node dist/simple-price-propagation-core.js
         env:
           NODE_ENV: test
   core-with-node-failure:
@@ -33,8 +35,10 @@ jobs:
           node-version: 18.15
       - name: Install deps
         run: yarn
+      - name: Build
+        run: yarn build
       - name: Run tests - node failures
-        run: yarn run-ts src/prices-updates-node-failures.ts
+        run: node dist/prices-updates-node-failures.js
         env:
           NODE_ENV: test
   classic:
@@ -49,7 +53,9 @@ jobs:
           node-version: 18.15
       - name: Install deps
         run: yarn
+      - name: Build
+        run: yarn build
       - name: Run clasic tests - simple propagation
-        run: yarn run-ts src/simple-price-propagation-classic.ts
+        run: node dist/simple-price-propagation-classic.js
         env:
           NODE_ENV: test
