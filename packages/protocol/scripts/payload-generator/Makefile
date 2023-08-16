@@ -1,4 +1,4 @@
-PAYLOAD_URL=https://d33trozg86ya9x.cloudfront.net/data-packages/payload?unique-signers-count=1&data-service-id=redstone-rapid-demo&data-feeds=BTC,ETH,BNB,AR,AVAX,CELO&format=
+PAYLOAD_URL=https://d33trozg86ya9x.cloudfront.net/data-packages/payload?unique-signers-count=1&data-service-id=redstone-rapid-demo&data-feeds=ETH&format=
 DATA_DIR=./data
 SHELL := /bin/bash
 
@@ -24,6 +24,8 @@ prepare_data: fetch_time
 	echo ',' >> $(DATA_DIR)/${DATA_NAME}.input 
 	cat $(DATA_DIR)/${DATA_NAME}.time | cut -c 2- >> $(DATA_DIR)/${DATA_NAME}.input 
 	cat $(DATA_DIR)/${DATA_NAME}.hex | fold -w2 | paste -sd' ' -  | sed -E 's/[[:space:]]+/ 0x/g' | cut -c 3- > $(DATA_DIR)/${DATA_NAME}.splitted
+
+	cat $(DATA_DIR)/${DATA_NAME}.hex > /dev/null
 
 	echo "" >  $(DATA_DIR)/${DATA_NAME}.cairo;
 	echo -e "use array::ArrayTrait;\n" >> $(DATA_DIR)/${DATA_NAME}.cairo
