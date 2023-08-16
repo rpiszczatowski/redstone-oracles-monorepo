@@ -69,3 +69,8 @@ export type OnChainRelayerEnv = {
 export type ConfigProvider = () => RelayerConfig;
 
 export type ConditionCheckNames = "time" | "value-deviation";
+
+export type AntiConditionCheckFn = (
+  context: Context,
+  config: RelayerConfig
+) => Promise<{ shouldNotUpdatePrice: boolean; message?: string }>;
