@@ -6,31 +6,36 @@ use array::ArrayTrait;
 use integer::{u8_to_felt252, u128_byte_reverse};
 use option::OptionTrait;
 
-use starknet::secp256k1::{recover_public_key_u32, public_key_point_to_eth_address};
+use starknet::secp256_trait::{
+    recover_public_key, public_key_point_to_eth_address, signature_from_vrs
+};
+use starknet::secp256k1::Secp256k1Point;
 use keccak::cairo_keccak;
 
 use debug::PrintTrait;
 
 use redstone::gas::out_of_gas_array;
-use redstone::signature::Signature;
+use redstone::signature::RedstoneSignature;
 use redstone::number_convertible_array::NumberConvertibleArrayTrait;
 
 trait VerifiableTrait<T> {
-    fn verify(message_hash: u256, signature: Signature, public_key: felt252) -> bool;
+    fn verify(message_hash: u256, signature: RedstoneSignature, public_key: felt252) -> bool;
     fn hash(self: @Array<T>) -> u256;
 }
 
 impl VerifiableU8Array of VerifiableTrait<u8> {
-    fn verify(message_hash: u256, signature: Signature, public_key: felt252) -> bool {
-        let key = recover_public_key_u32(
+    fn verify(message_hash: u256, signature: RedstoneSignature, public_key: felt252) -> bool {
+        let key = recover_public_key::<Secp256k1Point>(
             msg_hash: message_hash,
-            r: signature.r_bytes.to_u256(),
-            s: signature.s_bytes.to_u256(),
-            v: signature.v.into()
+            signature: signature_from_vrs(
+                signature.v, signature.r_bytes.to_u256(), signature.s_bytes.to_u256()
+            )
         );
 
         match key {
             Option::Some(pub_key) => {
+                public_key_point_to_eth_address(pub_key).address.print();
+
                 public_key_point_to_eth_address(pub_key).address == public_key
             },
             Option::None(_) => false

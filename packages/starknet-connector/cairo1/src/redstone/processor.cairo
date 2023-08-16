@@ -156,8 +156,10 @@ fn get_min_timestamp(data_packages: @Array<DataPackage>, index: usize, acc: felt
         return acc;
     }
 
-    let value = if (*data_packages[index].timestamp < acc) {
-        *data_packages[index].timestamp
+    let timestamp: felt252 = *data_packages.at(index).timestamp;
+
+    let value = if (timestamp < acc) {
+        timestamp
     } else {
         acc
     };

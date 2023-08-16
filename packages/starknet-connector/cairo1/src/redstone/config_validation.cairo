@@ -9,7 +9,7 @@ use redstone::timestamp_validation::validate_timestamp;
 use redstone::crypto::VerifiableTrait;
 use redstone::crypto::VerifiableU8Array;
 use redstone::gas::out_of_gas_array;
-use redstone::signature::Signature;
+use redstone::signature::RedstoneSignature;
 
 /// 655360000 + feed_index + 10000 * count
 const INSUFFICIENT_SIGNER_COUNT: felt252 = 0x27100000;
@@ -47,7 +47,7 @@ impl ValidableConfig of ValidableTrait<Config> {
 
 
 fn _signer_index(
-    signers: @Array<felt252>, hash: u256, signature: Signature, index: usize
+    signers: @Array<felt252>, hash: u256, signature: RedstoneSignature, index: usize
 ) -> Option<usize> {
     match gas::withdraw_gas_all(get_builtin_costs()) {
         Option::Some(_) => {},

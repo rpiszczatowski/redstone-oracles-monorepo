@@ -7,7 +7,7 @@ use array::ArrayTrait;
 use redstone::protocol::DataPoint;
 use redstone::protocol::DataPackage;
 use redstone::protocol::Payload;
-use redstone::protocol::Signature;
+use redstone::protocol::RedstoneSignature;
 use redstone::number_convertible_array::NumberConvertibleArrayTrait;
 use redstone::gas::out_of_gas_array;
 
@@ -38,8 +38,8 @@ impl PayloadPrintImpl of PrintTrait<Payload> {
     }
 }
 
-impl SignaturePrintImpl of PrintTrait<Signature> {
-    fn print(self: Signature) {
+impl SignaturePrintImpl of PrintTrait<RedstoneSignature> {
+    fn print(self: RedstoneSignature) {
         'Signature --> r'.print();
         self.r_bytes.to_u256().high.print();
         self.r_bytes.to_u256().low.print();

@@ -20,7 +20,7 @@ use redstone::config_validation::ValidableTrait;
 use redstone::numbers::Felt252Div;
 use redstone::sliceable_array::SliceableArrayTrait;
 use redstone::number_convertible_array::NumberConvertibleArrayTrait;
-use redstone::signature::Signature;
+use redstone::signature::RedstoneSignature;
 use redstone::signature::get_signature_from_bytes;
 
 #[derive(Copy, Drop)]
@@ -37,7 +37,7 @@ struct DataPoint {
 
 #[derive(Drop, Copy)]
 struct DataPackage {
-    signature: Signature,
+    signature: RedstoneSignature,
     timestamp: felt252,
     data_points: @Array<DataPoint>,
     signable_bytes: @Array<u8>,
