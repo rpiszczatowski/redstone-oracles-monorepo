@@ -44,7 +44,10 @@ const checkConditionByName = async (
 ) => {
   switch (name) {
     case "time":
-      return timeUpdateCondition(context.lastUpdateTimestamp, config);
+      return timeUpdateCondition(
+        context.lastUpdateTimestamps.lastBlockTimestampMS,
+        config
+      );
 
     case "value-deviation":
       return await valueDeviationCondition(

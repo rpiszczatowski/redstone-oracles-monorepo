@@ -40,14 +40,14 @@ describe("update-prices", () => {
     await priceFeedsAdapter.deployed();
 
     // Update prices
-    const { lastUpdateTimestamp } = await getLastRoundParamsFromContract(
+    const lastUpdateTimestamps = await getLastRoundParamsFromContract(
       priceFeedsAdapter
     );
     const dataPackages = await getDataPackagesResponse();
     const updatePricesArgs = await getUpdatePricesArgs(
       dataPackages,
       priceFeedsAdapter,
-      lastUpdateTimestamp
+      lastUpdateTimestamps.lastDataPackageTimestampMS
     );
 
     await updatePrices(updatePricesArgs.args!);
@@ -86,14 +86,14 @@ describe("update-prices", () => {
     mockEnvVariables(overrideMockConfig);
 
     // Update prices
-    const { lastUpdateTimestamp } = await getLastRoundParamsFromContract(
+    const lastUpdateTimestamps = await getLastRoundParamsFromContract(
       mentoAdapter
     );
     const dataPackages = await getDataPackagesResponse();
     const updatePricesArgs = await getUpdatePricesArgs(
       dataPackages,
       mentoAdapter,
-      lastUpdateTimestamp
+      lastUpdateTimestamps.lastDataPackageTimestampMS
     );
 
     await updatePrices(updatePricesArgs.args!);

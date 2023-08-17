@@ -22,7 +22,7 @@ export const getIterationArgs = async (
   const relayerConfig = config();
   const { dataFeeds, updateConditions } = relayerConfig;
 
-  const { lastUpdateTimestamp } = await getLastRoundParamsFromContract(
+  const lastUpdateTimestamps = await getLastRoundParamsFromContract(
     adapterContract
   );
 
@@ -51,7 +51,7 @@ export const getIterationArgs = async (
       dataPackages,
       valuesFromContract,
       uniqueSignersThreshold,
-      lastUpdateTimestamp,
+      lastUpdateTimestamps,
     },
     relayerConfig
   );
@@ -62,7 +62,7 @@ export const getIterationArgs = async (
     const updatePricesArgs = await getUpdatePricesArgs(
       dataPackages,
       adapterContract,
-      lastUpdateTimestamp
+      lastUpdateTimestamps.lastDataPackageTimestampMS
     );
 
     return {
