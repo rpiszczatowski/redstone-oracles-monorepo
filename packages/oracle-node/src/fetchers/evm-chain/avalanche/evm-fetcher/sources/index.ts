@@ -7,7 +7,7 @@ import { MooTraderJoeTokensRequestHandlers } from "./moo-trader-joe/MooTraderJoe
 import { mooTraderJoeTokensContractsDetails } from "./moo-trader-joe/mooTraderJoeTokensContractsDetails";
 import { OracleAdapterRequestHandlers } from "./oracle-adapter/OracleAdapterRequestHandlers";
 import { oracleAdapterContractsDetails } from "./oracle-adapter/oracleAdapterContractsDetails";
-import { GlpManagerRequestHandler } from "./glp-manager/GlpManagerRequestHandlers";
+import { GlpManagerRequestHandler } from "../../../shared/request-handlers/GlpManagerRequestHandlers";
 import { glpManagerContractsDetails } from "./glp-manager/glpManagerContractsDetails";
 import { steakHutTokensContractDetails } from "./steak-hut/steakHutTokensContractDetails";
 import { SteakHutTokensRequestHandlers } from "./steak-hut/SteakHutTokensRequestHandler";

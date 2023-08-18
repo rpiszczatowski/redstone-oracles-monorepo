@@ -1,6 +1,6 @@
+import { GlpManagerRequestHandler } from "../../../shared/request-handlers/GlpManagerRequestHandlers";
 import { buildRequestHandlersFromContractDetails } from "../../../shared/utils/build-request-handlers-from-contract-details";
-import { GlpManagerRequestHandler } from "./glp-manager/GlpManagerRequestHandlers";
-import { glpManagerContractsDetails } from "./glp-manager";
+import { glpManagerContractsDetails } from "./glp-manager/glpManagerContractsDetails";
 
 export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
