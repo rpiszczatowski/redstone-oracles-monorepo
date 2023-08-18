@@ -1,4 +1,4 @@
-import GlpManagerAbi from "./GlpManager.abi.json";
+import GlpManagerAbi from "../../../../shared/abis/GlpManager.abi.json";
 
 export const glpManagerContractsDetails = {
   GLP: {
