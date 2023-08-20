@@ -69,7 +69,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     }
 
     // Start listening on block numbers
-    this.lastBlockNumber = 42;
+    this.lastBlockNumber = 123267769; // block number from 2023-08:20T14:44:32
     this.startListeningOnBlocks();
 
     const agreementProviderId = `AggrProvider (${this.providers.length})`;
@@ -86,7 +86,11 @@ export class ProviderWithAgreement extends ProviderWithFallback {
   startListeningOnBlocks() {
     this.providers[0].on("block", (blockNumber) => {
       this.logger.info(`New block received: ${blockNumber}`);
-      this.lastBlockNumber = Number(blockNumber);
+      if (Number(blockNumber) < this.lastBlockNumber) {
+        this.logger.warn(`Weird block number received: ${blockNumber}`);
+      } else {
+        this.lastBlockNumber = Number(blockNumber);
+      }
     });
   }
 
