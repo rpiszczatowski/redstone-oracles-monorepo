@@ -9,7 +9,7 @@ import {
 } from "@ethersproject/providers";
 import { ProviderWithFallbackBase } from "./ProviderWithFallbackBase";
 
-const logger = Logger.globalLogger();
+export const logger = Logger.globalLogger();
 
 export type ProviderWithFallbackConfig = {
   unrecoverableErrors: ErrorCode[];
