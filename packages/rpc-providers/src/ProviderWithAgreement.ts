@@ -41,6 +41,10 @@ const defaultConfig: Omit<
 export class ProviderWithAgreement extends ProviderWithFallback {
   private lastBlockNumber: number;
   private readonly agreementConfig: ProviderWithAgreementConfig;
+  private logger: {
+    info: (msg: string) => void;
+    warn: (msg: string) => void;
+  };
 
   constructor(
     providers: JsonRpcProvider[],
@@ -65,13 +69,23 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     }
 
     // Start listening on block numbers
-    this.lastBlockNumber = 0;
+    this.lastBlockNumber = 42;
     this.startListeningOnBlocks();
+
+    const agreementProviderId = `AggrProvider (${this.providers.length})`;
+    this.logger = {
+      warn(msg: string) {
+        logger.warn(`${agreementProviderId}: ${msg}`);
+      },
+      info(msg: string) {
+        logger.info(`${agreementProviderId}: ${msg}`);
+      },
+    };
   }
 
   startListeningOnBlocks() {
     this.providers[0].on("block", (blockNumber) => {
-      logger.info(`New block received: ${blockNumber}`);
+      this.logger.info(`New block received: ${blockNumber}`);
       this.lastBlockNumber = Number(blockNumber);
     });
   }
@@ -79,10 +93,12 @@ export class ProviderWithAgreement extends ProviderWithFallback {
   override async getBlockNumber(): Promise<number> {
     try {
       const electedBlockNumber = await this.electBlockNumber();
-      logger.info(`Successfully elected block number: ${electedBlockNumber}`);
+      this.logger.info(
+        `Successfully elected block number: ${electedBlockNumber}`
+      );
       return electedBlockNumber;
     } catch (e: any) {
-      logger.warn(
+      this.logger.warn(
         `Error during block number election. We'll use block number from listener instead: ${e.stack}`
       );
       return this.lastBlockNumber;
@@ -110,24 +126,24 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       providerId: number
     ) => {
       try {
-        logger.info(`Requesting block number from rpc #${providerId}`);
+        this.logger.info(`Requesting block number from rpc #${providerId}`);
         const receivedBlockNumber = await timeout(
           provider.getBlockNumber(),
           this.agreementConfig.getBlockNumberTimeoutMS
         );
-        logger.info(
+        this.logger.info(
           `Successfully fetched block number from rpc #${providerId}`
         );
         return receivedBlockNumber;
       } catch (e: any) {
-        logger.warn(
+        this.logger.warn(
           `Failed to fetch block number from rpc #${providerId}: ${e.stack}`
         );
       }
     };
 
     // collect block numbers
-    logger.info(`Collecting block numbers from RPCs`);
+    this.logger.info(`Collecting block numbers from RPCs`);
     const promises = [];
     for (let providerId = 0; providerId < this.providers.length; providerId++) {
       const provider = this.providers[providerId];
@@ -176,7 +192,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
               providerIndex
             ].getBlockNumber();
           } catch (e: any) {
-            logger.warn(
+            this.logger.warn(
               `Failed during syncing with getting block number by provider #${providerIndex}. ${e.stack}`
             );
             throw e;
@@ -194,7 +210,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
             electedBlockTag
           );
         } catch (e: any) {
-          logger.warn(
+          this.logger.warn(
             `Failed to make call by provider #${providerIndex}. ${e.stack}`
           );
           throw e;
@@ -218,7 +234,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
             for (const providerIdUsedForSelection of resultsToProviderIndexes[
               currentResult
             ]) {
-              logger.info(
+              this.logger.info(
                 `Provider used for result selection #${providerIdUsedForSelection}`
               );
             }
