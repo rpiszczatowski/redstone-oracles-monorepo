@@ -84,14 +84,28 @@ export class ProviderWithAgreement extends ProviderWithFallback {
   }
 
   startListeningOnBlocks() {
-    this.providers[0].on("block", (blockNumber) => {
-      this.logger.info(`New block received: ${blockNumber}`);
-      if (Number(blockNumber) < this.lastBlockNumber) {
-        this.logger.warn(`Weird block number received: ${blockNumber}`);
-      } else {
-        this.lastBlockNumber = Number(blockNumber);
-      }
-    });
+    for (
+      let providerIndex = 0;
+      providerIndex < this.providers.length;
+      providerIndex++
+    ) {
+      const logPrefix = `(rpc #${providerIndex})`;
+      this.providers[providerIndex].on("block", (blockNumber) => {
+        this.logger.info(
+          `${logPrefix}: Received on-block hook: ${blockNumber}`
+        );
+        if (Number(blockNumber) < this.lastBlockNumber) {
+          this.logger.warn(
+            `${logPrefix}: Weird block number received: ${blockNumber}. Skipping`
+          );
+        } else {
+          this.logger.info(
+            `${logPrefix}: New block number received: ${blockNumber}`
+          );
+          this.lastBlockNumber = Number(blockNumber);
+        }
+      });
+    }
   }
 
   override async getBlockNumber(): Promise<number> {
@@ -191,6 +205,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
 
       const syncProvider = async (providerIndex: number) => {
         while (!stop && blockPerProvider[providerIndex] < electedBlockNumber) {
+          this.logger.info(`Syncing provider #${providerIndex}`);
           try {
             blockPerProvider[providerIndex] = await this.providers[
               providerIndex
@@ -204,6 +219,8 @@ export class ProviderWithAgreement extends ProviderWithFallback {
 
           await sleepMS(this.agreementConfig.sleepBetweenBlockSync);
         }
+
+        this.logger.info(`Provider synced #${providerIndex}`);
       };
 
       const call = async (providerIndex: number) => {
@@ -220,33 +237,30 @@ export class ProviderWithAgreement extends ProviderWithFallback {
           throw e;
         }
 
-        const currentResultCount = results.get(currentResult);
+        const currentResultCount = results.get(currentResult) || 0;
 
-        if (currentResultCount) {
-          results.set(currentResult, currentResultCount + 1);
-          if (!resultsToProviderIndexes[currentResult]) {
-            resultsToProviderIndexes[currentResult] = [];
-          }
-          resultsToProviderIndexes[currentResult].push(providerIndex);
+        results.set(currentResult, currentResultCount + 1);
+        if (!resultsToProviderIndexes[currentResult]) {
+          resultsToProviderIndexes[currentResult] = [];
+        }
+        resultsToProviderIndexes[currentResult].push(providerIndex);
 
-          // we have found satisfying number of same responses
-          if (
-            currentResultCount + 1 >=
-            this.agreementConfig.numberOfProvidersThatHaveToAgree
-          ) {
+        // we have found satisfying number of same responses
+        if (
+          currentResultCount + 1 >=
+          this.agreementConfig.numberOfProvidersThatHaveToAgree
+        ) {
+          if (!stop) {
+            // preventing too many confusing logs, and to avoid double resolving
             stop = true;
-            for (const providerIdUsedForSelection of resultsToProviderIndexes[
-              currentResult
-            ]) {
-              this.logger.info(
-                `Provider used for result selection #${providerIdUsedForSelection}`
-              );
-            }
-
+            const provIndexes = resultsToProviderIndexes[currentResult];
+            this.logger.info(
+              provIndexes
+                .map((i) => `Used for result selection provider #${i}`)
+                .join(", ") + ` Result: ${currentResult}`
+            );
             resolve(currentResult);
           }
-        } else {
-          results.set(currentResult, 1);
         }
       };
 
