@@ -1,22 +1,26 @@
-import { AggregatedPriceHandler } from "./AggregatedPriceHandler";
-import { PriceDataAfterAggregation } from "../types";
-import PricesService from "./../fetchers/PricesService";
-import { DataPackage, DataPoint, SignedDataPackage } from "redstone-protocol";
+import {
+  DataPackage,
+  DataPoint,
+  SignedDataPackage,
+  consts,
+} from "redstone-protocol";
+import { convertNumberToBytes } from "redstone-protocol/src/common/utils";
 import { Consola } from "consola";
+import { AggregatedPriceHandler } from "./AggregatedPriceHandler";
+import PricesService from "./../fetchers/PricesService";
 import {
   DataPackageBroadcaster,
   HttpBroadcaster,
   StreamrBroadcaster,
 } from "../broadcasters";
-import { config } from "../config";
 import ManifestHelper from "../manifest/ManifestHelper";
-import { DEFAULT_NUM_VALUE_DECIMALS } from "redstone-protocol/src/common/redstone-constants";
-import { convertNumberToBytes } from "redstone-protocol/src/common/utils";
 import { createMetadataForRedstonePrice } from "../fetchers/MetadataForRedstonePrice";
 import { IterationContext } from "../schedulers/IScheduler";
 import { validateDataPointsForBigPackage } from "../validators/validate-data-feed-for-big-package";
 import { BroadcastPerformer } from "./BroadcastPerformer";
 import { ManifestDataProvider } from "./ManifestDataProvider";
+import { config } from "../config";
+import { PriceDataAfterAggregation } from "../types";
 const logger = require("./../utils/logger")("runner") as Consola;
 
 const DEFAULT_HTTP_BROADCASTER_URLS = [
@@ -140,9 +144,13 @@ export class DataPackageBroadcastPerformer
       ManifestHelper.getDataFeedDecimals(
         this.manifestDataProvider.latestManifest!,
         price.symbol
-      ) ?? DEFAULT_NUM_VALUE_DECIMALS;
-    const metadata = createMetadataForRedstonePrice(price);
-    const value = convertNumberToBytes(price.value.toString(), decimals, 32);
+      ) ?? consts.DEFAULT_NUM_VALUE_DECIMALS;
+    const metadata = createMetadataForRedstonePrice(price, decimals);
+    const value = convertNumberToBytes(
+      price.value.toString(),
+      decimals,
+      consts.DEFAULT_NUM_VALUE_BS
+    );
     return new DataPoint(price.symbol, value, metadata);
   }
 }

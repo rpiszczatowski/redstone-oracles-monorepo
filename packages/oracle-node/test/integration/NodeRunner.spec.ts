@@ -203,7 +203,7 @@ describe("NodeRunner", () => {
       expect(simulateSerialization(firstCallArgs[1])).toEqual(
         simulateSerialization({
           requestSignature:
-            "0xa4627603332b20c175df72c95e23339e9d57eff63bf030e5c8117304c56f52a0667d865b563643de7c2ea8bf5b261266d7019c99241cb1864000d37ec0db1e2e1c",
+            "0x84884ccb42f8b6d30d97414396e9de8374d0658fed6a05e32a11099e26b84ca24fc305be2b426ad8fef35f1a824fccaf736fbe663be830c3f2ff5a0e323f4c961c",
           dataPackages: [
             {
               signature:
@@ -222,6 +222,7 @@ describe("NodeRunner", () => {
                       },
                     },
                     value: "444.5",
+                    decimals: 8,
                   },
                   value: base64.encode(convertNumberToBytes("444.5", 8, 32)),
                 },
@@ -241,6 +242,7 @@ describe("NodeRunner", () => {
                       },
                     },
                     value: "42",
+                    decimals: 8,
                   },
                   value: base64.encode(convertNumberToBytes("42", 8, 32)),
                 },
@@ -263,6 +265,7 @@ describe("NodeRunner", () => {
                       },
                     },
                     value: "444.5",
+                    decimals: 8,
                   },
                   value: base64.encode(convertNumberToBytes("444.5", 8, 32)),
                 },
@@ -275,6 +278,7 @@ describe("NodeRunner", () => {
                       },
                     },
                     value: "42",
+                    decimals: 8,
                   },
                   value: base64.encode(convertNumberToBytes("42", 8, 32)),
                 },

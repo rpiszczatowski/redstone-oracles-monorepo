@@ -1,20 +1,22 @@
+import { ethers } from "hardhat";
 import { BigNumber, Contract, Signer } from "ethers";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 import { WrapperBuilder } from "@redstone-finance/evm-connector";
 import {
   DataPackage,
-  INumericDataPoint,
-  NumericDataPoint,
+  IStandardDataPoint,
+  DataPoint,
+  utils,
+  consts,
 } from "redstone-protocol";
 import { DataPackagesResponse } from "redstone-sdk";
-import { formatBytes32String } from "ethers/lib/utils";
-import { setConfigProvider } from "../src";
-import { ethers } from "hardhat";
+import { base64, formatBytes32String } from "ethers/lib/utils";
+import { setConfigProvider } from "../src/config";
 
 export const ethDataFeed = formatBytes32String("ETH");
 export const btcDataFeed = formatBytes32String("BTC");
 
-interface DataPoint {
+interface IDataPoint {
   dataFeedId: string;
   value: number;
 }
@@ -27,7 +29,7 @@ export const dataFeedsIds = [ethDataFeed, btcDataFeed];
 export const getWrappedContractAndUpdateBlockTimestamp = async (
   contract: Contract,
   timestamp: number,
-  newDataPoint?: DataPoint
+  newDataPoint?: IDataPoint
 ) => {
   const dataPoints = [
     { dataFeedId: "ETH", value: 1670.99 },
@@ -83,12 +85,30 @@ const mockWallets = [
 ];
 
 const DEFAULT_DATA_POINTS = [
-  { dataFeedId: "ETH", value: 1670.99 },
-  { dataFeedId: "BTC", value: 23077.68 },
+  {
+    dataFeedId: "ETH",
+    value: base64.encode(
+      utils.convertNumberToBytes(
+        1670.99,
+        consts.DEFAULT_NUM_VALUE_DECIMALS,
+        consts.DEFAULT_NUM_VALUE_BS
+      )
+    ),
+  },
+  {
+    dataFeedId: "BTC",
+    value: base64.encode(
+      utils.convertNumberToBytes(
+        23077.68,
+        consts.DEFAULT_NUM_VALUE_DECIMALS,
+        consts.DEFAULT_NUM_VALUE_BS
+      )
+    ),
+  },
 ];
 
 export const getDataPackagesResponse = async (
-  dataPoints: INumericDataPoint[] = DEFAULT_DATA_POINTS
+  dataPoints: IStandardDataPoint[] = DEFAULT_DATA_POINTS
 ) => {
   const timestampMilliseconds = (await time.latest()) * 1000;
 
@@ -96,7 +116,11 @@ export const getDataPackagesResponse = async (
 
   for (const mockWallet of mockWallets) {
     for (const dataPointObj of dataPoints) {
-      const dataPoint = new NumericDataPoint(dataPointObj);
+      const dataPoint = new DataPoint(
+        dataPointObj.dataFeedId,
+        base64.decode(dataPointObj.value),
+        dataPointObj.metadata
+      );
       const mockDataPackage = {
         signer: mockWallet.address,
         dataPackage: new DataPackage([dataPoint], timestampMilliseconds),

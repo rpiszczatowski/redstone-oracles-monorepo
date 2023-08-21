@@ -20,10 +20,12 @@ export const createMetadataPerSource = (
 };
 
 export const createMetadataForRedstonePrice = (
-  price: PriceDataAfterAggregation
+  price: PriceDataAfterAggregation,
+  decimals: number
 ): RedstoneTypes.MetadataForRedstonePrice => {
   return {
     value: price.value.toString(),
+    decimals: decimals,
     sourceMetadata: price.sourceMetadata,
   };
 };

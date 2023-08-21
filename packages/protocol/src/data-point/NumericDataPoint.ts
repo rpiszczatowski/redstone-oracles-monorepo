@@ -33,11 +33,10 @@ export class NumericDataPoint extends DataPoint {
       decimals,
       valueByteSize
     );
-    super(
-      numericDataPointArgs.dataFeedId,
-      valueBytes,
-      numericDataPointArgs.metadata
-    );
+    super(numericDataPointArgs.dataFeedId, valueBytes, {
+      ...numericDataPointArgs.metadata,
+      decimals,
+    });
   }
 
   toObj(): INumericDataPoint {

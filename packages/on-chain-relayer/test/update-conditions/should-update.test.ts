@@ -1,7 +1,9 @@
 import { expect } from "chai";
 import { ValuesForDataFeeds } from "redstone-sdk";
-import { config } from "../../src/config";
+import { consts, utils } from "redstone-protocol";
+import { base64 } from "ethers/lib/utils";
 import { shouldUpdate } from "../../src/core/update-conditions/should-update";
+import { config } from "../../src/config";
 import {
   createNumberFromContract,
   getDataPackagesResponse,
@@ -83,11 +85,24 @@ describe("should-update", () => {
     );
   });
 
-  it("should return true for same value when data packages contains custom decimals", async () => {
-    const dataPackages = await getDataPackagesResponse([
-      { value: 124567, dataFeedId: "timestamp", decimals: 0 },
-      { value: 1247, dataFeedId: "timestamp2", decimals: 2 },
-    ]);
+  it("should return true for the same value when data packages contains custom decimals", async () => {
+    const dataPoints = [
+      {
+        value: base64.encode(
+          utils.convertNumberToBytes("124567", 0, consts.DEFAULT_NUM_VALUE_BS)
+        ),
+        dataFeedId: "timestamp",
+        metadata: { decimals: 0 },
+      },
+      {
+        value: base64.encode(
+          utils.convertNumberToBytes("1247", 2, consts.DEFAULT_NUM_VALUE_BS)
+        ),
+        dataFeedId: "timestamp",
+        metadata: { decimals: 2 },
+      },
+    ];
+    const dataPackages = await getDataPackagesResponse(dataPoints);
 
     const sameValue: ValuesForDataFeeds = {
       timestamp: createNumberFromContract(124567, 0),
@@ -110,9 +125,16 @@ describe("should-update", () => {
   });
 
   it("should return true for smaller value when data packages contains custom decimals", async () => {
-    const dataPackages = await getDataPackagesResponse([
-      { value: 124567, dataFeedId: "timestamp", decimals: 0 },
-    ]);
+    const dataPoints = [
+      {
+        value: base64.encode(
+          utils.convertNumberToBytes("124567", 0, consts.DEFAULT_NUM_VALUE_BS)
+        ),
+        dataFeedId: "timestamp",
+        metadata: { decimals: 0 },
+      },
+    ];
+    const dataPackages = await getDataPackagesResponse(dataPoints);
 
     const sameValue: ValuesForDataFeeds = {
       timestamp: createNumberFromContract(Math.floor(124567 * 0.8), 0),

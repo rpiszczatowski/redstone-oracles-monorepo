@@ -3,6 +3,9 @@ export interface MetadataForRedstonePrice {
   /** Aggregated value represented as decimal with '.' decimal point separator */
   value: string;
 
+  /** Decimals of the value */
+  decimals: number;
+
   /** Metadata per source */
   sourceMetadata: Record<string, MetadataPerSource>;
 }

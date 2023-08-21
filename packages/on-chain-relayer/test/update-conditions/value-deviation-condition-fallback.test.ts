@@ -1,21 +1,59 @@
 import { expect } from "chai";
+import { base64 } from "ethers/lib/utils";
+import { ValuesForDataFeeds } from "redstone-sdk";
+import { consts, utils } from "redstone-protocol";
 import { config } from "../../src/config";
 import {
   createNumberFromContract,
   getDataPackagesResponse,
   mockEnvVariables,
 } from "../helpers";
-import { ValuesForDataFeeds } from "redstone-sdk";
 import { performValueDeviationConditionChecks } from "../../src/core/update-conditions/value-deviation-condition";
 
 const HISTORICAL_DATA_POINTS = [
-  { dataFeedId: "ETH", value: 1660.99 },
-  { dataFeedId: "BTC", value: 23088.68 },
+  {
+    dataFeedId: "ETH",
+    value: base64.encode(
+      utils.convertNumberToBytes(
+        "1660.99",
+        consts.DEFAULT_NUM_VALUE_DECIMALS,
+        consts.DEFAULT_NUM_VALUE_BS
+      )
+    ),
+  },
+  {
+    dataFeedId: "BTC",
+    value: base64.encode(
+      utils.convertNumberToBytes(
+        "23088.68",
+        consts.DEFAULT_NUM_VALUE_DECIMALS,
+        consts.DEFAULT_NUM_VALUE_BS
+      )
+    ),
+  },
 ];
 
 const VERY_SMALL_DATA_POINTS = [
-  { dataFeedId: "ETH", value: 660.99 },
-  { dataFeedId: "BTC", value: 3066.68 },
+  {
+    dataFeedId: "ETH",
+    value: base64.encode(
+      utils.convertNumberToBytes(
+        "660.99",
+        consts.DEFAULT_NUM_VALUE_DECIMALS,
+        consts.DEFAULT_NUM_VALUE_BS
+      )
+    ),
+  },
+  {
+    dataFeedId: "BTC",
+    value: base64.encode(
+      utils.convertNumberToBytes(
+        "3066.68",
+        consts.DEFAULT_NUM_VALUE_DECIMALS,
+        consts.DEFAULT_NUM_VALUE_BS
+      )
+    ),
+  },
 ];
 
 describe("value-deviation-condition fallback mode tests", () => {

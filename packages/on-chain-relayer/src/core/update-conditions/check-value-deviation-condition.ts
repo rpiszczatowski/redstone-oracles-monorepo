@@ -1,9 +1,14 @@
 import { BigNumber } from "ethers";
-import { INumericDataPoint } from "redstone-protocol";
+import {
+  DataPointPlainObj,
+  IStandardDataPoint,
+  consts,
+  utils,
+} from "redstone-protocol";
+import { MathUtils } from "redstone-utils";
+import { base64, formatUnits } from "ethers/lib/utils";
 import { DataPackagesResponse, ValuesForDataFeeds } from "redstone-sdk";
 import { RelayerConfig } from "../../types";
-import { formatUnits } from "ethers/lib/utils";
-import { MathUtils } from "redstone-utils";
 
 const DEFAULT_DECIMALS = 8;
 
@@ -23,12 +28,12 @@ export const checkValueDeviationCondition = (
 
     for (const { dataPackage } of dataPackages[dataFeedId]) {
       for (const dataPoint of dataPackage.dataPoints) {
-        const dataPointObj = dataPoint.toObj() as INumericDataPoint;
+        const dataPointObj = dataPoint.toObj() as IStandardDataPoint;
 
         const valueFromContractAsDecimal = Number(
           formatUnits(
             valueFromContract.toString(),
-            dataPointObj.decimals ?? DEFAULT_DECIMALS
+            dataPointObj?.metadata?.decimals ?? DEFAULT_DECIMALS
           )
         );
 
@@ -39,8 +44,11 @@ export const checkValueDeviationCondition = (
           dataPointObj
         );
 
+        const dataPointObjValueAsNumber =
+          convertDataPointValueToNumber(dataPointObj);
+
         const currentDeviation = calculateDeviation(
-          dataPointObj.value,
+          dataPointObjValueAsNumber,
           valueFromContractAsDecimal
         );
         maxDeviation = Math.max(currentDeviation, maxDeviation);
@@ -87,18 +95,21 @@ class ValueDeviationLogTrace {
     timestamp: number,
     valueFromContract: number,
     packagesCount: number,
-    dataPoint: INumericDataPoint
+    dataPoint: IStandardDataPoint
   ) {
+    const dataPointObjValueAsNumber = convertDataPointValueToNumber(dataPoint);
     const dataFeedId = dataPoint.dataFeedId;
     if (!this.perDataFeedId[dataFeedId]) {
       this.perDataFeedId[dataFeedId] = {
         valueFromContract: valueFromContract,
-        valuesFromNode: [dataPoint.value],
+        valuesFromNode: [dataPointObjValueAsNumber],
         packagesCount,
         timestamp,
       };
     } else {
-      this.perDataFeedId[dataFeedId].valuesFromNode.push(dataPoint.value);
+      this.perDataFeedId[dataFeedId].valuesFromNode.push(
+        dataPointObjValueAsNumber
+      );
     }
   }
 
@@ -115,3 +126,22 @@ class ValueDeviationLogTrace {
     });
   }
 }
+
+const convertDataPointValueToNumber = (
+  dataPointObj: DataPointPlainObj
+): number => {
+  let dataPointValue: number;
+  if (typeof dataPointObj.value === "number") {
+    dataPointValue = dataPointObj.value;
+  } else if (typeof dataPointObj.value === "string") {
+    const decimals =
+      dataPointObj.metadata?.decimals ?? consts.DEFAULT_NUM_VALUE_DECIMALS;
+    dataPointValue = utils.convertAndSerializeBytesToNumber(
+      base64.decode(dataPointObj.value),
+      decimals
+    );
+  } else {
+    throw new Error("Invalid data point value type received");
+  }
+  return dataPointValue;
+};
