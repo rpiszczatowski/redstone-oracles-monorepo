@@ -15,6 +15,8 @@ import assert from "assert";
 
 dotenv.config();
 
+process.env.DENO_PATH = "./../../node_modules/deno-bin/bin/deno";
+
 // Process Env Variables
 const ALCHEMY_ID = process.env.ALCHEMY_ID;
 assert.ok(ALCHEMY_ID, "no Alchemy ID in process.env");

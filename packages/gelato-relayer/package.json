@@ -7,7 +7,7 @@
   "scripts": {
     "clean": "rm -rf dist && rm -rf .tmp && rm -rf artifacts",
     "build": "yarn clean && yarn compile && tsc --build",
-    "compile": "hardhat compile && cd ../evm-connector && hardhat compile && cd ../on-chain-relayer && hardhat compile",
+    "compile": "cd ../evm-connector && hardhat compile && cd ../on-chain-relayer && hardhat compile && cd ../gelato-relayer && hardhat compile",
     "sample-contract-compile": "npx hardhat compile --force",
     "sample-contract-deploy": "npx hardhat deploy",
     "test": "npx hardhat test",

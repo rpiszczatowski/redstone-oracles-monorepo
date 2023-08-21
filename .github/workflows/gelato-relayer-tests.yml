@@ -24,4 +24,3 @@ jobs:
         env:
           NODE_ENV: test
           ALCHEMY_ID: ${{ secrets.ALCHEMY_API_KEY }}
-          DENO_PATH: ./../../node_modules/deno-bin/bin/deno
