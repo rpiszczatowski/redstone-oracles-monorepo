@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - packages/gelato-relayer/**
+      - packages/on-chain-relayer/**
       - .github/workflows/gelato-relayer-tests.yml
 
 jobs:
