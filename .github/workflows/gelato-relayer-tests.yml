@@ -1,0 +1,27 @@
+name: Gelato Relayer CI
+on:
+  push:
+    paths:
+      - packages/gelato-relayer/**
+      - .github/workflows/gelato-relayer-tests.yml
+
+jobs:
+  tests:
+    runs-on: LargeRunner
+    defaults:
+      run:
+        working-directory: packages/gelato-relayer
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install modules
+        run: yarn
+      - name: Build
+        run: yarn build
+        env:
+          ALCHEMY_ID: ${{ secrets.ALCHEMY_API_KEY }}
+      - name: Run tests
+        run: yarn test
+        env:
+          NODE_ENV: test
+          ALCHEMY_ID: ${{ secrets.ALCHEMY_API_KEY }}
+          DENO_PATH: ./../../node_modules/deno-bin/bin/deno

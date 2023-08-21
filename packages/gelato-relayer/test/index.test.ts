@@ -8,7 +8,7 @@ import { Web3FunctionResultCallData } from "@gelatonetwork/web3-functions-sdk";
 
 const { w3f } = hre;
 
-describe("Redstone Gelato Relayer Tests", function () {
+describe("RedStone Gelato Relayer Tests", function () {
   this.timeout(0);
 
   let redstoneW3f: Web3FunctionHardhat;
