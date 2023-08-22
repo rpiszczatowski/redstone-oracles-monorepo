@@ -21,6 +21,8 @@ type CacheServiceResponsePromise =
 
 const ONE_MINUTE_IN_MILLISECONDS = 60 * 1000;
 
+const MAX_PACKAGES_PERCENTAGE_DIFF = 10;
+
 export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
   constructor(private readonly dataServiceId: string) {
     super(`twap-cache-service-minute-${dataServiceId}`);
@@ -68,8 +70,13 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
     responses: RequestIdToResponse<CacheServiceResponsePromise[]>
   ): number | undefined {
     const twapResponses = responses[twapDataFeedId];
-    const { dataFeedId } =
+    const { dataFeedId, minutesOffset } =
       TwapCacheServiceMinuteFetcher.parseTwapAssetId(twapDataFeedId);
+    TwapCacheServiceMinuteFetcher.validateResponsesCount(
+      twapResponses,
+      dataFeedId,
+      minutesOffset
+    );
 
     const dataPackagesToCalculateTwap: RedstoneTypes.DataPackageFromCache[] =
       [];
@@ -110,6 +117,30 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
       ONE_MINUTE_IN_MILLISECONDS
     );
   };
+
+  private static validateResponsesCount(
+    twapResponses: CacheServiceResponsePromise[],
+    dataFeedId: string,
+    minutesOffset: number
+  ) {
+    const expectedResponsesCount = minutesOffset;
+    const validResponsesCount = twapResponses.map(
+      (response) =>
+        response.status === "fulfilled" && !!response.value[dataFeedId]
+    ).length;
+
+    const difference =
+      (expectedResponsesCount - validResponsesCount) / expectedResponsesCount;
+    const percentageDiff = difference * 100;
+
+    if (percentageDiff > MAX_PACKAGES_PERCENTAGE_DIFF) {
+      throw new Error(
+        `Invalid number of responses to calculate TWAP, only ${percentageDiff.toFixed(
+          1
+        )}% present`
+      );
+    }
+  }
 
   private static getDataPackageFromThisNode(
     response: CacheServiceResponsePromise,

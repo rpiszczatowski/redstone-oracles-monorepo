@@ -58,4 +58,16 @@ describe("twap cache service fetcher", () => {
       },
     ]);
   });
+
+  test("should throw error if not enough responses", async () => {
+    const slicedMockResponse = {
+      "PREMIA-TWAP-60": mockResponse["PREMIA-TWAP-60"].slice(20),
+    };
+    const fetcher = new TwapCacheServiceMinuteFetcher("cache-service-test");
+    expect(() =>
+      fetcher.extractPrice("PREMIA-TWAP-60", slicedMockResponse as any)
+    ).toThrowError(
+      `Invalid number of responses to calculate TWAP, only 33.3% present`
+    );
+  });
 });
