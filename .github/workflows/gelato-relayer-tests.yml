@@ -18,8 +18,6 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
-        env:
-          ALCHEMY_ID: ${{ secrets.ALCHEMY_API_KEY }}
       - name: Run tests
         run: yarn test
         env:
