@@ -55,7 +55,7 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
-      - name: Run clasic tests - simple propagation
+      - name: Run classic tests - simple propagation
         run: node dist/simple-price-propagation-classic.js
         env:
           NODE_ENV: test
