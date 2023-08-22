@@ -11,15 +11,14 @@ import "hardhat-deploy";
 // Process Env Variables
 import * as dotenv from "dotenv";
 // Libraries
-import assert from "assert";
 
 dotenv.config();
 
 process.env.DENO_PATH = "./../../node_modules/deno-bin/bin/deno";
 
 // Process Env Variables
-const ALCHEMY_ID = process.env.ALCHEMY_ID;
-assert.ok(ALCHEMY_ID, "no Alchemy ID in process.env");
+// const ALCHEMY_ID = process.env.ALCHEMY_ID;
+// assert.ok(ALCHEMY_ID, "no Alchemy ID in process.env");
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ETHERSCAN_KEY = process.env.ETHERSCAN_KEY;
