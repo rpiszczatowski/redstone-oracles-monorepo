@@ -17,7 +17,7 @@ dotenv.config();
 process.env.DENO_PATH = "./../../node_modules/deno-bin/bin/deno";
 
 // Process Env Variables
-// const ALCHEMY_ID = process.env.ALCHEMY_ID;
+const ALCHEMY_ID = process.env.ALCHEMY_ID;
 // assert.ok(ALCHEMY_ID, "no Alchemy ID in process.env");
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
