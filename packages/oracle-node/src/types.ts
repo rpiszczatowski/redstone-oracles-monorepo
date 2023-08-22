@@ -1,4 +1,4 @@
-import { SafeNumber, RedstoneTypes } from "redstone-utils";
+import { RedstoneTypes, SafeNumber } from "redstone-utils";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
