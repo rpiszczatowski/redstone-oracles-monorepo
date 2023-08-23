@@ -8,12 +8,6 @@ import {
 } from "../../src/fetchers/balancer-multi/BalancerMultiFetcher";
 import { balancerMultiConfigs } from "../../src/fetchers/balancer-multi/balancer-multi-configs";
 
-const mockDeltasResponse = {
-  "0xf951e335afb289353dc249e82926178eac7ded78": "1000000000000000",
-  "0x60d604890feaa0b5460b28a424407c24fe89374a": "0",
-  "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": "-1025056002749498",
-};
-
 describe("balancer multi fetcher", () => {
   let provider: MockProvider;
 
@@ -25,8 +19,7 @@ describe("balancer multi fetcher", () => {
     const contract = await deployMockContract(wallet, BalancerVaultAbi);
     await contract.mock.queryBatchSwap.returns([
       "1000000000000000",
-      "0",
-      "-1025056002749498",
+      "-1023980940581531",
     ]);
     (BALANCER_VAULT_ADDRESS as any) = contract.address;
   });
@@ -49,7 +42,7 @@ describe("balancer multi fetcher", () => {
     expect(result).toEqual([
       {
         symbol: "SWETH",
-        value: 1676.2433296161716,
+        value: 1674.4853127047602,
       },
     ]);
   });
