@@ -18,24 +18,15 @@ export const balancerMultiConfigs = {
       swaps: [
         {
           poolId:
-            "0x02d928e68d8f10c0358566152677db51e1e2dc8c00000000000000000000051e",
+            "0xe7e2c68d3b13d905bbb636709cf4dfd21076b9d20000000000000000000005ca",
           assetInIndex: 0,
           assetOutIndex: 1,
           amount: DEFAULT_AMOUNT.toString(),
           userData: "0x",
         },
-        {
-          poolId:
-            "0x60d604890feaa0b5460b28a424407c24fe89374a0000000000000000000004fc",
-          assetInIndex: 1,
-          assetOutIndex: 2,
-          amount: "0",
-          userData: "0x",
-        },
       ],
       tokenAddresses: [
         "0xf951e335afb289353dc249e82926178eac7ded78",
-        "0x60d604890feaa0b5460b28a424407c24fe89374a",
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
       ],
     },
