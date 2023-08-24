@@ -3,6 +3,8 @@ import { buildRequestHandlersFromContractDetails } from "../../../shared/utils/b
 import { BalancerRequestHandlers } from "./balancer/BalancerRequestHandlers";
 import { balancerTokensContractDetails } from "./balancer/balancerTokensContractDetails";
 import { curveTokensContractsDetails } from "./curve-lp-tokens/curveTokensContractsDetails";
+import { LidoTokensRequestHandlers } from "./lido/LidoTokensRequestHandlers";
+import { lidoTokensContractDetails } from "./lido/lidoTokensContractDetails";
 
 export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
@@ -13,5 +15,10 @@ export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
     curveTokensContractsDetails,
     CurveRequestHandlers
+  ),
+
+  ...buildRequestHandlersFromContractDetails(
+    lidoTokensContractDetails,
+    LidoTokensRequestHandlers
   ),
 };
