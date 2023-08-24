@@ -17,7 +17,7 @@ import {
 import { config } from "../../config";
 
 type CacheServiceResponsePromise =
-  PromiseSettledResult<RedstoneTypes.DataPackageFromCacheResponse>;
+  PromiseSettledResult<RedstoneTypes.DataPackageFromGatewayResponse>;
 
 const ONE_MINUTE_IN_MILLISECONDS = 60 * 1000;
 
@@ -35,7 +35,8 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
       TwapCacheServiceMinuteFetcher.parseTwapAssetId(id);
     const roundedTimestamp =
       TwapCacheServiceMinuteFetcher.roundTimestampToMinute(Date.now());
-    const promises: Promise<RedstoneTypes.DataPackageFromCacheResponse>[] = [];
+    const promises: Promise<RedstoneTypes.DataPackageFromGatewayResponse>[] =
+      [];
     for (let offset = 0; offset < minutesOffset; offset++) {
       const timestampForHistoricalRequest =
         roundedTimestamp - offset * ONE_MINUTE_IN_MILLISECONDS;
@@ -61,7 +62,7 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
     }
     const url = `${config.historicalDataPackagesUrl}/${this.dataServiceId}/${timestampForHistoricalRequest}`;
     const dataPackageResponse =
-      await axios.get<RedstoneTypes.DataPackageFromCacheResponse>(url);
+      await axios.get<RedstoneTypes.DataPackageFromGatewayResponse>(url);
     return dataPackageResponse.data;
   }
 
@@ -78,7 +79,7 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
       minutesOffset
     );
 
-    const dataPackagesToCalculateTwap: RedstoneTypes.DataPackageFromCache[] =
+    const dataPackagesToCalculateTwap: RedstoneTypes.DataPackageFromGateway[] =
       [];
     for (const response of twapResponses) {
       const dataPackageFromThisNode =
@@ -145,7 +146,7 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
   private static getDataPackageFromThisNode(
     response: CacheServiceResponsePromise,
     dataFeedId: string
-  ): RedstoneTypes.DataPackageFromCache | undefined {
+  ): RedstoneTypes.DataPackageFromGateway | undefined {
     const dataPackagesResponse =
       response.status === "fulfilled" ? response.value : undefined;
     if (dataPackagesResponse) {
@@ -159,7 +160,7 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
   }
 
   private static validateSignatures(
-    dataPackages: RedstoneTypes.DataPackageFromCache[]
+    dataPackages: RedstoneTypes.DataPackageFromGateway[]
   ) {
     for (const dataPackageObject of dataPackages) {
       const { signature, dataPackage } =
@@ -178,7 +179,7 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
   }
 
   private static getTwapValue(
-    dataPackages: RedstoneTypes.DataPackageFromCache[]
+    dataPackages: RedstoneTypes.DataPackageFromGateway[]
   ): number {
     const sortedDataPackages =
       TwapCacheServiceMinuteFetcher.getSortedValidPricesByTimestamp(
@@ -217,8 +218,8 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
   }
 
   private static getSortedValidPricesByTimestamp(
-    dataPackages: RedstoneTypes.DataPackageFromCache[]
-  ): RedstoneTypes.DataPackageFromCache[] {
+    dataPackages: RedstoneTypes.DataPackageFromGateway[]
+  ): RedstoneTypes.DataPackageFromGateway[] {
     const validDataPackages = dataPackages.filter((dataPackage) => {
       const dataPointValue = dataPackage.dataPoints[0].value;
       const isNan = new Decimal(dataPointValue).isNaN();
@@ -234,7 +235,7 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
   }
 
   private static calculatePartTwapValue(
-    sortedDataPackages: RedstoneTypes.DataPackageFromCache[],
+    sortedDataPackages: RedstoneTypes.DataPackageFromGateway[],
     intervalIndex: number,
     totalIntervalLengthInMilliseconds: number
   ): Decimal {
