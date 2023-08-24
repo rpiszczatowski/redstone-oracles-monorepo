@@ -534,6 +534,11 @@
     "url": "https://excalibur.exchange/",
     "color": "#f3b245"
   },
+  "camelot-v3-weth-500": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/camelot.png",
+    "url": "https://excalibur.exchange/",
+    "color": "#f3b245"
+  },
   "non-usd-based": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/redstone-logo.png",
     "url": "https://redstone.finance/",

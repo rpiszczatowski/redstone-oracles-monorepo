@@ -1,11 +1,11 @@
 import { MockProvider, deployMockContract } from "ethereum-waffle";
 import { closeLocalLevelDB, setupLocalDb } from "../../src/db/local-db";
 import { Contract } from "ethers";
-import { UniswapV3OnChainFetcher } from "../../src/fetchers/evm-chain/shared/uniswap-v3-on-chain/UniswapV3OnChainFetcher";
+import { CamelotV3Fetcher } from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotV3Fetcher";
 import { PoolsConfig } from "../../src/fetchers/uniswap-v3-like/types";
 import { saveMockPriceInLocalDb } from "./_helpers";
-import UniswapV3Pool from "../../src/fetchers/evm-chain/shared/uniswap-v3-on-chain/UniswapV3Pool.abi.json";
-import UniswapV3Quoter from "../../src/fetchers/evm-chain/shared/uniswap-v3-on-chain/UniswapV3Quoter.abi.json";
+import CamelotPoolAbi from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotPool.abi.json";
+import CamelotRouterAbi from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotRouter.abi.json";
 
 jest.setTimeout(10000);
 
@@ -81,7 +81,7 @@ jest.mock("ethereum-multicall", () => {
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
-describe("uniswap V3 fetcher", () => {
+describe("Camelot V3 fetcher", () => {
   let quoterContract: Contract;
   let poolContract: Contract;
   let provider: MockProvider;
@@ -91,8 +91,8 @@ describe("uniswap V3 fetcher", () => {
     setupLocalDb();
     provider = new MockProvider();
     const [wallet] = provider.getWallets();
-    quoterContract = await deployMockContract(wallet, UniswapV3Quoter.abi);
-    poolContract = await deployMockContract(wallet, UniswapV3Pool.abi);
+    quoterContract = await deployMockContract(wallet, CamelotRouterAbi);
+    poolContract = await deployMockContract(wallet, CamelotPoolAbi);
 
     mockTokenConfig = {
       MockToken: {
@@ -118,7 +118,7 @@ describe("uniswap V3 fetcher", () => {
   });
 
   test("should properly fetch price", async () => {
-    const fetcher = new UniswapV3OnChainFetcher(
+    const fetcher = new CamelotV3Fetcher(
       "uniswap-v3-mock",
       mockTokenConfig,
       provider

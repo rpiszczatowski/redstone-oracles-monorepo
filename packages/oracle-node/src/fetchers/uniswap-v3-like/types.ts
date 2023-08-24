@@ -1,4 +1,4 @@
-import { PriceAction } from "./UniswapV3OnChainFetcher";
+import { PriceAction } from "./UniswapV3LikeFetcher";
 
 export interface PoolConfig {
   quoterAddress: string;
@@ -56,4 +56,15 @@ export interface MulticallResult {
   priceRatio: number;
   slippage: Record<string, number>;
   pairedToken: string;
+}
+
+export interface Abis {
+  poolAbi: any[];
+  quoterAbi: any[];
+}
+
+export interface FunctionNames {
+  buyFunctionName: string;
+  sellFunctionName: string;
+  slot0FunctionName: string;
 }

@@ -1,4 +1,4 @@
-import { PriceAction } from "../evm-chain/uniswap-v3-on-chain/UniswapV3OnChainFetcher";
+import { PriceAction } from "../uniswap-v3-like/UniswapV3LikeFetcher";
 
 export const buildLiquidityDataFeedId = (
   tokenName: string,
