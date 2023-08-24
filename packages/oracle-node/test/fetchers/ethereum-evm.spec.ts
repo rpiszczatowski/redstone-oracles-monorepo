@@ -15,6 +15,7 @@ import {
 } from "../../src/db/local-db";
 import { balancerTokensContractDetails } from "../../src/fetchers/evm-chain/ethereum/evm-fetcher/sources/balancer/balancerTokensContractDetails";
 import { curveTokensContractsDetails } from "../../src/fetchers/evm-chain/ethereum/evm-fetcher/sources/curve-lp-tokens/curveTokensContractsDetails";
+import { lidoTokensContractDetails } from "../../src/fetchers/evm-chain/ethereum/evm-fetcher/sources/lido/lidoTokensContractDetails";
 
 jest.setTimeout(15000);
 
@@ -139,6 +140,41 @@ describe("Ethereum EVM fetcher", () => {
 
       const result = await fetcher.fetchAll(["3Crv"]);
       expect(result).toEqual([{ symbol: "3Crv", value: 1.0262545814646273 }]);
+    });
+  });
+
+  describe("Lido Token - WSTETH", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+
+      const wstethContract = await deployMockContract(
+        wallet,
+        lidoTokensContractDetails.WSTETH.abi
+      );
+      await wstethContract.mock.stEthPerToken.returns("1136995300838313055");
+      await wstethContract.mock.decimals.returns(18);
+
+      multicallContract = await deployMulticallContract(wallet);
+
+      lidoTokensContractDetails.WSTETH = {
+        ...lidoTokensContractDetails.WSTETH,
+        address: wstethContract.address,
+      };
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new EvmFetcher(
+        "ethereum-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
+      );
+
+      await saveMockPriceInLocalDb(1635.15, "STETH");
+
+      const result = await fetcher.fetchAll(["WSTETH"]);
+      expect(result).toEqual([{ symbol: "WSTETH", value: 1859.1578661657677 }]);
     });
   });
 });
