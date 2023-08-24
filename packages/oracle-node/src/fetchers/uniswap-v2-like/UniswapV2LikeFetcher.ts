@@ -7,6 +7,7 @@ import {
   calculateSlippage,
   convertUsdToTokenAmount,
   DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,
+  tryConvertUsdToTokenAmount,
 } from "../SlippageAndLiquidityCommons";
 import abi from "./UniswapV2.abi.json";
 
@@ -101,11 +102,15 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeRespons
       : reserve0Scaler;
 
     // sell slippage
-    const currentAssetTokensAmount = convertUsdToTokenAmount(
+    const currentAssetTokensAmount = tryConvertUsdToTokenAmount(
       assetId,
       10 ** currentTokenScaler.tokenDecimals,
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
+    if (!currentAssetTokensAmount) {
+      return [];
+    }
+
     const lowAmountSell = this.getToken0SwapPrice(
       response.reserve0Scaled,
       response.reserve1Scaled,
