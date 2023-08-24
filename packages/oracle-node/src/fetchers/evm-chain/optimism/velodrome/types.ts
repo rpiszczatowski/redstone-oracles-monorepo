@@ -1,4 +1,4 @@
-import { SlippageInfo } from "../../uniswap-v3-on-chain/types";
+import { SlippageInfo } from "../../../uniswap-v3-like/types";
 
 export interface PoolConfig {
   poolAddress: string;
