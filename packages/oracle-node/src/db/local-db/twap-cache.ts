@@ -3,11 +3,11 @@ import { RedstoneTypes } from "redstone-utils";
 const ONE_DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
 let localCache: {
-  [timestampWithDataFeedId: string]: RedstoneTypes.DataPackageFromCache;
+  [timestampWithDataFeedId: string]: RedstoneTypes.DataPackageFromGateway;
 } = {};
 
 export const storeDataPackagesInLocalCache = (
-  dataPackages: RedstoneTypes.DataPackageFromCache[]
+  dataPackages: RedstoneTypes.DataPackageFromGateway[]
 ) => {
   for (const dataPackage of dataPackages) {
     const timestamp = dataPackage.timestampMilliseconds;
@@ -23,7 +23,7 @@ const buildLocalCacheKey = (timestamp: number, dataFeedId: string) =>
 export const getDataPackageFromLocalCache = (
   timestamp: number,
   dataFeedId: string
-): RedstoneTypes.DataPackageFromCache => {
+): RedstoneTypes.DataPackageFromGateway => {
   const localCacheKey = buildLocalCacheKey(timestamp, dataFeedId);
   return localCache[localCacheKey];
 };
@@ -31,7 +31,7 @@ export const getDataPackageFromLocalCache = (
 export const getDataPackageFromLocalCacheAsResponse = (
   timestamp: number,
   dataFeedId: string
-): RedstoneTypes.DataPackageFromCacheResponse | undefined => {
+): RedstoneTypes.DataPackageFromGatewayResponse | undefined => {
   const dataPackageFromLocalCache = getDataPackageFromLocalCache(
     timestamp,
     dataFeedId
