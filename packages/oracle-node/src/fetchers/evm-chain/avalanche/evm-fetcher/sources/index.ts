@@ -17,6 +17,8 @@ import { traderJoeAutoPoolTokenContractDetails } from "./trader-joe-auto/traderJ
 import { TraderJoeAutoRequestHandlers } from "./trader-joe-auto/TraderJoeAutoRequestHandlers";
 import { curveTokensContractsDetails } from "./curve-lp-tokens/curveTokensContractsDetails";
 import { CurveRequestHandlers } from "../../../shared/request-handlers/CurveRequestHandlers";
+import { balancerTokensContractDetails } from "./balancer/balancerTokensContractDetails";
+import { BalancerRequestHandlers } from "./balancer/BalancerRequestHandlers";
 
 export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
@@ -54,5 +56,9 @@ export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
     curveTokensContractsDetails,
     CurveRequestHandlers
+  ),
+  ...buildRequestHandlersFromContractDetails(
+    balancerTokensContractDetails,
+    BalancerRequestHandlers
   ),
 };
