@@ -24,6 +24,7 @@ import GmdVaultAbi from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sour
 import { traderJoeAutoPoolTokenContractDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/trader-joe-auto/traderJoeAutoPoolTokenContractsDetails";
 import { steakHutTokensContractDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/steak-hut/steakHutTokensContractDetails";
 import { curveTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/curve-lp-tokens/curveTokensContractsDetails";
+import { balancerTokensContractDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/balancer/balancerTokensContractDetails";
 
 jest.setTimeout(15000);
 
@@ -464,6 +465,49 @@ describe("Avalanche EVM fetcher", () => {
       const result = await fetcher.fetchAll(["crvUSDBTCETH"]);
       expect(result).toEqual([
         { symbol: "crvUSDBTCETH", value: 1059.910337370855 },
+      ]);
+    });
+  });
+
+  describe("Balancer Token - sAVAX-bb-a-WAVAX-BPT", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+
+      const mainPoolContract = await deployMockContract(
+        wallet,
+        balancerTokensContractDetails["sAVAX-bb-a-WAVAX-BPT"].mainPoolAbi
+      );
+      await mainPoolContract.mock.getRate.returns("1002100095172511274");
+
+      const secondPoolContract = await deployMockContract(
+        wallet,
+        balancerTokensContractDetails["sAVAX-bb-a-WAVAX-BPT"].secondPoolAbi
+      );
+      await secondPoolContract.mock.getRate.returns("1000918229247960000");
+
+      multicallContract = await deployMulticallContract(wallet);
+
+      balancerTokensContractDetails["sAVAX-bb-a-WAVAX-BPT"] = {
+        ...balancerTokensContractDetails["sAVAX-bb-a-WAVAX-BPT"],
+        mainPoolAddress: mainPoolContract.address,
+        secondPoolAddress: secondPoolContract.address,
+      };
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new EvmFetcher(
+        "avalanche-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
+      );
+
+      await saveMockPricesInLocalDb([12.45690738, 11.36], ["sAVAX", "AVAX"]);
+
+      const result = await fetcher.fetchAll(["sAVAX-bb-a-WAVAX-BPT"]);
+      expect(result).toEqual([
+        { symbol: "sAVAX-bb-a-WAVAX-BPT", value: 11.394310071686245 },
       ]);
     });
   });
