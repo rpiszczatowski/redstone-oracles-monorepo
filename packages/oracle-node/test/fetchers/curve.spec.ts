@@ -1,7 +1,6 @@
 import { deployMockContract } from "@ethereum-waffle/mock-contract";
 import Decimal from "decimal.js";
 import { deployContract, MockContract, MockProvider } from "ethereum-waffle";
-import { BigNumber } from "ethers";
 import { RedstoneCommon } from "redstone-utils";
 import {
   clearPricesSublevel,
