@@ -1,6 +1,7 @@
 import { beginCell, Builder, Cell, TupleBuilder, TupleReader } from "ton-core";
 import { OP_NUMBER_BITS } from "./config/operations";
 import { DEFAULT_NUM_VALUE_BS } from "redstone-protocol/src/common/redstone-constants";
+import { arrayify } from "ethers/lib/utils";
 
 export function createTupleItems(items: (number | string)[]) {
   const tuple = new TupleBuilder();
@@ -51,4 +52,10 @@ export function createArrayFromTuple(result: TupleReader) {
   }
 
   return values;
+}
+
+export function createBuilderFromString(value: string) {
+  return beginCell().storeBuffer(
+    Buffer.from(arrayify(value.startsWith("0x") ? value : "0x" + value))
+  );
 }

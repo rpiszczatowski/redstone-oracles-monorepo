@@ -34,7 +34,8 @@
       "packages/utils",
       "packages/integration",
       "packages/gelato-relayer",
-      "packages/ton-connector"
+      "packages/ton-connector",
+      "packages/fuel-connector"
     ],
     "nohoist": [
       "ts-node"

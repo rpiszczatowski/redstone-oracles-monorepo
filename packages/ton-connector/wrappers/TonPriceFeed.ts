@@ -1,9 +1,9 @@
 import { TonContract } from "../src/TonContract";
-import { Contract, ContractProvider } from "ton-core";
+import { ContractProvider } from "ton-core";
 import { OP_REDSTONE_FETCH_DATA } from "../src/config/operations";
 import { createArrayFromTuple, messageBuilder } from "../src/ton-utils";
 
-export class TonPriceFeed extends TonContract implements Contract {
+export class TonPriceFeed extends TonContract {
   static getName(): string {
     return "price_feed";
   }

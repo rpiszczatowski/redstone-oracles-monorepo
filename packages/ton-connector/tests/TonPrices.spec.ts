@@ -8,24 +8,31 @@ import { TonPriceManagerContractAdapter } from "../src/price-manager/TonPriceMan
 import { PriceFeedInitData } from "../src/price-feed/PriceFeedInitData";
 import { PriceManagerInitData } from "../src/price-manager/PriceManagerInitData";
 
-import { TestTonNetwork } from "./TestTonNetwork";
+import { TestTonNetwork } from "./helpers/TestTonNetwork";
 import { TonPriceFeedContractDeployer } from "../src/price-feed/TonPriceFeedContractDeployer";
 import { TonPriceManagerContractDeployer } from "../src/price-manager/TonPriceManagerContractDeployer";
 
 jest.setTimeout(10000);
 
+export const SIGNERS = [
+  "0x109B4A318A4F5DDCBCA6349B45F881B4137DEAFB",
+  "0x12470F7ABA85C8B81D63137DD5925D6EE114952B",
+  "0x1EA62D73EDF8AC05DFCEA1A34B9796E937A29EFF",
+  "0x2C59617248994D12816EE1FA77CE0A64EEB456BF",
+  "0x83CBA8C619FB629B81A65C2E67FE15CF3E3C9747",
+];
+
 describe("Ton Prices Tests", () => {
   let priceManagerCode: Cell;
   let priceFeedCode: Cell;
+  let blockchain: Blockchain;
+  let priceManager: TonPriceManagerContractAdapter;
+  let pricesFeed: TonPriceFeedContractAdapter;
 
   beforeAll(async () => {
     priceManagerCode = await compile("price_manager");
     priceFeedCode = await compile("price_feed");
   });
-
-  let blockchain: Blockchain;
-  let priceManager: TonPriceManagerContractAdapter;
-  let pricesFeed: TonPriceFeedContractAdapter;
 
   beforeEach(async () => {
     blockchain = await Blockchain.create();
@@ -35,13 +42,7 @@ describe("Ton Prices Tests", () => {
     priceManager = await new TonPriceManagerContractDeployer(
       network,
       priceManagerCode,
-      new PriceManagerInitData(1, [
-        "0x109B4A318A4F5DDCBCA6349B45F881B4137DEAFB",
-        "0x12470F7ABA85C8B81D63137DD5925D6EE114952B",
-        "0x1EA62D73EDF8AC05DFCEA1A34B9796E937A29EFF",
-        "0x2C59617248994D12816EE1FA77CE0A64EEB456BF",
-        "0x83CBA8C619FB629B81A65C2E67FE15CF3E3C9747",
-      ])
+      new PriceManagerInitData(1, SIGNERS)
     ).getAdapter();
 
     pricesFeed = await new TonPriceFeedContractDeployer(

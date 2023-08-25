@@ -235,6 +235,7 @@ export default {
 };
 export * from "./data-services-urls";
 export * from "./contracts/ContractParamsProvider";
+export * from "./contracts/ContractParamsProviderMock";
 export * from "./contracts/IContractConnector";
 export * from "./contracts/prices/IPricesContractAdapter";
 export * from "./data-feed-values";

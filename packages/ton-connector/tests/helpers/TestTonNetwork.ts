@@ -1,4 +1,4 @@
-import { TonNetwork } from "../src/network/TonNetwork";
+import { TonNetwork } from "../../src/network/TonNetwork";
 import { Address, Contract, OpenedContract, Sender } from "ton-core";
 import { TonClient, TonClient4 } from "ton";
 import { Blockchain, SandboxContract } from "@ton-community/sandbox";

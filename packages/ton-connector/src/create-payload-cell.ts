@@ -3,6 +3,7 @@ import { beginCell } from "ton-core";
 import { arrayify } from "ethers/lib/utils";
 import assert from "assert";
 import { splitPayloadHex } from "./split-payload-hex";
+import { createBuilderFromString } from "./ton-utils";
 
 export function createPayloadCell(payloadHex: string) {
   const { dataPackageChunks, metadata } = splitPayloadHex(payloadHex);
@@ -13,9 +14,7 @@ export function createPayloadCell(payloadHex: string) {
   );
 
   let lastCellIndex = -1;
-  const payloadCell = beginCell().storeBuffer(
-    Buffer.from(arrayify("0x" + metadata))
-  );
+  const payloadCell = createBuilderFromString(metadata);
   let cell = beginCell();
   for (let i = 0; i <= dataPackageChunks.length; i++) {
     const payloadCellIndex = Math.floor(i / 4);
