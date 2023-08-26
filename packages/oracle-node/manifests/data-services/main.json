@@ -777,7 +777,7 @@
       ]
     },
     "CANTO": {
-      "source": ["bkex", "coingecko", "gate", "mexc"]
+      "source": ["coingecko"]
     },
     "GMX": {
       "source": [
