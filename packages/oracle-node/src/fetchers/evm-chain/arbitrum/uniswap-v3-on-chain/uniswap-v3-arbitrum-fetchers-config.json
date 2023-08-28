@@ -11,6 +11,18 @@
       "token1Decimals": 18,
       "fee": 500,
       "pairedToken": "ETH"
+    },
+    "USDC.e": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0xc31e54c7a869b9fcbecc14363cf510d1c41fa443",
+      "token0Symbol": "WETH",
+      "token1Symbol": "USDC.e",
+      "token0Address": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "token1Address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 500,
+      "pairedToken": "ETH"
     }
   },
   "uniswap-v3-arbitrum-on-chain-weth-3000": {
@@ -35,6 +47,18 @@
       "token1Address": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
       "token0Decimals": 18,
       "token1Decimals": 18,
+      "fee": 3000,
+      "pairedToken": "ETH"
+    },
+    "USDC.e": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x17c14d2c404d167802b16c450d3c99f88f2c4f4d",
+      "token0Symbol": "WETH",
+      "token1Symbol": "USDC.e",
+      "token0Address": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
+      "token1Address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
       "fee": 3000,
       "pairedToken": "ETH"
     }
@@ -63,6 +87,84 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "fee": 3000
+    }
+  },
+  "uniswap-v3-arbitrum-on-chain-arb-500": {
+    "USDC.e": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0xcda53b1f66614552f834ceef361a8d12a0b8dad8",
+      "token0Symbol": "ARB",
+      "token1Symbol": "USDC.e",
+      "token0Address": "0x912ce59144191c1204e64559fe8253a0e49e6548",
+      "token1Address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 500
+    }
+  },
+  "uniswap-v3-arbitrum-on-chain-arb-3000": {
+    "USDC.e": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x81c48d31365e6b526f6bbadc5c9aafd822134863",
+      "token0Symbol": "ARB",
+      "token1Symbol": "USDC.e",
+      "token0Address": "0x912ce59144191c1204e64559fe8253a0e49e6548",
+      "token1Address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 3000
+    }
+  },
+  "uniswap-v3-arbitrum-on-chain-usdc-100": {
+    "USDC.e": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x8e295789c9465487074a65b1ae9ce0351172393f",
+      "token0Symbol": "USDC",
+      "token1Symbol": "USDC.e",
+      "token0Address": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "token1Address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+      "token0Decimals": 6,
+      "token1Decimals": 6,
+      "fee": 100
+    }
+  },
+  "uniswap-v3-arbitrum-on-chain-usdt-100": {
+    "USDC.e": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x8c9d230d45d6cfee39a6680fb7cb7e8de7ea8e71",
+      "token0Symbol": "USDT",
+      "token1Symbol": "USDC.e",
+      "token0Address": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
+      "token1Address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+      "token0Decimals": 6,
+      "token1Decimals": 6,
+      "fee": 100
+    }
+  },
+  "uniswap-v3-arbitrum-on-chain-dai-100": {
+    "USDC.e": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0xf0428617433652c9dc6d1093a42adfbf30d29f74",
+      "token0Symbol": "DAI",
+      "token1Symbol": "USDC.e",
+      "token0Address": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+      "token1Address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 100
+    }
+  },
+  "uniswap-v3-arbitrum-on-chain-dai-500": {
+    "USDC.e": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0xd37af656abf91c7f548fffc0133175b5e4d3d5e6",
+      "token0Symbol": "DAI",
+      "token1Symbol": "USDC.e",
+      "token0Address": "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1",
+      "token1Address": "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 500
     }
   }
 }
