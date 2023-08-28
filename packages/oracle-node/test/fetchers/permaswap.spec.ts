@@ -20,6 +20,12 @@ const acnhToUsdcPriceResponse =
 const ansToArPriceResponse =
   "../../src/fetchers/permaswap/example-ans-ar-response.json";
 
+const uToArPriceResponse =
+  "../../src/fetchers/permaswap/example-u-ar-response.json";
+
+const stampToArPriceResponse =
+  "../../src/fetchers/permaswap/example-stamp-ar-response.json";
+
 jest.mock("axios");
 
 describe("permaswap fetcher", () => {
@@ -75,6 +81,34 @@ describe("permaswap fetcher", () => {
       {
         symbol: "ANS",
         value: 2.3401329288270003,
+      },
+    ]);
+  });
+
+  it("should properly fetch U price", async () => {
+    await saveMockPricesInLocalDb([4.9], ["AR"]);
+    mockFetcherResponse(uToArPriceResponse);
+
+    const result = await sut.fetchAll(["U"]);
+
+    expect(result).toEqual([
+      {
+        symbol: "U",
+        value: 2.465180471166,
+      },
+    ]);
+  });
+
+  it("should properly fetch STAMP token price", async () => {
+    await saveMockPricesInLocalDb([4.8], ["AR"]);
+    mockFetcherResponse(stampToArPriceResponse);
+
+    const result = await sut.fetchAll(["STAMP"]);
+
+    expect(result).toEqual([
+      {
+        symbol: "STAMP",
+        value: 0.09103148452799999,
       },
     ]);
   });

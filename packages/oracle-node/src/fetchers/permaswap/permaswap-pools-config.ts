@@ -19,4 +19,16 @@ export const pools: PermaswapPoolsConfig = {
     pairedToken: "AR",
     direction: "currentPriceUp",
   },
+  U: {
+    poolAddress:
+      "0xdc13faadbd1efdaeb764f5515b20d88c5b9fa0c507c0717c7013b1725e398717",
+    pairedToken: "AR",
+    direction: "currentPriceUp",
+  },
+  STAMP: {
+    poolAddress:
+      "0x94170544e7e25b6fc216eb044c1c283c89781bfb92bfeda3054488497bd654b6",
+    pairedToken: "AR",
+    direction: "currentPriceUp",
+  },
 };
