@@ -444,6 +444,36 @@
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
+  "uniswap-v3-arbitrum-on-chain-arb-500": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-arbitrum-on-chain-usdc-100": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-arbitrum-on-chain-arb-3000": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-arbitrum-on-chain-usdt-100": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-arbitrum-on-chain-dai-100": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
+  "uniswap-v3-arbitrum-on-chain-dai-500": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
   "uniswap-v2-on-chain-weth": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",
@@ -530,6 +560,11 @@
     "color": "#f3b245"
   },
   "camelot-usdc": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/camelot.png",
+    "url": "https://excalibur.exchange/",
+    "color": "#f3b245"
+  },
+  "camelot-usdt": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/camelot.png",
     "url": "https://excalibur.exchange/",
     "color": "#f3b245"

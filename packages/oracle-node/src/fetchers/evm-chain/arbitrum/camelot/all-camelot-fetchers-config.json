@@ -15,6 +15,14 @@
       "symbol1": "WETH",
       "symbol1Decimals": 18,
       "pairedToken": "ETH"
+    },
+    "USDC.e": {
+      "address": "0x84652bb2539513baf36e225c930fdd8eaa63ce27",
+      "symbol0": "WETH",
+      "symbol0Decimals": 18,
+      "symbol1": "USDC.e",
+      "symbol1Decimals": 6,
+      "pairedToken": "ETH"
     }
   },
   "camelot-usdc": {
@@ -25,6 +33,16 @@
       "symbol1": "USDC",
       "symbol1Decimals": 6,
       "pairedToken": "USDC"
+    }
+  },
+  "camelot-usdt": {
+    "USDC.e": {
+      "address": "0x1c31fb3359357f6436565ccb3e982bc6bf4189ae",
+      "symbol0": "USDT",
+      "symbol0Decimals": 6,
+      "symbol1": "USDC.e",
+      "symbol1Decimals": 6,
+      "pairedToken": "USDT"
     }
   }
 }
