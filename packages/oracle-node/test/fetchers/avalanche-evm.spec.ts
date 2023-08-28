@@ -1,14 +1,16 @@
-import { Contract, Wallet } from "ethers";
+import { Contract } from "ethers";
 import {
   MockContract,
   MockProvider,
-  deployContract,
   deployMockContract,
 } from "ethereum-waffle";
 import { EvmFetcher } from "../../src/fetchers/evm-chain/shared/EvmFetcher";
 import { requestHandlers } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources";
-import Multicall2 from "../../src/fetchers/evm-chain/shared/abis/Multicall2.abi.json";
-import { saveMockPriceInLocalDb, saveMockPricesInLocalDb } from "./_helpers";
+import {
+  deployMulticallContract,
+  saveMockPriceInLocalDb,
+  saveMockPricesInLocalDb,
+} from "./_helpers";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
@@ -16,7 +18,8 @@ import {
 } from "../../src/db/local-db";
 import { yieldYakTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/yield-yak/yieldYakTokensContractsDetails";
 import { dexLpTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/dex-lp-tokens/dexLpTokensContractsDetails";
-import { mooTraderJoeTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/moo-trader-joe/mooTraderJoeTokensContractsDetails";
+import { beefyContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/beefy/beefyContractsDetails";
+import BeefyVaultAbi from "../../src/fetchers/evm-chain/shared/abis/BeefyVault.abi.json";
 import { glpManagerContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/glp-manager/glpManagerContractsDetails";
 import { oracleAdapterContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/oracle-adapter/oracleAdapterContractsDetails";
 import { gmdTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/gmd/gmdTokensContractsDetails";
@@ -191,21 +194,18 @@ describe("Avalanche EVM fetcher", () => {
     });
   });
 
-  describe("Moo Trader Joe Token", () => {
+  describe("Beefy vault - MOO_TJ_AVAX_USDC_LP", () => {
     beforeAll(async () => {
       provider = new MockProvider();
       const [wallet] = provider.getWallets();
 
-      const mooTokenContract = await deployMockContract(
-        wallet,
-        mooTraderJoeTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.abi
-      );
+      const mooTokenContract = await deployMockContract(wallet, BeefyVaultAbi);
       await mooTokenContract.mock.balance.returns("71564564588400204");
       await mooTokenContract.mock.totalSupply.returns("62713817908999769");
 
       multicallContract = await deployMulticallContract(wallet);
 
-      mooTraderJoeTokensContractsDetails.MOO_TJ_AVAX_USDC_LP.address =
+      beefyContractsDetails.MOO_TJ_AVAX_USDC_LP.address =
         mooTokenContract.address;
     });
 
@@ -512,10 +512,3 @@ describe("Avalanche EVM fetcher", () => {
     });
   });
 });
-
-async function deployMulticallContract(wallet: Wallet) {
-  return await deployContract(wallet, {
-    bytecode: Multicall2.bytecode,
-    abi: Multicall2.abi,
-  });
-}

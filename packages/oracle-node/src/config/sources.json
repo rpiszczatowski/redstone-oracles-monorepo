@@ -613,5 +613,15 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/maverick.png",
     "url": "https://www.mav.xyz/",
     "color": "#5b0ef5"
+  },
+  "ethereum-evm-fetcher": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/eth.svg",
+    "url": "https://ethereum.org/en/",
+    "color": "#3c3c3d"
+  },
+  "arbitrum-evm-fetcher": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/arbitrum.png",
+    "url": "https://arbitrum.io/",
+    "color": "##28A0F0"
   }
 }

@@ -3,8 +3,8 @@ import { YieldYakTokensRequestHandlers } from "./yield-yak/YieldYakTokensRequest
 import { yieldYakTokensContractsDetails } from "./yield-yak/yieldYakTokensContractsDetails";
 import { DexLpTokensRequestHandlers } from "./dex-lp-tokens/DexLpTokensRequestHandlers";
 import { dexLpTokensContractsDetails } from "./dex-lp-tokens/dexLpTokensContractsDetails";
-import { MooTraderJoeTokensRequestHandlers } from "./moo-trader-joe/MooTraderJoeTokensRequestHandlers";
-import { mooTraderJoeTokensContractsDetails } from "./moo-trader-joe/mooTraderJoeTokensContractsDetails";
+import { BeefyTokensRequestHandlers } from "../../../shared/request-handlers/BeefyTokensRequestHandlers";
+import { beefyContractsDetails } from "./beefy/beefyContractsDetails";
 import { OracleAdapterRequestHandlers } from "./oracle-adapter/OracleAdapterRequestHandlers";
 import { oracleAdapterContractsDetails } from "./oracle-adapter/oracleAdapterContractsDetails";
 import { GlpManagerRequestHandler } from "../../../shared/request-handlers/GlpManagerRequestHandlers";
@@ -30,8 +30,8 @@ export const requestHandlers = {
     DexLpTokensRequestHandlers
   ),
   ...buildRequestHandlersFromContractDetails(
-    mooTraderJoeTokensContractsDetails,
-    MooTraderJoeTokensRequestHandlers
+    beefyContractsDetails,
+    BeefyTokensRequestHandlers
   ),
   ...buildRequestHandlersFromContractDetails(
     oracleAdapterContractsDetails,
