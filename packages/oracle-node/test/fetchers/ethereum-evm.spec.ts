@@ -1,13 +1,12 @@
-import { Contract, Wallet } from "ethers";
-import {
-  MockProvider,
-  deployContract,
-  deployMockContract,
-} from "ethereum-waffle";
+import { Contract } from "ethers";
+import { MockProvider, deployMockContract } from "ethereum-waffle";
 import { EvmFetcher } from "../../src/fetchers/evm-chain/shared/EvmFetcher";
 import { requestHandlers } from "../../src/fetchers/evm-chain/ethereum/evm-fetcher/sources";
-import Multicall2 from "../../src/fetchers/evm-chain/shared/abis/Multicall2.abi.json";
-import { saveMockPriceInLocalDb, saveMockPricesInLocalDb } from "./_helpers";
+import {
+  deployMulticallContract,
+  saveMockPriceInLocalDb,
+  saveMockPricesInLocalDb,
+} from "./_helpers";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
@@ -178,10 +177,3 @@ describe("Ethereum EVM fetcher", () => {
     });
   });
 });
-
-async function deployMulticallContract(wallet: Wallet) {
-  return await deployContract(wallet, {
-    bytecode: Multicall2.bytecode,
-    abi: Multicall2.abi,
-  });
-}

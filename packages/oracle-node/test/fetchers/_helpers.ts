@@ -1,10 +1,13 @@
 import { savePrices } from "../../src/db/local-db";
 import axios from "axios";
+import { SafeNumber } from "redstone-utils";
+import { Wallet } from "ethers";
+import { deployContract } from "ethereum-waffle";
 import {
   PriceDataAfterAggregation,
   PriceDataBeforeAggregation,
 } from "../../src/types";
-import { SafeNumber } from "redstone-utils";
+import Multicall2 from "../../src/fetchers/evm-chain/shared/abis/Multicall2.abi.json";
 
 export const saveMockPriceInLocalDb = async (
   value: number,
@@ -98,3 +101,10 @@ export const preparePrice = (
 export const preparePrices = (
   partialPrices: Partial<PriceDataAfterAggregation>[]
 ): any[] => partialPrices.map(preparePrice);
+
+export const deployMulticallContract = async (wallet: Wallet) => {
+  return await deployContract(wallet, {
+    bytecode: Multicall2.bytecode,
+    abi: Multicall2.abi,
+  });
+};
