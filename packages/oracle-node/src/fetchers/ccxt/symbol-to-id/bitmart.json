@@ -3,5 +3,6 @@
   "EUROC": "EUROC/USDC",
   "AAVE": "AAVE/USDT",
   "ARB": "ARB/USDT",
-  "OP": "OP/USDT"
+  "OP": "OP/USDT",
+  "CANTO": "CANTO/USDT"
 }
