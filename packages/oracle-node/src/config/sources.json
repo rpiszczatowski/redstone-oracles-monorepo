@@ -369,6 +369,11 @@
     "url": "https://uniswap.org/",
     "color": "#e23275"
   },
+  "uniswap-v3-ethereum-on-chain-usdt-100": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
+    "url": "https://uniswap.org/",
+    "color": "#e23275"
+  },
   "uniswap-v3-ethereum-on-chain-wbtc-100": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/uniswap.svg",
     "url": "https://uniswap.org/",

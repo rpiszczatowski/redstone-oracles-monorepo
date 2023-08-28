@@ -870,6 +870,30 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "fee": 500
+    },
+    "USDC": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x7858E59e0C01EA06Df3aF3D20aC7B0003275D4Bf",
+      "token0Symbol": "USDC",
+      "token1Symbol": "USDT",
+      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "token0Decimals": 6,
+      "token1Decimals": 6,
+      "fee": 500
+    }
+  },
+  "uniswap-v3-ethereum-on-chain-usdt-100": {
+    "USDC": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x3416cf6c708da44db2624d63ea0aaef7113527c6",
+      "token0Symbol": "USDC",
+      "token1Symbol": "USDT",
+      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "token0Decimals": 6,
+      "token1Decimals": 6,
+      "fee": 100
     }
   }
 }

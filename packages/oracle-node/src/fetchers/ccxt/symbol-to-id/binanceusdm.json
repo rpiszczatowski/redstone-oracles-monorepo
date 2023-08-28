@@ -144,5 +144,6 @@
   "GAL": "GAL/USDT:USDT",
   "APT": "APT/USDT:USDT",
   "ARB": "ARB/USDT:USDT",
-  "OP": "OP/USDT:USDT"
+  "OP": "OP/USDT:USDT",
+  "USDC": "USDC/USDT:USDT"
 }

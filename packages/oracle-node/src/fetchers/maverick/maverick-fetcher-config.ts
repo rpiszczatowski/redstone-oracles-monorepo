@@ -29,5 +29,13 @@ export default {
       pairedToken: "ETH",
       poolAddress: "0x0eB1C92f9f5EC9D817968AfDdB4B46c564cdeDBe",
     },
+    USDC: {
+      token0Symbol: "USDC",
+      token1Symbol: "USDT",
+      token0Decimals: 6,
+      token1Decimals: 6,
+      pairedToken: "USDT",
+      poolAddress: "0xD0b2F5018B5D22759724af6d4281AC0B13266360",
+    },
   },
 };

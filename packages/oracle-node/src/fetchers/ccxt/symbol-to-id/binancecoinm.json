@@ -40,5 +40,6 @@
   "KNC": "KNC/USD:KNC",
   "XMR": "XMR/USD:XMR",
   "GMT": "GMT/USD:GMT",
-  "OP": "OP/USD:OP"
+  "OP": "OP/USD:OP",
+  "USDC": "USDC/USD:USDC"
 }
