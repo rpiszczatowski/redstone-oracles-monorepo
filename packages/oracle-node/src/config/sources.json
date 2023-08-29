@@ -663,5 +663,15 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/symbols/arbitrum.png",
     "url": "https://arbitrum.io/",
     "color": "##28A0F0"
+  },
+  "trader-joe-v2-avalanche-on-chain-usdc": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/trader-joe.png",
+    "url": "https://www.traderjoexyz.com/",
+    "color": "#e2786f"
+  },
+  "trader-joe-v2-avalanche-on-chain-wavax": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/trader-joe.png",
+    "url": "https://www.traderjoexyz.com/",
+    "color": "#e2786f"
   }
 }

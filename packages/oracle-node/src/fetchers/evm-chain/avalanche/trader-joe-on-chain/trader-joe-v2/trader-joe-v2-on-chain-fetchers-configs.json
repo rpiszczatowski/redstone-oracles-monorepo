@@ -8,5 +8,16 @@
       "symbolY": "USDC",
       "symbolYDecimals": 6
     }
+  },
+  "trader-joe-v2-avalanche-on-chain-wavax": {
+    "JOE": {
+      "routerAddress": "0xb4315e873dBcf96Ffd0acd8EA43f689D8c20fB30",
+      "pairAddress": "0x9f8973fb86b35c307324ec31fd81cf565e2f4a63",
+      "symbolX": "JOE",
+      "symbolXDecimals": 18,
+      "symbolY": "WAVAX",
+      "symbolYDecimals": 18,
+      "pairedToken": "AVAX"
+    }
   }
 }
