@@ -934,5 +934,6 @@
   "PEPE": "pepe",
   "SWETH": "sweth",
   "BB-A-WETH": "balancer-boosted-aave-weth",
-  "CRVUSD": "crvusd"
+  "CRVUSD": "crvusd",
+  "DPX": "dopex"
 }

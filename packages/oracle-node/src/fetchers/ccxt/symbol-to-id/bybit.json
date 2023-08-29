@@ -1,15 +1,16 @@
 {
-  "AVAX": "AVAX/USDT:USDT",
-  "GMX": "GMX/USDT:USDT",
+  "AVAX": "AVAX/USDT",
+  "GMX": "GMX/USDT",
   "CMP": "CMP/USDT",
-  "BNB": "BNB/USDT:USDT",
-  "CRV": "CRV/USDT:USDT",
-  "AAVE": "AAVE/USDT:USDT",
+  "BNB": "BNB/USDT",
+  "CRV": "CRV/USDT",
+  "AAVE": "AAVE/USDT",
   "STETH": "STETH/USDT",
-  "TRX": "TRX/USDT:USDT",
+  "TRX": "TRX/USDT",
   "SHIB": "SHIB/USDT",
   "PEPE": "PEPE/USDT",
-  "ARB": "ARB/USDT:USDT",
-  "OP": "OP/USDT:USDT",
-  "DYDX": "DYDX/USDT:USDT"
+  "ARB": "ARB/USDT",
+  "OP": "OP/USDT",
+  "DYDX": "DYDX/USDT",
+  "DPX": "DPX/USDT"
 }
