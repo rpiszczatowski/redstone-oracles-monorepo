@@ -47,9 +47,6 @@ export class CcxtFetcher extends BaseFetcher {
       );
     }
 
-    if (this.exchange.name === "Bybit") {
-      return await this.handleRequestsForBybit(ids);
-    }
     return await this.exchange.fetchTickers(ids);
   }
 
@@ -76,30 +73,5 @@ export class CcxtFetcher extends BaseFetcher {
       return { value: lastPrice * lastUsdInStablePrice, id: pairSymbol };
     }
     throw new Error(`Cannot get last price from cache for ${stableCoinSymbol}`);
-  }
-
-  async handleRequestsForBybit(ids: string[]) {
-    const oldTypeIds = [];
-    const newTypeIds = [];
-
-    for (const id of ids) {
-      if (id.includes("USDT:USDT")) {
-        oldTypeIds.push(id);
-      } else {
-        newTypeIds.push(id);
-      }
-    }
-
-    let responses = {};
-    if (oldTypeIds.length > 0) {
-      responses = await this.exchange.fetchTickers(oldTypeIds);
-    }
-    if (newTypeIds.length > 0) {
-      responses = {
-        ...responses,
-        ...(await this.exchange.fetchTickers(newTypeIds)),
-      };
-    }
-    return responses;
   }
 }
