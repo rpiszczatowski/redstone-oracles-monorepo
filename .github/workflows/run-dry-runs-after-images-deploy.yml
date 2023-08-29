@@ -1,0 +1,71 @@
+name: Run dry runs after Docker images deployment
+on:
+  workflow_run:
+    workflows: [Deploy images to AWS ECR Public]
+    types:
+      - completed
+
+jobs:
+  get-short-sha:
+    if: github.event.workflow_run.conclusion == 'success'
+
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.short-sha.outputs.sha }}
+    steps:
+      - name: Get short SHA
+        id: short-sha
+        run: echo "::set-output name=sha::$(echo ${GITHUB_SHA::7})"
+
+  dry-runs-tests:
+    if: github.event.workflow_run.conclusion == 'success'
+
+    needs: get-short-sha
+    runs-on: LargeRunner
+    container:
+      image: public.ecr.aws/y7v2w8b2/redstone-oracle-node:${{ needs.get-short-sha.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install modules
+        run: yarn
+
+      - name: Run main dry run test
+        run: yarn test:main-dry-run 2>&1 | tee logs.log
+        env:
+          NODE_ENV: test
+          COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          KAIKO_API_KEY: ${{ secrets.KAIKO_API_KEY }}
+          STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
+          SKIPPED_SOURCES: '["binance", "binancecoinm", "binanceusdm"]'
+          SKIPPED_TOKENS: "[]"
+
+      - name: Run avalanche dry run test
+        run: yarn test:avalanche-dry-run 2>&1 | tee logs.log
+        env:
+          NODE_ENV: test
+          COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+
+      - name: Run primary dry run test
+        run: yarn test:primary-dry-run 2>&1 | tee logs.log
+        env:
+          NODE_ENV: test
+          COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          KAIKO_API_KEY: ${{ secrets.KAIKO_API_KEY }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
+
+      - name: Run arbitrum dry run test
+        run: yarn test:arbitrum-dry-run 2>&1 | tee logs.log
+        env:
+          NODE_ENV: test
+          COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
