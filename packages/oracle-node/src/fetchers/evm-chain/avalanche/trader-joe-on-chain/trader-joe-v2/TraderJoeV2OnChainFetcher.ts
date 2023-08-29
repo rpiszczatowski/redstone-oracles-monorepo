@@ -36,6 +36,7 @@ interface PairConfig {
   symbolXDecimals: number;
   symbolY: string;
   symbolYDecimals: number;
+  pairedToken?: string;
 }
 
 interface PairsConfig {
@@ -235,7 +236,15 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<MulticallResult
   }
 
   private getPairedTokenConfig(assetId: string) {
-    return this.getTokenConfig(assetId, !this.isXBase(assetId));
+    const pairedTokenConfig = this.getTokenConfig(
+      assetId,
+      !this.isXBase(assetId)
+    );
+    const pairedTokenSymbol = this.pairsConfig[assetId].pairedToken;
+    if (pairedTokenSymbol) {
+      pairedTokenConfig.symbol = pairedTokenSymbol;
+    }
+    return pairedTokenConfig;
   }
 
   private convertDollarsToSubTokens(
