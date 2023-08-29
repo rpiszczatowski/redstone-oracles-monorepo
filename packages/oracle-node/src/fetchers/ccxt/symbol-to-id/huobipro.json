@@ -505,5 +505,6 @@
   "STETH": "STETH/USDT",
   "PEPE": "PEPE/USDT",
   "ARB": "ARB/USDT",
-  "OP": "OP/USDT"
+  "OP": "OP/USDT",
+  "FXS": "FXS/USDT"
 }
