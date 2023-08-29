@@ -15,5 +15,6 @@
   "OP": "OP/USDT",
   "DYDX": "DYDX/USDT",
   "ALCX": "ALCX/USDT",
-  "STETH": "STETH/USDT"
+  "STETH": "STETH/USDT",
+  "BAL": "BAL/USDT"
 }
