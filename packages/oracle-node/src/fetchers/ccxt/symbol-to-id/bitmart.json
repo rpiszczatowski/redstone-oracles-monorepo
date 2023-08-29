@@ -4,5 +4,7 @@
   "AAVE": "AAVE/USDT",
   "ARB": "ARB/USDT",
   "OP": "OP/USDT",
-  "CANTO": "CANTO/USDT"
+  "CANTO": "CANTO/USDT",
+  "GMX": "GMX/USDT",
+  "FXS": "FXS/USDC"
 }
