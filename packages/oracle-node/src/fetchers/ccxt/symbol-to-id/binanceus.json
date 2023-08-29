@@ -101,5 +101,6 @@
   "GTC": "GTC/USD",
   "THETA": "THETA/USD",
   "TFUEL": "TFUEL/USD",
-  "OCEAN": "OCEAN/USD"
+  "OCEAN": "OCEAN/USD",
+  "BAL": "BAL/USD"
 }

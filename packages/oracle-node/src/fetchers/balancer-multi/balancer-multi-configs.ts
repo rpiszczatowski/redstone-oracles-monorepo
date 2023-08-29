@@ -30,6 +30,27 @@ export const balancerMultiConfigs = {
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
       ],
     },
+    BAL: {
+      tokenIn: "0xba100000625a3754423978a60c9317c58a424e3D", // swETH
+      tokenOut: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+      tokenToFetch: "ETH",
+      swapAmount: DEFAULT_AMOUNT,
+      swapAmountForSwaps: DEFAULT_AMOUNT,
+      swaps: [
+        {
+          poolId:
+            "0x5c6ee304399dbdb9c8ef030ab642b10820db8f56000200000000000000000014",
+          assetInIndex: 0,
+          assetOutIndex: 1,
+          amount: DEFAULT_AMOUNT.toString(),
+          userData: "0x",
+        },
+      ],
+      tokenAddresses: [
+        "0xba100000625a3754423978a60c9317c58a424e3D",
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      ],
+    },
   },
   WSTETH: {
     SWETH: {

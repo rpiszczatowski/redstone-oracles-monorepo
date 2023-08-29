@@ -7,5 +7,6 @@
   "CRV": "crv_usdt",
   "AAVE": "aave_usdt",
   "OP": "op_usdt",
-  "DYDX": "dydx_usdt"
+  "DYDX": "dydx_usdt",
+  "BAL": "bal_usdt"
 }
