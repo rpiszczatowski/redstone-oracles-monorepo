@@ -1,0 +1,62 @@
+name: Check node after Docker images deployment
+on:
+  push:
+    branches: "*"
+  # workflow_run:
+  #   workflows: [Deploy images to AWS ECR Public]
+  #   types:
+  #     - completed
+
+jobs:
+  get-short-sha:
+    # if: github.event.workflow_run.conclusion == 'success'
+
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.short-sha.outputs.sha }}
+    steps:
+      - name: Get short SHA
+        id: short-sha
+        run: echo "::set-output name=sha::$(echo ${GITHUB_SHA::7})"
+
+  check-node:
+    # if: github.event.workflow_run.conclusion == 'success'
+
+    needs: get-short-sha
+    runs-on:
+      LargeRunner
+      # image: public.ecr.aws/y7v2w8b2/redstone-oracle-node:${{ needs.get-short-sha.outputs.sha }}
+    steps:
+      - name: Run oracle-node
+        env:
+          NODE_ENV: test
+          ENABLE_JSON_LOGS: true
+          OVERRIDE_MANIFEST_USING_FILE: ./manifests/data-services/main.json
+          COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
+          COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+          KAIKO_API_KEY: ${{ secrets.KAIKO_API_KEY }}
+          STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
+          ECDSA_PRIVATE_KEY: "0x1111111111111111111111111111111111111111111111111111111111111111"
+        run: |
+          docker pull public.ecr.aws/y7v2w8b2/redstone-oracle-node:60dd238
+          docker run -d \
+            -e NODE_ENV=${{ env.NODE_ENV }} \
+            -e ENABLE_JSON_LOGS=${{ env.ENABLE_JSON_LOGS }} \
+            -e OVERRIDE_MANIFEST_USING_FILE=${{ env.OVERRIDE_MANIFEST_USING_FILE }} \
+            -e COINGECKO_API_URL=${{ env.COINGECKO_API_URL }} \
+            -e COINGECKO_API_KEY=${{ env.COINGECKO_API_KEY }} \
+            -e COINMARKETCAP_API_KEY=${{ env.COINMARKETCAP_API_KEY }} \
+            -e TWELVE_DATA_API_KEY=${{ env.TWELVE_DATA_API_KEY }} \
+            -e KAIKO_API_KEY=${{ env.KAIKO_API_KEY}} \
+            -e STLOUISFED_API_KEY=${{ env.STLOUISFED_API_KEY }} \
+            -e ECDSA_PRIVATE_KEY=${{ env.ECDSA_PRIVATE_KEY }} \
+            public.ecr.aws/y7v2w8b2/redstone-oracle-node:60dd238 2>&1 | tee logs.log
+
+      - name: Sleep for 5 minutes
+        run: sleep 5m
+
+      - name: Summary
+        if: ${{ !cancelled() }}
+        run: grep 'Broadcasting data package completed' logs.log >> $GITHUB_STEP_SUMMARY || false
