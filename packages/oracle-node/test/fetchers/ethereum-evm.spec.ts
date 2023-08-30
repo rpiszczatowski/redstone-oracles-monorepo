@@ -142,22 +142,22 @@ describe("Ethereum EVM fetcher", () => {
     });
   });
 
-  describe("Lido Token - WSTETH", () => {
+  describe("Lido Token - wstETH", () => {
     beforeAll(async () => {
       provider = new MockProvider();
       const [wallet] = provider.getWallets();
 
       const wstethContract = await deployMockContract(
         wallet,
-        lidoTokensContractDetails.WSTETH_FUNDAMENTAL.abi
+        lidoTokensContractDetails.wstETH_FUNDAMENTAL.abi
       );
       await wstethContract.mock.stEthPerToken.returns("1136995300838313055");
       await wstethContract.mock.decimals.returns(18);
 
       multicallContract = await deployMulticallContract(wallet);
 
-      lidoTokensContractDetails.WSTETH_FUNDAMENTAL = {
-        ...lidoTokensContractDetails.WSTETH_FUNDAMENTAL,
+      lidoTokensContractDetails.wstETH_FUNDAMENTAL = {
+        ...lidoTokensContractDetails.wstETH_FUNDAMENTAL,
         address: wstethContract.address,
       };
     });
@@ -172,9 +172,9 @@ describe("Ethereum EVM fetcher", () => {
 
       await saveMockPriceInLocalDb(1635.15, "STETH");
 
-      const result = await fetcher.fetchAll(["WSTETH_FUNDAMENTAL"]);
+      const result = await fetcher.fetchAll(["wstETH_FUNDAMENTAL"]);
       expect(result).toEqual([
-        { symbol: "WSTETH_FUNDAMENTAL", value: 1859.1578661657677 },
+        { symbol: "wstETH_FUNDAMENTAL", value: 1859.1578661657677 },
       ]);
     });
   });
