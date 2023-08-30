@@ -1,7 +1,7 @@
 import { buildRequestHandlersFromContractDetails } from "../../../shared/utils/build-request-handlers-from-contract-details";
 import { YieldYakTokensRequestHandlers } from "../../../shared/request-handlers/YieldYakTokensRequestHandlers";
 import { yieldYakTokensContractsDetails } from "./yield-yak/yieldYakTokensContractsDetails";
-import { DexLpTokensRequestHandlers } from "./dex-lp-tokens/DexLpTokensRequestHandlers";
+import { DexLpTokensRequestHandlers } from "../../../shared/request-handlers/DexLpTokensRequestHandlers";
 import { dexLpTokensContractsDetails } from "./dex-lp-tokens/dexLpTokensContractsDetails";
 import { BeefyTokensRequestHandlers } from "../../../shared/request-handlers/BeefyTokensRequestHandlers";
 import { beefyContractsDetails } from "./beefy/beefyContractsDetails";

@@ -1,44 +1,56 @@
 import { Decimal } from "decimal.js";
-import { dexLpTokensContractsDetails } from "./dexLpTokensContractsDetails";
-import { IEvmRequestHandlers } from "../../../../shared/IEvmRequestHandlers";
-import { buildMulticallRequests } from "../../../../shared/utils/build-multicall-request";
-import { extractValueFromMulticallResponse } from "../../../../shared/utils/extract-value-from-multicall-response";
-import { getFairPriceForLpToken } from "../../../../shared/utils/get-fair-price-lp-token";
-import { serializeDecimalsForLpTokens } from "../../../../shared/utils/serialize-decimals-lp-tokens";
-import { getContractDetailsFromConfig } from "../../../../shared/utils/get-contract-details-from-config";
-import { MulticallParsedResponses } from "../../../../../../types";
+import { IEvmRequestHandlers } from "../IEvmRequestHandlers";
+import { buildMulticallRequests } from "../utils/build-multicall-request";
+import { extractValueFromMulticallResponse } from "../utils/extract-value-from-multicall-response";
+import { getFairPriceForLpToken } from "../utils/get-fair-price-lp-token";
+import { serializeDecimalsForLpTokens } from "../utils/serialize-decimals-lp-tokens";
+import { getContractDetailsFromConfig } from "../utils/get-contract-details-from-config";
+import { MulticallParsedResponses } from "../../../../types";
+import DexLpTokenAbi from "../abis/DexLpToken.abi.json";
 
 // Fair LP Token Pricing has been implemented with the help of: https://blog.alphaventuredao.io/fair-lp-token-pricing/
 
-export type DexLpTokensDetailsKeys = keyof typeof dexLpTokensContractsDetails;
-export type DexLpTokensDetailsValues =
-  (typeof dexLpTokensContractsDetails)[DexLpTokensDetailsKeys];
+interface DexLpTokensContractDetails {
+  address: string;
+  tokensToFetch: string[];
+}
 
 const FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [0, 66];
 const SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [66, 130];
 
 export class DexLpTokensRequestHandlers implements IEvmRequestHandlers {
-  prepareMulticallRequest(id: DexLpTokensDetailsKeys) {
-    const { abi, address } = getContractDetailsFromConfig<
-      DexLpTokensDetailsKeys,
-      DexLpTokensDetailsValues
-    >(dexLpTokensContractsDetails, id);
+  constructor(
+    private readonly dexLpTokensContractsDetails: Record<
+      string,
+      DexLpTokensContractDetails
+    >
+  ) {}
+
+  prepareMulticallRequest(id: string) {
+    const { address } = getContractDetailsFromConfig<
+      string,
+      DexLpTokensContractDetails
+    >(this.dexLpTokensContractsDetails, id);
 
     const functionsNamesWithValues = [
       { name: "getReserves" },
       { name: "totalSupply" },
     ];
-    return buildMulticallRequests(abi, address, functionsNamesWithValues);
+    return buildMulticallRequests(
+      DexLpTokenAbi,
+      address,
+      functionsNamesWithValues
+    );
   }
 
   extractPrice(
     response: MulticallParsedResponses,
-    id: DexLpTokensDetailsKeys
+    id: string
   ): number | undefined {
     const { address, tokensToFetch } = getContractDetailsFromConfig<
-      DexLpTokensDetailsKeys,
-      DexLpTokensDetailsValues
-    >(dexLpTokensContractsDetails, id);
+      string,
+      DexLpTokensContractDetails
+    >(this.dexLpTokensContractsDetails, id);
 
     const reserves = extractValueFromMulticallResponse(
       response,

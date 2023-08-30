@@ -18,6 +18,7 @@ import {
 } from "../../src/db/local-db";
 import { yieldYakTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/yield-yak/yieldYakTokensContractsDetails";
 import { dexLpTokensContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/dex-lp-tokens/dexLpTokensContractsDetails";
+import DexLpTokenAbi from "../../src/fetchers/evm-chain/shared/abis/DexLpToken.abi.json";
 import { beefyContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/beefy/beefyContractsDetails";
 import BeefyVaultAbi from "../../src/fetchers/evm-chain/shared/abis/BeefyVault.abi.json";
 import { glpManagerContractsDetails } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources/glp-manager/glpManagerContractsDetails";
@@ -123,7 +124,7 @@ describe("Avalanche EVM fetcher", () => {
 
       const dexLpTokenContract = await deployMockContract(
         wallet,
-        dexLpTokensContractsDetails.TJ_AVAX_USDC_LP.abi
+        DexLpTokenAbi
       );
       await dexLpTokenContract.mock.getReserves.returns(
         "116071821240319574811726",
@@ -162,7 +163,7 @@ describe("Avalanche EVM fetcher", () => {
 
       const dexLpTokenContract = await deployMockContract(
         wallet,
-        dexLpTokensContractsDetails.TJ_AVAX_BTC_LP.abi
+        DexLpTokenAbi
       );
       await dexLpTokenContract.mock.getReserves.returns(
         1830801156,
