@@ -927,7 +927,7 @@
   "ZBC": "zebec-protocol",
   "ZEON": "zeon",
   "ANKRETH": "ankreth",
-  "WSTETH": "wrapped-steth",
+  "wstETH": "wrapped-steth",
   "STETH": "staked-ether",
   "CMP": "caduceus",
   "PLS": "plutusdao",

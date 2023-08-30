@@ -72109,7 +72109,7 @@
       "name": "Wrapped Statera"
     }
   ],
-  "WSTETH": [
+  "wstETH": [
     {
       "id": "wrapped-steth",
       "name": "Wrapped stETH"

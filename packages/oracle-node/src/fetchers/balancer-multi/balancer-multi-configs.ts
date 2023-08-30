@@ -52,10 +52,10 @@ export const balancerMultiConfigs = {
       ],
     },
   },
-  WSTETH: {
+  wstETH: {
     SWETH: {
       tokenIn: "0xf951e335afb289353dc249e82926178eac7ded78", // swETH
-      tokenOut: "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", // WSTETH
+      tokenOut: "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", // wstETH
       swapAmount: SMALLER_AMOUNT,
       swapAmountForSwaps: SMALLER_AMOUNT,
       swaps: [

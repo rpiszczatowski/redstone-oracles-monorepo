@@ -22,7 +22,7 @@ export const balancerFetchersConfig = {
         tokenIn: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
         tokenOut: "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5",
       },
-      WSTETH: {
+      wstETH: {
         poolId:
           "0x36bf227d6bac96e2ab1ebb5492ecec69c691943f000200000000000000000316",
         tokenOut: "0x5979d7b546e38e414f7e9822514be443a4800529",

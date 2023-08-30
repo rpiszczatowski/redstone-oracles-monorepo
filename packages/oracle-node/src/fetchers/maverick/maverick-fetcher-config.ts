@@ -21,9 +21,9 @@ export default {
       pairedToken: "USDC",
       poolAddress: "0x6c6FC818b25dF89A8adA8da5A43669023bAD1F4c",
     },
-    WSTETH: {
+    wstETH: {
       token0Symbol: "WETH",
-      token1Symbol: "WSTETH",
+      token1Symbol: "wstETH",
       token0Decimals: 18,
       token1Decimals: 18,
       pairedToken: "ETH",
