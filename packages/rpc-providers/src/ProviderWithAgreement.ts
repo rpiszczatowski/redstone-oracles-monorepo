@@ -289,15 +289,19 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         finishedProvidersCount++;
         if (finishedProvidersCount === this.providers.length) {
           stop = true;
+          this.logger.warn(
+            `Failed to achieve consensus. Min rpcs to agree for consensus: ${this.agreementConfig.numberOfProvidersThatHaveToAgree}. ` +
+              JSON.stringify({
+                blockPerProvider,
+                resultsToProviderIndexes,
+                finishedProvidersCount,
+                errors,
+              })
+          );
           reject(
             new AggregateError(
               errors,
-              `Failed to find at least ${this.agreementConfig.numberOfProvidersThatHaveToAgree} agreeing providers. ` +
-                JSON.stringify({
-                  blockPerProvider,
-                  resultsToProviderIndexes,
-                  finishedProvidersCount,
-                })
+              `Failed to find at least ${this.agreementConfig.numberOfProvidersThatHaveToAgree} agreeing providers.`
             )
           );
         }
