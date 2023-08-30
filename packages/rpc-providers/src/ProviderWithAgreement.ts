@@ -72,7 +72,8 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     this.lastBlockNumber = 123267769; // block number from 2023-08:20T14:44:32
     this.startListeningOnBlocks();
 
-    const agreementProviderId = `AggrProvider (${this.providers.length})`;
+    const networkName = providers[0].network.name;
+    const agreementProviderId = `AggrProvider (${networkName})`;
     this.logger = {
       warn(msg: string) {
         logger.warn(`${agreementProviderId}: ${msg}`);
@@ -108,12 +109,29 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     }
   }
 
+  logTimeMs(label: string, timeInMs: number) {
+    const rounded = Math.round(timeInMs / 20) * 20;
+    this.logger.info(`${label}. Rounded: ${rounded}ms. Exact: ${timeInMs}ms.`);
+  }
+
   override async getBlockNumber(): Promise<number> {
     try {
+      const timeBeforeElection = Date.now();
       const electedBlockNumber = await this.electBlockNumber();
+      const blockElectionTimeMs = Date.now() - timeBeforeElection;
       this.logger.info(
         `Successfully elected block number: ${electedBlockNumber}`
       );
+      this.logTimeMs("Block election time", blockElectionTimeMs);
+      const blockNumDiff = electedBlockNumber - this.lastBlockNumber;
+      if (Math.abs(blockNumDiff) > 0) {
+        this.logger.warn(
+          `Elected block number differs from listened block number. ` +
+            `Diff: ${blockNumDiff}. ` +
+            `Elected: ${electedBlockNumber}. ` +
+            `Listened: ${this.lastBlockNumber}`
+        );
+      }
       return electedBlockNumber;
     } catch (e: any) {
       this.logger.warn(
@@ -202,6 +220,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       let stop = false;
       let finishedProvidersCount = 0;
       const resultsToProviderIndexes: Record<string, number[]> = {};
+      const timeBeforeCall = Date.now();
 
       const syncProvider = async (providerIndex: number) => {
         while (!stop && blockPerProvider[providerIndex] < electedBlockNumber) {
@@ -259,6 +278,8 @@ export class ProviderWithAgreement extends ProviderWithFallback {
                 .map((i) => `Used for result selection provider #${i}`)
                 .join(", ") + ` Result: ${currentResult}`
             );
+            const callTimeMs = Date.now() - timeBeforeCall;
+            this.logTimeMs("Call time", callTimeMs);
             resolve(currentResult);
           }
         }
@@ -271,7 +292,12 @@ export class ProviderWithAgreement extends ProviderWithFallback {
           reject(
             new AggregateError(
               errors,
-              `Failed to find at least ${this.agreementConfig.numberOfProvidersThatHaveToAgree} agreeing providers.`
+              `Failed to find at least ${this.agreementConfig.numberOfProvidersThatHaveToAgree} agreeing providers. ` +
+                JSON.stringify({
+                  blockPerProvider,
+                  resultsToProviderIndexes,
+                  finishedProvidersCount,
+                })
             )
           );
         }
