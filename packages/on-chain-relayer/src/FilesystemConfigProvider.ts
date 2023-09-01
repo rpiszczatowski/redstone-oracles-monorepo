@@ -67,6 +67,7 @@ export const fileSystemConfigProvider: ConfigProvider = () => {
       "HISTORICAL_PACKAGES_GATEWAYS",
       true
     ),
+    legacyGasMode: getFromEnv("LEGACY_GAS_MODE", true) === "true",
   };
 
   return makeConfigProvider(manifest, env);

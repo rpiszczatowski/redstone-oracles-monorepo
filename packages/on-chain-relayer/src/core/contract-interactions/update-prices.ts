@@ -51,13 +51,15 @@ const updatePricesInPriceFeedsAdapter = async ({
 }: UpdatePricesArgs): Promise<TransactionResponse> => {
   const wrappedContract = wrapContract(adapterContract);
 
-  const deliveryResult = await getDeliveryMan().deliver(
+  if (config().legacyGasMode) {
+    return await wrappedContract.updateDataFeedsValues(proposedTimestamp);
+  }
+
+  return await getDeliveryMan().deliver(
     wrappedContract,
     "updateDataFeedsValues",
     [proposedTimestamp]
   );
-
-  return deliveryResult;
 };
 
 const updatePricesInMentoAdapter = async ({

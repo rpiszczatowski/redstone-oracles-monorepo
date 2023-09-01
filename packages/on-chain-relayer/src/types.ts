@@ -54,6 +54,7 @@ export interface RelayerConfig {
   fallbackOffsetInMS: number;
   cacheServiceUrls?: string[];
   historicalPackagesGateways?: string[];
+  legacyGasMode?: boolean;
 }
 
 export type OnChainRelayerEnv = {
@@ -68,6 +69,7 @@ export type OnChainRelayerEnv = {
   cacheServiceUrls?: string[];
   historicalPackagesGateways?: string[];
   gasMultiplier: number;
+  legacyGasMode?: boolean;
 };
 
 export type ConfigProvider = () => RelayerConfig;
