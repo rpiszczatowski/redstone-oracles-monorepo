@@ -2,19 +2,19 @@ import { parseFixed } from "@balancer-labs/sdk";
 
 const DEFAULT_DECIMALS = 15;
 const BIGGER_DECIMALS = 21;
-const SMALLER_DECIMALS = 10;
 const DEFAULT_AMOUNT = parseFixed("1", DEFAULT_DECIMALS);
 const BIGGER_AMOUNT = parseFixed("1", BIGGER_DECIMALS);
-const SMALLER_AMOUNT = parseFixed("1", SMALLER_DECIMALS);
 
+// first element on tokenAddresses is our base token - the one for which we calculate the price
+// last element on tokenAddresses is our paired token
+// so swaps array should provide us with a path specifying
+// how to buy the paired token from base token (i.e. sell base token)
 export const balancerMultiConfigs = {
   WETH: {
     SWETH: {
-      tokenIn: "0xf951e335afb289353dc249e82926178eac7ded78", // swETH
-      tokenOut: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+      baseTokenDecimals: 18,
+      pairedTokenDecimals: 18,
       tokenToFetch: "ETH",
-      swapAmount: DEFAULT_AMOUNT,
-      swapAmountForSwaps: DEFAULT_AMOUNT,
       swaps: [
         {
           poolId:
@@ -31,11 +31,10 @@ export const balancerMultiConfigs = {
       ],
     },
     BAL: {
-      tokenIn: "0xba100000625a3754423978a60c9317c58a424e3D", // swETH
-      tokenOut: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2", // WETH
+      baseTokenDecimals: 18,
+      pairedTokenDecimals: 18,
       tokenToFetch: "ETH",
       swapAmount: DEFAULT_AMOUNT,
-      swapAmountForSwaps: DEFAULT_AMOUNT,
       swaps: [
         {
           poolId:
@@ -52,34 +51,10 @@ export const balancerMultiConfigs = {
       ],
     },
   },
-  wstETH: {
-    SWETH: {
-      tokenIn: "0xf951e335afb289353dc249e82926178eac7ded78", // swETH
-      tokenOut: "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", // wstETH
-      swapAmount: SMALLER_AMOUNT,
-      swapAmountForSwaps: SMALLER_AMOUNT,
-      swaps: [
-        {
-          poolId:
-            "0xe0e8ac08de6708603cfd3d23b613d2f80e3b7afb00020000000000000000058a",
-          assetInIndex: 0,
-          assetOutIndex: 1,
-          amount: SMALLER_AMOUNT.toString(),
-          userData: "0x",
-        },
-      ],
-      tokenAddresses: [
-        "0xf951e335afb289353dc249e82926178eac7ded78",
-        "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",
-      ],
-    },
-  },
   DAI: {
     GHO: {
-      tokenIn: "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f", // GHO
-      tokenOut: "0x6b175474e89094c44da98b954eedeac495271d0f", // DAI
-      swapAmount: BIGGER_AMOUNT,
-      swapAmountForSwaps: BIGGER_AMOUNT,
+      baseTokenDecimals: 18,
+      pairedTokenDecimals: 18,
       swaps: [
         {
           poolId:
@@ -116,11 +91,8 @@ export const balancerMultiConfigs = {
   },
   USDC: {
     GHO: {
-      tokenIn: "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f", // GHO
-      tokenOut: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // USDC
-      swapAmount: BIGGER_AMOUNT,
-      swapAmountForSwaps: BIGGER_AMOUNT,
-      priceMultiplier: 10e11,
+      baseTokenDecimals: 18,
+      pairedTokenDecimals: 6,
       swaps: [
         {
           poolId:
@@ -157,11 +129,8 @@ export const balancerMultiConfigs = {
   },
   USDT: {
     GHO: {
-      tokenIn: "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f", // GHO
-      tokenOut: "0xdac17f958d2ee523a2206206994597c13d831ec7", // USDT
-      swapAmount: BIGGER_AMOUNT,
-      swapAmountForSwaps: BIGGER_AMOUNT,
-      priceMultiplier: 10e11,
+      baseTokenDecimals: 18,
+      pairedTokenDecimals: 6,
       swaps: [
         {
           poolId:

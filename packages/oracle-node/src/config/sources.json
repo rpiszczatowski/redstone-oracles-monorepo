@@ -619,11 +619,6 @@
     "url": "https://balancer.fi",
     "color": "#232326"
   },
-  "balancer-multi-wsteth": {
-    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
-    "url": "https://balancer.fi",
-    "color": "#232326"
-  },
   "balancer-multi-dai": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
     "url": "https://balancer.fi",

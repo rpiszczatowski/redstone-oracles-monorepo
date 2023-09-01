@@ -1,13 +1,29 @@
 import { SwapType } from "@balancer-labs/sdk";
-import { BigNumber, Contract, providers } from "ethers";
+import { BigNumber, BigNumberish, ethers, providers } from "ethers";
 import { AddressZero } from "@ethersproject/constants";
 import Decimal from "decimal.js";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
-import { getLastPrice } from "../../db/local-db";
+import { getLastPrice, getLastPriceOrFail } from "../../db/local-db";
 import BalancerVaultAbi from "./BalancerVault.abi.json";
+import {
+  CallReturnContext,
+  ContractCallContext,
+  Multicall,
+} from "ethereum-multicall";
+import { MathUtils, RedstoneTypes } from "redstone-utils";
+import {
+  DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,
+  calculateSlippage,
+  convertUsdToTokenAmount,
+} from "../SlippageAndLiquidityCommons";
 
 export const BALANCER_VAULT_ADDRESS =
   "0xBA12222222228d8Ba445958a75a0704d566BF2C8";
+
+const SLIPPAGE_BUY_LABEL = "slippage_buy";
+const SLIPPAGE_SELL_LABEL = "slippage_sell";
+const SPOT_PRICE_LABEL = "balancer_vault";
+const VAULT_CALLS = "balancer_vault";
 
 const FUNDS = {
   sender: AddressZero,
@@ -16,19 +32,17 @@ const FUNDS = {
   toInternalBalance: false,
 };
 
-type BalancerPoolsConfigs = Record<
-  string,
-  {
-    tokenIn: string;
-    tokenOut: string;
-    swapAmount: BigNumber;
-    swapAmountForSwaps: BigNumber;
-    swaps: SwapConfig[];
-    tokenAddresses: string[];
-    tokenToFetch?: string;
-    priceMultiplier?: number;
-  }
->;
+type BalancerPoolConfig = {
+  baseTokenDecimals: number;
+  pairedTokenDecimals: number;
+  swaps: SwapConfig[];
+  tokenAddresses: string[];
+  tokenToFetch?: string;
+};
+
+type BalancerPoolsConfigs = {
+  [baseToken: string]: BalancerPoolConfig;
+};
 
 interface SwapConfig {
   poolId: string;
@@ -38,11 +52,15 @@ interface SwapConfig {
   userData: string;
 }
 
-interface DeltaResponse {
-  [tokenAddress: string]: string;
+type BatchSwapParams = [SwapType, SwapConfig[], string[], typeof FUNDS];
+
+interface BalancerResponse {
+  spotPrice: string;
+  buySlippage?: string;
+  sellSlippage?: string;
 }
 
-export class BalancerMultiFetcher extends DexOnChainFetcher<DeltaResponse> {
+export class BalancerMultiFetcher extends DexOnChainFetcher<BalancerResponse> {
   constructor(
     name: string,
     private readonly configs: BalancerPoolsConfigs,
@@ -52,58 +70,285 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<DeltaResponse> {
     super(name);
   }
 
-  // Implementation based on https://github.com/balancer/balancer-sdk/blob/7b7aac51daee0ff2b3c29887f821e1fef6a102ff/balancer-js/src/modules/swaps/swaps.module.ts#L365C11
-  override async makeRequest(dataFeedId: string): Promise<DeltaResponse> {
-    const { swaps, tokenAddresses } = this.configs[dataFeedId];
+  multicallAddress: undefined | string;
+  public overrideMulticallAddress(address: string) {
+    this.multicallAddress = address;
+  }
 
-    const vaultContract = new Contract(
-      BALANCER_VAULT_ADDRESS,
-      BalancerVaultAbi,
-      this.provider
+  override async makeRequest(assetId: string): Promise<BalancerResponse> {
+    const { baseTokenDecimals, pairedTokenDecimals, swaps, tokenAddresses } =
+      this.configs[assetId];
+    const pairedToken =
+      this.configs[assetId].tokenToFetch ?? this.underlyingToken;
+    const pairedTokenPrice = getLastPriceOrFail(pairedToken).value;
+    const baseTokenPrice = getLastPrice(assetId)?.value;
+    const baseTokenScaler = new MathUtils.PrecisionScaler(baseTokenDecimals);
+    const pairedTokenScaler = new MathUtils.PrecisionScaler(
+      pairedTokenDecimals
+    );
+    let swapAmountBase: string | undefined;
+    if (baseTokenPrice) {
+      swapAmountBase = convertUsdToTokenAmount(
+        assetId,
+        baseTokenScaler.tokenDecimalsScaler.toNumber(),
+        DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
+      );
+    }
+    const swapAmountPaired = convertUsdToTokenAmount(
+      pairedToken,
+      pairedTokenScaler.tokenDecimalsScaler.toNumber(),
+      DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
 
-    const deltas = await vaultContract.callStatic.queryBatchSwap(
-      SwapType.SwapExactIn,
+    const callContexts = BalancerMultiFetcher.buildContractCallContext(
+      swapAmountBase,
+      swapAmountPaired,
       swaps,
-      tokenAddresses,
-      FUNDS
+      tokenAddresses
     );
+    const multicallResult = await this.createMulticallInstance().call(
+      callContexts
+    );
+    const allReturnedDeltas =
+      multicallResult.results[VAULT_CALLS].callsReturnContext;
 
-    return Object.fromEntries(
-      deltas.map((delta: BigNumber[], idx: number) => [
-        tokenAddresses[idx],
-        String(delta),
-      ])
+    const pairedPriceInBase = this.extractPriceFromMulticallResult(
+      allReturnedDeltas,
+      assetId,
+      baseTokenScaler,
+      pairedTokenScaler
     );
+    const basePriceInPaired = new Decimal(1).div(pairedPriceInBase);
+    let buySlippage: string | undefined;
+    let sellSlippage: string | undefined;
+    if (baseTokenPrice) {
+      const slippageSellAmountOut =
+        BalancerMultiFetcher.extractAmountOutFromMulticallResult(
+          allReturnedDeltas,
+          tokenAddresses,
+          SLIPPAGE_SELL_LABEL,
+          tokenAddresses[tokenAddresses.length - 1]
+        );
+      const slippageBuyAmountOut =
+        BalancerMultiFetcher.extractAmountOutFromMulticallResult(
+          allReturnedDeltas,
+          tokenAddresses,
+          SLIPPAGE_BUY_LABEL,
+          tokenAddresses[0]
+        );
+      const buyPrice = BalancerMultiFetcher.getPrice(
+        new Decimal(swapAmountPaired),
+        slippageBuyAmountOut,
+        pairedTokenScaler,
+        baseTokenScaler
+      );
+      const sellPrice = BalancerMultiFetcher.getPrice(
+        new Decimal(swapAmountBase!),
+        slippageSellAmountOut,
+        baseTokenScaler,
+        pairedTokenScaler
+      );
+      buySlippage = calculateSlippage(basePriceInPaired, buyPrice);
+      sellSlippage = calculateSlippage(pairedPriceInBase, sellPrice);
+    }
+    return {
+      spotPrice: basePriceInPaired.mul(pairedTokenPrice).toString(),
+      sellSlippage,
+      buySlippage,
+    };
+  }
+
+  private static extractAmountOutFromMulticallResult(
+    allReturnedDeltas: CallReturnContext[],
+    tokenAddresses: string[],
+    slippageLabel: string,
+    tokenToExtractAddress: string
+  ) {
+    const tokensOutDeltas = this.convertDeltas(
+      tokenAddresses,
+      allReturnedDeltas.find((result) => result.reference === slippageLabel)!
+        .returnValues as BigNumber[]
+    );
+    return tokensOutDeltas[tokenToExtractAddress].abs();
+  }
+
+  private extractPriceFromMulticallResult(
+    allReturnedDeltas: CallReturnContext[],
+    assetId: string,
+    baseTokenScaler: MathUtils.PrecisionScaler,
+    pairedTokenScaler: MathUtils.PrecisionScaler
+  ): Decimal {
+    const { swaps, tokenAddresses } = this.configs[assetId];
+    const deltasSpot = BalancerMultiFetcher.convertDeltas(
+      tokenAddresses,
+      allReturnedDeltas.find((result) => result.reference === SPOT_PRICE_LABEL)!
+        .returnValues as BigNumberish[]
+    );
+    const pairedTokensOut = pairedTokenScaler.fromSolidityValue(
+      String(deltasSpot[tokenAddresses[tokenAddresses.length - 1]].abs())
+    );
+    const baseTokensIn = baseTokenScaler.fromSolidityValue(swaps[0].amount);
+
+    return baseTokensIn.div(pairedTokensOut);
   }
 
   override calculateSpotPrice(
-    dataFeedId: string,
-    response: DeltaResponse
-  ): number {
-    const { tokenOut, swapAmount, priceMultiplier } = this.configs[dataFeedId];
-    const ratio = new Decimal(response[tokenOut]);
-    let ratioSerialized = ratio.div(swapAmount.toHexString());
-    if (priceMultiplier) {
-      ratioSerialized = ratioSerialized.mul(priceMultiplier);
-    }
-    const tokenToFetch =
-      this.configs[dataFeedId].tokenToFetch ?? this.underlyingToken;
-    const tokenPrice = getLastPrice(tokenToFetch);
-    if (!tokenPrice) {
-      throw new Error(`Cannot get last price from cache for: ${tokenToFetch}`);
-    }
-    const tokenPriceAsDecimal = new Decimal(tokenPrice.value);
-
-    return tokenPriceAsDecimal.mul(ratioSerialized).abs().toNumber();
+    _assetId: string,
+    response: BalancerResponse
+  ): string {
+    return response.spotPrice;
   }
 
   override calculateLiquidity(
     _assetId: string,
-    _response: DeltaResponse
-  ): number {
-    throw new Error(
-      `calculateLiquidity is not implemented for ${this.getName()}`
+    _response: BalancerResponse
+  ): undefined {
+    return undefined;
+  }
+
+  override calculateSlippage(
+    _assetId: string,
+    response: BalancerResponse
+  ): RedstoneTypes.SlippageData[] {
+    if (!response.buySlippage || !response.sellSlippage) {
+      return [];
+    }
+    return [
+      {
+        direction: "buy",
+        simulationValueInUsd: String(DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE),
+        slippageAsPercent: response.buySlippage,
+      },
+      {
+        direction: "sell",
+        simulationValueInUsd: String(DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE),
+        slippageAsPercent: response.sellSlippage,
+      },
+    ];
+  }
+
+  private static getPrice(
+    subtokensIn: Decimal,
+    subtokensOut: Decimal,
+    tokensInScaler: MathUtils.PrecisionScaler,
+    tokensOutScaler: MathUtils.PrecisionScaler
+  ): Decimal {
+    const tokensIn = tokensInScaler.fromSolidityValue(subtokensIn.toString());
+    const tokensOut = tokensOutScaler.fromSolidityValue(
+      subtokensOut.toString()
     );
+    return tokensIn.div(tokensOut);
+  }
+
+  private static convertDeltas(
+    tokenAddresses: string[],
+    deltas: BigNumberish[]
+  ): { [token: string]: Decimal } {
+    return Object.fromEntries(
+      deltas.map((delta: BigNumberish, idx: number) => [
+        tokenAddresses[idx],
+        new Decimal(BigNumber.from(delta).toString()),
+      ])
+    );
+  }
+
+  private static swapsConfigForSellSlippage(
+    swapsForSpot: SwapConfig[],
+    newInitialAmount: string
+  ): SwapConfig[] {
+    // we only want to change initial trade amount
+    const swapsCopy = swapsForSpot.slice();
+    swapsCopy[0] = { ...swapsCopy[0], amount: newInitialAmount };
+    return swapsCopy;
+  }
+
+  private static reverseTokensOrder(swap: SwapConfig): SwapConfig {
+    return {
+      ...swap,
+      amount: "0", // reset original trade amount
+      assetInIndex: swap.assetOutIndex,
+      assetOutIndex: swap.assetInIndex,
+    };
+  }
+
+  private static swapsConfigForBuySlippage(
+    swapsForSpot: SwapConfig[],
+    initialAmount: string
+  ): SwapConfig[] {
+    // we need to reverse swaps order and set new trade amount
+    const swapsCopy = swapsForSpot
+      .slice()
+      .reverse()
+      .map(this.reverseTokensOrder);
+    swapsCopy[0].amount = initialAmount;
+    return swapsCopy;
+  }
+
+  private createMulticallInstance() {
+    return new Multicall({
+      ethersProvider: this.provider,
+      tryAggregate: false, // throw on error
+      multicallCustomContractAddress: this.multicallAddress,
+    });
+  }
+
+  private static createBatchSwapCall(label: string, params: BatchSwapParams) {
+    return {
+      reference: label,
+      methodName: "queryBatchSwap",
+      methodParameters: params,
+    };
+  }
+
+  private static createBatchSwapParams(
+    swaps: SwapConfig[],
+    tokenAddresses: string[]
+  ): BatchSwapParams {
+    return [SwapType.SwapExactIn, swaps, tokenAddresses, FUNDS];
+  }
+
+  private static buildContractCallContext(
+    swapAmountBase: string | undefined,
+    swapAmountPaired: string,
+    swapsForSpotCalculation: SwapConfig[],
+    tokenAddresses: string[]
+  ): ContractCallContext[] {
+    const swapsForSpotParams = this.createBatchSwapParams(
+      swapsForSpotCalculation,
+      tokenAddresses
+    );
+    const callContexts = [
+      this.createBatchSwapCall(SPOT_PRICE_LABEL, swapsForSpotParams),
+    ];
+    if (swapAmountBase) {
+      const swapsForSellSlippage = this.swapsConfigForSellSlippage(
+        swapsForSpotCalculation,
+        swapAmountBase
+      );
+      const swapsForBuySlippage = this.swapsConfigForBuySlippage(
+        swapsForSpotCalculation,
+        swapAmountPaired
+      );
+      const slippageSellParams = this.createBatchSwapParams(
+        swapsForSellSlippage,
+        tokenAddresses
+      );
+      const slippageBuyParams = this.createBatchSwapParams(
+        swapsForBuySlippage,
+        tokenAddresses
+      );
+      callContexts.push(
+        this.createBatchSwapCall(SLIPPAGE_SELL_LABEL, slippageSellParams),
+        this.createBatchSwapCall(SLIPPAGE_BUY_LABEL, slippageBuyParams)
+      );
+    }
+    return [
+      {
+        reference: VAULT_CALLS,
+        contractAddress: BALANCER_VAULT_ADDRESS,
+        abi: BalancerVaultAbi,
+        calls: callContexts,
+      },
+    ];
   }
 }

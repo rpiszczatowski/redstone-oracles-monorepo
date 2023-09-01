@@ -48,7 +48,7 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
       return {
         requestId,
         success: false,
-        response: undefined,
+        response: stringifyError(e),
       };
     }
   }
