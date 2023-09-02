@@ -69,7 +69,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     }
 
     // Start listening on block numbers
-    this.lastBlockNumber = 123267769; // block number from 2023-08:20T14:44:32
+    this.lastBlockNumber = 0;
     this.startListeningOnBlocks();
 
     const networkName = providers[0].network.name;
@@ -95,15 +95,20 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         this.logger.info(
           `${logPrefix}: Received on-block hook: ${blockNumber}`
         );
-        if (Number(blockNumber) < this.lastBlockNumber) {
+
+        const receivedBlockNumber = Number(blockNumber);
+
+        if (receivedBlockNumber < this.lastBlockNumber || isNaN(receivedBlockNumber)) {
           this.logger.warn(
             `${logPrefix}: Weird block number received: ${blockNumber}. Skipping`
           );
-        } else {
+        }
+        
+        if (receivedBlockNumber > this.lastBlockNumber) {
           this.logger.info(
             `${logPrefix}: New block number received: ${blockNumber}`
           );
-          this.lastBlockNumber = Number(blockNumber);
+          this.lastBlockNumber = receivedBlockNumber;
         }
       });
     }
@@ -123,13 +128,14 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         `Successfully elected block number: ${electedBlockNumber}`
       );
       this.logTimeMs("Block election time", blockElectionTimeMs);
-      const blockNumDiff = electedBlockNumber - this.lastBlockNumber;
-      if (Math.abs(blockNumDiff) > 0) {
+      const listenedBlockNumber = this.lastBlockNumber;
+      const blockNumDiff = electedBlockNumber - listenedBlockNumber;
+      if (Math.abs(blockNumDiff) > 0 && listenedBlockNumber > 0) {
         this.logger.warn(
           `Elected block number differs from listened block number. ` +
             `Diff: ${blockNumDiff}. ` +
             `Elected: ${electedBlockNumber}. ` +
-            `Listened: ${this.lastBlockNumber}`
+            `Listened: ${listenedBlockNumber}`
         );
       }
       return electedBlockNumber;
@@ -137,7 +143,12 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       this.logger.warn(
         `Error during block number election. We'll use block number from listener instead: ${e.stack}`
       );
-      return this.lastBlockNumber;
+
+      if (this.lastBlockNumber === 0) {
+        throw new Error(`Didn't receive any last block number`);
+      } else {
+        return this.lastBlockNumber;
+      }
     }
   }
 
