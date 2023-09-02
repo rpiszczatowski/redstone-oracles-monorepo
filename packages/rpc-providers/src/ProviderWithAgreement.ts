@@ -70,8 +70,9 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       );
     }
 
-    // Start listening on block numbers
     this.lastBlockNumber = 0;
+
+    // Start listening on block numbers
     this.startListeningOnBlocks();
 
     const networkName = providers[0].network.name;
@@ -84,6 +85,23 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         logger.info(`${agreementProviderId}: ${msg}`);
       },
     };
+
+    // Hack: setting default (valid block numbers for known networks)
+    const nn = networkName.toLowerCase();
+    if (!nn.includes("test")) {
+      if (nn.includes("ethereum")) {
+        this.lastBlockNumber = 18050446;
+      }
+      if (nn.includes("arbitrum")) {
+        this.lastBlockNumber = 127416055;
+      }
+      if (nn.includes("optimism")) {
+        this.lastBlockNumber = 109036024;
+      }
+      if (nn.includes("avalanche")) {
+        this.lastBlockNumber = 34689286;
+      }
+    }
   }
 
   startListeningOnBlocks() {
@@ -107,7 +125,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
           );
         }
 
-        if (receivedBlockNumber > this.lastBlockNumber && Math.abs(diff) < 10_000) {
+        if (receivedBlockNumber > this.lastBlockNumber && Math.abs(diff) < 100_000) {
           this.logger.info(
             `${logPrefix}: New block number received: ${blockNumber}`
           );
@@ -193,7 +211,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
           this.agreementConfig.getBlockNumberTimeoutMS
         );
         this.logger.info(
-          `Successfully fetched block number from rpc #${providerId}`
+          `Successfully fetched block number from rpc #${providerId}. Block number: ${receivedBlockNumber}`
         );
         return receivedBlockNumber;
       } catch (e: any) {
