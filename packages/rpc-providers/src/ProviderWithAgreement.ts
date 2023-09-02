@@ -97,14 +97,15 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         );
 
         const receivedBlockNumber = Number(blockNumber);
+        const diff = receivedBlockNumber - this.lastBlockNumber;
 
-        if (receivedBlockNumber < this.lastBlockNumber || isNaN(receivedBlockNumber)) {
+        if (receivedBlockNumber < this.lastBlockNumber || isNaN(receivedBlockNumber) || Math.abs(diff) > 10) {
           this.logger.warn(
-            `${logPrefix}: Weird block number received: ${blockNumber}. Skipping`
+            `${logPrefix}: Weird block number received: ${blockNumber}. Diff: ${diff}. Last: ${this.lastBlockNumber}. Received: ${receivedBlockNumber}`
           );
         }
-        
-        if (receivedBlockNumber > this.lastBlockNumber) {
+
+        if (receivedBlockNumber > this.lastBlockNumber && diff < 10_000) {
           this.logger.info(
             `${logPrefix}: New block number received: ${blockNumber}`
           );
@@ -138,6 +139,12 @@ export class ProviderWithAgreement extends ProviderWithFallback {
             `Listened: ${listenedBlockNumber}`
         );
       }
+
+      // Setting listened block number for the first time
+      if (this.lastBlockNumber === 0) {
+        this.lastBlockNumber = electedBlockNumber;
+      }
+
       return electedBlockNumber;
     } catch (e: any) {
       this.logger.warn(
