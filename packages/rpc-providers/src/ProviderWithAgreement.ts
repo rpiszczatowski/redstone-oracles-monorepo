@@ -19,6 +19,8 @@ export interface ProviderWithAgreementConfig {
   electBlockFn: (blocks: number[], numberOfAgreeingNodes: number) => number;
 }
 
+// TODO: looks like there is a bug in this function
+// Or not
 const DEFAULT_ELECT_BLOCK_FN = (blockNumbers: number[]): number => {
   const mid = Math.floor(blockNumbers.length / 2);
   blockNumbers.sort((a, b) => a - b);
@@ -105,7 +107,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
           );
         }
 
-        if (receivedBlockNumber > this.lastBlockNumber && diff < 10_000) {
+        if (receivedBlockNumber > this.lastBlockNumber && (diff < 10_000 || this.lastBlockNumber === 0)) {
           this.logger.info(
             `${logPrefix}: New block number received: ${blockNumber}`
           );
@@ -125,6 +127,11 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       const timeBeforeElection = Date.now();
       const electedBlockNumber = await this.electBlockNumber();
       const blockElectionTimeMs = Date.now() - timeBeforeElection;
+      if (isNaN(electedBlockNumber)) {
+        const errMsg = `Elected block number is NaN: ${electedBlockNumber}`;
+        this.logger.warn(errMsg);
+        throw new Error(errMsg);
+      }
       this.logger.info(
         `Successfully elected block number: ${electedBlockNumber}`
       );
@@ -188,16 +195,12 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         this.logger.info(
           `Successfully fetched block number from rpc #${providerId}`
         );
-        if (isNaN(receivedBlockNumber)) {
-          const errMsg = `Elected block number is NaN: ${receivedBlockNumber}`;
-          this.logger.warn(errMsg);
-          throw new Error(errMsg);
-        }
         return receivedBlockNumber;
       } catch (e: any) {
         this.logger.warn(
           `Failed to fetch block number from rpc #${providerId}: ${e.stack}`
         );
+        throw e;
       }
     };
 
