@@ -188,6 +188,11 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         this.logger.info(
           `Successfully fetched block number from rpc #${providerId}`
         );
+        if (isNaN(receivedBlockNumber)) {
+          const errMsg = `Elected block number is NaN: ${receivedBlockNumber}`;
+          this.logger.warn(errMsg);
+          throw new Error(errMsg);
+        }
         return receivedBlockNumber;
       } catch (e: any) {
         this.logger.warn(
