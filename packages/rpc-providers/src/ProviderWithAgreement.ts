@@ -107,7 +107,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
           );
         }
 
-        if (receivedBlockNumber > this.lastBlockNumber && (diff < 10_000 || this.lastBlockNumber === 0)) {
+        if (receivedBlockNumber > this.lastBlockNumber && Math.abs(diff) < 10_000) {
           this.logger.info(
             `${logPrefix}: New block number received: ${blockNumber}`
           );
