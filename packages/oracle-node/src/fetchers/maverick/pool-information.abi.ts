@@ -1,4 +1,22 @@
 export const MAVERICK_POOL_INFORMATION_ABI = [
-  "function getSqrtPrice(address pool) external view returns (uint256 sqrtPrice)",
-  "function calculateSwap(address pool, uint128 amount, bool tokenAIn, bool exactOutput, uint256 sqrtPriceLimit) external returns (uint256 returnAmount)",
+  {
+    name: "getSqrtPrice",
+    outputs: [{ type: "uint256", name: "sqrtPrice" }],
+    inputs: [{ type: "address", name: "pool" }],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    name: "calculateSwap",
+    outputs: [{ type: "uint256", name: "returnAmount" }],
+    inputs: [
+      { type: "address", name: "pool" },
+      { type: "uint128", name: "amount" },
+      { type: "bool", name: "tokenAIn" },
+      { type: "bool", name: "exactOutput" },
+      { type: "uint256", name: "sqrtPriceLimit" },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
 ];

@@ -1,5 +1,5 @@
 import { Decimal } from "decimal.js";
-import { BigNumber, Contract } from "ethers";
+import { BigNumber, BigNumberish, Contract } from "ethers";
 import { RedstoneCommon, RedstoneTypes } from "redstone-utils";
 import { getRawPrice, getRawPriceOrFail } from "../../db/local-db";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
@@ -189,7 +189,7 @@ class MultiCallHandler {
     return commonRequest;
   }
 
-  parseResponse(multicallResponse: BigNumber[]): CurveFetcherResponse {
+  parseResponse(multicallResponse: BigNumberish[]): CurveFetcherResponse {
     const {
       pairedTokenDecimalsMultiplier: pairedTokenDecimals,
       tokenDecimalsMultiplier: tokenDecimals,
@@ -202,13 +202,13 @@ class MultiCallHandler {
     ] = multicallResponse;
 
     const commonParsedResult = {
-      sellRatio: new Decimal(ratioBigNumber.toString()).div(
+      sellRatio: new Decimal(BigNumber.from(ratioBigNumber).toHexString()).div(
         pairedTokenDecimals
       ),
-      baseTokenSupply: new Decimal(baseTokenSupply.toString()).div(
+      baseTokenSupply: new Decimal(BigNumber.from(baseTokenSupply).toHexString()).div(
         tokenDecimals
       ),
-      pairedTokenSupply: new Decimal(pairedTokenSupply.toString()).div(
+      pairedTokenSupply: new Decimal(BigNumber.from(pairedTokenSupply).toHexString()).div(
         pairedTokenDecimals
       ),
       assetId: this.assetId,
@@ -218,10 +218,10 @@ class MultiCallHandler {
     if (this.amountInBaseToken) {
       const [bigSell, bigBuy] = slippageResponses;
       const slippageParsedResponse = {
-        bigBuyRatio: new Decimal(bigBuy.toString())
+        bigBuyRatio: new Decimal(BigNumber.from(bigBuy).toHexString())
           .div(decimalsRatio)
           .div(this.amountInPairedToken),
-        bigSellRatio: new Decimal(bigSell.toString())
+        bigSellRatio: new Decimal(BigNumber.from(bigSell).toHexString())
           .mul(decimalsRatio)
           .div(this.amountInBaseToken),
       };

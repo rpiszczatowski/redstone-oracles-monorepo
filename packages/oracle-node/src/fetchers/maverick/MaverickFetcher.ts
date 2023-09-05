@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { BigNumber, Contract, providers } from "ethers";
+import { BigNumber, BigNumberish, Contract, providers } from "ethers";
 import { MathUtils, RedstoneCommon } from "redstone-utils";
 import { SlippageData } from "redstone-utils/src/types";
 import { getRawPrice } from "../../db/local-db";
@@ -245,9 +245,9 @@ class MultiCallHandler {
     return requests;
   }
 
-  parseResponse(multicallResponse: BigNumber[]) {
+  parseResponse(multicallResponse: BigNumberish[]) {
     const [sqrtPrice, ...slippageResponses] = multicallResponse;
-    const price = new Decimal(sqrtPrice.toString())
+    const price = new Decimal(BigNumber.from(sqrtPrice).toHexString())
       .div(MAVERICK_PRECISION)
       .toPower(2);
 
