@@ -54,36 +54,10 @@ impl U64TupleFelt252Convertible<
     }
 }
 
-impl TupleSize4PartialEq<
-    E0, impl E0PartialEq: PartialEq<E0>, impl E0Drop: Drop<E0>
-> of PartialEq<(E0, E0, E0, E0, )> {
-    #[inline(always)]
-    fn eq(lhs: (E0, E0, E0, E0, ), rhs: (E0, E0, E0, E0, )) -> bool {
-        let (a, b, c, d) = lhs;
-        let (e, f, g, h) = rhs;
-
-        if a != e {
-            return false;
-        } else if b != f {
-            return false;
-        } else if c != g {
-            return false;
-        }
-
-        return d == h;
-    }
-
-    #[inline(always)]
-    fn ne(lhs: (E0, E0, E0, E0, ), rhs: (E0, E0, E0, E0, )) -> bool {
-        !(rhs == lhs)
-    }
-}
-
 mod tests {
     use super::U64_TUPLE_MAX_A;
     use super::U64TupleFelt252Convertible;
     use super::U64TupleConvertible;
-    use super::TupleSize4PartialEq;
     use utils::felt252_convertible::Felt252Convertible;
 
     const MAX_U64: u64 = 18446744073709551615;

@@ -1,4 +1,4 @@
-#[contract]
+#[starknet::contract]
 mod HelloStarknet {
     use array::array_new;
     use array::ArrayTrait;
@@ -7,6 +7,7 @@ mod HelloStarknet {
     use option::OptionTrait;
 
     use starknet::info::get_block_timestamp;
+    use starknet::storage_access::Store;
 
     use redstone::processor::process_payload;
     use redstone::config::Config;
@@ -15,9 +16,10 @@ mod HelloStarknet {
     use redstone::sliceable_array::SliceableArray;
     use redstone::numbers::Felt252PartialOrd;
 
-    use utils::serde_storage::StorageAccessSerde;
+    use utils::serde_storage::StoreSerde;
     use utils::gas::out_of_gas_array;
 
+    #[storage]
     struct Storage {
         signer_count: usize,
         signers: Array<felt252>,
@@ -26,7 +28,9 @@ mod HelloStarknet {
     }
 
     #[constructor]
-    fn constructor(signer_count_threshold: felt252, signer_addresses: Array<felt252>) {
+    fn constructor(
+        ref self: ContractState, signer_count_threshold: felt252, signer_addresses: Array<felt252>
+    ) {
         assert(signer_count_threshold > 0, 'Wrong signer count threshold');
         assert(
             signer_addresses.len().into() >= signer_count_threshold, 'Wrong number of addresses'
@@ -64,8 +68,8 @@ mod HelloStarknet {
         result
     }
 
-    #[external]
-    fn write_prices(feed_ids: Array<felt252>, payload_bytes: Array<u8>, ) {
+    #[external(v0)]
+    fn write_prices(ref self: ContractState, feed_ids: Array<felt252>, payload_bytes: Array<u8>, ) {
         let config = Config {
             block_timestamp: get_block_timestamp(),
             feed_ids: @feed_ids,

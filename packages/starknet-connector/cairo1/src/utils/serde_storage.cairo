@@ -10,7 +10,7 @@ use starknet::syscalls::storage_read_syscall;
 use starknet::syscalls::storage_write_syscall;
 use starknet::syscalls::SyscallResult;
 use starknet::StorageBaseAddress;
-use starknet::StorageAccess;
+use starknet::Store;
 use starknet::storage_address_from_base_and_offset;
 
 use utils::gas::out_of_gas_array;
@@ -18,16 +18,16 @@ use utils::gas::out_of_gas_array;
 trait WrappedSerde<T> {} // to avoid multiple implementations of Serde for primitive types
 impl ArrayWrappedSerde<U> of WrappedSerde<Array<U>> {}
 
-impl StorageAccessSerde<
+impl StoreSerde<
     T, impl TSerde: Serde<T>, impl TDrop: Drop<T>, impl TWrappedSerde: WrappedSerde<T>
-> of StorageAccess<T> {
+> of Store<T> {
     #[inline(always)]
     fn read(address_domain: u32, base: StorageBaseAddress) -> SyscallResult<T> {
         let mut result = Default::default();
 
-        let size: usize = StorageAccess::<felt252>::read(address_domain, base)?
+        let size: usize = Store::<felt252>::read(address_domain, base)?
             .try_into()
-            .expect('StorageAccessArray - non usize');
+            .expect('StoreArray - non usize');
 
         _read(:address_domain, :base, :size, index: 0_u8, ref acc: result);
         let mut span = result.span();
@@ -40,7 +40,7 @@ impl StorageAccessSerde<
         let mut arr: Array<felt252> = Default::default();
         Serde::<T>::serialize(@value, ref arr);
 
-        StorageAccess::<felt252>::write(address_domain, base, arr.len().into());
+        Store::<felt252>::write(address_domain, base, arr.len().into());
 
         _write(:address_domain, :base, value: arr, index: 0_u8)
     }
@@ -61,7 +61,7 @@ fn _read(
     let value = storage_read_syscall(
         address_domain, storage_address_from_base_and_offset(base, index + 1_u8)
     )
-        .expect('StorageAccessArray - non felt');
+        .expect('StoreArray - non felt');
 
     acc.append(value);
 

@@ -1,4 +1,4 @@
-#[contract]
+#[starknet::contract]
 mod PriceManager {
     use array::ArrayTrait;
     use box::BoxTrait;
@@ -12,6 +12,7 @@ mod PriceManager {
     use starknet::get_caller_address;
     use starknet::info::get_block_timestamp;
     use starknet::info::get_block_info;
+    use starknet::storage_access::Store;
 
     use redstone::processor::process_payload;
     use redstone::config::Config;
@@ -22,8 +23,8 @@ mod PriceManager {
     use redstone::numbers::Felt252Div;
 
     use utils::u64tuple_convertible::U64TupleFelt252Convertible;
-    use utils::felt252_convertible_storage::StorageAccessFelt252Convertible;
-    use utils::serde_storage::StorageAccessSerde;
+    use utils::felt252_convertible_storage::StoreFelt252Convertible;
+    use utils::serde_storage::StoreSerde;
     use utils::gas::out_of_gas_array;
 
     use interface::round_data::RoundData;
@@ -31,6 +32,7 @@ mod PriceManager {
 
     use price_manager::round_data_u64tuple_convertible::RoundDataU64TupleConvertible;
 
+    #[storage]
     struct Storage {
         signer_count: usize,
         signers: Array<felt252>,
@@ -42,7 +44,10 @@ mod PriceManager {
 
     #[constructor]
     fn constructor(
-        owner_address: felt252, signer_count_threshold: felt252, signer_addresses: Array<felt252>
+        ref self: ContractState,
+        owner_address: felt252,
+        signer_count_threshold: felt252,
+        signer_addresses: Array<felt252>
     ) {
         owner::write(contract_address_try_from_felt252(owner_address).unwrap());
 
@@ -76,8 +81,13 @@ mod PriceManager {
     }
 
     //TODO: change write_prices & payload_timestamp to u64
-    #[external]
-    fn write_prices(round_number: felt252, feed_ids: Array<felt252>, payload_bytes: Array<u8>) {
+    #[external(v0)]
+    fn write_prices(
+        ref self: ContractState,
+        round_number: felt252,
+        feed_ids: Array<felt252>,
+        payload_bytes: Array<u8>
+    ) {
         let config = Config {
             block_timestamp: get_block_timestamp(),
             feed_ids: @feed_ids,
@@ -93,8 +103,9 @@ mod PriceManager {
         )
     }
 
-    #[external]
+    #[external(v0)]
     fn write_price_values(
+        ref self: ContractState,
         round_number: felt252,
         feed_ids: Array<felt252>,
         prices: Array<felt252>,
