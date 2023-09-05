@@ -1,4 +1,4 @@
-import { PriceAction } from "../uniswap-v3-like/UniswapV3LikeFetcher";
+type PriceAction = "buy" | "sell";
 
 export const buildLiquidityDataFeedId = (
   tokenName: string,

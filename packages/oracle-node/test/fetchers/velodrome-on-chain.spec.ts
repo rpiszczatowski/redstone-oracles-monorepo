@@ -1,63 +1,27 @@
-import { MockProvider, deployMockContract } from "ethereum-waffle";
-import { closeLocalLevelDB, setupLocalDb } from "../../src/db/local-db";
+import {
+  MockProvider,
+  deployMockContract,
+  deployContract,
+} from "ethereum-waffle";
+import {
+  clearLastPricesCache,
+  clearPricesSublevel,
+  closeLocalLevelDB,
+  setupLocalDb,
+} from "../../src/db/local-db";
 import { Contract } from "ethers";
 import { saveMockPriceInLocalDb } from "./_helpers";
 import VelodromPool from "../../src/fetchers/evm-chain/optimism/velodrome/abi.json";
-
+import multicall3Json from "../abis/Multicall3.deployment.json";
 import { VelodromeOnChainFetcher } from "../../src/fetchers/evm-chain/optimism/velodrome/VelodromeOnChainFetcher";
 import { PoolsConfig } from "../../src/fetchers/evm-chain/optimism/velodrome/types";
 
-jest.setTimeout(10000);
-
-jest.mock("../../src/Terminator", () => ({
-  terminateWithManifestConfigError: (details: string) => {
-    throw new Error(`Mock manifest config termination: ${details}`);
-  },
-}));
-
-jest.mock("ethereum-multicall", () => {
-  return {
-    Multicall: jest.fn().mockImplementation(() => {
-      return {
-        call: jest.fn().mockResolvedValue({
-          results: {
-            poolContract: {
-              callsReturnContext: [
-                {
-                  returnValues: [
-                    { type: "BigNumber", hex: "0x64" },
-                    { type: "BigNumber", hex: "0xa" },
-                  ],
-                  success: true,
-                },
-                {
-                  returnValues: [{ type: "BigNumber", hex: "0xa" }],
-                  reference: "1_buy",
-                  methodName: "getAmountOut",
-                  methodParameters: [1, MOCK_TOKEN2_ADDRESS],
-                  success: true,
-                },
-                {
-                  returnValues: [{ type: "BigNumber", hex: "0x1" }],
-                  reference: "1_sell",
-                  methodName: "getAmountOut",
-                  methodParameters: [10, MOCK_TOKEN_ADDRESS],
-                  success: true,
-                },
-              ],
-            },
-          },
-        }),
-      };
-    }),
-  };
-});
-
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
-const MOCK_TOKEN2_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc3";
+const MOCK_TOKEN2_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc3";
 
 describe("velodrome fetcher", () => {
   let poolContract: Contract;
+  let multicall: Contract;
   let provider: MockProvider;
   let mockTokenConfig: PoolsConfig;
 
@@ -66,6 +30,7 @@ describe("velodrome fetcher", () => {
     provider = new MockProvider();
     const [wallet] = provider.getWallets();
     poolContract = await deployMockContract(wallet, VelodromPool.abi);
+    multicall = await deployContract(wallet, multicall3Json);
 
     mockTokenConfig = {
       MockToken: {
@@ -77,10 +42,6 @@ describe("velodrome fetcher", () => {
         token0Decimals: 1,
         token1Decimals: 0,
         stable: false,
-        slippage: [
-          { direction: "buy", simulationValueInUsd: 1 },
-          { direction: "sell", simulationValueInUsd: 1 },
-        ],
       },
       MockTokenStable: {
         poolAddress: poolContract.address,
@@ -91,86 +52,104 @@ describe("velodrome fetcher", () => {
         token0Decimals: 1,
         token1Decimals: 0,
         stable: true,
-        slippage: [
-          { direction: "buy", simulationValueInUsd: 1 },
-          { direction: "sell", simulationValueInUsd: 1 },
-        ],
       },
     };
   });
 
+  beforeEach(async () => {
+    await clearPricesSublevel();
+    clearLastPricesCache();
+  });
   afterAll(async () => {
     await closeLocalLevelDB();
   });
 
-  test("should properly fetch price", async () => {
+  // despite of the supposedly synchronous interface waffle mock setup has to be awaited, quiet the compiler
+  const asAwaitable = <T = void>(awaitableObject: any): Promise<T> => {
+    return awaitableObject as unknown as Promise<T>;
+  };
+
+  test("should properly fetch price - non-stable pool", async () => {
     const fetcher = new VelodromeOnChainFetcher(
       "velodrome-mock",
       mockTokenConfig,
       provider
     );
-    await saveMockPriceInLocalDb(1, "MockToken2");
-    await saveMockPriceInLocalDb(1, "MockTokenStable2");
-    const result = await fetcher.fetchAll([
-      "MockToken",
-      "MockToken_test-source_BUY_1_slippage",
-      "MockToken_test-source_SELL_1_slippage",
-      "MockToken_no-config_SELL_10_slippage", // no config for 10 so no value should be returned
-      "MockTokenStable",
-      "MockTokenStable_test-source_BUY_1_slippage",
-      "MockTokenStable_test-source_SELL_1_slippage",
-    ]);
+    fetcher.overrideMulticallAddress(multicall.address);
+    await asAwaitable(
+      poolContract.mock.getReserves.returns(
+        { type: "BigNumber", hex: "0x64" },
+        { type: "BigNumber", hex: "0xa" },
+        0
+      )
+    );
+    await asAwaitable(
+      poolContract.mock.getAmountOut
+        .returns({ type: "BigNumber", hex: "0xa" })
+        .returns({ type: "BigNumber", hex: "0x1" })
+    );
+    await saveMockPriceInLocalDb(10000, "MockToken");
+    await saveMockPriceInLocalDb(10000, "MockToken2");
+    const result = await fetcher.fetchAll(["MockToken"]);
     expect(result[0]).toEqual({
       symbol: "MockToken",
-      value: 1,
+      value: "10000",
       metadata: {
         slippage: [
           {
             direction: "buy",
-            simulationValueInUsd: "1",
-            slippageAsPercent: "0.2222222222",
+            simulationValueInUsd: "10000",
+            slippageAsPercent: "22.22222222222222222",
           },
           {
             direction: "sell",
-            simulationValueInUsd: "1",
-            slippageAsPercent: "0.1818181818",
+            simulationValueInUsd: "10000",
+            slippageAsPercent: "18.181818181818181818",
           },
         ],
       },
     });
-    expect(result[1]).toEqual({
-      symbol: "MockToken_test-source_BUY_1_slippage",
-      value: "0.2222222222",
-    });
-    expect(result[2]).toEqual({
-      symbol: "MockToken_test-source_SELL_1_slippage",
-      value: "0.1818181818",
-    });
-    expect(result[3]).toEqual({
+  });
+
+  test("should properly fetch price - stable pool", async () => {
+    const fetcher = new VelodromeOnChainFetcher(
+      "velodrome-mock",
+      mockTokenConfig,
+      provider
+    );
+    fetcher.overrideMulticallAddress(multicall.address);
+    await asAwaitable(
+      poolContract.mock.getReserves.returns(
+        { type: "BigNumber", hex: "0x64" },
+        { type: "BigNumber", hex: "0xa" },
+        0
+      )
+    );
+    await asAwaitable(
+      poolContract.mock.getAmountOut
+        .returns({ type: "BigNumber", hex: "0xa" })
+        .returns({ type: "BigNumber", hex: "0x1" })
+    );
+    await saveMockPriceInLocalDb(10000, "MockTokenStable");
+    await saveMockPriceInLocalDb(10000, "MockTokenStable2");
+    const result = await fetcher.fetchAll(["MockTokenStable"]);
+    expect(result[0]).toEqual({
       symbol: "MockTokenStable",
-      value: 1,
+      value: "10000",
       metadata: {
         slippage: [
           {
             direction: "buy",
-            simulationValueInUsd: "1",
-            slippageAsPercent: "0.002002002",
+            simulationValueInUsd: "10000",
+            slippageAsPercent: "0.2002002002002002",
           },
           {
             direction: "sell",
-            simulationValueInUsd: "1",
-            slippageAsPercent: "0.001998002",
+            simulationValueInUsd: "10000",
+            slippageAsPercent: "0.1998001998001998",
           },
         ],
       },
-    });
-    expect(result[4]).toEqual({
-      symbol: "MockTokenStable_test-source_BUY_1_slippage",
-      value: "0.002002002",
-    });
-    expect(result[5]).toEqual({
-      symbol: "MockTokenStable_test-source_SELL_1_slippage",
-      value: "0.001998002",
     });
   });
 });

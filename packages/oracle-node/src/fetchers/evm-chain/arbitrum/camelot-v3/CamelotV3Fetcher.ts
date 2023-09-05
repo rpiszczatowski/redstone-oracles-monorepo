@@ -19,10 +19,26 @@ export class CamelotV3Fetcher extends UniswapV3LikeFetcher {
         quoterAbi: CamelotRouterAbi,
       },
       {
-        buyFunctionName: "exactInputSingle",
-        sellFunctionName: "exactOutputSingle",
+        quoteFunctionName: "exactInputSingle",
         slot0FunctionName: "globalState",
       }
     );
+  }
+
+  protected override createQuoterParams(
+    tokenIn: string,
+    tokenOut: string,
+    _fee: number,
+    amountIn: string
+  ): unknown {
+    return {
+      tokenIn,
+      tokenOut,
+      recipient: "0x0000000000000000000000000000000000000000",
+      deadline: Number.MAX_SAFE_INTEGER - 1,
+      amountIn,
+      amountOutMinimum: 0,
+      limitSqrtPrice: 0,
+    };
   }
 }

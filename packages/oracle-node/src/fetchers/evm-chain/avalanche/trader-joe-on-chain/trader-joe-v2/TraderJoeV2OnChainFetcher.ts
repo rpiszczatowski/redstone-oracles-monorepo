@@ -207,7 +207,7 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<MulticallResult
     return actualPrice
       .sub(spotPrice)
       .abs()
-      .div(actualPrice)
+      .div(spotPrice)
       .mul(HUNDERD_PERCENT);
   }
 

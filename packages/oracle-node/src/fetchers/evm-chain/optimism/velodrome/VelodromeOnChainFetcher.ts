@@ -5,22 +5,25 @@ import {
   ContractCallResults,
   Multicall,
 } from "ethereum-multicall";
-import { BigNumber, ethers, providers } from "ethers";
-import { RedstoneTypes } from "redstone-utils";
-import { getLastPrice } from "../../../../db/local-db";
+import { BigNumber, providers } from "ethers";
+import { MathUtils, RedstoneTypes } from "redstone-utils";
+import { getLastPrice, getLastPriceOrFail } from "../../../../db/local-db";
 import { DexOnChainFetcher } from "../../../dex-on-chain/DexOnChainFetcher";
+import {
+  calculateSlippage,
+  convertUsdToTokenAmount,
+  DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,
+  tryConvertUsdToTokenAmount,
+} from "../../../SlippageAndLiquidityCommons";
 import { TEN_AS_BASE_OF_POWER } from "../../shared/contants";
 import abi from "./abi.json";
-import {
-  MulticallParams,
-  MulticallResult,
-  PoolConfig,
-  PoolsConfig,
-  SlippageParams,
-  TokenConfig,
-} from "./types";
+import { MulticallResult, PoolConfig, PoolsConfig, TokenConfig } from "./types";
 
-type PriceAction = "buy" | "sell";
+const SLIPPAGE_BUY_LABEL = "slippage_buy";
+const SLIPPAGE_SELL_LABEL = "slippage_sell";
+const POOL_LABEL = "pool_contract";
+const RESERVES_LABEL = "quoter_contract";
+
 export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> {
   constructor(
     name: string,
@@ -30,90 +33,133 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     super(name);
   }
 
-  private static convertDollars2Tokens(
-    amountInDollars: number,
-    tokenPrice: number,
-    tokenDecimals: number
-  ): string {
-    return ethers.utils
-      .parseUnits(
-        (amountInDollars / tokenPrice).toFixed(tokenDecimals),
-        tokenDecimals
-      )
-      .toString();
+  multicallAddress: undefined | string = undefined;
+  public overrideMulticallAddress(address: string) {
+    this.multicallAddress = address;
   }
 
-  private prepareSlippageParams(
-    slippageParams: SlippageParams,
-    slippageAmount: number,
-    tokenPrice: number,
-    tokenConfig: TokenConfig,
-    action: PriceAction
-  ) {
-    const swapAmount = VelodromeOnChainFetcher.convertDollars2Tokens(
-      slippageAmount,
-      tokenPrice,
-      tokenConfig.decimals
-    );
-    const slippageLabel = VelodromeOnChainFetcher.createSlippageLabel(
-      slippageAmount,
-      action
-    );
-    slippageParams[slippageLabel] = {
-      tokenIn: tokenConfig.address,
-      amountIn: swapAmount,
-    };
-  }
-
-  private prepareMulticallParams(assetId: string): MulticallParams {
+  override async makeRequest(assetId: string): Promise<MulticallResult | null> {
     const poolConfig = this.poolsConfig[assetId];
 
-    const pairedTokenPrice = getLastPrice(
-      VelodromeOnChainFetcher.getPairedTokenSymbol(assetId, poolConfig)
+    const baseToken = VelodromeOnChainFetcher.getBaseTokenConfig(
+      assetId,
+      poolConfig
     );
-    const currentTokenPrice = getLastPrice(assetId);
-    const slippageParams: SlippageParams = {};
-
-    if (pairedTokenPrice && poolConfig.slippage) {
-      const currentToken = VelodromeOnChainFetcher.getCurrentTokenConfig(
-        assetId,
+    const quoteToken = VelodromeOnChainFetcher.getQuoteTokenConfig(
+      assetId,
+      poolConfig
+    );
+    const baseTokenPrice = getLastPrice(assetId)?.value;
+    const quoteTokenPrice = getLastPriceOrFail(
+      poolConfig.pairedToken ?? quoteToken.symbol
+    ).value;
+    const baseTokenScaler = new MathUtils.PrecisionScaler(baseToken.decimals);
+    const quoteTokenScaler = new MathUtils.PrecisionScaler(quoteToken.decimals);
+    const swapAmountBase = tryConvertUsdToTokenAmount(
+      baseToken.symbol,
+      baseTokenScaler.tokenDecimalsScaler.toNumber(),
+      DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
+    );
+    const swapAmountPaired = convertUsdToTokenAmount(
+      poolConfig.pairedToken ?? quoteToken.symbol,
+      quoteTokenScaler.tokenDecimalsScaler.toNumber(),
+      DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
+    );
+    const multicallContext = this.buildContractCallContext(
+      assetId,
+      swapAmountBase,
+      swapAmountPaired,
+      baseToken.address,
+      quoteToken.address
+    );
+    const multicallResult = await this.createMulticallInstance().call(
+      multicallContext
+    );
+    const reservesResult = VelodromeOnChainFetcher.getResultByLabel(
+      multicallResult,
+      RESERVES_LABEL
+    );
+    const spotPrice = VelodromeOnChainFetcher.extractSpotPriceFromResult(
+      assetId,
+      reservesResult,
+      poolConfig
+    );
+    let buySlippage: string | undefined;
+    let sellSlippage: string | undefined;
+    if (baseTokenPrice) {
+      const buyResult = VelodromeOnChainFetcher.getResultByLabel(
+        multicallResult,
+        SLIPPAGE_BUY_LABEL
+      );
+      const sellResult = VelodromeOnChainFetcher.getResultByLabel(
+        multicallResult,
+        SLIPPAGE_SELL_LABEL
+      );
+      const buyPrice = VelodromeOnChainFetcher.getPriceAfterSwap(
+        reservesResult,
+        buyResult,
         poolConfig
       );
-      const quoteToken = VelodromeOnChainFetcher.getQuoteTokenConfig(
-        assetId,
+      const sellPrice = VelodromeOnChainFetcher.getPriceAfterSwap(
+        reservesResult,
+        sellResult,
         poolConfig
       );
-      for (const slippageInfo of poolConfig.slippage) {
-        this.prepareSlippageParams(
-          slippageParams,
-          slippageInfo.simulationValueInUsd,
-          pairedTokenPrice.value,
-          quoteToken,
-          "buy"
-        );
-        if (currentTokenPrice) {
-          this.prepareSlippageParams(
-            slippageParams,
-            slippageInfo.simulationValueInUsd,
-            currentTokenPrice.value,
-            currentToken,
-            "sell"
-          );
-        }
-      }
+      buySlippage = calculateSlippage(spotPrice, buyPrice);
+      sellSlippage = calculateSlippage(
+        new Decimal(1).div(spotPrice),
+        sellPrice
+      );
     }
     return {
-      slippageParams,
+      spotPrice: spotPrice.mul(quoteTokenPrice).toString(),
+      buySlippage,
+      sellSlippage,
     };
+  }
+
+  override calculateSpotPrice(_assetId: string, response: MulticallResult) {
+    return response.spotPrice;
+  }
+
+  override calculateSlippage(
+    _assetId: string,
+    response: MulticallResult
+  ): RedstoneTypes.SlippageData[] {
+    if (!response.buySlippage || !response.sellSlippage) {
+      return [];
+    }
+
+    return [
+      {
+        direction: "buy",
+        simulationValueInUsd: String(DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE),
+        slippageAsPercent: response.buySlippage,
+      },
+      {
+        direction: "sell",
+        simulationValueInUsd: String(DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE),
+        slippageAsPercent: response.sellSlippage,
+      },
+    ];
+  }
+
+  private static getResultByLabel(
+    multicallResult: ContractCallResults,
+    label: string
+  ): CallReturnContext {
+    return multicallResult.results[POOL_LABEL].callsReturnContext.find(
+      (result) => result.reference === label
+    )!;
   }
 
   private static getTokenConfig(
     assetId: string,
     poolConfig: PoolConfig,
-    current: boolean
+    base: boolean
   ): TokenConfig {
     const isSymbol1Current = poolConfig.token1Symbol === assetId;
-    return current === isSymbol1Current
+    return base === isSymbol1Current
       ? {
           symbol: poolConfig.token1Symbol,
           address: poolConfig.token1Address,
@@ -126,54 +172,12 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
         };
   }
 
-  private static getCurrentTokenConfig(
-    assetId: string,
-    poolConfig: PoolConfig
-  ) {
+  private static getBaseTokenConfig(assetId: string, poolConfig: PoolConfig) {
     return this.getTokenConfig(assetId, poolConfig, true);
   }
 
   private static getQuoteTokenConfig(assetId: string, poolConfig: PoolConfig) {
     return this.getTokenConfig(assetId, poolConfig, false);
-  }
-
-  private static getPairedTokenSymbol(assetId: string, poolConfig: PoolConfig) {
-    return poolConfig.pairedToken
-      ? poolConfig.pairedToken
-      : this.getQuoteTokenConfig(assetId, poolConfig).symbol;
-  }
-
-  private static createSlippageLabel(
-    slippageAmount: number,
-    priceAction: PriceAction
-  ) {
-    return `${slippageAmount}_${priceAction}`;
-  }
-
-  override async makeRequest(assetId: string): Promise<MulticallResult | null> {
-    const multicallParams = this.prepareMulticallParams(assetId);
-    const multicallContext = this.buildContractCallContext(
-      assetId,
-      multicallParams
-    );
-    const multicallResult = await this.createMulticallInstance().call(
-      multicallContext
-    );
-    const poolConfig = this.poolsConfig[assetId];
-
-    const priceRatio = VelodromeOnChainFetcher.extractPriceRatioFromResult(
-      multicallResult,
-      poolConfig
-    ).toNumber();
-    const slippage = VelodromeOnChainFetcher.extractSlippage(
-      multicallResult,
-      poolConfig
-    );
-    const pairedToken = VelodromeOnChainFetcher.getPairedTokenSymbol(
-      assetId,
-      poolConfig
-    );
-    return { priceRatio, slippage, pairedToken };
   }
 
   private static decimal(bigNumberLike: any): Decimal {
@@ -206,56 +210,7 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
         swapContext.methodParameters[0]
       );
     }
-    return this.getPriceRatio(reserve0AfterSwap, reserve1AfterSwap, poolConfig);
-  }
-
-  private static successfulSlippageResults(
-    multicallResult: ContractCallResults
-  ) {
-    return multicallResult.results.poolContract.callsReturnContext
-      .slice(1) // the first one contains 'reserves' call result
-      .filter((c) => c.success);
-  }
-
-  private static extractSlippage(
-    multicallResult: ContractCallResults,
-    poolConfig: PoolConfig
-  ) {
-    const slippage: Record<string, number> = {};
-    const reservesResult = this.extractReservesResult(multicallResult);
-    const priceBeforeSwap = this.extractPriceRatioFromResult(
-      multicallResult,
-      poolConfig
-    );
-    for (const callReturnContext of this.successfulSlippageResults(
-      multicallResult
-    )) {
-      const priceAfterSwap = this.getPriceAfterSwap(
-        reservesResult,
-        callReturnContext,
-        poolConfig
-      );
-
-      slippage[callReturnContext.reference] = Number(
-        priceAfterSwap
-          .sub(priceBeforeSwap)
-          .div(priceBeforeSwap)
-          .abs()
-          .toFixed(10)
-      );
-    }
-    return slippage;
-  }
-
-  private static extractReservesResult(multicallResult: ContractCallResults) {
-    const reservesResult =
-      multicallResult.results.poolContract.callsReturnContext[0];
-    if (!reservesResult.success) {
-      throw new Error(
-        `method 'getReserves' failed, result ${JSON.stringify(reservesResult)}`
-      );
-    }
-    return reservesResult;
+    return this.getPrice(reserve0AfterSwap, reserve1AfterSwap, poolConfig);
   }
 
   // https://docs.velodrome.finance/liquidity#stable-pools
@@ -287,20 +242,23 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     }
   }
 
-  private static extractPriceRatioFromResult(
-    multicallResult: ContractCallResults,
+  private static extractSpotPriceFromResult(
+    assetId: string,
+    reservesResult: CallReturnContext,
     poolConfig: PoolConfig
   ): Decimal {
-    const reserves0 = this.decimal(
-      multicallResult.results.poolContract.callsReturnContext[0].returnValues[0]
-    );
-    const reserves1 = this.decimal(
-      multicallResult.results.poolContract.callsReturnContext[0].returnValues[1]
-    );
-    return this.getPriceRatio(reserves0, reserves1, poolConfig);
+    const reserves0 = this.decimal(reservesResult.returnValues[0]);
+    const reserves1 = this.decimal(reservesResult.returnValues[1]);
+    const token0InToken1Price = this.getPrice(reserves0, reserves1, poolConfig);
+
+    const baseInQoutePrice =
+      poolConfig.token1Symbol === assetId
+        ? new Decimal(1).div(token0InToken1Price)
+        : token0InToken1Price;
+    return baseInQoutePrice;
   }
 
-  private static getPriceRatio(
+  private static getPrice(
     reserve0: Decimal,
     reserve1: Decimal,
     poolConfig: PoolConfig
@@ -312,89 +270,46 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     return this.reservesToPrice(reserve0, reserve1Adjusted, poolConfig);
   }
 
-  override calculateSpotPrice(
-    assetId: string,
-    multicallResult: MulticallResult
-  ) {
-    const otherAssetLastPrice = VelodromeOnChainFetcher.getLastPriceOrThrow(
-      multicallResult.pairedToken
-    );
-    const isSymbol1Current = this.poolsConfig[assetId].token1Symbol === assetId;
-    const priceMultiplier = isSymbol1Current
-      ? 1.0 / multicallResult.priceRatio
-      : multicallResult.priceRatio;
-    return otherAssetLastPrice * priceMultiplier;
-  }
-
-  override calculateSlippage(
-    assetId: string,
-    response: MulticallResult
-  ): RedstoneTypes.SlippageData[] {
-    if (!this.poolsConfig[assetId].slippage) {
-      throw new Error(
-        `Slippage is not configured for fetcher ${this.getName()} assetId: ${assetId} in pool config`
-      );
-    }
-    const slippageResponse: RedstoneTypes.SlippageData[] = [];
-    for (const slippageInfo of this.poolsConfig[assetId].slippage!) {
-      const slippageLabel = VelodromeOnChainFetcher.createSlippageLabel(
-        slippageInfo.simulationValueInUsd,
-        slippageInfo.direction
-      );
-      const slippageAsPercent = response.slippage[slippageLabel].toString();
-
-      slippageResponse.push({
-        direction: slippageInfo.direction,
-        simulationValueInUsd: slippageInfo.simulationValueInUsd.toString(),
-        slippageAsPercent,
-      });
-    }
-    return slippageResponse;
-  }
-
-  private static getLastPriceOrThrow(outAssetId: string) {
-    const lastPrice = getLastPrice(outAssetId);
-    if (lastPrice === undefined) {
-      throw new Error(`Could not fetch last price for ${outAssetId} from DB`);
-    }
-    return lastPrice.value;
-  }
-
   private createMulticallInstance() {
     return new Multicall({
       ethersProvider: this.provider,
-      tryAggregate: true,
+      tryAggregate: false,
+      multicallCustomContractAddress: this.multicallAddress,
     });
   }
 
   private buildContractCallContext(
     assetId: string,
-    multicallParams: MulticallParams
+    swapAmountBase: string | undefined,
+    swapAmountQuote: string,
+    baseTokenAddress: string,
+    quoteTokenAddress: string
   ): ContractCallContext {
+    const poolConfig = this.poolsConfig[assetId];
     const callContext: ContractCallContext = {
-      reference: "poolContract",
-      contractAddress: this.poolsConfig[assetId].poolAddress,
+      reference: POOL_LABEL,
+      contractAddress: poolConfig.poolAddress,
       abi: abi.abi,
       calls: [
         {
-          reference: "reserves",
+          reference: RESERVES_LABEL,
           methodName: "getReserves",
           methodParameters: [],
         },
       ],
     };
-    const quoterCalls = [];
-    for (const slippageLabel in multicallParams.slippageParams) {
-      quoterCalls.push({
-        reference: slippageLabel,
+    if (swapAmountBase) {
+      callContext.calls.push({
+        reference: SLIPPAGE_BUY_LABEL,
         methodName: "getAmountOut",
-        methodParameters: [
-          multicallParams.slippageParams[slippageLabel].amountIn,
-          multicallParams.slippageParams[slippageLabel].tokenIn,
-        ],
+        methodParameters: [swapAmountQuote, quoteTokenAddress],
+      });
+      callContext.calls.push({
+        reference: SLIPPAGE_SELL_LABEL,
+        methodName: "getAmountOut",
+        methodParameters: [swapAmountBase, baseTokenAddress],
       });
     }
-    callContext.calls.push(...quoterCalls);
     return callContext;
   }
 }

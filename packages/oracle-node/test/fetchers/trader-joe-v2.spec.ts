@@ -9,6 +9,7 @@ import pairAbi from "../../src/fetchers/evm-chain/avalanche/trader-joe-on-chain/
 import routerAbi from "../../src/fetchers/evm-chain/avalanche/trader-joe-on-chain/trader-joe-v2/TraderJoeV2LBRouter.abi.json";
 import configs from "../../src/fetchers/evm-chain/avalanche/trader-joe-on-chain/trader-joe-v2/trader-joe-v2-on-chain-fetchers-configs.json";
 import {
+  clearLastPricesCache,
   clearPricesSublevel,
   closeLocalLevelDB,
   setupLocalDb,
@@ -44,6 +45,7 @@ describe("Trader Joe - EUROC token", () => {
 
   beforeEach(async () => {
     await clearPricesSublevel();
+    clearLastPricesCache();
   });
 
   afterAll(async () => {
@@ -86,7 +88,7 @@ describe("Trader Joe - EUROC token", () => {
     await asAwaitable(pairContract.mock.getBinStep.returns("5"));
     await asAwaitable(
       routerContract.mock.getSwapOut
-        .returns("0", "20000000000", "0") // buy
+        .returns("0", "5000000000", "0") // buy
         .returns("0", "5000000000", "0")
     );
     await saveMockPriceInLocalDb(1, PAIRED_TOKEN);
@@ -115,7 +117,7 @@ describe("Trader Joe - EUROC token", () => {
             {
               direction: "sell",
               simulationValueInUsd: "10000",
-              slippageAsPercent: "50",
+              slippageAsPercent: "100",
             },
           ],
         },

@@ -1,5 +1,3 @@
-import { SlippageInfo } from "../../../uniswap-v3-like/types";
-
 export interface PoolConfig {
   poolAddress: string;
   token0Symbol: string;
@@ -10,7 +8,6 @@ export interface PoolConfig {
   token1Decimals: number;
   stable: boolean;
   pairedToken?: string;
-  slippage?: SlippageInfo[];
 }
 
 export interface PoolsConfig {
@@ -19,22 +16,13 @@ export interface PoolsConfig {
 
 export interface TokenConfig {
   symbol: string;
+  pairedSymbol?: string;
   address: string;
   decimals: number;
 }
 
-export interface QuoterParams {
-  tokenIn: string;
-  amountIn: string;
-}
-
-export type SlippageParams = { [key: string]: QuoterParams };
-export interface MulticallParams {
-  slippageParams: SlippageParams;
-}
-
 export interface MulticallResult {
-  priceRatio: number;
-  slippage: Record<string, number>;
-  pairedToken: string;
+  spotPrice: string;
+  buySlippage?: string;
+  sellSlippage?: string;
 }

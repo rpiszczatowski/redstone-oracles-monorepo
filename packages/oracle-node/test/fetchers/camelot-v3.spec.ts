@@ -1,89 +1,28 @@
-import { MockProvider, deployMockContract } from "ethereum-waffle";
-import { closeLocalLevelDB, setupLocalDb } from "../../src/db/local-db";
+import {
+  MockProvider,
+  deployMockContract,
+  deployContract,
+} from "ethereum-waffle";
+import {
+  clearLastPricesCache,
+  clearPricesSublevel,
+  closeLocalLevelDB,
+  setupLocalDb,
+} from "../../src/db/local-db";
 import { Contract } from "ethers";
 import { CamelotV3Fetcher } from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotV3Fetcher";
 import { PoolsConfig } from "../../src/fetchers/uniswap-v3-like/types";
 import { saveMockPriceInLocalDb } from "./_helpers";
+import multicall3Json from "../abis/Multicall3.deployment.json";
 import CamelotPoolAbi from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotPool.abi.json";
 import CamelotRouterAbi from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotRouter.abi.json";
-
-jest.setTimeout(10000);
-
-jest.mock("../../src/Terminator", () => ({
-  terminateWithManifestConfigError: (details: string) => {
-    throw new Error(`Mock manifest config termination: ${details}`);
-  },
-}));
-
-jest.mock("ethereum-multicall", () => {
-  return {
-    Multicall: jest.fn().mockImplementation(() => {
-      return {
-        call: jest.fn().mockResolvedValue({
-          results: {
-            poolContract: {
-              callsReturnContext: [
-                {
-                  returnValues: [
-                    { type: "BigNumber", hex: "0x64000000000000000000000000" },
-                  ],
-                  success: true,
-                },
-                {
-                  returnValues: [
-                    [
-                      { type: "BigNumber", hex: "0x0be069d1bcc3" },
-                      { type: "BigNumber", hex: "0x0be06bf9da3f" },
-                    ],
-                    [
-                      {
-                        type: "BigNumber",
-                        hex: "0x064404e0fd5ef65a1b6b2fa9f9",
-                      },
-                      {
-                        type: "BigNumber",
-                        hex: "0x064404e9bb13c8fbcbef353f14",
-                      },
-                    ],
-                  ],
-                  success: true,
-                },
-              ],
-            },
-            quoterContract: {
-              callsReturnContext: [
-                {
-                  returnValues: [
-                    { fake: "" },
-                    { type: "BigNumber", hex: "0x65000000000000000000000000" },
-                  ],
-                  reference: "1000_buy",
-                  methodName: "quoteExactInputSingle",
-                  success: true,
-                },
-                {
-                  returnValues: [
-                    { fake: "" },
-                    { type: "BigNumber", hex: "0x63500000000000000000000000" },
-                  ],
-                  reference: "1000_sell",
-                  methodName: "quoteExactOutputSingle",
-                  success: true,
-                },
-              ],
-            },
-          },
-        }),
-      };
-    }),
-  };
-});
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 describe("Camelot V3 fetcher", () => {
   let quoterContract: Contract;
   let poolContract: Contract;
+  let multicall: Contract;
   let provider: MockProvider;
   let mockTokenConfig: PoolsConfig;
 
@@ -93,6 +32,7 @@ describe("Camelot V3 fetcher", () => {
     const [wallet] = provider.getWallets();
     quoterContract = await deployMockContract(wallet, CamelotRouterAbi);
     poolContract = await deployMockContract(wallet, CamelotPoolAbi);
+    multicall = await deployContract(wallet, multicall3Json);
 
     mockTokenConfig = {
       MockToken: {
@@ -105,57 +45,70 @@ describe("Camelot V3 fetcher", () => {
         token0Decimals: 6,
         token1Decimals: 8,
         fee: 5000,
-        slippage: [
-          { direction: "buy", simulationValueInUsd: 1000 },
-          { direction: "sell", simulationValueInUsd: 1000 },
-        ],
       },
     };
+  });
+
+  beforeEach(async () => {
+    await clearPricesSublevel();
+    clearLastPricesCache();
   });
 
   afterAll(async () => {
     await closeLocalLevelDB();
   });
 
+  // despite of the supposedly synchronous interface waffle mock setup has to be awaited, quiet the compiler
+  const asAwaitable = <T = void>(awaitableObject: any): Promise<T> => {
+    return awaitableObject as unknown as Promise<T>;
+  };
+
   test("should properly fetch price", async () => {
+    await asAwaitable(
+      poolContract.mock.globalState.returns(
+        { type: "BigNumber", hex: "0x64000000000000000000000000" }, // 100:1
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        true
+      )
+    );
+    await asAwaitable(
+      quoterContract.mock.exactInputSingle
+        .returns(50_000_000)
+        .returns(500_000_000_000)
+    );
+
     const fetcher = new CamelotV3Fetcher(
       "uniswap-v3-mock",
       mockTokenConfig,
       provider
     );
+    fetcher.overrideMulticallAddress(multicall.address);
+
+    await saveMockPriceInLocalDb(100, "MockToken");
     await saveMockPriceInLocalDb(1, "MockToken2");
-    const result = await fetcher.fetchAll([
-      "MockToken",
-      "MockToken_test-source_BUY_1000_slippage",
-      "MockToken_test-source_SELL_1000_slippage",
-      "MockToken_no-config_SELL_10000_slippage", // no config for 10K so no value should be returned
-    ]);
+    const result = await fetcher.fetchAll(["MockToken"]);
     expect(result[0]).toEqual({
       symbol: "MockToken",
-      value: 100,
+      value: "100",
       metadata: {
         slippage: [
           {
             direction: "buy",
-            simulationValueInUsd: "1000",
-            slippageAsPercent: "0.0201",
+            simulationValueInUsd: "10000",
+            slippageAsPercent: "100",
           },
           {
             direction: "sell",
-            simulationValueInUsd: "1000",
-            slippageAsPercent: "0.0137027344",
+            simulationValueInUsd: "10000",
+            slippageAsPercent: "100",
           },
         ],
       },
     });
-    expect(result[1]).toEqual({
-      symbol: "MockToken_test-source_BUY_1000_slippage",
-      value: "0.0201",
-    });
-    expect(result[2]).toEqual({
-      symbol: "MockToken_test-source_SELL_1000_slippage",
-      value: "0.0137027344",
-    });
-    expect(result[3]).toBeUndefined();
   });
 });

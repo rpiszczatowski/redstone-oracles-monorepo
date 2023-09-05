@@ -19,8 +19,7 @@ export class UniswapV3OnChainFetcher extends UniswapV3LikeFetcher {
         quoterAbi: UniswapV3Quoter.abi,
       },
       {
-        buyFunctionName: "quoteExactInputSingle",
-        sellFunctionName: "quoteExactOutputSingle",
+        quoteFunctionName: "quoteExactInputSingle",
         slot0FunctionName: "slot0",
       }
     );

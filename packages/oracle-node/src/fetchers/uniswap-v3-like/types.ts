@@ -1,5 +1,3 @@
-import { PriceAction } from "./UniswapV3LikeFetcher";
-
 export interface PoolConfig {
   quoterAddress: string;
   poolAddress: string;
@@ -11,12 +9,6 @@ export interface PoolConfig {
   token1Decimals: number;
   fee: number;
   pairedToken?: string;
-  slippage?: SlippageInfo[];
-}
-
-export interface SlippageInfo {
-  direction: PriceAction;
-  simulationValueInUsd: number;
 }
 
 export interface PoolsConfig {
@@ -29,33 +21,10 @@ export interface TokenConfig {
   decimals: number;
 }
 
-export interface QuoterInSingleParams {
-  tokenIn: string;
-  tokenOut: string;
-  amountIn: string;
-  fee: number;
-  sqrtPriceLimitX96: number;
-}
-
-export interface QuoterOutSingleParams {
-  tokenIn: string;
-  tokenOut: string;
-  amountOut: string;
-  fee: number;
-  sqrtPriceLimitX96: number;
-}
-
-export type SlippageParams = {
-  [key: string]: QuoterInSingleParams | QuoterOutSingleParams;
-};
-export interface MulticallParams {
-  slippageParams: SlippageParams;
-}
-
 export interface MulticallResult {
-  priceRatio: number;
-  slippage: Record<string, number>;
-  pairedToken: string;
+  spotPrice: string;
+  buySlippage?: string;
+  sellSlippage?: string;
 }
 
 export interface Abis {
@@ -64,7 +33,6 @@ export interface Abis {
 }
 
 export interface FunctionNames {
-  buyFunctionName: string;
-  sellFunctionName: string;
+  quoteFunctionName: string;
   slot0FunctionName: string;
 }
