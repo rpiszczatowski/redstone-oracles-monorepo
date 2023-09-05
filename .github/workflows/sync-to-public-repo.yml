@@ -1,0 +1,42 @@
+name: Sync to public repo
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repo
+        uses: actions/checkout@v2
+
+      - name: Sync to target repo respecting .gitignore
+        env:
+          PRIVATE_KEY: ${{ secrets.PUBLIC_REPO_KEY }}
+        run: |
+          # Install SSH key
+          echo "$PRIVATE_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          eval `ssh-agent -s`
+          ssh-add private_key.pem
+
+          # Configure user
+          git config --global user.name "Syncer Man"
+          git config --global user.email "syncer@redstone.finance"
+
+          # Remove from all commits
+          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+
+          curl https://raw.githubusercontent.com/newren/git-filter-repo/cbc6535/git-filter-repo --output git-filter-repo
+          python3 git-filter-repo --refs "$BRANCH_NAME" --invert-paths --force --paths-from-file .gitignore.public
+
+          # Add as remote
+          git remote add target git@github.com:redstone-finance/redstone-oracles-monorepo-future-public.git
+
+          # Push modified
+          git push -f target "$BRANCH_NAME"
+
+          # Cleanup
+          ssh-agent -k
