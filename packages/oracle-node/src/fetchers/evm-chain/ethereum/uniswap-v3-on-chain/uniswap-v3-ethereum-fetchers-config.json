@@ -229,6 +229,18 @@
       "token1Decimals": 18,
       "fee": 3000,
       "pairedToken": "ETH"
+    },
+    "MNT": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0xF4c5e0F4590b6679B3030d29A84857F226087FeF",
+      "token0Symbol": "MNT",
+      "token1Symbol": "WETH",
+      "token0Address": "0x3c3a81e81dc49A522A592e7622A7E711c06bf354",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "fee": 3000,
+      "pairedToken": "ETH"
     }
   },
   "uniswap-v3-ethereum-on-chain-weth-500": {
