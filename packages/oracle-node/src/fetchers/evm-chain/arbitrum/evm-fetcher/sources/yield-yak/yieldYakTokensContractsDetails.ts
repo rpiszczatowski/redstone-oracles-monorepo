@@ -11,4 +11,8 @@ export const yieldYakTokensContractsDetails = {
     address: "0x28f37fa106AA2159c91C769f7AE415952D28b6ac",
     tokenToFetch: "GLP",
   },
+  YY_WOMBEX_DAI: {
+    address: "0x1817fE376740b53CAe73224B7F0a57F23DD4C9b5",
+    tokenToFetch: "DAI",
+  },
 };
