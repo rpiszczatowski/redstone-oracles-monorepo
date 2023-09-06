@@ -12,7 +12,7 @@ const MATRIX_KEY_LEN = 8;
     slice payload_slice = payload.begin_parse();
 
     int data_package_count = payload_slice~load_int(DATA_PACKAGES_COUNT_BITS);
-    int marker = payload_slice~slice_int(REDSTONE_MARKER_BITS);
+    int marker = payload_slice~slice_uint(REDSTONE_MARKER_BITS);
 
     throw_unless(ERR_WRONG_REDSTONE_MARKER, marker == REDSTONE_MARKER);
 

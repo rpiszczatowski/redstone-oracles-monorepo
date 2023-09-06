@@ -3,19 +3,12 @@ import { OP_NUMBER_BITS } from "./config/operations";
 import { DEFAULT_NUM_VALUE_BS } from "redstone-protocol/src/common/redstone-constants";
 import { arrayify } from "ethers/lib/utils";
 
-export function createTupleItems(items: (number | string)[]) {
+export function createTupleItems(
+  items: (bigint | boolean | number | string)[]
+) {
   const tuple = new TupleBuilder();
 
-  items.forEach((value) => {
-    switch (typeof value) {
-      case "number":
-        tuple.writeNumber(value);
-        break;
-      case "string":
-        tuple.writeNumber(BigInt(value));
-        break;
-    }
-  });
+  items.forEach((value) => tuple.writeNumber(BigInt(value)));
 
   return tuple.build();
 }
@@ -46,9 +39,9 @@ export function messageBuilder(opNumber: bigint): Builder {
 }
 
 export function createArrayFromTuple(result: TupleReader) {
-  const values: number[] = [];
+  const values: bigint[] = [];
   while (result.remaining) {
-    values.push(result.readNumber());
+    values.push(result.readBigNumber());
   }
 
   return values;

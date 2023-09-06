@@ -18,11 +18,19 @@ export class TonUnitTesterContractAdapter {
     return this.contract.getTestMedian(numbers);
   }
 
-  async testSliceInt(data: string | Cell, length: number) {
-    return this.contract.getTestSliceInt(data, length);
+  async testSliceUint(data: string | Cell, byteLength: number) {
+    return this.contract.getTestSliceUint(data, byteLength);
+  }
+
+  async testSliceInt(data: string | Cell, bitLength: number) {
+    return this.contract.getTestSliceInt(data, bitLength);
   }
 
   async testParseDataPackage(data: string) {
     return this.contract.getTestParseDataPackage(data);
+  }
+
+  async testTupleDeserializeIntegers(numbers: (number | string)[]) {
+    return this.contract.getTestTupleDeserializeIntegers(numbers);
   }
 }

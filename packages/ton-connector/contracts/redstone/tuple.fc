@@ -1,4 +1,5 @@
 #include "constants.fc";
+#include "slice.fc";
 
 const UNKNOWN_INDEX = -100;
 
@@ -102,7 +103,12 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
 (tuple)tuple_deserialize_integers(cell c) {
     slice s = c.begin_parse();
     tuple result = empty_tuple();
-    repeat s~load_int(24) {
+
+    int length = s~load_int(24);
+
+    throw_unless(ERR_LENGTH_OVERFLOW, length <= 255);
+
+    repeat length {
         int k = s.preload_int(15);
         int size = k == 0x0100 ? 257 : 64;
         int v = s~slice_int(size);

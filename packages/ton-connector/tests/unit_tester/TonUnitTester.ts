@@ -1,7 +1,11 @@
 import { TonContract } from "../../src/TonContract";
-import { createBuilderFromString, createTupleItems } from "../../src/ton-utils";
+import {
+  createArrayFromTuple,
+  createBuilderFromString,
+  createTupleItems,
+} from "../../src/ton-utils";
 
-import { Cell, ContractProvider } from "ton-core";
+import { Cell, ContractProvider, serializeTuple } from "ton-core";
 import { hexlify } from "ethers/lib/utils";
 
 export class TonUnitTester extends TonContract {
@@ -38,10 +42,32 @@ export class TonUnitTester extends TonContract {
     return stack.readNumber();
   }
 
+  async getTestSliceUint(
+    provider: ContractProvider,
+    data: string | Cell,
+    byteLength: number
+  ) {
+    const { stack } = await provider.get("test_slice_uint", [
+      {
+        type: "slice",
+        cell:
+          typeof data == "string"
+            ? createBuilderFromString(data).asCell()
+            : data,
+      },
+      {
+        type: "int",
+        value: BigInt(byteLength * 8),
+      },
+    ]);
+
+    return { remainingSlice: stack.readCell(), value: stack.readBigNumber() };
+  }
+
   async getTestSliceInt(
     provider: ContractProvider,
     data: string | Cell,
-    length: number
+    bitLength: number
   ) {
     const { stack } = await provider.get("test_slice_int", [
       {
@@ -53,11 +79,11 @@ export class TonUnitTester extends TonContract {
       },
       {
         type: "int",
-        value: BigInt(length * 8),
+        value: BigInt(bitLength),
       },
     ]);
 
-    return { slice: stack.readCell(), value: stack.readBigNumber() };
+    return { remainingSlice: stack.readCell(), value: stack.readBigNumber() };
   }
 
   async getTestParseDataPackage(provider: ContractProvider, data: string) {
@@ -73,5 +99,19 @@ export class TonUnitTester extends TonContract {
       value: stack.readBigNumber(),
       timestamp: stack.readNumber(),
     };
+  }
+
+  async getTestTupleDeserializeIntegers(
+    provider: ContractProvider,
+    numbers: (number | string)[]
+  ) {
+    const { stack } = await provider.get("test_tuple_deserialize_integers", [
+      {
+        type: "cell",
+        cell: serializeTuple(createTupleItems(numbers)),
+      },
+    ]);
+
+    return createArrayFromTuple(stack.readTuple());
   }
 }

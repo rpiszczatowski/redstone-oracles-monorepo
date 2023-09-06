@@ -11,6 +11,7 @@ import {
   DATA_PACKAGE_DATA_1,
   DATA_PACKAGE_DATA_2,
 } from "./helpers/test_helpers";
+import { hexlify, toUtf8Bytes } from "ethers/lib/utils";
 
 describe("TON unit Tests", () => {
   let testerAdapter: TonUnitTesterContractAdapter;
@@ -80,45 +81,85 @@ describe("TON unit Tests", () => {
     );
   });
 
-  it("slice integer from string", async () => {
-    const { slice, value: dataPointCount } = await testerAdapter.testSliceInt(
-      DATA_PACKAGE_DATA_1,
-      DATA_POINTS_COUNT_BS
-    );
+  it("slice unsigned integer from string", async () => {
+    const { remainingSlice, value: dataPointCount } =
+      await testerAdapter.testSliceUint(
+        DATA_PACKAGE_DATA_1,
+        DATA_POINTS_COUNT_BS
+      );
 
     expect(dataPointCount).toBe(1n);
 
-    const { slice: slice2, value: valueByteSize } =
-      await testerAdapter.testSliceInt(slice, DATA_POINT_VALUE_BYTE_SIZE_BS);
+    const { remainingSlice: slice2, value: valueByteSize } =
+      await testerAdapter.testSliceUint(
+        remainingSlice,
+        DATA_POINT_VALUE_BYTE_SIZE_BS
+      );
 
     expect(valueByteSize).toBe(32n);
 
-    const { slice: slice3, value: timestamp } =
-      await testerAdapter.testSliceInt(slice2, TIMESTAMP_BS);
+    const { remainingSlice: slice3, value: timestamp } =
+      await testerAdapter.testSliceUint(slice2, TIMESTAMP_BS);
 
     expect(timestamp).toBe(1678113550000n);
 
-    const { slice: slice4, value: price } = await testerAdapter.testSliceInt(
-      slice3,
-      32
-    );
+    const { remainingSlice: slice4, value: price } =
+      await testerAdapter.testSliceUint(slice3, 32);
 
     expect(price).toBe(156954083908n);
     expect(slice4.bits.length).toBe(DATA_FEED_ID_BS * 8);
   });
 
-  it("slice integer from string for extreme lengths", async () => {
+  it("slice signed integer from string", async () => {
+    const { remainingSlice, value } = await testerAdapter.testSliceInt(
+      "0x12470f7aBA85c8b81D63137DD5925D6EE114952b",
+      160
+    );
+
+    expect(value).toBe(104346535230593580204614826068498408664160572715n);
+    expect(remainingSlice.bits.length).toBe(0);
+  });
+
+  it("slice integers from string for extreme lengths", async () => {
     expect(
-      testerAdapter.testSliceInt(DATA_PACKAGE_DATA_1, 33)
+      testerAdapter.testSliceInt(DATA_PACKAGE_DATA_1, 258)
     ).rejects.toHaveProperty("exitCode", 997);
 
-    expect(testerAdapter.testSliceInt("", 1)).rejects.toHaveProperty(
+    expect(
+      testerAdapter.testSliceUint(DATA_PACKAGE_DATA_1, 33)
+    ).rejects.toHaveProperty("exitCode", 997);
+
+    expect(testerAdapter.testSliceUint("", 1)).rejects.toHaveProperty(
       "exitCode",
       9
     );
 
     expect(
-      (await testerAdapter.testSliceInt(DATA_PACKAGE_DATA_1, 0)).value
+      (await testerAdapter.testSliceUint(DATA_PACKAGE_DATA_1, 0)).value
     ).toBe(0n);
+  });
+
+  it("deserialize integers passed as a serialized tuple", async () => {
+    [
+      [],
+      [1, 2, 3],
+      ["BTC", "ETH", "USDT"].map((n) => hexlify(toUtf8Bytes(n))),
+      ["0x12470f7aBA85c8b81D63137DD5925D6EE114952b"],
+      ["0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"],
+      [
+        "0x12470f7aBA85c8b81D63137DD5925D6EE114952b",
+        1,
+        hexlify(toUtf8Bytes("BTC")),
+      ],
+      Array.from(Array(255).keys()),
+    ].forEach(async (caseData) => {
+      expect(
+        await testerAdapter.testTupleDeserializeIntegers(caseData)
+      ).toStrictEqual(caseData.map(BigInt));
+    });
+
+    expect(
+      testerAdapter.testTupleDeserializeIntegers(Array.from(Array(256).keys()))
+    ).rejects.toHaveProperty("exitCode", 997);
   });
 });

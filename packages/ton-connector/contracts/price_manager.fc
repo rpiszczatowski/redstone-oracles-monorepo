@@ -73,18 +73,14 @@ global cell values_dict;
         var cs = in_msg_full.begin_parse();
         var flags = cs~load_uint(4);
 
-        slice s_addr = cs~load_msg_addr();
-
-        var address = parse_work_addr(s_addr);
-        ~strdump(address);
+        slice sender_address = cs~load_msg_addr();
 
         (slice val_slice, int success) = values_dict.udict_get?(DATA_FEED_ID_BITS, feed_id);
-
         throw_unless(ERR_MISSING_DATA, success);
 
         int value = val_slice~load_uint(MAX_VALUE_SIZE_BITS);
 
-        send_message(OP_REDSTONE_DATA_FETCHED, s_addr, begin_cell().store_uint(value, MAX_VALUE_SIZE_BITS).store_uint(timestamp, TIMESTAMP_BITS));
+        send_message(OP_REDSTONE_DATA_FETCHED, sender_address, begin_cell().store_uint(value, MAX_VALUE_SIZE_BITS).store_uint(timestamp, TIMESTAMP_BITS));
 
         return ();
     }
