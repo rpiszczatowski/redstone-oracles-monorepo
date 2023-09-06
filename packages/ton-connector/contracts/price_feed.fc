@@ -30,6 +30,12 @@ global int timestamp;
 
 () recv_internal(int balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     int op = in_msg_body~load_uint(OP_NUMBER_BITS);
+    var cs = in_msg_full.begin_parse();
+    var flags = cs~load_uint(4);
+
+    if (flags & 1) { ;; ignore all bounced messages
+        return ();
+    }
 
     load_data();
 
@@ -40,11 +46,9 @@ global int timestamp;
     }
 
     if (op == OP_REDSTONE_DATA_FETCHED) {
-        var cs = in_msg_full.begin_parse();
-        var flags = cs~load_uint(4);
-        slice s_addr = cs~load_msg_addr();
+        slice sender_address = cs~load_msg_addr();
 
-        throw_unless(ERR_ADDRESS_MISMATCH, parse_work_addr(adapter_address_slice) == parse_work_addr(s_addr));
+        throw_unless(ERR_ADDRESS_MISMATCH, parse_work_addr(adapter_address_slice) == parse_work_addr(sender_address));
 
         price = in_msg_body~load_uint(MAX_VALUE_SIZE_BITS);
         timestamp = in_msg_body~load_uint(TIMESTAMP_BITS);

@@ -17,12 +17,11 @@ export function createArrayFromSerializedTuple(
   cell: Cell,
   value_size_bits: number = DEFAULT_NUM_VALUE_BS * 8
 ) {
-  // TODO: change it to bigint and in other places too.
-  let values: number[] = [];
+  let values: bigint[] = [];
 
   const slice = cell.beginParse();
   while (slice.remainingBits > 0) {
-    const value = slice.loadInt(value_size_bits);
+    const value = slice.loadUintBig(value_size_bits);
     values.push(value);
   }
 

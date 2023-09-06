@@ -16,13 +16,13 @@ export class TonPriceManagerContractAdapter implements IPricesContractAdapter {
 
   async getPricesFromPayload(
     paramsProvider: ContractParamsProvider
-  ): Promise<number[]> {
+  ): Promise<bigint[]> {
     return this.contract.getPrices(paramsProvider);
   }
 
   async writePricesFromPayloadToContract(
     paramsProvider: ContractParamsProvider
-  ): Promise<string | number[]> {
+  ): Promise<string | bigint[]> {
     await this.contract.sendWritePrices(paramsProvider);
 
     return "";
@@ -30,7 +30,7 @@ export class TonPriceManagerContractAdapter implements IPricesContractAdapter {
 
   async readPricesFromContract(
     paramsProvider: ContractParamsProvider
-  ): Promise<number[]> {
+  ): Promise<bigint[]> {
     return this.contract.getReadPrices(paramsProvider);
   }
 

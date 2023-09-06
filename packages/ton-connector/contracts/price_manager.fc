@@ -55,6 +55,12 @@ global cell values_dict;
 
 () recv_internal(int balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     int op = in_msg_body~load_uint(OP_NUMBER_BITS);
+    var cs = in_msg_full.begin_parse();
+    var flags = cs~load_uint(4);
+
+    if (flags & 1) { ;; ignore all bounced messages
+        return ();
+    }
 
     load_data();
 
@@ -69,9 +75,6 @@ global cell values_dict;
 
     if (op == OP_REDSTONE_FETCH_DATA) {
         int feed_id = in_msg_body~load_uint(DATA_FEED_ID_BITS);
-
-        var cs = in_msg_full.begin_parse();
-        var flags = cs~load_uint(4);
 
         slice sender_address = cs~load_msg_addr();
 
