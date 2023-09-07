@@ -82,9 +82,9 @@ describe("balancer multi fetcher", () => {
   test("should properly fetch data with slippage", async () => {
     await asAwaitable(
       vaultContract.mock.queryBatchSwap
-        .returns(["1000000000000000000000", "0", "0", "-2000000000"]) // 1:2
-        .returns(["5000000000000000000000", "0", "0", "-5000000000"]) // 1:1
-        .returns(["-2500000000000000000000", "0", "0", "10000000000"]) // 1:4
+        .returns(["1000000000000000000000", "0", "-2000000000"]) // 1:2
+        .returns(["5000000000000000000000", "0", "-5000000000"]) // 1:1
+        .returns(["-2500000000000000000000", "0", "10000000000"]) // 1:4
     );
 
     await saveMockPriceInLocalDb(1, "USDC");

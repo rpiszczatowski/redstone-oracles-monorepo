@@ -33,7 +33,7 @@
       ]
     },
     "LUSD": {
-      "poolAddress": "0x207AddB05C548F262219f6bFC6e11c02d0f7fDbe",
+      "poolAddress": "0xf04458f7B21265b80FC340dE7Ee598e24485c5bB",
       "token0Symbol": "USDC",
       "token1Symbol": "LUSD",
       "token0Address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
