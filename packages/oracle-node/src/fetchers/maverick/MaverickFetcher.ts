@@ -74,12 +74,12 @@ export class MaverickFetcher extends DexOnChainFetcher<MaverickResponse> {
       amountIn1Token
     );
 
-    const response = await RedstoneCommon.multiCallOneContract(
+    const response = (await RedstoneCommon.multiCallOneContract(
       contract,
       multicallHandler.buildRequest()
-    );
+    )) as BigNumberish[];
 
-    return await multicallHandler.parseResponse(response);
+    return multicallHandler.parseResponse(response);
   }
 
   override calculateSpotPrice(

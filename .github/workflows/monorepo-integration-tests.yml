@@ -19,6 +19,8 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
+      - name: Lint
+        run: yarn lint
       - name: Run core tests - simple propagation
         run: node dist/simple-price-propagation-core.js
         env:

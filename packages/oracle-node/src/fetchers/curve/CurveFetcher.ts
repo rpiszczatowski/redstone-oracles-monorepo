@@ -52,11 +52,11 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
       amountInBaseToken
     );
 
-    const multicallResponse = await RedstoneCommon.multiCallOneContract(
+    const multicallResponse = (await RedstoneCommon.multiCallOneContract(
       curvePool,
       multicallHandler.buildRequest(),
       blockTag?.toString()
-    );
+    )) as BigNumberish[];
 
     return multicallHandler.parseResponse(multicallResponse);
   }
@@ -205,12 +205,12 @@ class MultiCallHandler {
       sellRatio: new Decimal(BigNumber.from(ratioBigNumber).toHexString()).div(
         pairedTokenDecimals
       ),
-      baseTokenSupply: new Decimal(BigNumber.from(baseTokenSupply).toHexString()).div(
-        tokenDecimals
-      ),
-      pairedTokenSupply: new Decimal(BigNumber.from(pairedTokenSupply).toHexString()).div(
-        pairedTokenDecimals
-      ),
+      baseTokenSupply: new Decimal(
+        BigNumber.from(baseTokenSupply).toHexString()
+      ).div(tokenDecimals),
+      pairedTokenSupply: new Decimal(
+        BigNumber.from(pairedTokenSupply).toHexString()
+      ).div(pairedTokenDecimals),
       assetId: this.assetId,
     };
     const decimalsRatio = tokenDecimals / pairedTokenDecimals;

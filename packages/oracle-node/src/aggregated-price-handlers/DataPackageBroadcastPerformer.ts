@@ -4,6 +4,7 @@ import PricesService from "./../fetchers/PricesService";
 import {
   DataPackage,
   DataPoint,
+  Metadata,
   NumericDataPoint,
   SignedDataPackage,
 } from "redstone-protocol";
