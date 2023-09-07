@@ -12,7 +12,7 @@ import {
 import { Contract } from "ethers";
 import { UniswapV3OnChainFetcher } from "../../src/fetchers/evm-chain/shared/uniswap-v3-on-chain/UniswapV3OnChainFetcher";
 import { PoolsConfig } from "../../src/fetchers/uniswap-v3-like/types";
-import { saveMockPriceInLocalDb } from "./_helpers";
+import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
 import UniswapV3Pool from "../../src/fetchers/evm-chain/shared/uniswap-v3-on-chain/UniswapV3Pool.abi.json";
 import UniswapV3Quoter from "../../src/fetchers/evm-chain/shared/uniswap-v3-on-chain/UniswapV3Quoter.abi.json";
 import multicall3Json from "../abis/Multicall3.deployment.json";
@@ -28,8 +28,8 @@ describe("uniswap V3 fetcher", () => {
   let mockTokenConfig: PoolsConfig;
 
   beforeAll(async () => {
-    // make sure numbers longer that 20 digits are not seiralized using scientific notation
-    // as ethers failes to parse scientific notation
+    // make sure numbers longer that 20 digits are not serialized using scientific notation
+    // as ethers fails to parse scientific notation
     Decimal.set({ toExpPos: 9e15 });
 
     setupLocalDb();
@@ -62,11 +62,6 @@ describe("uniswap V3 fetcher", () => {
   afterAll(async () => {
     await closeLocalLevelDB();
   });
-
-  // despite of the supposedly synchronous interface waffle mock setup has to be awaited, quiet the compiler
-  const asAwaitable = <T = void>(awaitableObject: any): Promise<T> => {
-    return awaitableObject as unknown as Promise<T>;
-  };
 
   test("should properly fetch price with slippage", async () => {
     await asAwaitable(

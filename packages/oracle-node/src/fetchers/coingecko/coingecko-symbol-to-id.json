@@ -935,5 +935,6 @@
   "SWETH": "sweth",
   "BB-A-WETH": "balancer-boosted-aave-weth",
   "CRVUSD": "crvusd",
-  "DPX": "dopex"
+  "DPX": "dopex",
+  "ETHx": "stader-ethx"
 }

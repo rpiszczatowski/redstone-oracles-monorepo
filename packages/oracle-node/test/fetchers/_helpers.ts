@@ -108,3 +108,7 @@ export const deployMulticallContract = async (wallet: Wallet) => {
     abi: Multicall2.abi,
   });
 };
+
+export const asAwaitable = <T = void>(awaitableObject: any): Promise<T> => {
+  return awaitableObject as unknown as Promise<T>;
+};

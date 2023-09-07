@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import {
   MockProvider,
   deployMockContract,
@@ -10,16 +11,16 @@ import {
   setupLocalDb,
 } from "../../src/db/local-db";
 import { Contract } from "ethers";
-import { CamelotV3Fetcher } from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotV3Fetcher";
-import { PoolsConfig } from "../../src/fetchers/uniswap-v3-like/types";
+import { PancakeSwapOnChainFetcher } from "../../src/fetchers/evm-chain/ethereum/pancake-swap-on-chain/PancakeSwapOnChainFetcher";
 import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
+import PancakeSwapPoolAbi from "../../src/fetchers/evm-chain/ethereum/pancake-swap-on-chain/PancakeSwapPool.abi.json";
+import PancakeSwapQuoterAbi from "../../src/fetchers/evm-chain/ethereum/pancake-swap-on-chain/PancakeSwapQuoter.abi.json";
 import multicall3Json from "../abis/Multicall3.deployment.json";
-import CamelotPoolAbi from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotPool.abi.json";
-import CamelotRouterAbi from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotRouter.abi.json";
+import { PoolsConfig } from "../../src/fetchers/uniswap-v3-like/types";
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
-describe("Camelot V3 fetcher", () => {
+describe("PancakeSwap fetcher", () => {
   let quoterContract: Contract;
   let poolContract: Contract;
   let multicall: Contract;
@@ -27,11 +28,15 @@ describe("Camelot V3 fetcher", () => {
   let mockTokenConfig: PoolsConfig;
 
   beforeAll(async () => {
+    // make sure numbers longer that 20 digits are not serialized using scientific notation
+    // as ethers fails to parse scientific notation
+    Decimal.set({ toExpPos: 9e15 });
+
     setupLocalDb();
     provider = new MockProvider();
     const [wallet] = provider.getWallets();
-    quoterContract = await deployMockContract(wallet, CamelotRouterAbi);
-    poolContract = await deployMockContract(wallet, CamelotPoolAbi);
+    quoterContract = await deployMockContract(wallet, PancakeSwapQuoterAbi);
+    poolContract = await deployMockContract(wallet, PancakeSwapPoolAbi);
     multicall = await deployContract(wallet, multicall3Json);
 
     mockTokenConfig = {
@@ -58,11 +63,10 @@ describe("Camelot V3 fetcher", () => {
     await closeLocalLevelDB();
   });
 
-  test("should properly fetch price", async () => {
+  test("should properly fetch price with slippage", async () => {
     await asAwaitable(
-      poolContract.mock.globalState.returns(
+      poolContract.mock.slot0.returns(
         { type: "BigNumber", hex: "0x64000000000000000000000000" }, // 100:1
-        0,
         0,
         0,
         0,
@@ -72,13 +76,13 @@ describe("Camelot V3 fetcher", () => {
       )
     );
     await asAwaitable(
-      quoterContract.mock.exactInputSingle
-        .returns(50_000_000)
-        .returns(500_000_000_000)
+      quoterContract.mock.quoteExactInputSingle
+        .returns(50_000_000, 0, 0, 0)
+        .returns(500_000_000_000, 0, 0, 0)
     );
 
-    const fetcher = new CamelotV3Fetcher(
-      "uniswap-v3-mock",
+    const fetcher = new PancakeSwapOnChainFetcher(
+      "pancake-swap-mock",
       mockTokenConfig,
       provider
     );
@@ -103,6 +107,37 @@ describe("Camelot V3 fetcher", () => {
             slippageAsPercent: "100",
           },
         ],
+      },
+    });
+  });
+
+  test("should properly fetch price without slippage", async () => {
+    await asAwaitable(
+      poolContract.mock.slot0.returns(
+        { type: "BigNumber", hex: "0x64000000000000000000000000" }, // 100:1
+        0,
+        0,
+        0,
+        0,
+        0,
+        true
+      )
+    );
+
+    const fetcher = new PancakeSwapOnChainFetcher(
+      "pancake-swap-mock",
+      mockTokenConfig,
+      provider
+    );
+    fetcher.overrideMulticallAddress(multicall.address);
+
+    await saveMockPriceInLocalDb(1, "MockToken2");
+    const result = await fetcher.fetchAll(["MockToken"]);
+    expect(result[0]).toEqual({
+      symbol: "MockToken",
+      value: "100",
+      metadata: {
+        slippage: [],
       },
     });
   });

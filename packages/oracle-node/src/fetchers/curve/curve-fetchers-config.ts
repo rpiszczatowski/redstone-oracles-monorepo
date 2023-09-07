@@ -183,6 +183,18 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
       fee: 0.0006,
     },
+    ETHx: {
+      address: "0xd82C2eB10F4895CABED6EDa6eeee234bd1A9838B",
+      tokenIndex: 0,
+      pairedTokenIndex: 1,
+      pairedToken: "ETH",
+      provider: ethereumProvider,
+      tokenDecimalsMultiplier: 1e18,
+      pairedTokenDecimalsMultiplier: 1e18,
+      functionName: "get_dy",
+      multiBlockConfig: ETH_MULTI_BLOCK_CONFIG,
+      fee: 0.0006,
+    },
   },
   "curve-frxeth": {
     ALETH: {

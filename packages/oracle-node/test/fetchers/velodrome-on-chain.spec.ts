@@ -10,7 +10,7 @@ import {
   setupLocalDb,
 } from "../../src/db/local-db";
 import { Contract } from "ethers";
-import { saveMockPriceInLocalDb } from "./_helpers";
+import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
 import VelodromPool from "../../src/fetchers/evm-chain/optimism/velodrome/abi.json";
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { VelodromeOnChainFetcher } from "../../src/fetchers/evm-chain/optimism/velodrome/VelodromeOnChainFetcher";
@@ -63,11 +63,6 @@ describe("velodrome fetcher", () => {
   afterAll(async () => {
     await closeLocalLevelDB();
   });
-
-  // despite of the supposedly synchronous interface waffle mock setup has to be awaited, quiet the compiler
-  const asAwaitable = <T = void>(awaitableObject: any): Promise<T> => {
-    return awaitableObject as unknown as Promise<T>;
-  };
 
   test("should properly fetch price - non-stable pool", async () => {
     const fetcher = new VelodromeOnChainFetcher(

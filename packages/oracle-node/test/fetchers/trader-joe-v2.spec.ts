@@ -16,11 +16,11 @@ import {
 } from "../../src/db/local-db";
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { Contract } from "ethers";
-import { saveMockPriceInLocalDb } from "./_helpers";
+import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
 
 const FETCHER_TO_TEST = "trader-joe-v2-avalanche-on-chain-usdc";
 const TOKEN_TO_TEST = "EUROC";
-const PAIRED_TOKEN = "USDC"
+const PAIRED_TOKEN = "USDC";
 
 describe("Trader Joe - EUROC token", () => {
   let pairContract: MockContract;
@@ -52,11 +52,6 @@ describe("Trader Joe - EUROC token", () => {
     await closeLocalLevelDB();
   });
 
-  // despite of the supposedly synchronous interface waffle mock setup has to be awaited, quiet the compiler
-  const asAwaitable = <T = void>(awaitableObject: any): Promise<T> => {
-    return awaitableObject as unknown as Promise<T>;
-  };
-
   test("Should properly fetch data, no slippage", async () => {
     await asAwaitable(pairContract.mock.getActiveId.returns("8388754"));
     await asAwaitable(pairContract.mock.getBinStep.returns("5"));
@@ -77,7 +72,7 @@ describe("Trader Joe - EUROC token", () => {
         symbol: TOKEN_TO_TEST,
         value: "1.075710911553001485",
         metadata: {
-          slippage: []
+          slippage: [],
         },
       },
     ]);
@@ -125,4 +120,3 @@ describe("Trader Joe - EUROC token", () => {
     ]);
   });
 });
-

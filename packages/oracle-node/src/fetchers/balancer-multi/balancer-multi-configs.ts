@@ -50,6 +50,26 @@ export const balancerMultiConfigs = {
         "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
       ],
     },
+    ETHx: {
+      baseTokenDecimals: 18,
+      pairedTokenDecimals: 18,
+      tokenToFetch: "ETH",
+      swapAmount: DEFAULT_AMOUNT,
+      swaps: [
+        {
+          poolId:
+            "0x37b18b10ce5635a84834b26095a0ae5639dcb7520000000000000000000005cb",
+          assetInIndex: 0,
+          assetOutIndex: 1,
+          amount: DEFAULT_AMOUNT.toString(),
+          userData: "0x",
+        },
+      ],
+      tokenAddresses: [
+        "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b",
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      ],
+    },
   },
   DAI: {
     GHO: {

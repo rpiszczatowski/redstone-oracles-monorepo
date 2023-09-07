@@ -47,6 +47,7 @@ import { FixedValueFetcher } from "./fixed-value-fetcher/fixed-value-fetcher";
 import { KaikoV2Fetcher } from "./kaiko-v2/KaikoV2Fetcher";
 import { twapCacheServicesMinuteFetchers } from "./twap-cache-service-minute/all-twap-cache-service-minute-fetchers";
 import { camelotV3Fetchers } from "./evm-chain/arbitrum/camelot-v3/all-camelot-v3-fetchers";
+import pancakeSwapFetchers from "./evm-chain/ethereum/pancake-swap-on-chain/all-pancake-swap-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -97,4 +98,5 @@ export default {
   ...velodromeFetchers,
   ...twapCacheServicesMinuteFetchers,
   ...camelotV3Fetchers,
+  ...pancakeSwapFetchers,
 } as { [name: string]: Fetcher };
