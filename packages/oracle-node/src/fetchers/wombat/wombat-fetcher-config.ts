@@ -3,10 +3,10 @@ import { ethereumProvider } from "../../utils/blockchain-providers";
 export default {
   provider: ethereumProvider,
   tokens: {
-    ETHX: {
+    ETHx: {
       baseToken: {
         address: "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b",
-        symbol: "ETHX",
+        symbol: "ETHx",
         decimals: 18,
       },
       quoteToken: {

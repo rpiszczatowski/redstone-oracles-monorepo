@@ -31,10 +31,10 @@ describe("Wombat", () => {
     config = {
       provider,
       tokens: {
-        ETHX: {
+        ETHx: {
           baseToken: {
             address: "0xA35b1B31Ce002FBF2058D22F30f95D405200A15b",
-            symbol: "ETHX",
+            symbol: "ETHx",
             decimals: 18,
           },
           quoteToken: {
@@ -66,11 +66,11 @@ describe("Wombat", () => {
 
     await saveMockPriceInLocalDb(2000, "ETH");
 
-    const result = await fetcher.fetchAll(["ETHX"]);
+    const result = await fetcher.fetchAll(["ETHx"]);
 
     expect(result).toEqual([
       {
-        symbol: "ETHX",
+        symbol: "ETHx",
         value: "2000",
         metadata: {
           slippage: [],
@@ -84,7 +84,7 @@ describe("Wombat", () => {
     const fetcher = new WombatFetcher(config);
 
     await saveMockPriceInLocalDb(2000, "ETH");
-    await saveMockPriceInLocalDb(2000, "ETHX");
+    await saveMockPriceInLocalDb(2000, "ETHx");
 
     await asAwaitable(
       mockContract.mock.quotePotentialSwap
@@ -93,11 +93,11 @@ describe("Wombat", () => {
         .returns("2500000000000000000", "0")
     );
 
-    const result = await fetcher.fetchAll(["ETHX"]);
+    const result = await fetcher.fetchAll(["ETHx"]);
 
     expect(result).toEqual([
       {
-        symbol: "ETHX",
+        symbol: "ETHx",
         value: "2000",
         metadata: {
           slippage: [
