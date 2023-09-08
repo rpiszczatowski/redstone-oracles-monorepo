@@ -119,13 +119,20 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         const receivedBlockNumber = Number(blockNumber);
         const diff = receivedBlockNumber - this.lastBlockNumber;
 
-        if (receivedBlockNumber < this.lastBlockNumber || isNaN(receivedBlockNumber) || Math.abs(diff) > 10) {
+        if (
+          receivedBlockNumber < this.lastBlockNumber ||
+          isNaN(receivedBlockNumber) ||
+          Math.abs(diff) > 10
+        ) {
           this.logger.warn(
             `${logPrefix}: Weird block number received: ${blockNumber}. Diff: ${diff}. Last: ${this.lastBlockNumber}. Received: ${receivedBlockNumber}`
           );
         }
 
-        if (receivedBlockNumber > this.lastBlockNumber && Math.abs(diff) < 100_000) {
+        if (
+          receivedBlockNumber > this.lastBlockNumber &&
+          Math.abs(diff) < 100_000
+        ) {
           this.logger.info(
             `${logPrefix}: New block number received: ${blockNumber}`
           );
@@ -331,7 +338,8 @@ export class ProviderWithAgreement extends ProviderWithFallback {
 
       const handleProviderResult = () => {
         finishedProvidersCount++;
-        if (finishedProvidersCount === this.providers.length) {
+        // TODO: maybe add !stop to the condition
+        if (finishedProvidersCount === this.providers.length && !stop) {
           stop = true;
           this.logger.warn(
             `Failed to achieve consensus. Min rpcs to agree for consensus: ${this.agreementConfig.numberOfProvidersThatHaveToAgree}. ` +
@@ -342,6 +350,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
                 errors,
               })
           );
+          // TODO: maybe we should check here if we also have 2 agreeing
           reject(
             new AggregateError(
               errors,
