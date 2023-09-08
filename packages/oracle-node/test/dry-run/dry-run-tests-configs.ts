@@ -1,13 +1,12 @@
 import Decimal from "decimal.js";
 import { getTokensFromManifest } from "./helpers";
 import mainManifest from "../../manifests/data-services/main.json";
-import wideSupportTokensManifest from "../../manifests/dev/main-wide-support.json";
 import stocksManifest from "../../manifests/data-services/stocks.json";
 import avalancheManifest from "../../manifests/data-services/avalanche.json";
 import rapidManifest from "../../manifests/data-services/rapid.json";
 import primaryManifest from "../../manifests/data-services/primary.json";
 import arbitrumManifest from "../../manifests/data-services/arbitrum.json";
-import { Manifest } from "../../src/types";
+import { Manifest, TokenConfig } from "../../src/types";
 
 Decimal.set({ toExpPos: 9e15 });
 
@@ -30,9 +29,18 @@ const config: Record<DryRunTestType, DryRunTestConfig> = {
   [DryRunTestType.main]: {
     manifest: mainManifest,
     nodeIterations: 4,
-    additionalCheck: assertAllRequiredTokensAreProperlyFetched(
-      wideSupportTokensManifest
-    ),
+    additionalCheck: assertAllRequiredTokensAreProperlyFetched({
+      ...mainManifest,
+      tokens: Object.entries(mainManifest.tokens).reduce(
+        (tokens, [dataFeedId, config]) => {
+          if (Object.keys(config).length > 0) {
+            tokens[dataFeedId] = config;
+          }
+          return tokens;
+        },
+        {} as Record<string, TokenConfig>
+      ),
+    }),
   },
   [DryRunTestType.stocks]: {
     manifest: stocksManifest,
