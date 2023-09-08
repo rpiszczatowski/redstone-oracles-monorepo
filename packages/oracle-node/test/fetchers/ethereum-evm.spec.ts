@@ -12,7 +12,6 @@ import {
   closeLocalLevelDB,
   setupLocalDb,
 } from "../../src/db/local-db";
-import { balancerTokensContractDetails } from "../../src/fetchers/evm-chain/ethereum/evm-fetcher/sources/balancer/balancerTokensContractDetails";
 import { curveTokensContractsDetails } from "../../src/fetchers/evm-chain/ethereum/evm-fetcher/sources/curve-lp-tokens/curveTokensContractsDetails";
 import { lidoTokensContractDetails } from "../../src/fetchers/evm-chain/ethereum/evm-fetcher/sources/lido/lidoTokensContractDetails";
 
@@ -32,64 +31,6 @@ describe("Ethereum EVM fetcher", () => {
 
   afterAll(async () => {
     await closeLocalLevelDB();
-  });
-
-  describe("Balancer Token - BB-A-WETH", () => {
-    beforeAll(async () => {
-      provider = new MockProvider();
-      const [wallet] = provider.getWallets();
-      const balancerPoolContract = await deployMockContract(
-        wallet,
-        balancerTokensContractDetails["BB-A-WETH"].abi
-      );
-      await balancerPoolContract.mock.getVirtualSupply.returns(
-        "3475875376494986673998"
-      );
-      await balancerPoolContract.mock.getWrappedTokenRate.returns(
-        "1003719018416122994"
-      );
-
-      const balancerVaultContract = await deployMockContract(
-        wallet,
-        balancerTokensContractDetails["BB-A-WETH"].vaultAbi
-      );
-      await balancerVaultContract.mock.getPoolTokens.returns(
-        [
-          "0x60D604890feaa0b5460B28A424407c24fe89374a",
-          "0x59463BB67dDD04fe58ED291ba36C26d99A39fbc6",
-          "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-        ],
-        [
-          "5192296858531351753154001342546097",
-          "3309105565121848877500",
-          "161677223664873474049",
-        ],
-        "17442976"
-      );
-
-      multicallContract = await deployMulticallContract(wallet);
-
-      balancerTokensContractDetails["BB-A-WETH"].address =
-        balancerPoolContract.address;
-      balancerTokensContractDetails["BB-A-WETH"].vaultAddress =
-        balancerVaultContract.address;
-    });
-
-    test("Should properly fetch data", async () => {
-      const fetcher = new EvmFetcher(
-        "ethereum-evm-test-fetcher",
-        { mainProvider: provider },
-        multicallContract.address,
-        requestHandlers
-      );
-
-      await saveMockPriceInLocalDb(1850.13, "ETH");
-
-      const result = await fetcher.fetchAll(["BB-A-WETH"]);
-      expect(result).toEqual([
-        { symbol: "BB-A-WETH", value: 1853.9698689576974 },
-      ]);
-    });
   });
 
   describe("Curve Token - crvFRAX", () => {

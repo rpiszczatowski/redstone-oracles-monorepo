@@ -41,7 +41,6 @@ import { PermaswapFetcher } from "./permaswap/PermaswapFetcher";
 import fraxswapOnChainFetchers from "./evm-chain/ethereum/fraxswap-on-chain/all-fraxswap-on-chain-fetchers";
 import { MaverickFetcher } from "./maverick/MaverickFetcher";
 import { ethereumEvmFetcher } from "./evm-chain/ethereum/evm-fetcher/EthereumEvmFetcher";
-import balancerMultiFetchers from "./balancer-multi/all-balancers-multi-fetchers";
 import traderJoeV2OnChainFetchers from "./evm-chain/avalanche/trader-joe-on-chain/trader-joe-v2/trader-joe-v2-on-chain-fetchers";
 import { FixedValueFetcher } from "./fixed-value-fetcher/fixed-value-fetcher";
 import { KaikoV2Fetcher } from "./kaiko-v2/KaikoV2Fetcher";
@@ -84,7 +83,6 @@ export default {
   wombat: new WombatFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
-  ...balancerFetchers,
   ...twapFetchers,
   ...uniswapV3Fetchers,
   ...sushiswapEthereumOnChainFetchers,
@@ -95,7 +93,7 @@ export default {
   ...traderJoeOnChainFetchers,
   ...twelveDataFetchers,
   ...fraxswapOnChainFetchers,
-  ...balancerMultiFetchers,
+  ...balancerFetchers,
   ...traderJoeV2OnChainFetchers,
   ...velodromeFetchers,
   ...twapCacheServicesMinuteFetchers,

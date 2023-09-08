@@ -11,12 +11,12 @@ import {
   setupLocalDb,
 } from "../../src/db/local-db";
 import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
-import BalancerVaultAbi from "../../src/fetchers/balancer-multi/BalancerVault.abi.json";
+import BalancerVaultAbi from "../../src/fetchers/balancer/BalancerVault.abi.json";
 import {
   BALANCER_VAULT_ADDRESS,
-  BalancerMultiFetcher,
-} from "../../src/fetchers/balancer-multi/BalancerMultiFetcher";
-import { balancerMultiConfigs } from "../../src/fetchers/balancer-multi/balancer-multi-configs";
+  BalancerFetcher,
+} from "../../src/fetchers/balancer/BalancerFetcher";
+import { balancerEthereumConfigs } from "../../src/fetchers/balancer/balancer-ethereum-configs";
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { Contract } from "ethers";
 import Decimal from "decimal.js";
@@ -61,9 +61,9 @@ describe("balancer multi fetcher", () => {
 
     await saveMockPriceInLocalDb(1635.27, "ETH");
 
-    const fetcher = new BalancerMultiFetcher(
-      "balancer-multi-weth-test",
-      balancerMultiConfigs.WETH,
+    const fetcher = new BalancerFetcher(
+      "balancer-weth-test",
+      balancerEthereumConfigs.WETH,
       "WETH",
       provider
     );
@@ -92,9 +92,9 @@ describe("balancer multi fetcher", () => {
     await saveMockPriceInLocalDb(1, "USDC");
     await saveMockPriceInLocalDb(2, "GHO");
 
-    const fetcher = new BalancerMultiFetcher(
-      "balancer-multi-usdc-test",
-      balancerMultiConfigs.USDC,
+    const fetcher = new BalancerFetcher(
+      "balancer-usdc-test",
+      balancerEthereumConfigs.USDC,
       "USDC",
       provider
     );

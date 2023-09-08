@@ -599,37 +599,32 @@
     "url": "https://app.frax.finance/fraxswap",
     "color": "#232326"
   },
-  "balancer-dai": {
+  "balancer-ethereum-dai": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
     "url": "https://balancer.fi",
     "color": "#232326"
   },
-  "balancer-weth": {
+  "balancer-ethereum-weth": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
     "url": "https://balancer.fi",
     "color": "#232326"
   },
-  "balancer-lusd": {
+  "balancer-ethereum-lusd": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
     "url": "https://balancer.fi",
     "color": "#232326"
   },
-  "balancer-multi-weth": {
+  "balancer-ethereum-usdc": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
     "url": "https://balancer.fi",
     "color": "#232326"
   },
-  "balancer-multi-dai": {
+  "balancer-ethereum-usdt": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
     "url": "https://balancer.fi",
     "color": "#232326"
   },
-  "balancer-multi-usdc": {
-    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
-    "url": "https://balancer.fi",
-    "color": "#232326"
-  },
-  "balancer-multi-usdt": {
+  "balancer-arbitrum-weth": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/balancer.png",
     "url": "https://balancer.fi",
     "color": "#232326"
