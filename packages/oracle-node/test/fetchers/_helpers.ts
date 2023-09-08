@@ -109,6 +109,6 @@ export const deployMulticallContract = async (wallet: Wallet) => {
   });
 };
 
-export const asAwaitable = <T = void>(awaitableObject: any): Promise<T> => {
-  return awaitableObject as unknown as Promise<T>;
+export const asAwaitable = <T = void>(awaitableObject: unknown): Promise<T> => {
+  return awaitableObject as Promise<T>;
 };

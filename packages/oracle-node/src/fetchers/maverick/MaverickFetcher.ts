@@ -1,7 +1,6 @@
 import Decimal from "decimal.js";
-import { BigNumber, BigNumberish, Contract, providers } from "ethers";
-import { MathUtils, RedstoneCommon } from "redstone-utils";
-import { SlippageData } from "redstone-utils/src/types";
+import { BigNumberish, Contract, providers } from "ethers";
+import { MathUtils, RedstoneTypes, RedstoneCommon } from "redstone-utils";
 import { getRawPrice } from "../../db/local-db";
 import {
   DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,
@@ -114,7 +113,7 @@ export class MaverickFetcher extends DexOnChainFetcher<MaverickResponse> {
   override calculateSlippage(
     assetId: string,
     response: MaverickResponse
-  ): SlippageData[] {
+  ): RedstoneTypes.SlippageData[] {
     const {
       smallSellAmountOutScaled,
       smallBuyAmountOutScaled,
@@ -247,7 +246,7 @@ class MultiCallHandler {
 
   parseResponse(multicallResponse: BigNumberish[]) {
     const [sqrtPrice, ...slippageResponses] = multicallResponse;
-    const price = new Decimal(BigNumber.from(sqrtPrice).toHexString())
+    const price = RedstoneCommon.bignumberishToDecimal(sqrtPrice)
       .div(MAVERICK_PRECISION)
       .toPower(2);
 

@@ -15,6 +15,7 @@ import VelodromPool from "../../src/fetchers/evm-chain/optimism/velodrome/abi.js
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { VelodromeOnChainFetcher } from "../../src/fetchers/evm-chain/optimism/velodrome/VelodromeOnChainFetcher";
 import { PoolsConfig } from "../../src/fetchers/evm-chain/optimism/velodrome/types";
+import { RedstoneCommon } from "redstone-utils";
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 const MOCK_TOKEN2_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc3";
@@ -31,6 +32,7 @@ describe("velodrome fetcher", () => {
     const [wallet] = provider.getWallets();
     poolContract = await deployMockContract(wallet, VelodromPool.abi);
     multicall = await deployContract(wallet, multicall3Json);
+    RedstoneCommon.overrideMulticallAddress(multicall.address);
 
     mockTokenConfig = {
       MockToken: {
@@ -70,7 +72,6 @@ describe("velodrome fetcher", () => {
       mockTokenConfig,
       provider
     );
-    fetcher.overrideMulticallAddress(multicall.address);
     await asAwaitable(
       poolContract.mock.getReserves.returns(
         { type: "BigNumber", hex: "0x64" },
@@ -112,7 +113,6 @@ describe("velodrome fetcher", () => {
       mockTokenConfig,
       provider
     );
-    fetcher.overrideMulticallAddress(multicall.address);
     await asAwaitable(
       poolContract.mock.getReserves.returns(
         { type: "BigNumber", hex: "0x64" },

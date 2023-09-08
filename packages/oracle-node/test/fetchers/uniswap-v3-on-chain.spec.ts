@@ -2,6 +2,7 @@ import {
   MockProvider,
   deployMockContract,
   deployContract,
+  MockContract,
 } from "ethereum-waffle";
 import {
   clearLastPricesCache,
@@ -17,12 +18,13 @@ import UniswapV3Pool from "../../src/fetchers/evm-chain/shared/uniswap-v3-on-cha
 import UniswapV3Quoter from "../../src/fetchers/evm-chain/shared/uniswap-v3-on-chain/UniswapV3Quoter.abi.json";
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import Decimal from "decimal.js";
+import { RedstoneCommon } from "redstone-utils";
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 describe("uniswap V3 fetcher", () => {
-  let quoterContract: Contract;
-  let poolContract: Contract;
+  let quoterContract: MockContract;
+  let poolContract: MockContract;
   let multicall: Contract;
   let provider: MockProvider;
   let mockTokenConfig: PoolsConfig;
@@ -38,6 +40,7 @@ describe("uniswap V3 fetcher", () => {
     quoterContract = await deployMockContract(wallet, UniswapV3Quoter.abi);
     poolContract = await deployMockContract(wallet, UniswapV3Pool.abi);
     multicall = await deployContract(wallet, multicall3Json);
+    RedstoneCommon.overrideMulticallAddress(multicall.address);
 
     mockTokenConfig = {
       MockToken: {
@@ -86,7 +89,6 @@ describe("uniswap V3 fetcher", () => {
       mockTokenConfig,
       provider
     );
-    fetcher.overrideMulticallAddress(multicall.address);
 
     await saveMockPriceInLocalDb(100, "MockToken");
     await saveMockPriceInLocalDb(1, "MockToken2");
@@ -129,7 +131,6 @@ describe("uniswap V3 fetcher", () => {
       mockTokenConfig,
       provider
     );
-    fetcher.overrideMulticallAddress(multicall.address);
 
     await saveMockPriceInLocalDb(1, "MockToken2");
     const result = await fetcher.fetchAll(["MockToken"]);

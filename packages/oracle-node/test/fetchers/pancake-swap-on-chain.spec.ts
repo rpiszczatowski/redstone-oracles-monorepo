@@ -3,6 +3,7 @@ import {
   MockProvider,
   deployMockContract,
   deployContract,
+  MockContract,
 } from "ethereum-waffle";
 import {
   clearLastPricesCache,
@@ -17,12 +18,13 @@ import PancakeSwapPoolAbi from "../../src/fetchers/evm-chain/ethereum/pancake-sw
 import PancakeSwapQuoterAbi from "../../src/fetchers/evm-chain/ethereum/pancake-swap-on-chain/PancakeSwapQuoter.abi.json";
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { PoolsConfig } from "../../src/fetchers/uniswap-v3-like/types";
+import { RedstoneCommon } from "redstone-utils";
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 describe("PancakeSwap fetcher", () => {
-  let quoterContract: Contract;
-  let poolContract: Contract;
+  let quoterContract: MockContract;
+  let poolContract: MockContract;
   let multicall: Contract;
   let provider: MockProvider;
   let mockTokenConfig: PoolsConfig;
@@ -38,6 +40,7 @@ describe("PancakeSwap fetcher", () => {
     quoterContract = await deployMockContract(wallet, PancakeSwapQuoterAbi);
     poolContract = await deployMockContract(wallet, PancakeSwapPoolAbi);
     multicall = await deployContract(wallet, multicall3Json);
+    RedstoneCommon.overrideMulticallAddress(multicall.address);
 
     mockTokenConfig = {
       MockToken: {
@@ -86,7 +89,6 @@ describe("PancakeSwap fetcher", () => {
       mockTokenConfig,
       provider
     );
-    fetcher.overrideMulticallAddress(multicall.address);
 
     await saveMockPriceInLocalDb(100, "MockToken");
     await saveMockPriceInLocalDb(1, "MockToken2");
@@ -129,7 +131,6 @@ describe("PancakeSwap fetcher", () => {
       mockTokenConfig,
       provider
     );
-    fetcher.overrideMulticallAddress(multicall.address);
 
     await saveMockPriceInLocalDb(1, "MockToken2");
     const result = await fetcher.fetchAll(["MockToken"]);

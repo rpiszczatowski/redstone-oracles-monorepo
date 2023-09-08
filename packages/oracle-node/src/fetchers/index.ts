@@ -48,6 +48,7 @@ import { KaikoV2Fetcher } from "./kaiko-v2/KaikoV2Fetcher";
 import { twapCacheServicesMinuteFetchers } from "./twap-cache-service-minute/all-twap-cache-service-minute-fetchers";
 import { camelotV3Fetchers } from "./evm-chain/arbitrum/camelot-v3/all-camelot-v3-fetchers";
 import pancakeSwapFetchers from "./evm-chain/ethereum/pancake-swap-on-chain/all-pancake-swap-fetchers";
+import { WombatFetcher } from "./wombat/WombatFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -80,6 +81,7 @@ export default {
   maverick: new MaverickFetcher(),
   "ethereum-evm-fetcher": ethereumEvmFetcher,
   "fixed-value": new FixedValueFetcher(),
+  wombat: new WombatFetcher(),
   ...ccxtFetchers,
   ...pangolinFetchers,
   ...balancerFetchers,

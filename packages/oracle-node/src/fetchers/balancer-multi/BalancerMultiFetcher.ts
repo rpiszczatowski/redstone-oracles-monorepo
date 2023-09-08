@@ -1,16 +1,12 @@
 import { SwapType } from "@balancer-labs/sdk";
-import { BigNumber, BigNumberish, ethers, providers } from "ethers";
 import { AddressZero } from "@ethersproject/constants";
+import { BigNumberish, providers } from "ethers";
 import Decimal from "decimal.js";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { getLastPrice, getLastPriceOrFail } from "../../db/local-db";
 import BalancerVaultAbi from "./BalancerVault.abi.json";
-import {
-  CallReturnContext,
-  ContractCallContext,
-  Multicall,
-} from "ethereum-multicall";
-import { MathUtils, RedstoneTypes } from "redstone-utils";
+import { ContractCallContext } from "ethereum-multicall";
+import { MathUtils, RedstoneTypes, RedstoneCommon } from "redstone-utils";
 import {
   DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,
   calculateSlippage,
@@ -70,11 +66,6 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<BalancerResponse> {
     super(name);
   }
 
-  multicallAddress: undefined | string;
-  public overrideMulticallAddress(address: string) {
-    this.multicallAddress = address;
-  }
-
   override async makeRequest(assetId: string): Promise<BalancerResponse> {
     const { baseTokenDecimals, pairedTokenDecimals, swaps, tokenAddresses } =
       this.configs[assetId];
@@ -106,14 +97,13 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<BalancerResponse> {
       swaps,
       tokenAddresses
     );
-    const multicallResult = await this.createMulticallInstance().call(
+    const multicallResult = await RedstoneCommon.callMulticall(
+      this.provider,
       callContexts
     );
-    const allReturnedDeltas =
-      multicallResult.results[VAULT_CALLS].callsReturnContext;
 
     const pairedPriceInBase = this.extractPriceFromMulticallResult(
-      allReturnedDeltas,
+      multicallResult,
       assetId,
       baseTokenScaler,
       pairedTokenScaler
@@ -124,14 +114,14 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<BalancerResponse> {
     if (baseTokenPrice) {
       const slippageSellAmountOut =
         BalancerMultiFetcher.extractAmountOutFromMulticallResult(
-          allReturnedDeltas,
+          multicallResult,
           tokenAddresses,
           SLIPPAGE_SELL_LABEL,
           tokenAddresses[tokenAddresses.length - 1]
         );
       const slippageBuyAmountOut =
         BalancerMultiFetcher.extractAmountOutFromMulticallResult(
-          allReturnedDeltas,
+          multicallResult,
           tokenAddresses,
           SLIPPAGE_BUY_LABEL,
           tokenAddresses[0]
@@ -159,21 +149,20 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<BalancerResponse> {
   }
 
   private static extractAmountOutFromMulticallResult(
-    allReturnedDeltas: CallReturnContext[],
+    multicallResult: RedstoneCommon.MulticallResult,
     tokenAddresses: string[],
     slippageLabel: string,
     tokenToExtractAddress: string
   ) {
     const tokensOutDeltas = this.convertDeltas(
       tokenAddresses,
-      allReturnedDeltas.find((result) => result.reference === slippageLabel)!
-        .returnValues as BigNumber[]
+      multicallResult.getResults(VAULT_CALLS, slippageLabel)
     );
     return tokensOutDeltas[tokenToExtractAddress].abs();
   }
 
   private extractPriceFromMulticallResult(
-    allReturnedDeltas: CallReturnContext[],
+    multicallResult: RedstoneCommon.MulticallResult,
     assetId: string,
     baseTokenScaler: MathUtils.PrecisionScaler,
     pairedTokenScaler: MathUtils.PrecisionScaler
@@ -181,8 +170,7 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<BalancerResponse> {
     const { swaps, tokenAddresses } = this.configs[assetId];
     const deltasSpot = BalancerMultiFetcher.convertDeltas(
       tokenAddresses,
-      allReturnedDeltas.find((result) => result.reference === SPOT_PRICE_LABEL)!
-        .returnValues as BigNumberish[]
+      multicallResult.getResults(VAULT_CALLS, SPOT_PRICE_LABEL)
     );
     const pairedTokensOut = pairedTokenScaler.fromSolidityValue(
       String(deltasSpot[tokenAddresses[tokenAddresses.length - 1]].abs())
@@ -247,7 +235,7 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<BalancerResponse> {
     return Object.fromEntries(
       deltas.map((delta: BigNumberish, idx: number) => [
         tokenAddresses[idx],
-        new Decimal(BigNumber.from(delta).toString()),
+        RedstoneCommon.bignumberishToDecimal(delta),
       ])
     );
   }
@@ -284,20 +272,8 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<BalancerResponse> {
     return swapsCopy;
   }
 
-  private createMulticallInstance() {
-    return new Multicall({
-      ethersProvider: this.provider,
-      tryAggregate: false, // throw on error
-      multicallCustomContractAddress: this.multicallAddress,
-    });
-  }
-
   private static createBatchSwapCall(label: string, params: BatchSwapParams) {
-    return {
-      reference: label,
-      methodName: "queryBatchSwap",
-      methodParameters: params,
-    };
+    return RedstoneCommon.prepareCall(label, "queryBatchSwap", params);
   }
 
   private static createBatchSwapParams(
@@ -312,7 +288,7 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<BalancerResponse> {
     swapAmountPaired: string,
     swapsForSpotCalculation: SwapConfig[],
     tokenAddresses: string[]
-  ): ContractCallContext[] {
+  ): ContractCallContext {
     const swapsForSpotParams = this.createBatchSwapParams(
       swapsForSpotCalculation,
       tokenAddresses
@@ -342,13 +318,11 @@ export class BalancerMultiFetcher extends DexOnChainFetcher<BalancerResponse> {
         this.createBatchSwapCall(SLIPPAGE_BUY_LABEL, slippageBuyParams)
       );
     }
-    return [
-      {
-        reference: VAULT_CALLS,
-        contractAddress: BALANCER_VAULT_ADDRESS,
-        abi: BalancerVaultAbi,
-        calls: callContexts,
-      },
-    ];
+    return RedstoneCommon.prepareContractCall(
+      VAULT_CALLS,
+      BALANCER_VAULT_ADDRESS,
+      BalancerVaultAbi,
+      callContexts
+    );
   }
 }

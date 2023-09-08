@@ -16,6 +16,7 @@ import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import CamelotPoolAbi from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotPool.abi.json";
 import CamelotRouterAbi from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotRouter.abi.json";
+import { RedstoneCommon } from "redstone-utils";
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
@@ -33,6 +34,7 @@ describe("Camelot V3 fetcher", () => {
     quoterContract = await deployMockContract(wallet, CamelotRouterAbi);
     poolContract = await deployMockContract(wallet, CamelotPoolAbi);
     multicall = await deployContract(wallet, multicall3Json);
+    RedstoneCommon.overrideMulticallAddress(multicall.address);
 
     mockTokenConfig = {
       MockToken: {
@@ -82,7 +84,6 @@ describe("Camelot V3 fetcher", () => {
       mockTokenConfig,
       provider
     );
-    fetcher.overrideMulticallAddress(multicall.address);
 
     await saveMockPriceInLocalDb(100, "MockToken");
     await saveMockPriceInLocalDb(1, "MockToken2");

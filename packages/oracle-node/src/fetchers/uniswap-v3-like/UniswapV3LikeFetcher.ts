@@ -1,12 +1,8 @@
 import { Decimal } from "decimal.js";
-import {
-  ContractCallContext,
-  ContractCallResults,
-  Multicall,
-} from "ethereum-multicall";
-import { BigNumber, BigNumberish, providers } from "ethers";
-import { MathUtils, RedstoneTypes } from "redstone-utils";
-import { getLastPrice, getLastPriceOrFail } from "../../db/local-db";
+import { ContractCallContext } from "ethereum-multicall";
+import { providers } from "ethers";
+import { MathUtils, RedstoneTypes, RedstoneCommon } from "redstone-utils";
+import { getLastPriceOrFail } from "../../db/local-db";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { TEN_AS_BASE_OF_POWER } from "../evm-chain/shared/contants";
 import {
@@ -41,11 +37,6 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     super(name);
   }
 
-  multicallAddress: undefined | string = undefined;
-  public overrideMulticallAddress(address: string) {
-    this.multicallAddress = address;
-  }
-
   async makeRequest(assetId: string): Promise<MulticallResult> {
     const poolConfig = this.poolsConfig[assetId];
     const baseToken = UniswapV3LikeFetcher.getBaseTokenConfig(
@@ -58,7 +49,6 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     );
     const baseTokenScaler = new MathUtils.PrecisionScaler(baseToken.decimals);
     const quoteTokenScaler = new MathUtils.PrecisionScaler(quoteToken.decimals);
-    const baseTokenPrice = getLastPrice(baseToken.symbol)?.value;
     const quoteTokenPrice = getLastPriceOrFail(
       poolConfig.pairedToken ?? quoteToken.symbol
     ).value;
@@ -78,7 +68,8 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
       swapAmountBase,
       swapAmountQuote
     );
-    const multicallResult = await this.createMulticallInstance().call(
+    const multicallResult = await RedstoneCommon.callMulticall(
+      this.provider,
       multicallContext
     );
 
@@ -89,12 +80,12 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     );
     let buySlippage: string | undefined;
     let sellSlippage: string | undefined;
-    if (baseTokenPrice) {
+    if (swapAmountBase) {
       const slippageBuyAmountOut = UniswapV3LikeFetcher.getAmountOut(
         multicallResult,
         SLIPPAGE_BUY_LABEL
       );
-      const buyPrice = this.getPrice(
+      const buyPrice = UniswapV3LikeFetcher.getPrice(
         new Decimal(swapAmountQuote),
         slippageBuyAmountOut,
         quoteTokenScaler,
@@ -106,8 +97,8 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
         multicallResult,
         SLIPPAGE_SELL_LABEL
       );
-      const sellPrice = this.getPrice(
-        new Decimal(swapAmountBase!),
+      const sellPrice = UniswapV3LikeFetcher.getPrice(
+        new Decimal(swapAmountBase),
         slippageSellAmountOut,
         baseTokenScaler,
         quoteTokenScaler
@@ -150,7 +141,7 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     ];
   }
 
-  private getPrice(
+  private static getPrice(
     subtokensIn: Decimal,
     subtokensOut: Decimal,
     tokensInScaler: MathUtils.PrecisionScaler,
@@ -190,10 +181,6 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     return this.getTokenConfig(assetId, poolConfig, false);
   }
 
-  private static decimal(bigNumberLike: BigNumberish): Decimal {
-    return new Decimal(BigNumber.from(bigNumberLike).toString());
-  }
-
   private static sqrtPriceX96ToPrice(uniswapV3SqrtPriceX96: Decimal): Decimal {
     // prices returned by uniswap v3 are square rooted and shifted by 96 bits to the left
     const priceShift = new Decimal(2).toPower(2 * 96);
@@ -201,27 +188,25 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
   }
 
   private static getPriceBeforeSwap(
-    multicallResult: ContractCallResults
+    multicallResult: RedstoneCommon.MulticallResult
   ): Decimal {
-    const sqrtPriceX96BeforeSwap = this.decimal(
-      multicallResult.results[POOL_LABEL].callsReturnContext[0].returnValues[0]
+    const sqrtPriceX96BeforeSwap = RedstoneCommon.bignumberishToDecimal(
+      multicallResult.getResult(POOL_LABEL, SLOT0_LABEL, 0)
     );
     return this.sqrtPriceX96ToPrice(sqrtPriceX96BeforeSwap);
   }
 
   private static getAmountOut(
-    multicallResult: ContractCallResults,
+    multicallResult: RedstoneCommon.MulticallResult,
     slippageLabel: string
   ): Decimal {
-    return this.decimal(
-      multicallResult.results[QUOTER_LABEL].callsReturnContext.find(
-        (result) => result.reference === slippageLabel
-      )!.returnValues[0]
+    return RedstoneCommon.bignumberishToDecimal(
+      multicallResult.getResult(QUOTER_LABEL, slippageLabel, 0)
     );
   }
 
   private static extractSpotPriceFromMulticallResult(
-    multicallResult: ContractCallResults,
+    multicallResult: RedstoneCommon.MulticallResult,
     assetId: string,
     poolConfig: PoolConfig
   ): Decimal {
@@ -240,29 +225,20 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     return baseInQuotePrice;
   }
 
-  private createMulticallInstance() {
-    return new Multicall({
-      ethersProvider: this.provider,
-      tryAggregate: false, // throw on error
-      multicallCustomContractAddress: this.multicallAddress,
-    });
-  }
-
   private createSlot0Call(poolAddress: string) {
-    return {
-      reference: POOL_LABEL,
-      contractAddress: poolAddress,
-      abi: this.abis.poolAbi,
-      calls: [
-        {
-          reference: SLOT0_LABEL,
-          methodName: this.functionNames.slot0FunctionName,
-          methodParameters: [],
-        },
-      ],
-    };
+    const slot0Call = RedstoneCommon.prepareCall(
+      SLOT0_LABEL,
+      this.functionNames.slot0FunctionName
+    );
+    return RedstoneCommon.prepareContractCall(
+      POOL_LABEL,
+      poolAddress,
+      this.abis.poolAbi,
+      [slot0Call]
+    );
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected createQuoterParams(
     tokenIn: string,
     tokenOut: string,
@@ -281,7 +257,7 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
   private createQuoterCall(
     assetId: string,
     swapAmountBase: string,
-    swapAmountPaired: string
+    swapAmountQuote: string
   ) {
     const poolConfig = this.poolsConfig[assetId];
 
@@ -293,38 +269,34 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
       assetId,
       poolConfig
     );
-    const quoterAddress = poolConfig.quoterAddress;
-    return {
-      reference: QUOTER_LABEL,
-      contractAddress: quoterAddress,
-      abi: this.abis.quoterAbi,
-      calls: [
-        {
-          reference: SLIPPAGE_BUY_LABEL,
-          methodName: this.functionNames.quoteFunctionName,
-          methodParameters: [
-            this.createQuoterParams(
-              quoteToken.address,
-              baseToken.address,
-              poolConfig.fee,
-              swapAmountPaired
-            ),
-          ],
-        },
-        {
-          reference: SLIPPAGE_SELL_LABEL,
-          methodName: this.functionNames.quoteFunctionName,
-          methodParameters: [
-            this.createQuoterParams(
-              baseToken.address,
-              quoteToken.address,
-              poolConfig.fee,
-              swapAmountBase
-            ),
-          ],
-        },
-      ],
-    };
+    const buyQuoterParams = this.createQuoterParams(
+      quoteToken.address,
+      baseToken.address,
+      poolConfig.fee,
+      swapAmountQuote
+    );
+    const slippageBuyCall = RedstoneCommon.prepareCall(
+      SLIPPAGE_BUY_LABEL,
+      this.functionNames.quoteFunctionName,
+      [buyQuoterParams]
+    );
+    const sellQuoterParams = this.createQuoterParams(
+      baseToken.address,
+      quoteToken.address,
+      poolConfig.fee,
+      swapAmountBase
+    );
+    const slippageSellCall = RedstoneCommon.prepareCall(
+      SLIPPAGE_SELL_LABEL,
+      this.functionNames.quoteFunctionName,
+      [sellQuoterParams]
+    );
+    return RedstoneCommon.prepareContractCall(
+      QUOTER_LABEL,
+      poolConfig.quoterAddress,
+      this.abis.quoterAbi,
+      [slippageBuyCall, slippageSellCall]
+    );
   }
 
   private buildContractCallContext(

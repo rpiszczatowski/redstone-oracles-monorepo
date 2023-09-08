@@ -1,12 +1,8 @@
 import { Decimal } from "decimal.js";
-import {
-  CallReturnContext,
-  ContractCallContext,
-  ContractCallResults,
-  Multicall,
-} from "ethereum-multicall";
-import { BigNumber, providers } from "ethers";
-import { MathUtils, RedstoneTypes } from "redstone-utils";
+import { ContractCallContext } from "ethereum-multicall";
+import { BigNumberish, providers } from "ethers";
+import { MathUtils, RedstoneCommon, RedstoneTypes } from "redstone-utils";
+
 import { getLastPrice, getLastPriceOrFail } from "../../../../db/local-db";
 import { DexOnChainFetcher } from "../../../dex-on-chain/DexOnChainFetcher";
 import {
@@ -31,11 +27,6 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     private readonly provider: providers.Provider
   ) {
     super(name);
-  }
-
-  multicallAddress: undefined | string = undefined;
-  public overrideMulticallAddress(address: string) {
-    this.multicallAddress = address;
   }
 
   override async makeRequest(assetId: string): Promise<MulticallResult | null> {
@@ -72,37 +63,26 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
       baseToken.address,
       quoteToken.address
     );
-    const multicallResult = await this.createMulticallInstance().call(
+    const multicallResult = await RedstoneCommon.callMulticall(
+      this.provider,
       multicallContext
-    );
-    const reservesResult = VelodromeOnChainFetcher.getResultByLabel(
-      multicallResult,
-      RESERVES_LABEL
     );
     const spotPrice = VelodromeOnChainFetcher.extractSpotPriceFromResult(
       assetId,
-      reservesResult,
+      multicallResult,
       poolConfig
     );
     let buySlippage: string | undefined;
     let sellSlippage: string | undefined;
     if (baseTokenPrice) {
-      const buyResult = VelodromeOnChainFetcher.getResultByLabel(
-        multicallResult,
-        SLIPPAGE_BUY_LABEL
-      );
-      const sellResult = VelodromeOnChainFetcher.getResultByLabel(
-        multicallResult,
-        SLIPPAGE_SELL_LABEL
-      );
       const buyPrice = VelodromeOnChainFetcher.getPriceAfterSwap(
-        reservesResult,
-        buyResult,
+        multicallResult,
+        SLIPPAGE_BUY_LABEL,
         poolConfig
       );
       const sellPrice = VelodromeOnChainFetcher.getPriceAfterSwap(
-        reservesResult,
-        sellResult,
+        multicallResult,
+        SLIPPAGE_SELL_LABEL,
         poolConfig
       );
       buySlippage = calculateSlippage(spotPrice, buyPrice);
@@ -144,15 +124,6 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     ];
   }
 
-  private static getResultByLabel(
-    multicallResult: ContractCallResults,
-    label: string
-  ): CallReturnContext {
-    return multicallResult.results[POOL_LABEL].callsReturnContext.find(
-      (result) => result.reference === label
-    )!;
-  }
-
   private static getTokenConfig(
     assetId: string,
     poolConfig: PoolConfig,
@@ -180,35 +151,40 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     return this.getTokenConfig(assetId, poolConfig, false);
   }
 
-  private static decimal(bigNumberLike: any): Decimal {
-    return new Decimal(BigNumber.from(bigNumberLike).toString());
-  }
-
   private static getPriceAfterSwap(
-    getReservesContext: CallReturnContext,
-    swapContext: CallReturnContext,
+    multicallResult: RedstoneCommon.MulticallResult,
+    resultReference: string,
     poolConfig: PoolConfig
   ): Decimal {
-    let reserve0BeforeSwap = this.decimal(getReservesContext.returnValues[0]);
-    let reserve1BeforeSwap = this.decimal(getReservesContext.returnValues[1]);
+    const reserves = multicallResult.getResults<BigNumberish>(
+      POOL_LABEL,
+      RESERVES_LABEL
+    );
+    const reserve0BeforeSwap = RedstoneCommon.bignumberishToDecimal(
+      reserves[0]
+    );
+    const reserve1BeforeSwap = RedstoneCommon.bignumberishToDecimal(
+      reserves[1]
+    );
     let reserve0AfterSwap = reserve0BeforeSwap;
     let reserve1AfterSwap = reserve1BeforeSwap;
-    const wasToken0Swapped =
-      swapContext.methodParameters[1] === poolConfig.token0Address;
+
+    const swapParams = multicallResult.getCallParams<string>(
+      POOL_LABEL,
+      resultReference
+    );
+    const swapResults = multicallResult.getResults<BigNumberish>(
+      POOL_LABEL,
+      resultReference
+    );
+    const tokensOut = RedstoneCommon.bignumberishToDecimal(swapResults[0]);
+    const wasToken0Swapped = swapParams[1] === poolConfig.token0Address;
     if (wasToken0Swapped) {
-      reserve0AfterSwap = reserve0AfterSwap.plus(
-        swapContext.methodParameters[0]
-      );
-      reserve1AfterSwap = reserve1AfterSwap.minus(
-        this.decimal(swapContext.returnValues[0])
-      );
+      reserve0AfterSwap = reserve0AfterSwap.plus(swapParams[0]);
+      reserve1AfterSwap = reserve1AfterSwap.minus(tokensOut);
     } else {
-      reserve0AfterSwap = reserve0AfterSwap.minus(
-        this.decimal(swapContext.returnValues[0])
-      );
-      reserve1AfterSwap = reserve1AfterSwap.plus(
-        swapContext.methodParameters[0]
-      );
+      reserve0AfterSwap = reserve0AfterSwap.minus(tokensOut);
+      reserve1AfterSwap = reserve1AfterSwap.plus(swapParams[0]);
     }
     return this.getPrice(reserve0AfterSwap, reserve1AfterSwap, poolConfig);
   }
@@ -244,11 +220,15 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
 
   private static extractSpotPriceFromResult(
     assetId: string,
-    reservesResult: CallReturnContext,
+    reservesResult: RedstoneCommon.MulticallResult,
     poolConfig: PoolConfig
   ): Decimal {
-    const reserves0 = this.decimal(reservesResult.returnValues[0]);
-    const reserves1 = this.decimal(reservesResult.returnValues[1]);
+    const reserves0 = RedstoneCommon.bignumberishToDecimal(
+      reservesResult.getResult(POOL_LABEL, RESERVES_LABEL, 0)
+    );
+    const reserves1 = RedstoneCommon.bignumberishToDecimal(
+      reservesResult.getResult(POOL_LABEL, RESERVES_LABEL, 1)
+    );
     const token0InToken1Price = this.getPrice(reserves0, reserves1, poolConfig);
 
     const baseInQoutePrice =
@@ -270,14 +250,6 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     return this.reservesToPrice(reserve0, reserve1Adjusted, poolConfig);
   }
 
-  private createMulticallInstance() {
-    return new Multicall({
-      ethersProvider: this.provider,
-      tryAggregate: false,
-      multicallCustomContractAddress: this.multicallAddress,
-    });
-  }
-
   private buildContractCallContext(
     assetId: string,
     swapAmountBase: string | undefined,
@@ -286,30 +258,31 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     quoteTokenAddress: string
   ): ContractCallContext {
     const poolConfig = this.poolsConfig[assetId];
-    const callContext: ContractCallContext = {
-      reference: POOL_LABEL,
-      contractAddress: poolConfig.poolAddress,
-      abi: abi.abi,
-      calls: [
-        {
-          reference: RESERVES_LABEL,
-          methodName: "getReserves",
-          methodParameters: [],
-        },
-      ],
-    };
+    const calls = [RedstoneCommon.prepareCall(RESERVES_LABEL, "getReserves")];
+
     if (swapAmountBase) {
-      callContext.calls.push({
-        reference: SLIPPAGE_BUY_LABEL,
-        methodName: "getAmountOut",
-        methodParameters: [swapAmountQuote, quoteTokenAddress],
-      });
-      callContext.calls.push({
-        reference: SLIPPAGE_SELL_LABEL,
-        methodName: "getAmountOut",
-        methodParameters: [swapAmountBase, baseTokenAddress],
-      });
+      const buyParams = [swapAmountQuote, quoteTokenAddress];
+      const sellParams = [swapAmountBase, baseTokenAddress];
+      calls.push(
+        RedstoneCommon.prepareCall(
+          SLIPPAGE_BUY_LABEL,
+          "getAmountOut",
+          buyParams
+        )
+      );
+      calls.push(
+        RedstoneCommon.prepareCall(
+          SLIPPAGE_SELL_LABEL,
+          "getAmountOut",
+          sellParams
+        )
+      );
     }
-    return callContext;
+    return RedstoneCommon.prepareContractCall(
+      POOL_LABEL,
+      poolConfig.poolAddress,
+      abi.abi,
+      calls
+    );
   }
 }

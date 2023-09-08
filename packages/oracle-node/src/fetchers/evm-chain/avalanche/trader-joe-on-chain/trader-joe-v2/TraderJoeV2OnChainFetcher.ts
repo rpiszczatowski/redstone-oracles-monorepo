@@ -1,13 +1,15 @@
 import Decimal from "decimal.js";
-import {
-  ContractCallContext,
-  ContractCallResults,
-  Multicall,
-} from "ethereum-multicall";
-import { BigNumber, ethers, providers } from "ethers";
-import { SlippageData } from "redstone-utils/src/types";
-import { getLastPrice, getRawPriceOrFail } from "../../../../../db/local-db";
+import { ContractCallContext } from "ethereum-multicall";
+import { providers } from "ethers";
+import { MathUtils, RedstoneCommon, RedstoneTypes } from "redstone-utils";
+import { getLastPriceOrFail } from "../../../../../db/local-db";
 import { DexOnChainFetcher } from "../../../../dex-on-chain/DexOnChainFetcher";
+import {
+  calculateSlippage,
+  convertUsdToTokenAmount,
+  DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,
+  tryConvertUsdToTokenAmount,
+} from "../../../../SlippageAndLiquidityCommons";
 import pairAbi from "./TraderJoeV2LBPair.abi.json";
 import routerAbi from "./TraderJoeV2LBRouter.abi.json";
 
@@ -15,13 +17,18 @@ import routerAbi from "./TraderJoeV2LBRouter.abi.json";
 const ONE_AS_DECIMAL = new Decimal(1);
 const BIN_STEP_DIVIDER = 10000;
 const BIN_ID_DEFAULT_SUBTRACTION = 8388608;
-const SLIPPAGE_SIMULATION_AMOUT = 10_000;
-const HUNDERD_PERCENT = 100;
+
+const ROUTER_LABEL = "router_contract";
+const POOL_LABEL = "pool_contract";
+const ACTIVE_ID_LABEL = "active_id";
+const BIN_STEP_LABEL = "bin_step";
+const SLIPPAGE_BUY_LABEL = "slippage_buy";
+const SLIPPAGE_SELL_LABEL = "slippage_sell";
 
 interface MulticallResult {
-  spotPrice: Decimal;
-  buySlippage?: Decimal;
-  sellSlippage?: Decimal;
+  spotPrice: string;
+  buySlippage?: string;
+  sellSlippage?: string;
 }
 
 interface TokenConfig {
@@ -54,72 +61,94 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<MulticallResult
     super(name);
   }
 
-  multicallAddress: undefined | string = undefined;
-  public overrideMulticallAddress(address: string) {
-    this.multicallAddress = address;
-  }
-
   override async makeRequest(assetId: string): Promise<MulticallResult> {
     const baseTokenConfig = this.getBaseTokenConfig(assetId);
-    const pairedTokenConfig = this.getPairedTokenConfig(assetId);
-    const baseTokenPrice = getLastPrice(assetId)?.value;
-    const pairedTokenPrice = Number(
-      getRawPriceOrFail(pairedTokenConfig.symbol).value
+    const quoteTokenConfig = this.getQuoteTokenConfig(assetId);
+    const quoteTokenPrice = getLastPriceOrFail(
+      this.pairsConfig[assetId].pairedToken ?? quoteTokenConfig.symbol
+    ).value;
+    const baseTokenScaler = new MathUtils.PrecisionScaler(
+      baseTokenConfig.decimals
     );
-    let swapAmountBase: Decimal | undefined;
-    const swapAmountPaired = this.convertDollarsToSubTokens(
-      SLIPPAGE_SIMULATION_AMOUT,
-      pairedTokenPrice,
-      pairedTokenConfig.decimals
+    const quoteTokenScaler = new MathUtils.PrecisionScaler(
+      quoteTokenConfig.decimals
     );
-    if (baseTokenPrice) {
-      swapAmountBase = this.convertDollarsToSubTokens(
-        SLIPPAGE_SIMULATION_AMOUT,
-        baseTokenPrice,
-        baseTokenConfig.decimals
-      );
-    }
+    const swapAmountBase = tryConvertUsdToTokenAmount(
+      assetId,
+      baseTokenScaler.tokenDecimalsScaler.toNumber(),
+      DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
+    );
+    const swapAmountQuote = convertUsdToTokenAmount(
+      this.pairsConfig[assetId].pairedToken ?? quoteTokenConfig.symbol,
+      quoteTokenScaler.tokenDecimalsScaler.toNumber(),
+      DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
+    );
     const callContexts = this.buildContractCallContext(
       assetId,
       swapAmountBase,
-      swapAmountPaired
+      swapAmountQuote
     );
 
-    const multicallResult: ContractCallResults =
-      await this.createMulticallInstance().call(callContexts);
-
-    const spotPrice = this.getSpotPriceFromMulticallResult(
-      multicallResult,
-      pairedTokenPrice
+    const multicallResult = await RedstoneCommon.callMulticall(
+      this.provider,
+      callContexts
     );
-    let buySlippage: Decimal | undefined;
-    let sellSlippage: Decimal | undefined;
-    if (baseTokenPrice) {
-      const basePriceInPaired = baseTokenPrice / pairedTokenPrice;
-      const pairedPriceInBase = pairedTokenPrice / baseTokenPrice;
-      buySlippage = this.getSlippageInPercent(
-        swapAmountPaired,
-        this.getTokensOutFromMulticallResult(multicallResult, "slippage_buy"),
-        pairedTokenConfig.decimals,
-        baseTokenConfig.decimals,
-        basePriceInPaired
+
+    const spotPrice =
+      TraderJoeV2OnChainFetcher.getSpotPriceFromMulticallResult(
+        multicallResult
       );
-      sellSlippage = this.getSlippageInPercent(
-        swapAmountBase!,
-        this.getTokensOutFromMulticallResult(multicallResult, "slippage_sell"),
-        baseTokenConfig.decimals,
-        pairedTokenConfig.decimals,
-        pairedPriceInBase
+    let buySlippage: string | undefined;
+    let sellSlippage: string | undefined;
+    if (swapAmountBase) {
+      const buySlippageTokensOut =
+        TraderJoeV2OnChainFetcher.getTokensOutFromMulticallResult(
+          multicallResult,
+          SLIPPAGE_BUY_LABEL
+        );
+      const buyPrice = TraderJoeV2OnChainFetcher.getPrice(
+        swapAmountQuote,
+        buySlippageTokensOut.toString(),
+        quoteTokenScaler,
+        baseTokenScaler
       );
+      buySlippage = calculateSlippage(spotPrice, buyPrice);
+      const sellSlippageTokensOut =
+        TraderJoeV2OnChainFetcher.getTokensOutFromMulticallResult(
+          multicallResult,
+          SLIPPAGE_SELL_LABEL
+        );
+      const sellPrice = TraderJoeV2OnChainFetcher.getPrice(
+        swapAmountBase,
+        sellSlippageTokensOut.toString(),
+        baseTokenScaler,
+        quoteTokenScaler
+      );
+      sellSlippage = calculateSlippage(spotPrice, sellPrice);
     }
-    return { spotPrice, buySlippage, sellSlippage };
+    return {
+      spotPrice: spotPrice.mul(quoteTokenPrice).toString(),
+      buySlippage,
+      sellSlippage,
+    };
+  }
+
+  private static getPrice(
+    subtokensIn: string,
+    subtokensOut: string,
+    tokensInScaler: MathUtils.PrecisionScaler,
+    tokensOutScaler: MathUtils.PrecisionScaler
+  ): Decimal {
+    const tokensIn = tokensInScaler.fromSolidityValue(subtokensIn);
+    const tokensOut = tokensOutScaler.fromSolidityValue(subtokensOut);
+    return tokensIn.div(tokensOut);
   }
 
   override calculateSpotPrice(
     _assetId: string,
     response: MulticallResult
   ): string {
-    return response.spotPrice.toString();
+    return response.spotPrice;
   }
 
   override calculateLiquidity(
@@ -133,86 +162,48 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<MulticallResult
   override calculateSlippage(
     _assetId: string,
     response: MulticallResult
-  ): SlippageData[] {
+  ): RedstoneTypes.SlippageData[] {
     if (!response.buySlippage || !response.sellSlippage) {
       return [];
     }
     return [
       {
         direction: "buy",
-        simulationValueInUsd: String(SLIPPAGE_SIMULATION_AMOUT),
-        slippageAsPercent: response.buySlippage.toString(),
+        simulationValueInUsd: String(DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE),
+        slippageAsPercent: response.buySlippage,
       },
       {
         direction: "sell",
-        simulationValueInUsd: String(SLIPPAGE_SIMULATION_AMOUT),
-        slippageAsPercent: response.sellSlippage.toString(),
+        simulationValueInUsd: String(DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE),
+        slippageAsPercent: response.sellSlippage,
       },
     ];
   }
 
-  private getTokensOutFromMulticallResult(
-    multicallResult: ContractCallResults,
+  private static getTokensOutFromMulticallResult(
+    multicallResult: RedstoneCommon.MulticallResult,
     callReference: string
   ): Decimal {
-    return this.decimal(
-      multicallResult.results.routerContract?.callsReturnContext.find(
-        (result) => result.reference === callReference
-      )!.returnValues[1]
+    return RedstoneCommon.bignumberishToDecimal(
+      multicallResult.getResult(ROUTER_LABEL, callReference, 1)
     );
   }
 
-  private getSpotPriceFromMulticallResult(
-    multicallResult: ContractCallResults,
-    pairedTokenPrice: number
+  private static getSpotPriceFromMulticallResult(
+    multicallResult: RedstoneCommon.MulticallResult
   ) {
-    const poolResults = multicallResult.results.poolContract.callsReturnContext;
-    const binStep = this.decimal(
-      poolResults.find((result) => result.reference === "getBinStep")!
-        .returnValues[0]
+    const binStep = RedstoneCommon.bignumberishToDecimal(
+      multicallResult.getResult(POOL_LABEL, BIN_STEP_LABEL, 0)
     );
-    const binId = this.decimal(
-      poolResults.find((result) => result.reference === "getActiveId")!
-        .returnValues[0]
+    const binId = RedstoneCommon.bignumberishToDecimal(
+      multicallResult.getResult(POOL_LABEL, ACTIVE_ID_LABEL, 0)
     );
     const binStepDivided = binStep.div(BIN_STEP_DIVIDER);
     const binStepPlusOne = ONE_AS_DECIMAL.add(binStepDivided);
     const binIdSerialized = binId.sub(BIN_ID_DEFAULT_SUBTRACTION);
 
-    const baseInPairedPrice = binStepPlusOne.pow(binIdSerialized);
-    const basePriceInDollars = baseInPairedPrice.mul(pairedTokenPrice);
-    return basePriceInDollars;
-  }
-
-  private convertSubTokensToTokens(amount: Decimal, decimals: number): Decimal {
-    return amount.div(this.decimal(10).toPower(decimals));
-  }
-
-  private getSlippageInPercent(
-    subtokensIn: Decimal,
-    subtokensOut: Decimal,
-    tokensInDecimals: number,
-    tokensOutDecimals: number,
-    spotPrice: number
-  ): Decimal {
-    const tokensSent = this.convertSubTokensToTokens(
-      subtokensIn,
-      tokensInDecimals
-    );
-    const tokensGot = this.convertSubTokensToTokens(
-      subtokensOut,
-      tokensOutDecimals
-    );
-    const actualPrice = tokensSent.div(tokensGot);
-    return actualPrice
-      .sub(spotPrice)
-      .abs()
-      .div(spotPrice)
-      .mul(HUNDERD_PERCENT);
-  }
-
-  private decimal(bigNumberLike: {}): Decimal {
-    return new Decimal(BigNumber.from(bigNumberLike).toString());
+    const baseInQuotePrice = binStepPlusOne.pow(binIdSerialized);
+    return baseInQuotePrice;
   }
 
   private isXBase(assetId: string) {
@@ -235,54 +226,25 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<MulticallResult
     return this.getTokenConfig(assetId, this.isXBase(assetId));
   }
 
-  private getPairedTokenConfig(assetId: string) {
-    const pairedTokenConfig = this.getTokenConfig(
-      assetId,
-      !this.isXBase(assetId)
-    );
-    const pairedTokenSymbol = this.pairsConfig[assetId].pairedToken;
-    if (pairedTokenSymbol) {
-      pairedTokenConfig.symbol = pairedTokenSymbol;
-    }
-    return pairedTokenConfig;
-  }
-
-  private convertDollarsToSubTokens(
-    amountInDolars: number,
-    tokenPrice: number,
-    tokenDecimals: number
-  ): Decimal {
-    return this.decimal(
-      ethers.utils
-        .parseUnits(
-          (amountInDolars / tokenPrice).toFixed(tokenDecimals),
-          tokenDecimals
-        )
-        .toString()
-    );
-  }
-
-  private createMulticallInstance() {
-    return new Multicall({
-      ethersProvider: this.provider,
-      tryAggregate: false, // throw on error
-      multicallCustomContractAddress: this.multicallAddress,
-    });
+  private getQuoteTokenConfig(assetId: string) {
+    return this.getTokenConfig(assetId, !this.isXBase(assetId));
   }
 
   private buildContractCallContext(
     assetId: string,
-    swapAmountBase: Decimal | undefined,
-    swapAmountPaired: Decimal
+    swapAmountBase: string | undefined,
+    swapAmountQuote: string
   ): ContractCallContext[] {
     const poolAddress = this.pairsConfig[assetId].pairAddress;
 
-    const calls: ContractCallContext[] = [this.preparePoolCall(poolAddress)];
+    const calls: ContractCallContext[] = [
+      TraderJoeV2OnChainFetcher.preparePoolCall(poolAddress),
+    ];
     if (swapAmountBase) {
       const routerCall = this.prepareRouterCall(
         poolAddress,
         assetId,
-        swapAmountPaired,
+        swapAmountQuote,
         swapAmountBase
       );
       calls.push(routerCall);
@@ -290,56 +252,36 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<MulticallResult
     return calls;
   }
 
-  private preparePoolCall(poolAddress: string) {
-    return {
-      reference: "poolContract",
-      contractAddress: poolAddress,
-      abi: pairAbi,
-      calls: [
-        {
-          reference: "getActiveId",
-          methodName: "getActiveId",
-          methodParameters: [],
-        },
-        {
-          reference: "getBinStep",
-          methodName: "getBinStep",
-          methodParameters: [],
-        },
-      ],
-    };
+  private static preparePoolCall(poolAddress: string) {
+    const calls = [
+      RedstoneCommon.prepareCall(ACTIVE_ID_LABEL, "getActiveId"),
+      RedstoneCommon.prepareCall(BIN_STEP_LABEL, "getBinStep"),
+    ];
+    return RedstoneCommon.prepareContractCall(
+      POOL_LABEL,
+      poolAddress,
+      pairAbi,
+      calls
+    );
   }
 
   private prepareRouterCall(
     poolAddress: string,
     assetId: string,
-    swapAmountPaired: Decimal,
-    swapAmountBase: Decimal
+    swapAmountQuote: string,
+    swapAmountBase: string
   ) {
-    return {
-      reference: "routerContract",
-      contractAddress: this.pairsConfig[assetId].routerAddress,
-      abi: routerAbi.abi,
-      calls: [
-        {
-          reference: "slippage_buy",
-          methodName: "getSwapOut",
-          methodParameters: [
-            poolAddress,
-            swapAmountPaired.toString(),
-            !this.isXBase(assetId),
-          ],
-        },
-        {
-          reference: "slippage_sell",
-          methodName: "getSwapOut",
-          methodParameters: [
-            poolAddress,
-            swapAmountBase.toString(),
-            this.isXBase(assetId),
-          ],
-        },
-      ],
-    };
+    const buyParams = [poolAddress, swapAmountQuote, !this.isXBase(assetId)];
+    const sellParams = [poolAddress, swapAmountBase, this.isXBase(assetId)];
+    const routerCalls = [
+      RedstoneCommon.prepareCall(SLIPPAGE_BUY_LABEL, "getSwapOut", buyParams),
+      RedstoneCommon.prepareCall(SLIPPAGE_SELL_LABEL, "getSwapOut", sellParams),
+    ];
+    return RedstoneCommon.prepareContractCall(
+      ROUTER_LABEL,
+      this.pairsConfig[assetId].routerAddress,
+      routerAbi.abi,
+      routerCalls
+    );
   }
 }

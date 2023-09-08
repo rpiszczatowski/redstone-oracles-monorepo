@@ -1,5 +1,5 @@
 import { Decimal } from "decimal.js";
-import { BigNumber, BigNumberish, Contract } from "ethers";
+import { BigNumberish, Contract } from "ethers";
 import { RedstoneCommon, RedstoneTypes } from "redstone-utils";
 import { getRawPrice, getRawPriceOrFail } from "../../db/local-db";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
@@ -29,7 +29,7 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
     super(name);
   }
 
-  async makeRequest(
+  override async makeRequest(
     assetId: string,
     blockTag?: string | number
   ): Promise<CurveFetcherResponse> {
@@ -61,7 +61,7 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
     return multicallHandler.parseResponse(multicallResponse);
   }
 
-  calculateLiquidity(
+  override calculateLiquidity(
     assetId: string,
     response: CurveFetcherResponse
   ): string | undefined {
@@ -81,7 +81,7 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
     return baseTokenLiquidity.add(pairedTokenLiquidity).toString();
   }
 
-  calculateSlippage(
+  override calculateSlippage(
     _assetId: string,
     response: CurveFetcherResponse
   ): RedstoneTypes.SlippageData[] {
@@ -108,7 +108,10 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
     ];
   }
 
-  calculateSpotPrice(assetId: string, response: CurveFetcherResponse): number {
+  override calculateSpotPrice(
+    assetId: string,
+    response: CurveFetcherResponse
+  ): number {
     return this.calculateSpotPriceUsingRatio(assetId, response.sellRatio);
   }
 
@@ -202,15 +205,18 @@ class MultiCallHandler {
     ] = multicallResponse;
 
     const commonParsedResult = {
-      sellRatio: new Decimal(BigNumber.from(ratioBigNumber).toHexString()).div(
-        pairedTokenDecimals
-      ),
-      baseTokenSupply: new Decimal(
-        BigNumber.from(baseTokenSupply).toHexString()
-      ).div(tokenDecimals),
-      pairedTokenSupply: new Decimal(
-        BigNumber.from(pairedTokenSupply).toHexString()
-      ).div(pairedTokenDecimals),
+      sellRatio:
+        RedstoneCommon.bignumberishToDecimal(ratioBigNumber).div(
+          pairedTokenDecimals
+        ),
+      baseTokenSupply:
+        RedstoneCommon.bignumberishToDecimal(baseTokenSupply).div(
+          tokenDecimals
+        ),
+      pairedTokenSupply:
+        RedstoneCommon.bignumberishToDecimal(pairedTokenSupply).div(
+          pairedTokenDecimals
+        ),
       assetId: this.assetId,
     };
     const decimalsRatio = tokenDecimals / pairedTokenDecimals;
@@ -218,10 +224,10 @@ class MultiCallHandler {
     if (this.amountInBaseToken) {
       const [bigSell, bigBuy] = slippageResponses;
       const slippageParsedResponse = {
-        bigBuyRatio: new Decimal(BigNumber.from(bigBuy).toHexString())
+        bigBuyRatio: RedstoneCommon.bignumberishToDecimal(bigBuy)
           .div(decimalsRatio)
           .div(this.amountInPairedToken),
-        bigSellRatio: new Decimal(BigNumber.from(bigSell).toHexString())
+        bigSellRatio: RedstoneCommon.bignumberishToDecimal(bigSell)
           .mul(decimalsRatio)
           .div(this.amountInBaseToken),
       };

@@ -17,6 +17,7 @@ import {
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { Contract } from "ethers";
 import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
+import { RedstoneCommon } from "redstone-utils";
 
 const FETCHER_TO_TEST = "trader-joe-v2-avalanche-on-chain-usdc";
 const TOKEN_TO_TEST = "EUROC";
@@ -41,6 +42,7 @@ describe("Trader Joe - EUROC token", () => {
     });
 
     multicall = await deployContract(wallet, multicall3Json);
+    RedstoneCommon.overrideMulticallAddress(multicall.address);
   });
 
   beforeEach(async () => {
@@ -63,7 +65,6 @@ describe("Trader Joe - EUROC token", () => {
       configs[FETCHER_TO_TEST],
       provider
     );
-    fetcher.overrideMulticallAddress(multicall.address);
 
     const result = await fetcher.fetchAll([TOKEN_TO_TEST]);
 
@@ -78,9 +79,9 @@ describe("Trader Joe - EUROC token", () => {
     ]);
   });
 
-  test("Should properly fetch data", async () => {
+  test("Should properly fetch data with slippage", async () => {
     await asAwaitable(pairContract.mock.getActiveId.returns("8388754"));
-    await asAwaitable(pairContract.mock.getBinStep.returns("5"));
+    await asAwaitable(pairContract.mock.getBinStep.returns("0"));
     await asAwaitable(
       routerContract.mock.getSwapOut
         .returns("0", "5000000000", "0") // buy
@@ -94,14 +95,13 @@ describe("Trader Joe - EUROC token", () => {
       configs[FETCHER_TO_TEST],
       provider
     );
-    fetcher.overrideMulticallAddress(multicall.address);
 
     const result = await fetcher.fetchAll([TOKEN_TO_TEST]);
 
     expect(result).toEqual([
       {
         symbol: TOKEN_TO_TEST,
-        value: "1.075710911553001485",
+        value: "1",
         metadata: {
           slippage: [
             {

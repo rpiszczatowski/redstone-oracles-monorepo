@@ -2,6 +2,7 @@ import {
   MockProvider,
   deployMockContract,
   deployContract,
+  MockContract,
 } from "ethereum-waffle";
 import {
   clearLastPricesCache,
@@ -19,11 +20,12 @@ import { balancerMultiConfigs } from "../../src/fetchers/balancer-multi/balancer
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { Contract } from "ethers";
 import Decimal from "decimal.js";
+import { RedstoneCommon } from "redstone-utils";
 
 describe("balancer multi fetcher", () => {
   let provider: MockProvider;
   let multicall: Contract;
-  let vaultContract: Contract;
+  let vaultContract: MockContract;
 
   beforeAll(async () => {
     // make sure numbers longer that 20 digits are not serialized using scientific notation
@@ -37,6 +39,7 @@ describe("balancer multi fetcher", () => {
       address: BALANCER_VAULT_ADDRESS,
     });
     multicall = await deployContract(wallet, multicall3Json);
+    RedstoneCommon.overrideMulticallAddress(multicall.address);
   });
 
   beforeEach(async () => {
@@ -64,7 +67,6 @@ describe("balancer multi fetcher", () => {
       "WETH",
       provider
     );
-    fetcher.overrideMulticallAddress(multicall.address);
 
     const result = await fetcher.fetchAll(["SWETH"]);
     expect(result).toEqual([
@@ -96,7 +98,6 @@ describe("balancer multi fetcher", () => {
       "USDC",
       provider
     );
-    fetcher.overrideMulticallAddress(multicall.address);
 
     const result = await fetcher.fetchAll(["GHO"]);
     expect(result).toEqual([
