@@ -238,20 +238,21 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected createQuoterParams(
     tokenIn: string,
     tokenOut: string,
     fee: number,
     amountIn: string
-  ): unknown {
-    return {
-      tokenIn,
-      tokenOut,
-      fee,
-      amountIn,
-      sqrtPriceLimitX96: 0,
-    };
+  ): unknown[] {
+    return [
+      {
+        tokenIn,
+        tokenOut,
+        fee,
+        amountIn,
+        sqrtPriceLimitX96: 0,
+      },
+    ];
   }
 
   private createQuoterCall(
@@ -278,7 +279,7 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     const slippageBuyCall = RedstoneCommon.prepareCall(
       SLIPPAGE_BUY_LABEL,
       this.functionNames.quoteFunctionName,
-      [buyQuoterParams]
+      buyQuoterParams
     );
     const sellQuoterParams = this.createQuoterParams(
       baseToken.address,
@@ -289,7 +290,7 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     const slippageSellCall = RedstoneCommon.prepareCall(
       SLIPPAGE_SELL_LABEL,
       this.functionNames.quoteFunctionName,
-      [sellQuoterParams]
+      sellQuoterParams
     );
     return RedstoneCommon.prepareContractCall(
       QUOTER_LABEL,

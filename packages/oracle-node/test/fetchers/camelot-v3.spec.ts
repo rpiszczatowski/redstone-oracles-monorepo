@@ -15,7 +15,7 @@ import { PoolsConfig } from "../../src/fetchers/uniswap-v3-like/types";
 import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import CamelotPoolAbi from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotPool.abi.json";
-import CamelotRouterAbi from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotRouter.abi.json";
+import CamelotQuoter from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotQuoter.abi.json";
 import { RedstoneCommon } from "redstone-utils";
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
@@ -31,7 +31,7 @@ describe("Camelot V3 fetcher", () => {
     setupLocalDb();
     provider = new MockProvider();
     const [wallet] = provider.getWallets();
-    quoterContract = await deployMockContract(wallet, CamelotRouterAbi);
+    quoterContract = await deployMockContract(wallet, CamelotQuoter);
     poolContract = await deployMockContract(wallet, CamelotPoolAbi);
     multicall = await deployContract(wallet, multicall3Json);
     RedstoneCommon.overrideMulticallAddress(multicall.address);
@@ -74,9 +74,9 @@ describe("Camelot V3 fetcher", () => {
       )
     );
     await asAwaitable(
-      quoterContract.mock.exactInputSingle
-        .returns(50_000_000)
-        .returns(500_000_000_000)
+      quoterContract.mock.quoteExactInputSingle
+        .returns(50_000_000, 0)
+        .returns(500_000_000_000, 0)
     );
 
     const fetcher = new CamelotV3Fetcher(
