@@ -114,12 +114,12 @@ export class WombatFetcher extends DexOnChainFetcher<WombatResponse> {
 
     return [
       {
-        direction: "buy",
+        direction: RedstoneTypes.TradeDirection.BUY,
         slippageAsPercent: buySlippage,
         simulationValueInUsd: DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
       },
       {
-        direction: "sell",
+        direction: RedstoneTypes.TradeDirection.SELL,
         slippageAsPercent: sellSlippage,
         simulationValueInUsd: DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
       },

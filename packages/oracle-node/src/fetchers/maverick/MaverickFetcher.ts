@@ -142,12 +142,12 @@ export class MaverickFetcher extends DexOnChainFetcher<MaverickResponse> {
 
     return [
       {
-        direction: "buy",
+        direction: RedstoneTypes.TradeDirection.BUY,
         slippageAsPercent: buySlippage,
         simulationValueInUsd: DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
       },
       {
-        direction: "sell",
+        direction: RedstoneTypes.TradeDirection.SELL,
         slippageAsPercent: sellSlippage,
         simulationValueInUsd: DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
       },

@@ -1,4 +1,4 @@
-type PriceAction = "buy" | "sell";
+import { RedstoneTypes } from "redstone-utils";
 
 export const buildLiquidityDataFeedId = (
   tokenName: string,
@@ -43,7 +43,7 @@ export const parseSlippageDataFeedId = (assetId: string) => {
   return {
     dataFeedId: regexResult[1],
     source: regexResult[2],
-    priceAction: regexResult[3].toLowerCase() as PriceAction,
+    priceAction: regexResult[3].toLowerCase() as RedstoneTypes.TradeDirections,
     amount: regexResult[4],
   };
 };

@@ -129,12 +129,12 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
 
     return [
       {
-        direction: "buy",
+        direction: RedstoneTypes.TradeDirection.BUY,
         simulationValueInUsd: String(DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE),
         slippageAsPercent: response.buySlippage,
       },
       {
-        direction: "sell",
+        direction: RedstoneTypes.TradeDirection.SELL,
         simulationValueInUsd: String(DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE),
         slippageAsPercent: response.sellSlippage,
       },

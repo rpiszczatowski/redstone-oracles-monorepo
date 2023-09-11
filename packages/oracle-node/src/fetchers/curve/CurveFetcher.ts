@@ -2,14 +2,14 @@ import { Decimal } from "decimal.js";
 import { BigNumberish, Contract } from "ethers";
 import { RedstoneCommon, RedstoneTypes } from "redstone-utils";
 import { getRawPrice, getRawPriceOrFail } from "../../db/local-db";
-import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import {
+  DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,
   calculateSlippage,
   convertUsdToTokenAmount,
-  DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,
 } from "../SlippageAndLiquidityCommons";
-import { PoolsConfig } from "./curve-fetchers-config";
+import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import abi from "./CurveFactory.abi.json";
+import { PoolsConfig } from "./curve-fetchers-config";
 
 const ONE_AS_DECIMAL = new Decimal("1");
 
@@ -97,12 +97,12 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
     return [
       {
         slippageAsPercent: buySlippage.toString(),
-        direction: "buy",
+        direction: RedstoneTypes.TradeDirection.BUY,
         simulationValueInUsd: DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
       },
       {
         slippageAsPercent: sellSlippage.toString(),
-        direction: "sell",
+        direction: RedstoneTypes.TradeDirection.SELL,
         simulationValueInUsd: DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
       },
     ];

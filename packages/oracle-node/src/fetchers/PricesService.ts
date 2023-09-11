@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Consola } from "consola";
 import { v4 as uuidv4 } from "uuid";
-import { SafeNumber } from "redstone-utils";
+import { RedstoneTypes, SafeNumber } from "redstone-utils";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import ManifestHelper, { TokensBySource } from "../manifest/ManifestHelper";
 import { IterationContext } from "../schedulers/IScheduler";
@@ -27,6 +27,8 @@ import { createMetadataPerSource } from "./MetadataForRedstonePrice";
 export const VALUE_FOR_FAILED_FETCHER = "error";
 
 const logger = require("../utils/logger")("PricesFetcher") as Consola;
+
+const TRADE_DIRECTIONS = [RedstoneTypes.TradeDirection.BUY, RedstoneTypes.TradeDirection.SELL] as const;
 
 export type PricesDataFetched = { [source: string]: PriceDataFetched[] };
 export type PricesBeforeAggregation<T = number> = {
@@ -322,8 +324,8 @@ export default class PricesService {
     }
 
     // We need to check both trade directions
-    for (const direction of ["buy", "sell"]) {
-      if (!checkedDirections[direction as "buy" | "sell"]) {
+    for (const direction of TRADE_DIRECTIONS) {
+      if (!checkedDirections[direction]) {
         errors.push(`Missing slippage check for direction: ${direction}`);
       }
     }
