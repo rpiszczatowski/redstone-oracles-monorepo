@@ -28,6 +28,8 @@ const DEFAULT_HTTP_BROADCASTER_URLS = [
   "https://direct-2.cache-service.redstone.finance",
   "https://direct-3.cache-service.redstone.finance",
 ];
+// TODO
+const EMPTY_SIGNATURE = "";
 
 export class DataPackageBroadcastPerformer
   extends BroadcastPerformer
@@ -55,22 +57,24 @@ export class DataPackageBroadcastPerformer
     pricesService: PricesService,
     iterationContext: IterationContext
   ): Promise<void> {
+    // TODO: it should be removed
     // Excluding "helpful" prices, which should not be signed
     // "Helpful" prices (e.g. AVAX_SPOT) can be used to calculate TWAP values
-    const pricesForSigning =
-      pricesService.filterPricesForSigning(aggregatedPrices);
-
-    // When nothing to broadcast
-    if (pricesForSigning.length === 0) {
-      logger.warn("No prices to broadcast, skipping broadcasting.");
-      return;
-    }
+    // const pricesForSigning =
+    //   pricesService.filterPricesForSigning(aggregatedPrices);
 
     // Signing
     const signedDataPackages = this.signPrices(
-      pricesForSigning,
+      aggregatedPrices,
+      pricesService,
       iterationContext
     );
+
+    // When nothing to broadcast
+    if (signedDataPackages.length === 0) {
+      logger.warn("No data packages to broadcast, skipping broadcasting.");
+      return;
+    }
 
     // Broadcasting
     await this.broadcastDataPackages(signedDataPackages);
@@ -78,6 +82,7 @@ export class DataPackageBroadcastPerformer
 
   private signPrices(
     prices: PriceDataAfterAggregation[],
+    pricesService: PricesService,
     iterationContext: IterationContext
   ): SignedDataPackage[] {
     // Prepare data points
@@ -103,23 +108,32 @@ export class DataPackageBroadcastPerformer
       ? iterationContext.blockNumber!
       : iterationContext.timestamp;
 
-    // Prepare signed data packages with single data point
+    // Prepare data packages with single data point
     const signedDataPackages = dataPoints.map((dataPoint) => {
       const dataPackage = new DataPackage(
         [dataPoint],
         timeIdentifierForSigning
       );
-      return dataPackage.sign(this.ethereumPrivateKey);
+
+      if (pricesService.shouldSkipSigningForSymbol(dataPoint.dataFeedId)) {
+        // TODO: add a comment with details why we do this way
+        return new SignedDataPackage(dataPackage, EMPTY_SIGNATURE);
+      } else {
+        return dataPackage.sign(this.ethereumPrivateKey);
+      }
     });
 
     // Adding a data package with all data points
+    const dataPointsToSign = dataPoints.filter(
+      (dp) => !pricesService.shouldSkipSigningForSymbol(dp.dataFeedId)
+    );
     const areEnoughDataPoint = validateDataPointsForBigPackage(
-      dataPoints,
+      dataPointsToSign,
       this.manifestDataProvider.allTokensConfig
     );
     if (areEnoughDataPoint) {
       const bigDataPackage = new DataPackage(
-        dataPoints,
+        dataPointsToSign,
         timeIdentifierForSigning
       );
       const signedBigDataPackage = bigDataPackage.sign(this.ethereumPrivateKey);

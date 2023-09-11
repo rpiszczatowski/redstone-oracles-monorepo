@@ -365,10 +365,15 @@ export default class PricesService {
     }
   }
 
-  filterPricesForSigning(
-    prices: PriceDataAfterAggregation[]
-  ): PriceDataAfterAggregation[] {
-    return prices.filter((p) => !this.manifest.tokens[p.symbol].skipSigning);
+  // TODO: remove this function
+  // filterPricesForSigning(
+  //   prices: PriceDataAfterAggregation[]
+  // ): PriceDataAfterAggregation[] {
+  //   return prices.filter((p) => !this.manifest.tokens[p.symbol].skipSigning);
+  // }
+
+  shouldSkipSigningForSymbol(symbol: string): boolean {
+    return this.manifest.tokens[symbol].skipSigning ?? false;
   }
 
   preparePricesForSigning(
