@@ -9,7 +9,8 @@ concurrency:
 
 jobs:
   long-primary:
-    runs-on: LargeRunner
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: packages/integration

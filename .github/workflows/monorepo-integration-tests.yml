@@ -6,7 +6,8 @@ on:
 
 jobs:
   core:
-    runs-on: LargeRunner
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: packages/integration
@@ -26,7 +27,8 @@ jobs:
         env:
           NODE_ENV: test
   core-with-node-failure:
-    runs-on: LargeRunner
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: packages/integration
@@ -44,7 +46,8 @@ jobs:
         env:
           NODE_ENV: test
   classic:
-    runs-on: LargeRunner
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: packages/integration

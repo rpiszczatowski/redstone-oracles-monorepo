@@ -7,7 +7,8 @@ on:
 
 jobs:
   oracle-node-deploy:
-    runs-on: LargeRunner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     name: Deploy oracle node image
     steps:
       - name: Checkout
@@ -32,7 +33,8 @@ jobs:
           docker push $ORACLE_NODE_DOCKER_NAME:$TAG
 
   cache-service-deploy:
-    runs-on: LargeRunner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     name: Deploy cache service image
     steps:
       - name: Checkout
@@ -57,7 +59,8 @@ jobs:
           docker push $CACHE_SERVICE_DOCKER_NAME:$TAG
 
   on-chain-relayer-deploy:
-    runs-on: LargeRunner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     name: Deploy on-chain relayer image
     steps:
       - name: Checkout

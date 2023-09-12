@@ -13,7 +13,8 @@ on:
 
 jobs:
   tests:
-    runs-on: LargeRunner
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: packages/gelato-relayer
