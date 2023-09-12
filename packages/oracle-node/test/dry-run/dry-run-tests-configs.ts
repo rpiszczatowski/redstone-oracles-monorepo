@@ -1,12 +1,15 @@
 import Decimal from "decimal.js";
-import { getTokensFromManifest } from "./helpers";
+import {
+  getTokensFromMainManifestWithSources,
+  getTokensFromManifest,
+} from "./helpers";
 import mainManifest from "../../manifests/data-services/main.json";
 import stocksManifest from "../../manifests/data-services/stocks.json";
 import avalancheManifest from "../../manifests/data-services/avalanche.json";
 import rapidManifest from "../../manifests/data-services/rapid.json";
 import primaryManifest from "../../manifests/data-services/primary.json";
 import arbitrumManifest from "../../manifests/data-services/arbitrum.json";
-import { Manifest, TokenConfig } from "../../src/types";
+import { Manifest } from "../../src/types";
 
 Decimal.set({ toExpPos: 9e15 });
 
@@ -14,6 +17,8 @@ interface DryRunTestConfig {
   manifest: Manifest;
   nodeIterations: number;
   additionalCheck?: (token: string, currentDataFeedPrice?: number) => void;
+  doNotRemoveTokensFromManifest?: boolean;
+  checkTokensSources?: boolean;
 }
 
 enum DryRunTestType {
@@ -31,15 +36,7 @@ const config: Record<DryRunTestType, DryRunTestConfig> = {
     nodeIterations: 4,
     additionalCheck: assertAllRequiredTokensAreProperlyFetched({
       ...mainManifest,
-      tokens: Object.entries(mainManifest.tokens).reduce(
-        (tokens, [dataFeedId, config]) => {
-          if (Object.keys(config).length > 0) {
-            tokens[dataFeedId] = config;
-          }
-          return tokens;
-        },
-        {} as Record<string, TokenConfig>
-      ),
+      tokens: getTokensFromMainManifestWithSources(),
     }),
   },
   [DryRunTestType.stocks]: {
@@ -49,6 +46,8 @@ const config: Record<DryRunTestType, DryRunTestConfig> = {
   [DryRunTestType.avalanche]: {
     manifest: avalancheManifest,
     nodeIterations: 4,
+    doNotRemoveTokensFromManifest: true,
+    checkTokensSources: true,
     additionalCheck:
       assertAllRequiredTokensAreProperlyFetched(avalancheManifest),
   },
@@ -58,15 +57,22 @@ const config: Record<DryRunTestType, DryRunTestConfig> = {
   },
   [DryRunTestType.primary]: {
     manifest: primaryManifest,
-    nodeIterations: 3,
-    additionalCheck:
-      assertAllRequiredTokensAreProperlyFetched(avalancheManifest),
+    nodeIterations: 4,
+    doNotRemoveTokensFromManifest: true,
+    checkTokensSources: true,
+    additionalCheck: assertAllRequiredTokensAreProperlyFetched(
+      primaryManifest,
+      // PREMIA-TWAP-60 will work only on prod nodes
+      ["PREMIA-TWAP-60"]
+    ),
   },
   [DryRunTestType.arbitrum]: {
     manifest: arbitrumManifest,
     nodeIterations: 3,
+    doNotRemoveTokensFromManifest: true,
+    checkTokensSources: true,
     additionalCheck:
-      assertAllRequiredTokensAreProperlyFetched(avalancheManifest),
+      assertAllRequiredTokensAreProperlyFetched(arbitrumManifest),
   },
 };
 
@@ -78,10 +84,17 @@ export const getDryRunTestConfig = (): DryRunTestConfig => {
   return config[dryRunTestType as DryRunTestType];
 };
 
-function assertAllRequiredTokensAreProperlyFetched(manifest: Manifest) {
+function assertAllRequiredTokensAreProperlyFetched(
+  manifest: Manifest,
+  knowNotWorkingDataFeeds?: string[]
+) {
   const manifestTokens = getTokensFromManifest(manifest);
   return (token: string, currentDataFeedPrice?: number) => {
-    if (manifestTokens.includes(token)) {
+    if (
+      manifestTokens.includes(token) &&
+      !knowNotWorkingDataFeeds?.includes(token)
+    ) {
+      expect(currentDataFeedPrice).toBeTruthy();
       expect(currentDataFeedPrice).toBeGreaterThan(0);
     }
   };

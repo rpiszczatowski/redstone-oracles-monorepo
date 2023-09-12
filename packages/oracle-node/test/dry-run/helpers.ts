@@ -1,9 +1,10 @@
 import { ethers } from "ethers";
 import { SignedDataPackage } from "redstone-protocol";
+import NodeRunner from "../../src/NodeRunner";
 import { IterationContext } from "../../src/schedulers/IScheduler";
 import { roundTimestamp } from "../../src/utils/timestamps";
-import { Manifest, NodeConfig } from "../../src/types";
-import NodeRunner from "../../src/NodeRunner";
+import mainManifest from "../../manifests/data-services/main.json";
+import { Manifest, NodeConfig, TokenConfig } from "../../src/types";
 
 interface PricesForDataFeedId {
   [dataFeedId: string]: number;
@@ -12,7 +13,7 @@ interface PricesForDataFeedId {
 export const HARDHAT_MOCK_PRIVATE_KEY =
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 
-export const getDryRunTestNodeConfig = (manifest: Manifest): NodeConfig => ({
+export const getDryRunTestNodeConfig = (manifest: Manifest) => ({
   enableJsonLogs: false,
   enablePerformanceTracking: false,
   printDiagnosticInfo: false,
@@ -50,8 +51,13 @@ export const MockScheduler = {
 export const getTokensFromManifest = (manifest: Manifest) =>
   Object.keys(manifest.tokens);
 
+export const getSourcesForToken = (manifest: Manifest, dataFeedId: string) =>
+  manifest.tokens[dataFeedId].source;
+
 export const runTestNode = async (manifest: Manifest) => {
-  const sut = await NodeRunner.create(getDryRunTestNodeConfig(manifest));
+  const sut = await NodeRunner.create(
+    getDryRunTestNodeConfig(manifest) as NodeConfig
+  );
   await sut.run();
 };
 
@@ -73,3 +79,11 @@ export const getPricesForDataFeedId = (dataPackages: SignedDataPackage[]) => {
   }
   return pricesForDataFeedId;
 };
+
+export const getTokensFromMainManifestWithSources = () =>
+  Object.entries(mainManifest.tokens).reduce((tokens, [dataFeedId, config]) => {
+    if (Object.keys(config).length > 0) {
+      tokens[dataFeedId] = config;
+    }
+    return tokens;
+  }, {} as Record<string, TokenConfig>);

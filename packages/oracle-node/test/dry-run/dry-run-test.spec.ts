@@ -4,6 +4,7 @@ import { PriceDataBroadcastPerformer } from "../../src/aggregated-price-handlers
 import {
   MockScheduler,
   getPricesForDataFeedId,
+  getSourcesForToken,
   getTokensFromManifest,
   runTestNode,
 } from "./helpers";
@@ -103,12 +104,28 @@ describe("Main dry run test", () => {
       we need price of another tokens e.g.
       USDC/USDT -> AVAX/ETH -> TJ_AVAX_ETH_LP -> YY_TJ_AVAX_ETH_LP
     */
+    const initialManifest = { ...config.manifest };
     removeSkippedItemsFromManifest(config.manifest);
+    const tokens = getTokensFromManifest(config.manifest);
     for (let i = 0; i < config.nodeIterations; ++i) {
       await runTestNode(config.manifest);
-      removeAlreadyFetchedTokensFromManifest(config.manifest);
+      if (!config.doNotRemoveTokensFromManifest) {
+        removeAlreadyFetchedTokensFromManifest(config.manifest);
+      }
     }
-    const tokens = getTokensFromManifest(config.manifest);
+
+    const dataPackages = mockedBroadcaster.mock.calls
+      .map((call) => call[0])
+      .reduce(
+        (dataPackages, currentDataPackages) => [
+          ...dataPackages,
+          ...currentDataPackages,
+        ],
+        []
+      );
+
+    checkNumberOfTokensBroadcasted(dataPackages, tokens);
+
     for (const token of tokens) {
       const currentDataFeedPrice = getLastPrice(token);
       if (!currentDataFeedPrice) {
@@ -117,18 +134,42 @@ describe("Main dry run test", () => {
       if (config.additionalCheck) {
         config.additionalCheck(token, currentDataFeedPrice?.value);
       }
+      if (config.checkTokensSources) {
+        checkTokensSources(dataPackages, token, initialManifest);
+      }
     }
+  });
+
+  function checkNumberOfTokensBroadcasted(
+    dataPackages: SignedDataPackage[],
+    tokens: string[]
+  ) {
     expect(mockedBroadcaster.mock.calls.length).toBeGreaterThan(0);
-    const dataPackages = mockedBroadcaster.mock.calls
-      .map((a) => a[0])
-      .reduce((p, c) => {
-        p.push(...c);
-        return p;
-      }, []);
     const pricesForDataFeedId = getPricesForDataFeedId(dataPackages);
     const allTokensBroadcasted = Object.keys(pricesForDataFeedId).length;
     const requiredTokensCount =
       MIN_REQUIRED_MANIFEST_TOKENS_PERCENTAGE * tokens.length;
     expect(allTokensBroadcasted).toBeGreaterThan(requiredTokensCount);
-  });
+  }
+
+  function checkTokensSources(
+    dataPackages: SignedDataPackage[],
+    token: string,
+    initialManifest: Manifest
+  ) {
+    console.log(`Checking sources for ${token}`);
+    const dataPackagesPerToken = dataPackages.filter(
+      ({ dataPackage }) => dataPackage.dataPoints[0].dataFeedId === token
+    );
+    const lastDataPackage =
+      dataPackagesPerToken[dataPackagesPerToken.length - 1];
+    const sourceMetadata =
+      lastDataPackage?.dataPackage.dataPoints[0].toObj().metadata
+        ?.sourceMetadata;
+    const sourcesFromManifest = getSourcesForToken(initialManifest, token);
+    if (sourceMetadata && sourcesFromManifest) {
+      const sourcesFetched = Object.keys(sourceMetadata);
+      expect(sourcesFetched.sort()).toEqual(sourcesFromManifest.sort());
+    }
+  }
 });
