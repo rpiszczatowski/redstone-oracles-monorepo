@@ -4,6 +4,11 @@ on:
     paths:
       - packages/gelato-relayer/**
       - packages/on-chain-relayer/**
+      - packages/sdk/**
+      - packages/utils/**
+      - packages/protocol/**
+      - packages/rpc-providers/**
+      - packages/evm-connector/**
       - .github/workflows/gelato-relayer-tests.yml
 
 jobs:
