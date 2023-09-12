@@ -60,7 +60,7 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
     if (dataPackageFromLocalCache) {
       return dataPackageFromLocalCache;
     }
-    const url = `${config.historicalDataPackagesUrl}/${this.dataServiceId}/${timestampForHistoricalRequest}`;
+    const url = `${config.historicalDataPackagesUrl}/data-packages/historical/${this.dataServiceId}/${timestampForHistoricalRequest}`;
     const dataPackageResponse =
       await axios.get<RedstoneTypes.DataPackageFromGatewayResponse>(url);
     return dataPackageResponse.data;
@@ -153,7 +153,9 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
       const dataPackages = dataPackagesResponse[dataFeedId];
       if (dataPackages?.length > 0) {
         return dataPackages.find(
-          (dataPackage) => dataPackage.signerAddress === config.ethereumAddress
+          (dataPackage) =>
+            dataPackage.signerAddress.toLowerCase() ===
+            config.ethereumAddress.toLowerCase()
         );
       }
     }
@@ -172,7 +174,7 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
 
       if (singerAddress !== config.ethereumAddress) {
         throw new Error(
-          "This node is doesn't signed package used to calculate TWAP"
+          "This node haven't signed package used to calculate TWAP"
         );
       }
     }

@@ -62,7 +62,7 @@ const DEFAULT_OPTIMISM_RPC_URLS = [
   "https://optimism.blockpi.network/v1/rpc/public",
 ];
 const DEFAULT_HISTORICAL_DATA_PACKAGES_URL =
-  "https://oracle-gateway-1.b.redstone.finance/data-packages/historical";
+  "https://oracle-gateway-1.b.redstone.finance";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
