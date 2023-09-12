@@ -15,7 +15,7 @@ export class UniswapV3FetcherHistorical extends UniswapV3Fetcher {
     this.timestamp = timestamp;
   }
 
-  async fetchData(ids: string[]) {
+  override async fetchData(ids: string[]) {
     const pairIds = this.convertSymbolsToPoolIds(ids, symbolToPoolIdObj);
     const blockNumber = (
       await axios.get(timestampToBlockProviderUrl + this.timestamp)

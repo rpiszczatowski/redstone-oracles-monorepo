@@ -58,5 +58,6 @@ export class YieldYakTokensRequestHandlers implements IEvmRequestHandlers {
     if (tokenToFetchPrice) {
       return tokenValue.mul(tokenToFetchPrice.value).toNumber();
     }
+    return undefined;
   }
 }

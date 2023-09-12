@@ -12,7 +12,7 @@ export class SushiswapFetcherHistorical extends SushiswapFetcher {
     this.timestamp = timestamp;
   }
 
-  async fetchData(ids: string[]) {
+  override async fetchData(ids: string[]) {
     const pairIds = this.convertSymbolsToPairIds(ids, this.symbolToPairIdObj);
 
     const blockNumber = (

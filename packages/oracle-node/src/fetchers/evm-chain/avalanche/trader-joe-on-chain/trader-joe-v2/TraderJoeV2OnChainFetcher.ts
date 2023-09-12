@@ -51,7 +51,7 @@ interface PairsConfig {
 }
 
 export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<MulticallResult> {
-  protected retryForInvalidResponse: boolean = true;
+  protected override retryForInvalidResponse: boolean = true;
 
   constructor(
     name: string,
@@ -94,40 +94,40 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<MulticallResult
       callContexts
     );
 
-    const spotPrice =
+    const basePriceInQuote =
       TraderJoeV2OnChainFetcher.getSpotPriceFromMulticallResult(
         multicallResult
       );
-    let buySlippage: string | undefined;
-    let sellSlippage: string | undefined;
-    if (swapAmountBase) {
-      const buySlippageTokensOut =
-        TraderJoeV2OnChainFetcher.getTokensOutFromMulticallResult(
-          multicallResult,
-          SLIPPAGE_BUY_LABEL
-        );
-      const buyPrice = TraderJoeV2OnChainFetcher.getPrice(
-        swapAmountQuote,
-        buySlippageTokensOut.toString(),
-        quoteTokenScaler,
-        baseTokenScaler
-      );
-      buySlippage = calculateSlippage(spotPrice, buyPrice);
-      const sellSlippageTokensOut =
-        TraderJoeV2OnChainFetcher.getTokensOutFromMulticallResult(
-          multicallResult,
-          SLIPPAGE_SELL_LABEL
-        );
-      const sellPrice = TraderJoeV2OnChainFetcher.getPrice(
-        swapAmountBase,
-        sellSlippageTokensOut.toString(),
-        baseTokenScaler,
-        quoteTokenScaler
-      );
-      sellSlippage = calculateSlippage(spotPrice, sellPrice);
+    const spotPrice = basePriceInQuote.mul(quoteTokenPrice).toString();
+    if (!swapAmountBase) {
+      return { spotPrice };
     }
+    const buySlippageTokensOut =
+      TraderJoeV2OnChainFetcher.getTokensOutFromMulticallResult(
+        multicallResult,
+        SLIPPAGE_BUY_LABEL
+      );
+    const buyPrice = TraderJoeV2OnChainFetcher.getPrice(
+      swapAmountQuote,
+      buySlippageTokensOut.toString(),
+      quoteTokenScaler,
+      baseTokenScaler
+    );
+    const buySlippage = calculateSlippage(basePriceInQuote, buyPrice);
+    const sellSlippageTokensOut =
+      TraderJoeV2OnChainFetcher.getTokensOutFromMulticallResult(
+        multicallResult,
+        SLIPPAGE_SELL_LABEL
+      );
+    const sellPrice = TraderJoeV2OnChainFetcher.getPrice(
+      swapAmountBase,
+      sellSlippageTokensOut.toString(),
+      baseTokenScaler,
+      quoteTokenScaler
+    );
+    const sellSlippage = calculateSlippage(basePriceInQuote, sellPrice);
     return {
-      spotPrice: spotPrice.mul(quoteTokenPrice).toString(),
+      spotPrice,
       buySlippage,
       sellSlippage,
     };

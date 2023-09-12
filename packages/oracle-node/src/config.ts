@@ -114,6 +114,7 @@ const getOptionallyManifestData = () => {
   if (!!overrideManifestUsingFile) {
     return readJSON(overrideManifestUsingFile) as Manifest;
   }
+  return undefined;
 };
 
 const getOptionallyCacheServiceUrls = () => {
@@ -124,6 +125,7 @@ const getOptionallyCacheServiceUrls = () => {
   if (!!overrideDirectCacheServiceUrls) {
     return JSON.parse(overrideDirectCacheServiceUrls) as string[];
   }
+  return undefined;
 };
 
 const getOptionallyPriceDataServiceUrls = () => {
@@ -134,6 +136,7 @@ const getOptionallyPriceDataServiceUrls = () => {
   if (!!overridePriceCacheServiceUrls) {
     return JSON.parse(overridePriceCacheServiceUrls) as string[];
   }
+  return undefined;
 };
 
 const ethereumPrivateKey = parserFromString.hex(

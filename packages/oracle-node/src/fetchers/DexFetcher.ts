@@ -33,7 +33,7 @@ interface SymbolToPairId {
 }
 
 export class DexFetcher extends BaseFetcher {
-  protected retryForInvalidResponse: boolean = true;
+  protected override retryForInvalidResponse: boolean = true;
 
   constructor(
     name: string,
@@ -64,7 +64,7 @@ export class DexFetcher extends BaseFetcher {
     return await graphProxy.executeQuery(this.subgraphUrl, query);
   }
 
-  validateResponse(response: DexFetcherResponse): boolean {
+  override validateResponse(response: DexFetcherResponse): boolean {
     return response !== undefined && response.data !== undefined;
   }
 

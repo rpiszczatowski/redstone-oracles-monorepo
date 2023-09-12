@@ -4,7 +4,7 @@ const subgraphUrl =
   "https://api.thegraph.com/subgraphs/name/pangolindex/exchange";
 
 export class PangolinFetcher extends DexFetcher {
-  protected retryForInvalidResponse: boolean = true;
+  protected override retryForInvalidResponse: boolean = true;
 
   constructor(name: string, private readonly symbolToPairIdFile: string) {
     const symbolToPairIdObj: {

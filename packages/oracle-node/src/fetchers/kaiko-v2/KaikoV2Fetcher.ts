@@ -39,9 +39,7 @@ export class KaikoV2Fetcher extends MultiRequestFetcher {
     dataFeedId: string,
     responses: RequestIdToResponse
   ): number | undefined {
-    if (responses[dataFeedId]) {
-      const price = responses[dataFeedId]?.data?.data[0].price;
-      return price ? Number(price) : undefined;
-    }
+    const price = responses[dataFeedId]?.data?.data[0].price;
+    return price ? Number(price) : undefined;
   }
 }

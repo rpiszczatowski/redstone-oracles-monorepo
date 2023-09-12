@@ -5,7 +5,10 @@ import {
 import { ethereumProvider } from "../../../../utils/blockchain-providers";
 
 export class UniswapV2OnChainFetcher extends UniswapV2LikeFetcher {
-  constructor(name: string, protected readonly poolsConfig: PoolsConfig) {
+  constructor(
+    name: string,
+    protected override readonly poolsConfig: PoolsConfig
+  ) {
     super(name, poolsConfig, ethereumProvider);
   }
 }

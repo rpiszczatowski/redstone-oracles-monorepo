@@ -159,6 +159,7 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
         );
       }
     }
+    return undefined;
   }
 
   private static validateSignatures(

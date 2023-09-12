@@ -22,7 +22,7 @@ jobs:
       - name: Lint
         run: yarn lint
       - name: Run core tests - simple propagation
-        run: node dist/simple-price-propagation-core.js
+        run: node dist/src/simple-price-propagation-core.js
         env:
           NODE_ENV: test
   core-with-node-failure:
@@ -40,7 +40,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run tests - node failures
-        run: node dist/prices-updates-node-failures.js
+        run: node dist/src/prices-updates-node-failures.js
         env:
           NODE_ENV: test
   classic:
@@ -58,6 +58,6 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run classic tests - simple propagation
-        run: node dist/simple-price-propagation-classic.js
+        run: node dist/src/simple-price-propagation-classic.js
         env:
           NODE_ENV: test

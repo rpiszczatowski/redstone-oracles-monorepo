@@ -65,5 +65,6 @@ export class GmdRequestHandler implements IEvmRequestHandlers {
         return ratio.mul(tokenToFetchPrice.value).toNumber();
       }
     }
+    return undefined;
   }
 }

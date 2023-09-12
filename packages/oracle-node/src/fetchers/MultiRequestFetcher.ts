@@ -26,7 +26,7 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
   }
 
   // This method may be overridden to extend validation
-  validateResponse(responses: ExtendedPromiseResult[]): boolean {
+  override validateResponse(responses: ExtendedPromiseResult[]): boolean {
     return (
       responses !== undefined &&
       responses.some(

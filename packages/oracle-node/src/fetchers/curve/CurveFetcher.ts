@@ -23,7 +23,7 @@ export interface CurveFetcherResponse {
 }
 
 export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
-  protected retryForInvalidResponse: boolean = true;
+  protected override retryForInvalidResponse: boolean = true;
 
   constructor(name: string, public readonly poolsConfig: PoolsConfig) {
     super(name);

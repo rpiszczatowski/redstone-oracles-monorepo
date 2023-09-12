@@ -60,7 +60,7 @@ export class LensFetcher extends BaseFetcher {
     return profiles;
   }
 
-  validateResponse(profiles: LensProfile[]): boolean {
+  override validateResponse(profiles: LensProfile[]): boolean {
     return profiles !== undefined && profiles.length > 0;
   }
 

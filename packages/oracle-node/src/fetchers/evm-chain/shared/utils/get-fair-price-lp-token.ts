@@ -6,7 +6,7 @@ import { getTokensPricesFromLocalCache } from "./get-tokens-prices-from-local-ca
 export const getFairPriceForLpToken = (
   tokenReserves: Record<string, Decimal>,
   totalSupply: Decimal
-) => {
+): number | undefined => {
   const tokenNames = Object.keys(tokenReserves);
   const tokensReservesPrices = getTokensPricesFromLocalCache(tokenNames);
 
@@ -30,6 +30,7 @@ export const getFairPriceForLpToken = (
 
     return reservesPricesMultiplied.div(totalSupply).mul(2).toNumber();
   }
+  return undefined;
 };
 
 function checkIfAllTokensFetched(

@@ -73,43 +73,44 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
       multicallContext
     );
 
-    const spotPrice = UniswapV3LikeFetcher.extractSpotPriceFromMulticallResult(
-      multicallResult,
-      assetId,
-      poolConfig
-    );
-    let buySlippage: string | undefined;
-    let sellSlippage: string | undefined;
-    if (swapAmountBase) {
-      const slippageBuyAmountOut = UniswapV3LikeFetcher.getAmountOut(
+    const basePriceInQuote =
+      UniswapV3LikeFetcher.extractSpotPriceFromMulticallResult(
         multicallResult,
-        SLIPPAGE_BUY_LABEL
+        assetId,
+        poolConfig
       );
-      const buyPrice = UniswapV3LikeFetcher.getPrice(
-        new Decimal(swapAmountQuote),
-        slippageBuyAmountOut,
-        quoteTokenScaler,
-        baseTokenScaler
-      );
-      buySlippage = calculateSlippage(spotPrice, buyPrice);
-
-      const slippageSellAmountOut = UniswapV3LikeFetcher.getAmountOut(
-        multicallResult,
-        SLIPPAGE_SELL_LABEL
-      );
-      const sellPrice = UniswapV3LikeFetcher.getPrice(
-        new Decimal(swapAmountBase),
-        slippageSellAmountOut,
-        baseTokenScaler,
-        quoteTokenScaler
-      );
-      sellSlippage = calculateSlippage(
-        new Decimal(1).div(spotPrice),
-        sellPrice
-      );
+    const spotPrice = basePriceInQuote.mul(quoteTokenPrice).toString();
+    if (!swapAmountBase) {
+      return { spotPrice };
     }
+    const slippageBuyAmountOut = UniswapV3LikeFetcher.getAmountOut(
+      multicallResult,
+      SLIPPAGE_BUY_LABEL
+    );
+    const buyPrice = UniswapV3LikeFetcher.getPrice(
+      new Decimal(swapAmountQuote),
+      slippageBuyAmountOut,
+      quoteTokenScaler,
+      baseTokenScaler
+    );
+    const buySlippage = calculateSlippage(basePriceInQuote, buyPrice);
+
+    const slippageSellAmountOut = UniswapV3LikeFetcher.getAmountOut(
+      multicallResult,
+      SLIPPAGE_SELL_LABEL
+    );
+    const sellPrice = UniswapV3LikeFetcher.getPrice(
+      new Decimal(swapAmountBase),
+      slippageSellAmountOut,
+      baseTokenScaler,
+      quoteTokenScaler
+    );
+    const sellSlippage = calculateSlippage(
+      new Decimal(1).div(basePriceInQuote),
+      sellPrice
+    );
     return {
-      spotPrice: spotPrice.mul(quoteTokenPrice).toString(),
+      spotPrice,
       buySlippage,
       sellSlippage,
     };

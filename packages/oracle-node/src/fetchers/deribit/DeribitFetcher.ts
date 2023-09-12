@@ -27,9 +27,7 @@ export class DeribitFetcher extends MultiRequestFetcher {
     dataFeedId: string,
     responses: RequestIdToResponse
   ): number | undefined {
-    if (responses[dataFeedId]) {
-      const price = responses[dataFeedId]?.data?.result.index_price;
-      return price ? Number(price) : undefined;
-    }
+    const price = responses[dataFeedId]?.data?.result.index_price;
+    return price ? Number(price) : undefined;
   }
 }

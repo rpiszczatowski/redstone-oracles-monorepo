@@ -84,14 +84,14 @@ export interface PricesObj {
 export interface PricesObjWithMetadata {
   [symbol: string]: {
     value: PriceDataFetchedValue;
-    metadata?: RedstoneTypes.MetadataPerSource;
+    metadata?: RedstoneTypes.MetadataPerSource | undefined;
   };
 }
 
 export interface PriceDataFetched {
   symbol: string;
   value: PriceDataFetchedValue; // usually it is a positive number, but it may also be 0, null, undefined or "error"
-  metadata?: RedstoneTypes.MetadataPerSource;
+  metadata?: RedstoneTypes.MetadataPerSource | undefined;
 }
 
 export type PriceDataFetchedValue =
@@ -107,7 +107,7 @@ export interface PriceDataBeforeAggregation<T = number> {
   source: PriceSource<T>;
   sourceMetadata: Record<string, RedstoneTypes.MetadataPerSource>;
   timestamp: number;
-  blockNumber?: number;
+  blockNumber?: number | undefined;
   version: string;
 }
 
@@ -167,10 +167,10 @@ export interface NodeConfig {
   printDiagnosticInfo: boolean;
   manifestRefreshInterval: number;
   privateKeys: PrivateKeys;
-  overrideManifestUsingFile?: Manifest;
+  overrideManifestUsingFile?: Manifest | undefined;
   ethereumAddress: string;
-  overrideDirectCacheServiceUrls?: string[];
-  overridePriceCacheServiceUrls?: string[];
+  overrideDirectCacheServiceUrls?: string[] | undefined;
+  overridePriceCacheServiceUrls?: string[] | undefined;
   coinbaseIndexerMongoDbUrl?: string;
   levelDbLocation: string;
   etherscanApiUrl?: string;

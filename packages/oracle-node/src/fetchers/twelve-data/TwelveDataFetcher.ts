@@ -15,7 +15,7 @@ export const TWELVE_DATA_PRICE_URL = "https://api.twelvedata.com/price";
 
 export class TwelveDataFetcher extends BaseFetcher {
   symbolToId: Record<string, string>;
-  requestParams?: Record<string, any>;
+  requestParams?: Record<string, any> | undefined;
 
   constructor(
     name: string,

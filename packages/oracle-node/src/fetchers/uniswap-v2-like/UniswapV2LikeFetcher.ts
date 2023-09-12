@@ -30,7 +30,7 @@ interface UniswapV2LikeResponse {
 }
 
 export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeResponse> {
-  protected retryForInvalidResponse: boolean = true;
+  protected override retryForInvalidResponse: boolean = true;
 
   constructor(
     name: string,

@@ -57,5 +57,6 @@ class MultiRequestFetcherMock extends MultiRequestFetcher {
     if (responses[dataFeedId]) {
       return responses[dataFeedId] * 100;
     }
+    return undefined;
   }
 }

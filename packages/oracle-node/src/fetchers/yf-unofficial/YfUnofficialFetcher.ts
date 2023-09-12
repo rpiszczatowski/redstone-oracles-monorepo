@@ -5,7 +5,7 @@ import { getRequiredPropValue } from "../../utils/objects";
 import symbolToId from "./yf-symbol-to-id.json";
 
 export class YfUnofficialFetcher extends MultiRequestFetcher {
-  protected retryForInvalidResponse: boolean = true;
+  protected override retryForInvalidResponse: boolean = true;
 
   constructor() {
     super("yf-unofficial");

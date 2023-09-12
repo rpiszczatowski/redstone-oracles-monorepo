@@ -26,11 +26,11 @@ export class StlouisfedFetcher extends BaseFetcher {
     super("stlouisfed");
   }
 
-  protected convertIdToSymbol(id: string): string {
+  protected override convertIdToSymbol(id: string): string {
     return getRequiredPropValue(idToSymbol, id);
   }
 
-  protected convertSymbolToId(symbol: string): string {
+  protected override convertSymbolToId(symbol: string): string {
     return getRequiredPropValue(symbolToId, symbol);
   }
 

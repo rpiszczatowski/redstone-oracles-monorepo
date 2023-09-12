@@ -7,8 +7,8 @@ import {
 export class SushiswapOnChainFetcher extends UniswapV2LikeFetcher {
   constructor(
     name: string,
-    protected readonly poolsConfig: PoolsConfig,
-    protected readonly provider: providers.Provider
+    protected override readonly poolsConfig: PoolsConfig,
+    protected override readonly provider: providers.Provider
   ) {
     super(name, poolsConfig, provider);
   }

@@ -67,32 +67,33 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
       this.provider,
       multicallContext
     );
-    const spotPrice = VelodromeOnChainFetcher.extractSpotPriceFromResult(
-      assetId,
+    const basePriceInQuote =
+      VelodromeOnChainFetcher.extractSpotPriceFromResult(
+        assetId,
+        multicallResult,
+        poolConfig
+      );
+    const spotPrice = basePriceInQuote.mul(quoteTokenPrice).toString();
+    if (!baseTokenPrice) {
+      return { spotPrice };
+    }
+    const buyPrice = VelodromeOnChainFetcher.getPriceAfterSwap(
       multicallResult,
+      SLIPPAGE_BUY_LABEL,
       poolConfig
     );
-    let buySlippage: string | undefined;
-    let sellSlippage: string | undefined;
-    if (baseTokenPrice) {
-      const buyPrice = VelodromeOnChainFetcher.getPriceAfterSwap(
-        multicallResult,
-        SLIPPAGE_BUY_LABEL,
-        poolConfig
-      );
-      const sellPrice = VelodromeOnChainFetcher.getPriceAfterSwap(
-        multicallResult,
-        SLIPPAGE_SELL_LABEL,
-        poolConfig
-      );
-      buySlippage = calculateSlippage(spotPrice, buyPrice);
-      sellSlippage = calculateSlippage(
-        new Decimal(1).div(spotPrice),
-        sellPrice
-      );
-    }
+    const sellPrice = VelodromeOnChainFetcher.getPriceAfterSwap(
+      multicallResult,
+      SLIPPAGE_SELL_LABEL,
+      poolConfig
+    );
+    const buySlippage = calculateSlippage(basePriceInQuote, buyPrice);
+    const sellSlippage = calculateSlippage(
+      new Decimal(1).div(basePriceInQuote),
+      sellPrice
+    );
     return {
-      spotPrice: spotPrice.mul(quoteTokenPrice).toString(),
+      spotPrice,
       buySlippage,
       sellSlippage,
     };

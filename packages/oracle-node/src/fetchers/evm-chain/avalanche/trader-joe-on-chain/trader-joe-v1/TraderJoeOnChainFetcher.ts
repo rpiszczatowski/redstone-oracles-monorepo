@@ -5,7 +5,10 @@ import {
 import { avalancheProvider } from "../../../../../utils/blockchain-providers";
 
 export class TraderJoeOnChainFetcher extends UniswapV2LikeFetcher {
-  constructor(name: string, protected readonly poolsConfig: PoolsConfig) {
+  constructor(
+    name: string,
+    protected override readonly poolsConfig: PoolsConfig
+  ) {
     super(name, poolsConfig, avalancheProvider);
   }
 }

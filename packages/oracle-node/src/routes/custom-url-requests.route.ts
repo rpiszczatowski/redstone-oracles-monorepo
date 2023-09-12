@@ -59,7 +59,7 @@ export default function (app: express.Application, nodeConfig: NodeConfig) {
       );
 
       // Sending response
-      return res.json({
+      res.json({
         signerAddress: signedPackage.signerAddress,
         liteSignature: signedPackage.liteSignature,
         prices: dataPackage.prices,

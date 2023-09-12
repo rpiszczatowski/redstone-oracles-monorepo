@@ -60,7 +60,7 @@ export class UniswapV3Fetcher extends BaseFetcher {
     return await graphProxy.executeQuery(subgraphUrl, query);
   }
 
-  validateResponse(response: UniswapV3Response): boolean {
+  override validateResponse(response: UniswapV3Response): boolean {
     return response !== undefined && response.data !== undefined;
   }
 
@@ -87,6 +87,7 @@ export class UniswapV3Fetcher extends BaseFetcher {
     if (tokenPriceInTermsOfOther && otherTokenPrice) {
       return tokenPriceInTermsOfOther * otherTokenPrice.value;
     }
+    return undefined;
   }
 
   private prepareValuesBasedOnCurrentDataFeed(

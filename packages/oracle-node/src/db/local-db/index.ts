@@ -183,6 +183,7 @@ export const getRawPrice = (
     }
     return lastPrice;
   }
+  return undefined;
 };
 
 export default {

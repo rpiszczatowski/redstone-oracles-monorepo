@@ -20,7 +20,12 @@ export const tryConvertUsdToTokenAmount = (
   decimalsMultiplier: number,
   amountInUsd: number
 ): string | undefined => {
-  const rawPrice = getRawPrice(assetId)?.value;
+  let rawPrice = undefined;
+  try {
+    rawPrice = getRawPrice(assetId)?.value;
+  } catch (e: unknown) {
+    // ignore
+  }
   if (!rawPrice) {
     return undefined;
   }

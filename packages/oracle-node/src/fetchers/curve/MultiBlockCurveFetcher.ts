@@ -5,7 +5,7 @@ import { CurveFetcher, CurveFetcherResponse } from "./CurveFetcher";
 import Decimal from "decimal.js";
 
 export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
-  protected retryForInvalidResponse: boolean = true;
+  protected override retryForInvalidResponse: boolean = true;
 
   constructor(name: string, private readonly curveFetcher: CurveFetcher) {
     super(name);
@@ -43,21 +43,21 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     };
   }
 
-  calculateSlippage(
+  override calculateSlippage(
     assetId: string,
     response: CurveFetcherResponse
   ): RedstoneTypes.SlippageData[] {
     return this.curveFetcher.calculateSlippage(assetId, response);
   }
 
-  calculateLiquidity(
+  override calculateLiquidity(
     assetId: string,
     response: CurveFetcherResponse
   ): string | undefined {
     return this.curveFetcher.calculateLiquidity(assetId, response);
   }
 
-  calculateSpotPrice(assetId: string, response: CurveFetcherResponse): number {
+  override calculateSpotPrice(assetId: string, response: CurveFetcherResponse): number {
     return this.curveFetcher.calculateSpotPrice(assetId, response);
   }
 

@@ -22,7 +22,7 @@ export type PermaswapPoolsConfig = {
 const PERMASWAP_ROUTER_URL = "https://router.permaswap.network/pool";
 
 export class PermaswapFetcher extends MultiRequestFetcher {
-  protected retryForInvalidResponse: boolean = true;
+  protected override retryForInvalidResponse: boolean = true;
 
   constructor() {
     super("permaswap");
@@ -47,6 +47,7 @@ export class PermaswapFetcher extends MultiRequestFetcher {
       const pairedTokenPrice = this.getPairedTokenPrice(dataFeedId);
       return ratio * pairedTokenPrice;
     }
+    return undefined;
   }
 
   getPool(requestId: string) {

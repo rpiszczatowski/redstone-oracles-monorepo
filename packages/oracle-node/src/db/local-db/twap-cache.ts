@@ -39,6 +39,7 @@ export const getDataPackageFromLocalCacheAsResponse = (
   if (dataPackageFromLocalCache) {
     return { [dataFeedId]: [dataPackageFromLocalCache] };
   }
+  return undefined;
 };
 
 export const clearDataPackageFromLocalCache = () => {

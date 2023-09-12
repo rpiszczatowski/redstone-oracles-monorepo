@@ -47,7 +47,7 @@ export const setScoreByAddressRoute = (
         scoreType
       );
 
-      return res.json(signedDataPackage.toObj());
+      res.json(signedDataPackage.toObj());
     } catch (error: any) {
       const errText = stringifyError(error.message);
       res.status(400).json({

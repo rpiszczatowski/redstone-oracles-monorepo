@@ -28,7 +28,7 @@ export class PlatypusFetcher extends BaseFetcher {
     return await graphProxy.executeQuery(PLATYPUS_SUBGRAPH_FETCHER, query);
   }
 
-  validateResponse(response: any): boolean {
+  override validateResponse(response: any): boolean {
     return response !== undefined && response.data !== undefined;
   }
 

@@ -16,7 +16,7 @@ interface Providers {
 const MUTLICALL_CONTRACT_ADDRESS = "0x8755b94F88D120AB2Cc13b1f6582329b067C760d";
 
 export class EvmFetcher extends BaseFetcher {
-  protected retryForInvalidResponse: boolean = true;
+  protected override retryForInvalidResponse: boolean = true;
 
   private evmMulticallService: EvmMulticallService;
   constructor(

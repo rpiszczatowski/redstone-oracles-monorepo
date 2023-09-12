@@ -113,40 +113,40 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
       pairedTokenScaler
     );
     const basePriceInPaired = new Decimal(1).div(pairedPriceInBase);
-    let buySlippage: string | undefined;
-    let sellSlippage: string | undefined;
-    if (baseTokenPrice) {
-      const slippageSellAmountOut =
-        BalancerFetcher.extractAmountOutFromMulticallResult(
-          multicallResult,
-          tokenAddresses,
-          SLIPPAGE_SELL_LABEL,
-          tokenAddresses[tokenAddresses.length - 1]
-        );
-      const slippageBuyAmountOut =
-        BalancerFetcher.extractAmountOutFromMulticallResult(
-          multicallResult,
-          tokenAddresses,
-          SLIPPAGE_BUY_LABEL,
-          tokenAddresses[0]
-        );
-      const buyPrice = BalancerFetcher.getPrice(
-        new Decimal(swapAmountPaired),
-        slippageBuyAmountOut,
-        pairedTokenScaler,
-        baseTokenScaler
-      );
-      const sellPrice = BalancerFetcher.getPrice(
-        new Decimal(swapAmountBase!),
-        slippageSellAmountOut,
-        baseTokenScaler,
-        pairedTokenScaler
-      );
-      buySlippage = calculateSlippage(basePriceInPaired, buyPrice);
-      sellSlippage = calculateSlippage(pairedPriceInBase, sellPrice);
+    const spotPrice = basePriceInPaired.mul(pairedTokenPrice).toString();
+    if (!baseTokenPrice) {
+      return { spotPrice };
     }
+    const slippageSellAmountOut =
+      BalancerFetcher.extractAmountOutFromMulticallResult(
+        multicallResult,
+        tokenAddresses,
+        SLIPPAGE_SELL_LABEL,
+        tokenAddresses[tokenAddresses.length - 1]
+      );
+    const slippageBuyAmountOut =
+      BalancerFetcher.extractAmountOutFromMulticallResult(
+        multicallResult,
+        tokenAddresses,
+        SLIPPAGE_BUY_LABEL,
+        tokenAddresses[0]
+      );
+    const buyPrice = BalancerFetcher.getPrice(
+      new Decimal(swapAmountPaired),
+      slippageBuyAmountOut,
+      pairedTokenScaler,
+      baseTokenScaler
+    );
+    const sellPrice = BalancerFetcher.getPrice(
+      new Decimal(swapAmountBase!),
+      slippageSellAmountOut,
+      baseTokenScaler,
+      pairedTokenScaler
+    );
+    const buySlippage = calculateSlippage(basePriceInPaired, buyPrice);
+    const sellSlippage = calculateSlippage(pairedPriceInBase, sellPrice);
     return {
-      spotPrice: basePriceInPaired.mul(pairedTokenPrice).toString(),
+      spotPrice,
       sellSlippage,
       buySlippage,
     };
