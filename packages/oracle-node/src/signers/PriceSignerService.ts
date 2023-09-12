@@ -36,7 +36,7 @@ export default class PriceSignerService {
     }
   }
 
-  async signSinglePrice(
+  private async signSinglePrice(
     price: PriceDataBeforeSigning
   ): Promise<PriceDataSigned> {
     logger.info(`Signing price with evm signer: ${price.id}`);
@@ -55,14 +55,17 @@ export default class PriceSignerService {
     };
   }
 
-  signPricePackage(prices: PriceDataSigned[]): SignedPricePackage {
+  private signPricePackage(prices: PriceDataSigned[]): SignedPricePackage {
     if (prices.length === 0) {
       throw new Error("Price package should contain at least one price");
     }
 
     const pricePackage = {
       timestamp: prices[0].timestamp,
-      prices: prices.map((p) => ({ symbol: p.symbol, value: p.value })),
+      prices: prices.map((p) => ({
+        symbol: p.symbol,
+        value: p.value,
+      })),
     };
 
     return this.evmSigner.signPricePackage(

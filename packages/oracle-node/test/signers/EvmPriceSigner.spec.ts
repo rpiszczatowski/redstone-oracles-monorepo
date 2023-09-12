@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
-import { SignedPricePackage, PricePackage } from "../src/types";
-import EvmPriceSigner from "../src/signers/EvmPriceSigner";
+import EvmPriceSigner from "../../src/signers/EvmPriceSigner";
+import { PricePackage, SignedPricePackage } from "../../src/types";
+import { SafeNumber } from "redstone-utils";
 
 const evmSigner = new EvmPriceSigner();
 const ethereumPrivateKey =
@@ -153,5 +154,43 @@ describe("evmSignPricesAndVerify", () => {
         pricePackage: pricePackageWithDifferentOrder,
       })
     ).toEqual(true);
+  });
+
+  it("should fail to sign price package with where value is string", () => {
+    const pricePackage1: PricePackage = {
+      prices: [
+        {
+          symbol: "FIRST",
+          value: "1.1" as unknown as number,
+        },
+        {
+          symbol: "SECOND",
+          value: "100023" as unknown as number,
+        },
+      ],
+      timestamp: Date.now(),
+    };
+    expect(() =>
+      evmSigner.signPricePackage(pricePackage1, ethereumPrivateKey)
+    ).toThrow();
+  });
+
+  it("should fail to sign price package where value is ISafeNumber instance", () => {
+    const pricePackage1: PricePackage = {
+      prices: [
+        {
+          symbol: "FIRST",
+          value: SafeNumber.createSafeNumber("1.1") as unknown as number,
+        },
+        {
+          symbol: "SECOND",
+          value: SafeNumber.createSafeNumber("100023") as unknown as number,
+        },
+      ],
+      timestamp: Date.now(),
+    };
+    expect(() =>
+      evmSigner.signPricePackage(pricePackage1, ethereumPrivateKey)
+    ).toThrow();
   });
 });

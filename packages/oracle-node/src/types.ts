@@ -115,12 +115,13 @@ export interface PriceSource<T> {
   [sourceName: string]: T;
 }
 
-export interface PriceDataAfterAggregation
+export interface PriceDataAfterAggregation<V = SafeNumber.ISafeNumber>
   extends SanitizedPriceDataBeforeAggregation {
-  value: SafeNumber.ISafeNumber;
+  value: V;
 }
 
-export interface PriceDataBeforeSigning extends PriceDataAfterAggregation {
+export interface PriceDataBeforeSigning
+  extends PriceDataAfterAggregation<number> {
   permawebTx: string;
   provider: string;
 }
@@ -132,7 +133,7 @@ export interface PriceDataSigned extends PriceDataBeforeSigning {
 
 export interface ShortSinglePrice {
   symbol: string;
-  value: any;
+  value: number;
 }
 
 export interface PricePackage {
@@ -148,7 +149,7 @@ export interface SignedPricePackage {
 
 export interface SerializedPriceData {
   symbols: string[];
-  values: any[];
+  values: number[];
   timestamp: number;
 }
 

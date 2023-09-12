@@ -383,6 +383,7 @@ export default class PricesService {
     for (const price of prices) {
       pricesBeforeSigning.push({
         ...price,
+        value: price.value.unsafeToNumber(),
         permawebTx: idArTransaction,
         provider: providerAddress,
       });

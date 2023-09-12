@@ -1,6 +1,7 @@
+import { ethers } from "ethers";
+import PriceSignerService from "../../src/signers/PriceSignerService";
+import { PriceDataBeforeSigning } from "../../src/types";
 import { SafeNumber } from "redstone-utils";
-import PriceSignerService from "../src/signers/PriceSignerService";
-import { PriceDataBeforeSigning } from "../src/types";
 
 const testPrivKey =
   "0xc094df8d4a95134e721b2e418f53658c3927ee21b62b9b63c4331a902199e1e8";
@@ -18,7 +19,7 @@ describe("PriceSignerService", () => {
           source: {},
           timestamp: 1630454400000,
           version: "v1",
-          value: SafeNumber.createSafeNumber(102.123),
+          value: 102.123,
           sourceMetadata: {},
         },
       ];
@@ -33,11 +34,29 @@ describe("PriceSignerService", () => {
           source: {},
           symbol: "symbol",
           timestamp: 1630454400000,
-          value: SafeNumber.createSafeNumber(102.123),
+          value: 102.123,
           version: "v1",
           sourceMetadata: {},
         },
       ]);
+    });
+
+    it("should FAIL to sign prices which are SafeNumbers", async () => {
+      const prices: PriceDataBeforeSigning[] = [
+        {
+          permawebTx: "permawebtx",
+          provider: "provider1",
+          id: "id1",
+          symbol: "symbol",
+          source: {},
+          timestamp: Date.now(),
+          version: "v1",
+          sourceMetadata: {},
+          value: SafeNumber.createSafeNumber(102.123) as unknown as number,
+        },
+      ];
+
+      await expect(signer.signPrices(prices)).rejects.toThrow();
     });
   });
 });
