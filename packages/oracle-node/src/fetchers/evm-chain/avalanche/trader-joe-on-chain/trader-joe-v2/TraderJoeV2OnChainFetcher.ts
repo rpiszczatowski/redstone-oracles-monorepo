@@ -125,7 +125,7 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<MulticallResult
       baseTokenScaler,
       quoteTokenScaler
     );
-    const sellSlippage = calculateSlippage(basePriceInQuote, sellPrice);
+    const sellSlippage = calculateSlippage(new Decimal(1).div(basePriceInQuote), sellPrice);
     return {
       spotPrice,
       buySlippage,

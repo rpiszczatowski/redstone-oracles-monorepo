@@ -80,15 +80,15 @@ describe("Trader Joe - EUROC token", () => {
   });
 
   test("Should properly fetch data with slippage", async () => {
-    await asAwaitable(pairContract.mock.getActiveId.returns("8388754"));
-    await asAwaitable(pairContract.mock.getBinStep.returns("0"));
+    await asAwaitable(pairContract.mock.getActiveId.returns("8388611"));
+    await asAwaitable(pairContract.mock.getBinStep.returns("10000"));
     await asAwaitable(
       routerContract.mock.getSwapOut
-        .returns("0", "5000000000", "0") // buy
-        .returns("0", "5000000000", "0")
+        .returns("0", "625000000", "0") // buy
+        .returns("0", "400000000", "0")
     );
     await saveMockPriceInLocalDb(1, PAIRED_TOKEN);
-    await saveMockPriceInLocalDb(1, TOKEN_TO_TEST);
+    await saveMockPriceInLocalDb(100, TOKEN_TO_TEST);
 
     const fetcher = new TraderJoeV2OnChainFetcher(
       "trader-joe-v2-test-fetcher",
@@ -101,7 +101,7 @@ describe("Trader Joe - EUROC token", () => {
     expect(result).toEqual([
       {
         symbol: TOKEN_TO_TEST,
-        value: "1",
+        value: "8",
         metadata: {
           slippage: [
             {
