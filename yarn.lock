@@ -16736,15 +16736,6 @@ redstone-prettier-config@^1.0.0:
   resolved "https://registry.yarnpkg.com/redstone-prettier-config/-/redstone-prettier-config-1.0.0.tgz#154b28bf79f41826a4b47421db653d867aa3c241"
   integrity sha512-39BBmwrw+5L4MgV1TLGAlIwmRFvAzZ4iq8xshHdBhiiAgl0J6PeIYrkUkU5l6nMIilua4zkWoEz+58enT0pbhw==
 
-redstone-sdk@/Users/michalkonopka/github/redstone-oracles-monorepo/packages/sdk:
-  version "1.8.2"
-  dependencies:
-    axios "^0.27.2"
-    ethers "^5.7.2"
-    redstone-oracles-smartweave-contracts "*"
-    redstone-protocol "*"
-    redstone-utils "^0.1.0"
-
 reduce-flatten@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/reduce-flatten/-/reduce-flatten-2.0.0.tgz#734fd84e65f375d7ca4465c69798c25c9d10ae27"
