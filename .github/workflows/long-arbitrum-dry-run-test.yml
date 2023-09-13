@@ -24,7 +24,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run long arbitrum dry run tests
-        run: node dist/arbitrum-long-price-propagation-core.js
+        run: node dist/src/arbitrum-long-price-propagation-core.js
         env:
           NODE_ENV: test
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
