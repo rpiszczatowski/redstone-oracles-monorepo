@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { performance } from "perf_hooks";
 import { Consola } from "consola";
 import { config } from "../config";
+import axios from "axios";
 
 const logger = require("./logger")("utils/performance-tracker") as Consola;
 const tasks: {
@@ -46,14 +47,29 @@ export function trackEnd(trackingId: string): void {
 
   // Calculating time elapsed from the task trackStart
   // execution for the same label
-  const value = performance.now() - tasks[trackingId].startTime;
+  const executionTime = performance.now() - tasks[trackingId].startTime;
   const label = tasks[trackingId].label;
 
   // Clear the start value
   delete tasks[trackingId];
 
   // Saving metric using Redstone HTTP endpoint
-  saveMetric(label, value);
+  saveMetric(label, executionTime).catch((e) =>
+    console.error(`Failed saving metric: ${label}`, e)
+  );
+}
+
+export function sendNodeTelemetry() {
+  console.log("Sending node telemetry");
+  const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
+  const evmAddress = new ethers.Wallet(evmPrivateKey).address;
+
+  if (isTelemetryEnabled()) {
+    const measurementName = "nodeTelemetry";
+    const tags = `address=${evmAddress}`;
+    const fields = `dockerImageTag="${config.dockerImageTag}"`;
+    sendMetric(measurementName, tags, fields);
+  }
 }
 
 export function printTrackingState() {
@@ -61,10 +77,43 @@ export function printTrackingState() {
   logger.info(`Perf tracker tasks: ${tasksCount}`, JSON.stringify(tasks));
 }
 
-async function saveMetric(label: string, value: number): Promise<void> {
+async function saveMetric(label: string, executionTime: number): Promise<void> {
   const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
   const evmAddress = new ethers.Wallet(evmPrivateKey).address;
   const labelWithPrefix = `${evmAddress.slice(0, 14)}-${label}`;
 
-  logger.info(`Metric: ${labelWithPrefix}. Value: ${value}`);
+  logger.info(`Metric: ${labelWithPrefix}. Value: ${executionTime}`);
+
+  if (isTelemetryEnabled()) {
+    const measurementName = "nodePerformance";
+    const tags = `label=${label},address=${evmAddress}`;
+    const fields = `executionTime=${executionTime}`;
+    sendMetric(measurementName, tags, fields);
+  }
+}
+
+async function sendMetric(
+  measurementName: string,
+  tags: string,
+  fields: string
+) {
+  const requestData = `${measurementName},${tags} ${fields} ${Date.now()}`;
+
+  const requestConfig = {
+    headers: {
+      Authorization: `Token ${config.telemetryAuthorizationToken}`,
+    },
+  };
+  axios
+    .post(config.telemetryUrl, requestData, requestConfig)
+    .catch((e) => console.error(`Failed saving metric: ${measurementName}`, e));
+}
+
+function isTelemetryEnabled() {
+  const isTelemetryEnabled =
+    config.telemetryUrl !== "" && config.telemetryAuthorizationToken;
+  if (!isTelemetryEnabled) {
+    console.warn("Telemetry is not enabled");
+  }
+  return isTelemetryEnabled;
 }

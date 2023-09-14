@@ -32,6 +32,7 @@ import {
   trackStart,
 } from "./utils/performance-tracker";
 import { TimeoutError, promiseTimeout } from "./utils/promise-timeout";
+import { sendNodeTelemetry } from "./utils/performance-tracker";
 
 const logger = require("./utils/logger")("runner") as Consola;
 const pjson = require("../package.json") as any;
@@ -192,6 +193,7 @@ export default class NodeRunner {
     await this.safeProcessManifestTokens(iterationContext);
 
     printTrackingState();
+    sendNodeTelemetry();
   }
 
   private async safeProcessManifestTokens(iterationContext: IterationContext) {
