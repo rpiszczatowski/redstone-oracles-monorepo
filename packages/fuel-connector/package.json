@@ -1,6 +1,6 @@
 {
   "name": "@redstone-finance/fuel-connector",
-  "version": "0.2.3",
+  "version": "1.0.0",
   "description": "A tool to inject RedStone data into Fuel compatible smart contracts",
   "main": "dist/src/index.js",
   "license": "MIT",
@@ -14,10 +14,10 @@
     "pack-package": "yarn build && cd dist && npm pack"
   },
   "dependencies": {
-    "@redstone-finance/sdk": "*",
+    "@redstone-finance/sdk": "^1.0.0",
+    "arraybuffer-to-buffer": "^0.0.7",
     "axios": "^1.1.3",
-    "fuels": "^0.42.0",
-    "arraybuffer-to-buffer": "^0.0.7"
+    "fuels": "^0.42.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.21.0",
