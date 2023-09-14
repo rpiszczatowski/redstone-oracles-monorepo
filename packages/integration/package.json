@@ -1,6 +1,6 @@
 {
   "name": "@redstone-finance/integration-tests",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "prettier": "redstone-prettier-config",
   "description": "",
   "author": "",
@@ -21,6 +21,6 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@redstone-finance/utils": "*"
+    "@redstone-finance/utils": "^1.0.0"
   }
 }

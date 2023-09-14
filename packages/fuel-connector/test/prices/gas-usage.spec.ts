@@ -1,5 +1,5 @@
 import { Provider } from "fuels";
-import { ContractParamsProvider } from "redstone-sdk";
+import { ContractParamsProvider } from "@redstone-finance/sdk";
 import { connectPricesContract } from "./prices-contract-test-utils";
 
 jest.setTimeout(10 * 60000);
@@ -54,7 +54,12 @@ describe("Gas Usage of integrated and initialized prices contract", () => {
     });
 
     let gasUsage = await adapter.getPricesFromPayload(paramsProvider);
-    logAndSaveResults("get_prices", uniqueSignerCount, dataFeeds, gasUsage[0]);
+    logAndSaveResults(
+      "get_prices",
+      uniqueSignerCount,
+      dataFeeds,
+      Number(gasUsage[0].toString())
+    );
 
     gasUsage = (await adapter.writePricesFromPayloadToContract(
       paramsProvider
@@ -63,13 +68,18 @@ describe("Gas Usage of integrated and initialized prices contract", () => {
       "write_prices",
       uniqueSignerCount,
       dataFeeds,
-      gasUsage[0]
+      Number(gasUsage[0].toString())
     );
 
     gasUsage = (await adapter.readPricesFromContract(
       paramsProvider
     )) as number[];
-    logAndSaveResults("read_prices", uniqueSignerCount, dataFeeds, gasUsage[0]);
+    logAndSaveResults(
+      "read_prices",
+      uniqueSignerCount,
+      dataFeeds,
+      Number(gasUsage[0].toString())
+    );
 
     const timestampGasUsage = await adapter.readTimestampFromContract();
     logAndSaveResults(
