@@ -6,6 +6,8 @@ import { buildRequestHandlersFromContractDetails } from "../../../shared/utils/b
 import { beefyContractsDetails } from "./beefy/beefyContractsDetails";
 import { dexLpTokensContractsDetails } from "./dex-lp-tokens/dexLpTokensContractsDetails";
 import { glpManagerContractsDetails } from "./glp-manager/glpManagerContractsDetails";
+import { LevelFinanceTokensRequestHandlers } from "./level-finance/LevelFinanceTokensRequestHandlers";
+import { levelFinanceContractDetails } from "./level-finance/leveFinanceContractDetails";
 import { yieldYakTokensContractsDetails } from "./yield-yak/yieldYakTokensContractsDetails";
 
 export const requestHandlers = {
@@ -27,5 +29,10 @@ export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
     dexLpTokensContractsDetails,
     DexLpTokensRequestHandlers
+  ),
+
+  ...buildRequestHandlersFromContractDetails(
+    levelFinanceContractDetails,
+    LevelFinanceTokensRequestHandlers
   ),
 };
