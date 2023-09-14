@@ -1,6 +1,6 @@
 {
   "name": "@redstone-finance/gelato-relayer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "RedStone Relayer based on Gelato Web3 Functions",
   "repository": "https://github.com/redstone-finance/redstone-oracles-monorepo",
   "private": true,
@@ -51,6 +51,6 @@
   "dependencies": {
     "@gelatonetwork/automate-sdk": "^2.3.1",
     "@gelatonetwork/web3-functions-sdk": "^2.1.1",
-    "@redstone-finance/on-chain-relayer": "^1.0.0"
+    "@redstone-finance/on-chain-relayer": "^1.0.1"
   }
 }

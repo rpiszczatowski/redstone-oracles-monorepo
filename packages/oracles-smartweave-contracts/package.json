@@ -1,14 +1,13 @@
 {
   "name": "@redstone-finance/oracles-smartweave-contracts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "rm -rf dist && tsc && node ./scripts/build.js",
     "test": "yarn build && NODE_ENV=test jest",
-    "preversion": "yarn build",
-    "postversion": "git commit -a -m \"build: $npm_package_name@$npm_package_version\" && git push"
+    "preversion": "yarn build"
   },
   "devDependencies": {
     "@types/jest": "^29.5.4",
