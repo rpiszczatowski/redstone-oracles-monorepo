@@ -24,6 +24,9 @@ jobs:
           NODE_ENV: test
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
           COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
+          DOCKER_IMAGE_TAG: "ci"
+          TELEMETRY_URL: ${{ secrets.TELEMETRY_URL }}
+          TELEMETRY_AUTHORIZATION_TOKEN: ${{ secrets.TELEMETRY_AUTHORIZATION_TOKEN }}
       - name: Summary
         if: ${{ !cancelled() }}
         run: grep 'Fetching failed for source:\|Request failed:' logs.log >> $GITHUB_STEP_SUMMARY || true
