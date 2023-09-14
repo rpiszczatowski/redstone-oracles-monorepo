@@ -53,10 +53,7 @@ export function trackEnd(trackingId: string): void {
   // Clear the start value
   delete tasks[trackingId];
 
-  // Saving metric using Redstone HTTP endpoint
-  saveMetric(label, executionTime).catch((e) =>
-    console.error(`Failed saving metric: ${label}`, e)
-  );
+  saveMetric(label, executionTime);
 }
 
 export function sendNodeTelemetry() {
