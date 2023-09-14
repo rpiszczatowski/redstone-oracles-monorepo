@@ -103,7 +103,11 @@ async function sendMetric(
   };
   axios
     .post(config.telemetryUrl, requestData, requestConfig)
-    .catch((e) => console.error(`Failed saving metric: ${measurementName}`, e));
+    .catch((e) =>
+      console.error(
+        `Failed saving metric: ${measurementName}: ${e.response.status}, ${e.response.data.message}`
+      )
+    );
 }
 
 function isTelemetryEnabled() {
