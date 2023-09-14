@@ -33,7 +33,7 @@ const CustomUrlsSchema = z.object({
 
 const TokenSchema = z.object({
   source: z.array(z.string()).optional(),
-  deviationCheck: z.string().optional(),
+  deviationCheck: DeviationCheckSchema.optional(),
   customUrlDetails: CustomUrlsSchema.optional(),
   comment: z.string().optional(),
   skipSigning: z.boolean().optional(),
