@@ -36,6 +36,9 @@ export const getDryRunTestNodeConfig = (manifest: Manifest) => ({
   ethMainRpcUrls: ["https://mock-rpc.url"],
   arbitrumRpcUrls: ["https://mock-rpc.url"],
   optimismRpcUrls: ["https://mock-rpc.url"],
+  telemetryUrl: "",
+  telemetryAuthorizationToken: "",
+  dockerImageTag: "no_tag_dry_run",
 });
 
 export const MockScheduler = {
