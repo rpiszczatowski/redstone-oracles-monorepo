@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "types": "dist/index.d.ts",
   "license": "MIT",
+  "private": true,
   "scripts": {
     "build": "rm -rf dist && tsc -build",
     "start": "node dist/src/start-relayer.js",

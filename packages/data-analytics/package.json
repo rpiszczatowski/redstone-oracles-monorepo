@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "prettier": "redstone-prettier-config",
   "main": "index.js",
+  "private": "true",
   "license": "MIT",
   "scripts": {
     "get-avalanche-statistics": "yarn ts-node scripts/get-redstone-txs-stats-from-avalanche.ts"
