@@ -1,6 +1,6 @@
 import { Decimal } from "decimal.js";
 import { BigNumberish, Contract } from "ethers";
-import { RedstoneCommon, RedstoneTypes } from "redstone-utils";
+import { RedstoneCommon, RedstoneTypes } from "@redstone-finance/utils";
 import { getRawPrice, getRawPriceOrFail } from "../../db/local-db";
 import {
   DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,

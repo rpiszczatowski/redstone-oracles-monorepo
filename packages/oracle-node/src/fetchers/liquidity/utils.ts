@@ -1,4 +1,4 @@
-import { RedstoneTypes } from "redstone-utils";
+import { RedstoneTypes } from "@redstone-finance/utils";
 
 export const buildLiquidityDataFeedId = (
   tokenName: string,

@@ -1,5 +1,5 @@
 {
-  "name": "redstone-oracles-monorepo",
+  "name": "@redstone-finance/oracles-monorepo",
   "version": "0.0.2",
   "prettier": "redstone-prettier-config",
   "description": "",

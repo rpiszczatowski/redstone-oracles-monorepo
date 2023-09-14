@@ -1,5 +1,5 @@
 {
-  "name": "redstone-protocol",
+  "name": "@redstone-finance/protocol",
   "prettier": "redstone-prettier-config",
   "version": "1.0.5",
   "main": "dist/src/index.js",

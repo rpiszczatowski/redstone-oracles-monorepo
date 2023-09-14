@@ -1,5 +1,5 @@
 {
-  "name": "redstone-rpc-providers",
+  "name": "@redstone-finance/rpc-providers",
   "prettier": "redstone-prettier-config",
   "version": "0.0.1",
   "main": "dist/src/index.js",

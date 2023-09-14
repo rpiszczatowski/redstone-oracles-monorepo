@@ -1,4 +1,4 @@
-import { NumericDataPoint } from "redstone-protocol";
+import { NumericDataPoint } from "@redstone-finance/protocol";
 import { Manifest } from "../../src/types";
 
 export const mockDataPoints = [

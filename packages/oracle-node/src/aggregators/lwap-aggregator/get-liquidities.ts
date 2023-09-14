@@ -1,7 +1,7 @@
 import { buildLiquidityDataFeedId } from "../../fetchers/liquidity/utils";
 import { PricesWithLiquidity } from "./lwap-aggregator";
 import { PriceDataBeforeAggregation, PriceSource } from "../../types";
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber } from "@redstone-finance/utils";
 
 export const getTickLiquidities = (
   symbol: string,

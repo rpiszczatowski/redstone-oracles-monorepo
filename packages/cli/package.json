@@ -1,5 +1,5 @@
 {
-  "name": "redstone-cli",
+  "name": "@redstone-finance/cli",
   "prettier": "redstone-prettier-config",
   "version": "1.0.0",
   "main": "dist/src/index.js",

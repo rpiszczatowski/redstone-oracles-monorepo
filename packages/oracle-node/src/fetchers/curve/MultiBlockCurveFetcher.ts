@@ -1,4 +1,4 @@
-import { MathUtils, RedstoneTypes } from "redstone-utils";
+import { MathUtils, RedstoneTypes } from "@redstone-finance/utils";
 import { terminateWithManifestConfigError } from "../../Terminator";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { CurveFetcher, CurveFetcherResponse } from "./CurveFetcher";
@@ -57,7 +57,10 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     return this.curveFetcher.calculateLiquidity(assetId, response);
   }
 
-  override calculateSpotPrice(assetId: string, response: CurveFetcherResponse): number {
+  override calculateSpotPrice(
+    assetId: string,
+    response: CurveFetcherResponse
+  ): number {
     return this.curveFetcher.calculateSpotPrice(assetId, response);
   }
 

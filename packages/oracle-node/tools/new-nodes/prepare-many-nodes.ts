@@ -2,7 +2,7 @@ import prompts from "prompts";
 import fs from "fs";
 import Arweave from "arweave/node";
 import { ethers } from "ethers";
-import { RegisterNodeInputData } from "redstone-oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
+import { RegisterNodeInputData } from "@redstone-finance/oracles-smartweave-contracts/src/contracts/redstone-oracle-registry/types";
 import path from "path";
 
 const DEFAULT_LOGO_URL =

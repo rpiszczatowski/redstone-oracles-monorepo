@@ -1,5 +1,5 @@
 {
-  "name": "redstone-oracles-smartweave-contracts",
+  "name": "@redstone-finance/oracles-smartweave-contracts",
   "version": "1.0.6",
   "license": "MIT",
   "main": "dist/index.js",

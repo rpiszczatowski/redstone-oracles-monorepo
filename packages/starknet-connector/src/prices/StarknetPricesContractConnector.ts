@@ -1,6 +1,6 @@
 import { AccountInterface } from "starknet";
 import prices_abi from "./prices_abi.json";
-import { IContractConnector } from "redstone-sdk";
+import { IContractConnector } from "@redstone-finance/sdk";
 import { StarknetPricesContractAdapter } from "./StarknetPricesContractAdapter";
 import {
   NetworkName,

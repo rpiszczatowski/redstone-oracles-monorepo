@@ -1,6 +1,6 @@
 import { PriceDataAfterAggregation, PriceDataFetched } from "../types";
 import { VALUE_FOR_FAILED_FETCHER } from "./PricesService";
-import { RedstoneTypes } from "redstone-utils";
+import { RedstoneTypes } from "@redstone-finance/utils";
 
 export const createMetadataPerSource = (
   fetchedPrice: PriceDataFetched

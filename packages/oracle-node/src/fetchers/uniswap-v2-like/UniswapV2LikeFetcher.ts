@@ -1,6 +1,6 @@
 import Decimal from "decimal.js";
 import { BigNumber, Contract, providers } from "ethers";
-import { RedstoneTypes, MathUtils } from "redstone-utils";
+import { RedstoneTypes, MathUtils } from "@redstone-finance/utils";
 import { getLastPrice } from "../../db/local-db";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import {

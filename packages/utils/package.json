@@ -1,5 +1,5 @@
 {
-  "name": "redstone-utils",
+  "name": "@redstone-finance/utils",
   "prettier": "redstone-prettier-config",
   "version": "0.1.0",
   "main": "dist/src/index.js",

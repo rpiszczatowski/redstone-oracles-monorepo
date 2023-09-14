@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { SignedDataPackage } from "redstone-protocol";
+import { SignedDataPackage } from "@redstone-finance/protocol";
 import NodeRunner from "../../src/NodeRunner";
 import { IterationContext } from "../../src/schedulers/IScheduler";
 import { roundTimestamp } from "../../src/utils/timestamps";

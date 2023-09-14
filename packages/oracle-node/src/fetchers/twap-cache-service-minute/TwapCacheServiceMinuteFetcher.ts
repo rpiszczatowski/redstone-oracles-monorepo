@@ -2,8 +2,8 @@ import axios from "axios";
 import {
   deserializeSignedPackage,
   recoverSignerAddress,
-} from "redstone-protocol";
-import { RedstoneTypes } from "redstone-utils";
+} from "@redstone-finance/protocol";
+import { RedstoneTypes } from "@redstone-finance/utils";
 import Decimal from "decimal.js";
 import {
   MultiRequestFetcher,

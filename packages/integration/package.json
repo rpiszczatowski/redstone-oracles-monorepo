@@ -21,6 +21,6 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "redstone-utils": "*"
+    "@redstone-finance/utils": "*"
   }
 }

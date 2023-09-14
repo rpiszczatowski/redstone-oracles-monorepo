@@ -1,4 +1,7 @@
-import { IContractConnector, IPriceFeedContractAdapter } from "redstone-sdk";
+import {
+  IContractConnector,
+  IPriceFeedContractAdapter,
+} from "@redstone-finance/sdk";
 import price_feed_abi from "../../config/price_feed_abi.json";
 import { RelayerStarknetContractConnector } from "../RelayerStarknetContractConnector";
 import { PriceFeedContractAdapter } from "./PriceFeedContractAdapter";

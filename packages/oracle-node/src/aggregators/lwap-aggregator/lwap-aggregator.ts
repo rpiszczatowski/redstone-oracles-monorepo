@@ -1,4 +1,4 @@
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber } from "@redstone-finance/utils";
 import {
   Aggregator,
   PriceDataAfterAggregation,

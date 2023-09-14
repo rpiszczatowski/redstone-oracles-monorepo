@@ -1,5 +1,5 @@
 {
-  "name": "redstone-sdk",
+  "name": "@redstone-finance/sdk",
   "prettier": "redstone-prettier-config",
   "version": "1.8.2",
   "main": "dist/src/index.js",
@@ -17,9 +17,9 @@
   "dependencies": {
     "axios": "^0.27.2",
     "ethers": "^5.7.2",
-    "redstone-oracles-smartweave-contracts": "*",
-    "redstone-protocol": "*",
-    "redstone-utils": "^0.1.0"
+    "@redstone-finance/oracles-smartweave-contracts": "*",
+    "@redstone-finance/protocol": "*",
+    "@redstone-finance/utils": "^0.1.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.4",
