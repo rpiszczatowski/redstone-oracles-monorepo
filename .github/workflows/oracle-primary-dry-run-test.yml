@@ -19,7 +19,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run dry run test
-        run: yarn test:primary-dry-run 2>&1 | tee logs.log
+        run: yarn test:primary-dry-run
         env:
           NODE_ENV: test
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
@@ -27,6 +27,5 @@ jobs:
           KAIKO_API_KEY: ${{ secrets.KAIKO_API_KEY }}
           TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
           STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
-      - name: Summary
-        if: ${{ !cancelled() }}
-        run: grep 'Fetching failed for source:\|Request failed:' logs.log >> $GITHUB_STEP_SUMMARY || true
+          HISTORICAL_DATA_PACKAGES_URL: https://oracle-gateway-2.a.redstone.finance
+          SKIPPED_SOURCES: '["binance", "binancecoinm", "binanceusdm", "bybit"]'

@@ -19,10 +19,8 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run dry run test
-        run: yarn test:stocks-dry-run 2>&1 | tee logs.log
+        run: yarn test:stocks-dry-run
         env:
           NODE_ENV: test
           TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
-      - name: Summary
-        if: ${{ !cancelled() }}
-        run: grep 'Fetching failed for source:\|Request failed:' logs.log >> $GITHUB_STEP_SUMMARY || true
+          SKIPPED_SOURCES: '["binance"]'

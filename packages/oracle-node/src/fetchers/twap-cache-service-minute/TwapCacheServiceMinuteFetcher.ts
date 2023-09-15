@@ -173,7 +173,9 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
         dataPackage,
       });
 
-      if (singerAddress !== config.ethereumAddress) {
+      if (
+        singerAddress.toLowerCase() !== config.ethereumAddress.toLowerCase()
+      ) {
         throw new Error(
           "This node haven't signed package used to calculate TWAP"
         );

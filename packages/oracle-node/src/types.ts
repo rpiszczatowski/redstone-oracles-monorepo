@@ -23,7 +23,7 @@ export interface SourceTimeout {
 }
 
 export interface TokenConfig {
-  source?: string[];
+  source?: string[] | undefined;
   deviationCheck?: DeviationCheckConfig;
   customUrlDetails?: CustomUrlDetails;
   comment?: string;

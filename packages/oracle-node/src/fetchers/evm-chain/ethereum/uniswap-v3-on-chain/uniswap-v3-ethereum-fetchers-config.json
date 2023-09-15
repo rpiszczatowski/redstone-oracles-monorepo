@@ -751,9 +751,9 @@
     "FRAX": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xc63b0708e2f7e69cb8a1df0e1389a98c35a76d52",
-      "token0Symbol": "GHO",
+      "token0Symbol": "FRAX",
       "token1Symbol": "USDC",
-      "token0Address": "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f",
+      "token0Address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
       "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       "token0Decimals": 18,
       "token1Decimals": 6,
@@ -762,9 +762,9 @@
     "GHO": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x5c95d4B1C3321CF898D25949F41D50Be2dB5bc1d",
-      "token0Symbol": "FRAX",
+      "token0Symbol": "GHO",
       "token1Symbol": "USDC",
-      "token0Address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+      "token0Address": "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f",
       "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       "token0Decimals": 18,
       "token1Decimals": 6,
