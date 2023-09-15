@@ -104,7 +104,6 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeRespons
     // sell slippage
     const currentAssetTokensAmount = tryConvertUsdToTokenAmount(
       assetId,
-      10 ** currentTokenScaler.tokenDecimals,
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
     if (!currentAssetTokensAmount) {
@@ -125,7 +124,6 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeRespons
     // buy slippage
     const pairedTokenTokensAmount = convertUsdToTokenAmount(
       pairedToken,
-      10 ** pairedTokenScaler.tokenDecimals,
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
     const lowAmountBuy = this.getToken1SwapPrice(

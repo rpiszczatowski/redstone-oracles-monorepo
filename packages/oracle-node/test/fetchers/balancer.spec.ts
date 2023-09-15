@@ -110,12 +110,12 @@ describe("balancer multi fetcher", () => {
             {
               direction: "buy",
               simulationValueInUsd: "10000",
-              slippageAsPercent: "100",
+              slippageAsPercent: "99.9999999999999998",
             },
             {
               direction: "sell",
               simulationValueInUsd: "10000",
-              slippageAsPercent: "100",
+              slippageAsPercent: "99.9999999999999998",
             },
           ],
         },

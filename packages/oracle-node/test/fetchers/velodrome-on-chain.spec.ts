@@ -100,7 +100,7 @@ describe("velodrome fetcher", () => {
           {
             direction: "sell",
             simulationValueInUsd: "10000",
-            slippageAsPercent: "18.181818181818181818",
+            slippageAsPercent: "10.891089108910891089",
           },
         ],
       },
@@ -141,7 +141,7 @@ describe("velodrome fetcher", () => {
           {
             direction: "sell",
             simulationValueInUsd: "10000",
-            slippageAsPercent: "0.1998001998001998",
+            slippageAsPercent: "0.038196625668189844",
           },
         ],
       },

@@ -61,13 +61,11 @@ export class WombatFetcher extends DexOnChainFetcher<WombatResponse> {
     const quoteTokenScaler = new MathUtils.PrecisionScaler(quoteToken.decimals);
     const amountInBaseToken = tryConvertUsdToTokenAmount(
       assetId,
-      baseTokenScaler.tokenDecimalsScaler.toNumber(),
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
 
     const amountInQuoteToken = convertUsdToTokenAmount(
       pairedToken ?? quoteToken.symbol,
-      quoteTokenScaler.tokenDecimalsScaler.toNumber(),
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
 

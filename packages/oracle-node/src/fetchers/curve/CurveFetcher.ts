@@ -33,15 +33,13 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
     assetId: string,
     blockTag?: string | number
   ): Promise<CurveFetcherResponse> {
-    const { address, provider, pairedToken, pairedTokenDecimalsMultiplier } =
-      this.poolsConfig[assetId];
+    const { address, provider, pairedToken } = this.poolsConfig[assetId];
 
     const curvePool = new Contract(address, abi, provider);
 
     const amountInBaseToken = this.getAmountInBaseToken(assetId);
     const amountInPairedToken = convertUsdToTokenAmount(
       pairedToken,
-      pairedTokenDecimalsMultiplier,
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
 
@@ -116,12 +114,9 @@ export class CurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
   }
 
   private getAmountInBaseToken(assetId: string) {
-    const { tokenDecimalsMultiplier: tokenDecimals } =
-      this.poolsConfig[assetId];
     try {
       return convertUsdToTokenAmount(
         assetId,
-        tokenDecimals,
         DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
       );
     } catch (e) {

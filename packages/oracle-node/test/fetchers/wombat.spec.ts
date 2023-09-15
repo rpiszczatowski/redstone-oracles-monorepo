@@ -105,13 +105,13 @@ describe("Wombat", () => {
               direction: "buy",
               simulationValueInUsd:
                 DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
-              slippageAsPercent: "100",
+              slippageAsPercent: "99.9999999999999998",
             },
             {
               direction: "sell",
               simulationValueInUsd:
                 DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
-              slippageAsPercent: "100",
+              slippageAsPercent: "99.9999999999999998",
             },
           ],
           liquidity: undefined,

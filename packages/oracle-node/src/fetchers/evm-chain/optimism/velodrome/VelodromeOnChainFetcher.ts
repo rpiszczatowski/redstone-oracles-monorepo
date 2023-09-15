@@ -48,16 +48,12 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
     const quoteTokenPrice = getLastPriceOrFail(
       poolConfig.pairedToken ?? quoteToken.symbol
     ).value;
-    const baseTokenScaler = new MathUtils.PrecisionScaler(baseToken.decimals);
-    const quoteTokenScaler = new MathUtils.PrecisionScaler(quoteToken.decimals);
     const swapAmountBase = tryConvertUsdToTokenAmount(
       baseToken.symbol,
-      baseTokenScaler.tokenDecimalsScaler.toNumber(),
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
     const swapAmountPaired = convertUsdToTokenAmount(
       poolConfig.pairedToken ?? quoteToken.symbol,
-      quoteTokenScaler.tokenDecimalsScaler.toNumber(),
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
     const multicallContext = this.buildContractCallContext(

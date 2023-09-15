@@ -79,12 +79,10 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<MulticallResult
     );
     const swapAmountBase = tryConvertUsdToTokenAmount(
       assetId,
-      baseTokenScaler.tokenDecimalsScaler.toNumber(),
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
     const swapAmountQuote = convertUsdToTokenAmount(
       this.pairsConfig[assetId].pairedToken ?? quoteTokenConfig.symbol,
-      quoteTokenScaler.tokenDecimalsScaler.toNumber(),
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
     const callContexts = this.buildContractCallContext(

@@ -58,12 +58,10 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     ).value;
     const swapAmountBase = tryConvertUsdToTokenAmount(
       baseToken.symbol,
-      baseTokenScaler.tokenDecimalsScaler.toNumber(),
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
     const swapAmountQuote = convertUsdToTokenAmount(
       poolConfig.pairedToken ?? quoteToken.symbol,
-      quoteTokenScaler.tokenDecimalsScaler.toNumber(),
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
 

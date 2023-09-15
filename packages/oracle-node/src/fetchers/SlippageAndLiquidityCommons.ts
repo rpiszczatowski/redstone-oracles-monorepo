@@ -5,19 +5,16 @@ export const DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE = 10_000; // 10k usd
 
 export const convertUsdToTokenAmount = (
   assetId: string,
-  decimalsMultiplier: number,
   amountInUsd: number
 ) => {
   return new Decimal(amountInUsd)
     .div(getRawPriceOrFail(assetId).value)
-    .mul(decimalsMultiplier)
     .round()
     .toString();
 };
 
 export const tryConvertUsdToTokenAmount = (
   assetId: string,
-  decimalsMultiplier: number,
   amountInUsd: number
 ): string | undefined => {
   let rawPrice = undefined;
@@ -29,11 +26,7 @@ export const tryConvertUsdToTokenAmount = (
   if (!rawPrice) {
     return undefined;
   }
-  return new Decimal(amountInUsd)
-    .div(rawPrice)
-    .mul(decimalsMultiplier)
-    .round()
-    .toString();
+  return new Decimal(amountInUsd).div(rawPrice).round().toString();
 };
 
 export const calculateSlippage = (

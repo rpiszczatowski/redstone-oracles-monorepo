@@ -89,13 +89,11 @@ export class BalancerFetcher extends DexOnChainFetcher<BalancerResponse> {
     if (baseTokenPrice) {
       swapAmountBase = convertUsdToTokenAmount(
         assetId,
-        baseTokenScaler.tokenDecimalsScaler.toNumber(),
         DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
       );
     }
     const swapAmountPaired = convertUsdToTokenAmount(
       pairedToken,
-      pairedTokenScaler.tokenDecimalsScaler.toNumber(),
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
 

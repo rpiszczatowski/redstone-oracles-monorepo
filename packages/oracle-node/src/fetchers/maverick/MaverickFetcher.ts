@@ -61,13 +61,11 @@ export class MaverickFetcher extends DexOnChainFetcher<MaverickResponse> {
 
     const amountIn0Token = tryConvertUsdToTokenAmount(
       assetId,
-      token0Decimals,
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
 
     const amountIn1Token = convertUsdToTokenAmount(
       pairedToken,
-      token1Decimals,
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
 
