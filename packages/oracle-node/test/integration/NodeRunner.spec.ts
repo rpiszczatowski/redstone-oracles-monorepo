@@ -310,7 +310,7 @@ describe("NodeRunner", () => {
             symbol: "BTC",
             timestamp: 111111000,
             value: 444.5,
-            version: "0.4",
+            version: "0.3",
           },
           {
             liteEvmSignature: "mock_evm_signed_lite",
@@ -324,7 +324,7 @@ describe("NodeRunner", () => {
             symbol: "ETH",
             timestamp: 111111000,
             value: 42,
-            version: "0.4",
+            version: "0.3",
           },
         ])
       );
