@@ -61,13 +61,13 @@ export class MaverickFetcher extends DexOnChainFetcher<MaverickResponse> {
 
     const amountIn0Token = tryConvertUsdToTokenAmount(
       assetId,
-      token0Decimals,
+      10 ** token0Decimals,
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
 
     const amountIn1Token = convertUsdToTokenAmount(
       pairedToken,
-      token1Decimals,
+      10 ** token1Decimals,
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
 
@@ -226,7 +226,7 @@ class MultiCallHandler {
           function: "calculateSwap",
           params: [
             this.tokenConfig.poolAddress,
-            this.token0Scaler.toSolidityValue(this.amountIn0Token),
+            this.amountIn0Token,
             true,
             false,
             0,
@@ -236,7 +236,7 @@ class MultiCallHandler {
           function: "calculateSwap",
           params: [
             this.tokenConfig.poolAddress,
-            this.token1Scaler.toSolidityValue(this.amountIn1Token),
+            this.amountIn1Token,
             false,
             false,
             0,
@@ -246,6 +246,12 @@ class MultiCallHandler {
     }
 
     return requests;
+  }
+
+  private getPrice(subTokensIn: BigNumberish, subTokensOut: BigNumberish) {
+    const tokens0 = this.token0Scaler.fromSolidityValue(subTokensIn);
+    const tokens1 = this.token1Scaler.fromSolidityValue(subTokensOut);
+    return tokens0.div(tokens1);
   }
 
   parseResponse(multicallResponse: BigNumberish[]) {
@@ -269,12 +275,16 @@ class MultiCallHandler {
       this.token1Scaler.fromSolidityValue(smallSellAmountOut);
     const smallBuyAmountOutScaled =
       this.token0Scaler.fromSolidityValue(smallBuyAmountOut);
-    const bigSellAmountOutScaled = this.token1Scaler
-      .fromSolidityValue(bigSellAmountOut)
-      .div(this.amountIn0Token);
-    const bigBuyAmountOutScaled = this.token0Scaler
-      .fromSolidityValue(bigBuyAmountOut)
-      .div(this.amountIn1Token);
+
+    const bigSellAmountOutScaled = this.getPrice(
+      bigSellAmountOut,
+      this.amountIn0Token
+    );
+
+    const bigBuyAmountOutScaled = this.getPrice(
+      bigBuyAmountOut,
+      this.amountIn1Token
+    );
 
     return {
       price,

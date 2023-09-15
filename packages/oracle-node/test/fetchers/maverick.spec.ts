@@ -108,13 +108,13 @@ describe("Maverick", () => {
               direction: "buy",
               simulationValueInUsd:
                 DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
-              slippageAsPercent: "98.969072164948453608",
+              slippageAsPercent: "99.999999999999999981",
             },
             {
               direction: "sell",
               simulationValueInUsd:
                 DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
-              slippageAsPercent: "98.969072164948453608",
+              slippageAsPercent: "99.999999999999999981",
             },
           ],
           liquidity: undefined,
