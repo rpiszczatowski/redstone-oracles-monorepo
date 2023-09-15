@@ -7,7 +7,7 @@ on:
 
 jobs:
   rapid-dry-run-test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
       run:
