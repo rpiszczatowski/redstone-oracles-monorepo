@@ -38,8 +38,6 @@ type SupportedIds = keyof (typeof fetcherConfig)["tokens"];
 
 export interface MaverickResponse {
   price: Decimal;
-  smallSellAmountOutScaled?: Decimal;
-  smallBuyAmountOutScaled?: Decimal;
   bigSellAmountOutScaled?: Decimal;
   bigBuyAmountOutScaled?: Decimal;
 }
@@ -118,29 +116,16 @@ export class MaverickFetcher extends DexOnChainFetcher<MaverickResponse> {
     assetId: string,
     response: MaverickResponse
   ): RedstoneTypes.SlippageData[] {
-    const {
-      smallSellAmountOutScaled,
-      smallBuyAmountOutScaled,
-      bigSellAmountOutScaled,
-      bigBuyAmountOutScaled,
-    } = response;
+    const { bigSellAmountOutScaled, bigBuyAmountOutScaled, price } = response;
 
-    if (
-      !smallBuyAmountOutScaled ||
-      !smallSellAmountOutScaled ||
-      !bigBuyAmountOutScaled ||
-      !bigSellAmountOutScaled
-    ) {
+    if (!bigBuyAmountOutScaled || !bigSellAmountOutScaled) {
       return [];
     }
 
-    const buySlippage = calculateSlippage(
-      smallBuyAmountOutScaled,
-      bigBuyAmountOutScaled
-    );
+    const buySlippage = calculateSlippage(price, bigBuyAmountOutScaled);
 
     const sellSlippage = calculateSlippage(
-      smallSellAmountOutScaled,
+      new Decimal(1).div(price),
       bigSellAmountOutScaled
     );
 
@@ -190,38 +175,18 @@ class MultiCallHandler {
     ];
 
     if (this.amountIn0Token) {
+      /// @notice calculate swap tokens
+      /// @param pool to swap against
+      /// @param amount amount of token that is either the input if exactOutput
+      //is false or the output if exactOutput is true
+      /// @param tokenAIn bool indicating whether tokenA is the input
+      /// @param exactOutput bool indicating whether the amount specified is the
+      //exact output amount (true)
+      /// @param sqrtPriceLimit limiting sqrt price of the swap.  A value of 0
+      //indicates no limit.  Limit is only engaged for exactOutput=false.  If the
+      //limit is reached only part of the input amount will be swapped and the
+      //callback will only require that amount of the swap to be paid.
       requests.push(
-        {
-          /// @notice calculate swap tokens
-          /// @param pool to swap against
-          /// @param amount amount of token that is either the input if exactOutput
-          //is false or the output if exactOutput is true
-          /// @param tokenAIn bool indicating whether tokenA is the input
-          /// @param exactOutput bool indicating whether the amount specified is the
-          //exact output amount (true)
-          /// @param sqrtPriceLimit limiting sqrt price of the swap.  A value of 0
-          //indicates no limit.  Limit is only engaged for exactOutput=false.  If the
-          //limit is reached only part of the input amount will be swapped and the
-          //callback will only require that amount of the swap to be paid.
-          function: "calculateSwap",
-          params: [
-            this.tokenConfig.poolAddress,
-            this.token0Scaler.toSolidityValue(1),
-            true,
-            false,
-            0,
-          ],
-        },
-        {
-          function: "calculateSwap",
-          params: [
-            this.tokenConfig.poolAddress,
-            this.token1Scaler.toSolidityValue(1),
-            false,
-            false,
-            0,
-          ],
-        },
         {
           function: "calculateSwap",
           params: [
@@ -248,12 +213,6 @@ class MultiCallHandler {
     return requests;
   }
 
-  private getPrice(subTokensIn: BigNumberish, subTokensOut: BigNumberish) {
-    const tokens0 = this.token0Scaler.fromSolidityValue(subTokensIn);
-    const tokens1 = this.token1Scaler.fromSolidityValue(subTokensOut);
-    return tokens0.div(tokens1);
-  }
-
   parseResponse(multicallResponse: BigNumberish[]) {
     const [sqrtPrice, ...slippageResponses] = multicallResponse;
     const price = RedstoneCommon.bignumberishToDecimal(sqrtPrice)
@@ -265,31 +224,23 @@ class MultiCallHandler {
     }
 
     const [
-      smallSellAmountOut, // token1
-      smallBuyAmountOut, // token0
       bigSellAmountOut, // token0
       bigBuyAmountOut, // token1
     ] = slippageResponses;
 
-    const smallSellAmountOutScaled =
-      this.token1Scaler.fromSolidityValue(smallSellAmountOut);
-    const smallBuyAmountOutScaled =
-      this.token0Scaler.fromSolidityValue(smallBuyAmountOut);
-
-    const bigSellAmountOutScaled = this.getPrice(
-      bigSellAmountOut,
+    const tokens0Sell = this.token0Scaler.fromSolidityValue(
       this.amountIn0Token
     );
+    const tokens1Sell = this.token1Scaler.fromSolidityValue(bigSellAmountOut);
 
-    const bigBuyAmountOutScaled = this.getPrice(
-      bigBuyAmountOut,
-      this.amountIn1Token
-    );
+    const bigSellAmountOutScaled = tokens0Sell.div(tokens1Sell);
+
+    const tokens0Buy = this.token0Scaler.fromSolidityValue(bigBuyAmountOut);
+    const tokens1Buy = this.token1Scaler.fromSolidityValue(this.amountIn1Token);
+    const bigBuyAmountOutScaled = tokens1Buy.div(tokens0Buy);
 
     return {
       price,
-      smallSellAmountOutScaled,
-      smallBuyAmountOutScaled,
       bigSellAmountOutScaled,
       bigBuyAmountOutScaled,
     };

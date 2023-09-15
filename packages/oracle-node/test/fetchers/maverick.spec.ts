@@ -13,6 +13,7 @@ import { MAVERICK_POOL_INFORMATION_ABI } from "../../src/fetchers/maverick/pool-
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { RedstoneCommon } from "@redstone-finance/utils";
 import { DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE } from "../../src/fetchers/SlippageAndLiquidityCommons";
+import Decimal from "decimal.js";
 
 describe("Maverick", () => {
   let mockContract: MockContract;
@@ -94,7 +95,9 @@ describe("Maverick", () => {
     await saveMockPriceInLocalDb(1850, "ETH");
     await saveMockPriceInLocalDb(1850, "SWETH");
 
-    await mockContract.mock.calculateSwap.returns("1");
+    await mockContract.mock.calculateSwap.returns(
+      BigNumber.from("6010994351122103028")
+    );
 
     const result = await fetcher.fetchAll(["SWETH"]);
 
@@ -108,13 +111,13 @@ describe("Maverick", () => {
               direction: "buy",
               simulationValueInUsd:
                 DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
-              slippageAsPercent: "99.999999999999999981",
+              slippageAsPercent: "12.019891392257053006",
             },
             {
               direction: "sell",
               simulationValueInUsd:
                 DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
-              slippageAsPercent: "99.999999999999999981",
+              slippageAsPercent: "8.0864776256059975545",
             },
           ],
           liquidity: undefined,
