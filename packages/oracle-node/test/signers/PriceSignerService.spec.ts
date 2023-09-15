@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import PriceSignerService from "../../src/signers/PriceSignerService";
 import { PriceDataBeforeSigning } from "../../src/types";
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber } from "@redstone-finance/utils";
 
 const testPrivKey =
   "0xc094df8d4a95134e721b2e418f53658c3927ee21b62b9b63c4331a902199e1e8";

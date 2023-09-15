@@ -20,7 +20,7 @@ import { balancerEthereumConfigs } from "../../src/fetchers/balancer/balancer-et
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { Contract } from "ethers";
 import Decimal from "decimal.js";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 describe("balancer multi fetcher", () => {
   let provider: MockProvider;

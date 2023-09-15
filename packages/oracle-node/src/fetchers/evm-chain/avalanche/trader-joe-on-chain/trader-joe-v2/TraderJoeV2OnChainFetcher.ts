@@ -1,7 +1,11 @@
 import Decimal from "decimal.js";
 import { ContractCallContext } from "ethereum-multicall";
 import { providers } from "ethers";
-import { MathUtils, RedstoneCommon, RedstoneTypes } from "redstone-utils";
+import {
+  MathUtils,
+  RedstoneCommon,
+  RedstoneTypes,
+} from "@redstone-finance/utils";
 import { getLastPriceOrFail } from "../../../../../db/local-db";
 import { DexOnChainFetcher } from "../../../../dex-on-chain/DexOnChainFetcher";
 import {
@@ -125,7 +129,10 @@ export class TraderJoeV2OnChainFetcher extends DexOnChainFetcher<MulticallResult
       baseTokenScaler,
       quoteTokenScaler
     );
-    const sellSlippage = calculateSlippage(new Decimal(1).div(basePriceInQuote), sellPrice);
+    const sellSlippage = calculateSlippage(
+      new Decimal(1).div(basePriceInQuote),
+      sellPrice
+    );
     return {
       spotPrice,
       buySlippage,

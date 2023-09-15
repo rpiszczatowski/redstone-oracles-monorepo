@@ -1,14 +1,14 @@
 import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
 import { Consola } from "consola";
 import { providers, utils, Wallet } from "ethers";
-import { SignedDataPackage } from "redstone-protocol";
+import { SignedDataPackage } from "@redstone-finance/protocol";
 import {
   compressMsg,
   doesStreamExist,
   getStreamIdForNodeByEvmAddress,
   StreamPermission,
   StreamrClient,
-} from "redstone-streamr-proxy";
+} from "@redstone-finance/streamr-proxy";
 
 const POLYGON_RPC = {
   name: "Polygon",

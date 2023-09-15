@@ -1,7 +1,7 @@
 import { deployMockContract } from "@ethereum-waffle/mock-contract";
 import { deployContract, MockContract, MockProvider } from "ethereum-waffle";
 import { BigNumber } from "ethers";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,

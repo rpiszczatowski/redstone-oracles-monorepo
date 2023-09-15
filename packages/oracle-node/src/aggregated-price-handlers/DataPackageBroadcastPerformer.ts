@@ -7,7 +7,7 @@ import {
   Metadata,
   NumericDataPoint,
   SignedDataPackage,
-} from "redstone-protocol";
+} from "@redstone-finance/protocol";
 import { Consola } from "consola";
 import {
   DataPackageBroadcaster,

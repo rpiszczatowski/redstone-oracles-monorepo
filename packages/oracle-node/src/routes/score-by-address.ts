@@ -5,7 +5,7 @@ import {
   prepareMessageToSign,
   ScoreType,
   signOnDemandDataPackage,
-} from "redstone-protocol";
+} from "@redstone-finance/protocol";
 import { NodeConfig } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
 import {

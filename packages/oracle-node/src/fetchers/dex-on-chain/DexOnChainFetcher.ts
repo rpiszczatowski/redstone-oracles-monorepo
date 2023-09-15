@@ -1,5 +1,5 @@
 import { appendFileSync, writeFileSync } from "fs";
-import { RedstoneCommon, RedstoneTypes } from "redstone-utils";
+import { RedstoneCommon, RedstoneTypes } from "@redstone-finance/utils";
 import { PricesObjWithMetadata } from "../../types";
 import {
   isLiquidity,

@@ -11,7 +11,7 @@ import {
 import { BigNumber } from "ethers";
 import { MAVERICK_POOL_INFORMATION_ABI } from "../../src/fetchers/maverick/pool-information.abi";
 import multicall3Json from "../abis/Multicall3.deployment.json";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import { DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE } from "../../src/fetchers/SlippageAndLiquidityCommons";
 
 describe("Maverick", () => {

@@ -1,4 +1,4 @@
-import { DataPoint } from "redstone-protocol";
+import { DataPoint } from "@redstone-finance/protocol";
 import { config } from "../config";
 import { TokensConfig } from "../types";
 import { terminateWithManifestConfigError } from "../Terminator";

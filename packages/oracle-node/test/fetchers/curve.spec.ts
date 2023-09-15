@@ -1,7 +1,7 @@
 import { deployMockContract } from "@ethereum-waffle/mock-contract";
 import Decimal from "decimal.js";
 import { deployContract, MockContract, MockProvider } from "ethereum-waffle";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,

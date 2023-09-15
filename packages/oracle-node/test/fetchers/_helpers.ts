@@ -1,6 +1,6 @@
 import { savePrices } from "../../src/db/local-db";
 import axios from "axios";
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber } from "@redstone-finance/utils";
 import { Wallet } from "ethers";
 import { deployContract } from "ethereum-waffle";
 import {

@@ -1,4 +1,4 @@
-import { DataPackage, SignedDataPackage } from "redstone-protocol";
+import { DataPackage, SignedDataPackage } from "@redstone-finance/protocol";
 import { DataPackageBroadcastPerformer } from "../../src/aggregated-price-handlers/DataPackageBroadcastPerformer";
 import { PriceDataBroadcastPerformer } from "../../src/aggregated-price-handlers/PriceDataBroadcastPerformer";
 import {

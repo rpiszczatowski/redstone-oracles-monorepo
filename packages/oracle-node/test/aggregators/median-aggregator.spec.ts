@@ -4,7 +4,7 @@ import {
   SanitizedPriceDataBeforeAggregation,
 } from "../../src/types";
 import medianAggregator from "../../src/aggregators/median-aggregator";
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber } from "@redstone-finance/utils";
 
 describe("medianAggregator", () => {
   it("should properly aggregate prices from different sources", () => {

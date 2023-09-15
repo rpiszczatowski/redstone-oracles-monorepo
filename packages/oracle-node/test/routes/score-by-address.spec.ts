@@ -3,7 +3,10 @@ import request from "supertest";
 import { clearRecordedAddresses } from "../../src/routes/services/RateLimitingService";
 import { getApp } from "./_helpers";
 import { Wallet } from "ethers";
-import { prepareMessageToSign, UniversalSigner } from "redstone-protocol";
+import {
+  prepareMessageToSign,
+  UniversalSigner,
+} from "@redstone-finance/protocol";
 
 jest.mock("../../src/routes/score-by-address.ts", () => ({
   ...jest.requireActual("../../src/routes/score-by-address.ts"),

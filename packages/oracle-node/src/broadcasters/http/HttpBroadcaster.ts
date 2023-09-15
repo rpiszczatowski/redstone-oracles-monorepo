@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Consola } from "consola";
-import { SignedDataPackage, UniversalSigner } from "redstone-protocol";
+import { SignedDataPackage, UniversalSigner } from "@redstone-finance/protocol";
 import { stringifyError } from "../../utils/error-stringifier";
 import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
 

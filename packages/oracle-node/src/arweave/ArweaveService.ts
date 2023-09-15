@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { Consola } from "consola";
 import { Manifest } from "../types";
 import { promiseTimeout } from "../utils/promise-timeout";
-import { getDataServiceIdForSigner } from "redstone-sdk";
+import { getDataServiceIdForSigner } from "@redstone-finance/sdk";
 import { config } from "../config";
 import contractsAddresses from "../../src/config/contracts.json";
 

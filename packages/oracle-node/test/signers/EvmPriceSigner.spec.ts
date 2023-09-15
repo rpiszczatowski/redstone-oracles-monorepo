@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import EvmPriceSigner from "../../src/signers/EvmPriceSigner";
 import { PricePackage, SignedPricePackage } from "../../src/types";
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber } from "@redstone-finance/utils";
 
 const evmSigner = new EvmPriceSigner();
 const ethereumPrivateKey =

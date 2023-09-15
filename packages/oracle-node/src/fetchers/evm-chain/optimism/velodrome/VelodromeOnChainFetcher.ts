@@ -1,7 +1,11 @@
 import { Decimal } from "decimal.js";
 import { ContractCallContext } from "ethereum-multicall";
 import { BigNumberish, providers } from "ethers";
-import { MathUtils, RedstoneCommon, RedstoneTypes } from "redstone-utils";
+import {
+  MathUtils,
+  RedstoneCommon,
+  RedstoneTypes,
+} from "@redstone-finance/utils";
 
 import { getLastPrice, getLastPriceOrFail } from "../../../../db/local-db";
 import { DexOnChainFetcher } from "../../../dex-on-chain/DexOnChainFetcher";
@@ -67,12 +71,11 @@ export class VelodromeOnChainFetcher extends DexOnChainFetcher<MulticallResult> 
       this.provider,
       multicallContext
     );
-    const basePriceInQuote =
-      VelodromeOnChainFetcher.extractSpotPriceFromResult(
-        assetId,
-        multicallResult,
-        poolConfig
-      );
+    const basePriceInQuote = VelodromeOnChainFetcher.extractSpotPriceFromResult(
+      assetId,
+      multicallResult,
+      poolConfig
+    );
     const spotPrice = basePriceInQuote.mul(quoteTokenPrice).toString();
     if (!baseTokenPrice) {
       return { spotPrice };

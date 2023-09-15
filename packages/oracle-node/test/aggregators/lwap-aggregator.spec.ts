@@ -1,6 +1,6 @@
 import lwapAggregator from "../../src/aggregators/lwap-aggregator/lwap-aggregator";
 import { closeLocalLevelDB, setupLocalDb } from "../../src/db/local-db";
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber } from "@redstone-finance/utils";
 import {
   PriceDataBeforeAggregation,
   SanitizedPriceDataBeforeAggregation,
