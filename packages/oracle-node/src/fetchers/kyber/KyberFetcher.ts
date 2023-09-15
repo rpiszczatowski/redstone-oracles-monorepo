@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { BaseFetcher } from "../BaseFetcher";
 import { getLastPrice } from "../../db/local-db";
 import { PricesObj } from "../../types";
@@ -12,21 +12,24 @@ export class KyberFetcher extends BaseFetcher {
     super("kyber");
   }
 
-  async fetchData() {
-    return await axios.get(ETH_PAIRS_URL);
+  override async fetchData() {
+    return await axios.get<Pair>(ETH_PAIRS_URL);
   }
 
-  extractPrices(response: any, ids: string[]): PricesObj {
+  override extractPrices(
+    response: AxiosResponse<Pair>,
+    ids: string[]
+  ): PricesObj {
     const lastEthPrice = getLastPrice("ETH")?.value;
 
-    const pairs = response.data as Pair;
+    const pairs = response.data;
 
     return this.extractPricesSafely(ids, (id) =>
-      this.extractPricePair(pairs, id, lastEthPrice)
+      KyberFetcher.extractPricePair(pairs, id, lastEthPrice)
     );
   }
 
-  private extractPricePair(
+  private static extractPricePair(
     pairs: Pair,
     id: string,
     lastEthPrice: number | undefined

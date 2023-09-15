@@ -1,10 +1,10 @@
 import axios from "axios";
-import { Consola } from "consola";
 import { SignedDataPackage, UniversalSigner } from "@redstone-finance/protocol";
 import { stringifyError } from "../../utils/error-stringifier";
 import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
+import loggerFactory from "../../utils/logger";
 
-const logger = require("../../utils/logger")("HttpBroadcaster") as Consola;
+const logger = loggerFactory("HttpBroadcaster");
 
 export class HttpBroadcaster implements DataPackageBroadcaster {
   constructor(

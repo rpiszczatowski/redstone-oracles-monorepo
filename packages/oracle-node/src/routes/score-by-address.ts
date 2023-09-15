@@ -1,6 +1,5 @@
 import express from "express";
 import { utils } from "ethers";
-import { Consola } from "consola";
 import {
   prepareMessageToSign,
   ScoreType,
@@ -14,8 +13,9 @@ import {
 } from "./services/RateLimitingService";
 import { determineAddressLevelByCoinbaseData } from "../on-demand/CoinbaseKyd";
 import * as ScoreByAddress from "./score-by-address";
+import loggerFactory from "../utils/logger";
 
-const logger = require("../utils/logger")("score-by-address") as Consola;
+const logger = loggerFactory("score-by-address");
 
 interface Payload {
   signature: string;
@@ -29,6 +29,7 @@ export const setScoreByAddressRoute = (
   app: express.Application,
   nodeConfig: NodeConfig
 ) => {
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   app.get("/score-by-address", async (req, res) => {
     try {
       logger.info("Requested score by address");
@@ -48,8 +49,8 @@ export const setScoreByAddressRoute = (
       );
 
       res.json(signedDataPackage.toObj());
-    } catch (error: any) {
-      const errText = stringifyError(error.message);
+    } catch (error) {
+      const errText = stringifyError((error as Error).message);
       res.status(400).json({
         error: errText,
       });
@@ -60,7 +61,7 @@ export const setScoreByAddressRoute = (
 const verifyPayload = (
   timestamp: string,
   signature: string,
-  scoreType: ScoreType
+  scoreType?: ScoreType
 ) => {
   if (!(timestamp && signature && scoreType)) {
     throw new Error("Invalid request, missing parameter");

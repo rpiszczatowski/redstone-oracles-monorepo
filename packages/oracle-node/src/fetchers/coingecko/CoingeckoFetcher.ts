@@ -20,14 +20,14 @@ export class CoingeckoFetcher extends BaseFetcher {
   }
 
   override convertIdToSymbol(id: string) {
-    return getRequiredPropValue(idToSymbol, id);
+    return getRequiredPropValue<string>(idToSymbol, id);
   }
 
   override convertSymbolToId(symbol: string) {
-    return getRequiredPropValue(symbolToId, symbol);
+    return getRequiredPropValue<string>(symbolToId, symbol);
   }
 
-  async fetchData(ids: string[]): Promise<SimplePrices> {
+  override async fetchData(ids: string[]): Promise<SimplePrices> {
     const { coingeckoApiUrl, coingeckoApiKey } = config;
     const idsChunks = _.chunk(ids, COINGECKO_TOKENS_LIMIT);
 
@@ -46,7 +46,7 @@ export class CoingeckoFetcher extends BaseFetcher {
     return mergedPrices;
   }
 
-  extractPrices(prices: SimplePrices): PricesObj {
+  override extractPrices(prices: SimplePrices): PricesObj {
     return this.extractPricesSafely(Object.keys(prices), (id) => ({
       value: prices[id].usd,
       id,

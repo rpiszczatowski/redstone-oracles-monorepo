@@ -1,5 +1,4 @@
 import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
-import { Consola } from "consola";
 import { providers, utils, Wallet } from "ethers";
 import { SignedDataPackage } from "@redstone-finance/protocol";
 import {
@@ -9,6 +8,7 @@ import {
   StreamPermission,
   StreamrClient,
 } from "@redstone-finance/streamr-proxy";
+import loggerFactory from "../../utils/logger";
 
 const POLYGON_RPC = {
   name: "Polygon",
@@ -19,7 +19,7 @@ const MINIMAL_MATIC_BALANCE = "0.1";
 const STORAGE_DAYS = 7;
 const INACTIVITY_THRESHOLD_HOURS = 24 * 20; // 20 days
 
-const logger = require("../../utils/logger")("StreamrBroadcaster") as Consola;
+const logger = loggerFactory("StreamrBroadcaster");
 
 export class StreamrBroadcaster implements DataPackageBroadcaster {
   private readonly streamrClient: StreamrClient;

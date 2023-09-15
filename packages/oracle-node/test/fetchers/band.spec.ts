@@ -6,7 +6,7 @@ jest.mock("axios");
 mockFetcherResponse("../../src/fetchers/band/example-response.json");
 
 describe("band fetcher", () => {
-  const sut = fetchers["band"];
+  const sut = fetchers["band"]!;
 
   it("should properly fetch data", async () => {
     const result = await sut.fetchAll(["BTC", "ETH", "AAVE", "UNI"]);

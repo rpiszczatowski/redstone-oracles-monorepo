@@ -22,7 +22,7 @@ const expectedResult = [
 jest.mock("axios");
 
 describe("uniswap V3 fetcher", () => {
-  const sut = fetchers["uniswap-v3"];
+  const sut = fetchers["uniswap-v3"]!;
 
   beforeAll(async () => {
     setupLocalDb();
@@ -40,7 +40,8 @@ describe("uniswap V3 fetcher", () => {
   });
 
   test("should retry data fetching", async () => {
-    const exampleResponse = require(pathToExampleResponse);
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const exampleResponse = require(pathToExampleResponse) as unknown;
     let tryCounter = 0;
     const getResponse = () => {
       tryCounter++;

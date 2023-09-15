@@ -61,7 +61,7 @@ async function get1KMostPopularPairs(): Promise<Pair[]> {
   let response;
   try {
     response = await graphProxy.executeQuery(SUBGRAPH_URL, query);
-  } catch (e: any) {
+  } catch (e) {
     console.log("Error occured", e);
     throw "stop";
   }

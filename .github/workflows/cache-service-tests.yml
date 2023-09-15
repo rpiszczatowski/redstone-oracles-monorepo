@@ -4,6 +4,8 @@ on:
     paths:
       - packages/cache-service/**
       - packages/protocol/**
+      - packages/streamr-proxy/**
+      - packages/utils/**
       - packages/sdk/**
       - .github/workflows/cache-service-tests.yml
 
@@ -20,6 +22,8 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
+      - name: Lint
+        run: yarn lint
       - name: Run tests
         run: yarn test
         env:

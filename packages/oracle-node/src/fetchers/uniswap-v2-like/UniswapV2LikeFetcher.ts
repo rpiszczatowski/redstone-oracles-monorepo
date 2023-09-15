@@ -29,6 +29,11 @@ interface UniswapV2LikeResponse {
   isSymbol0CurrentAsset: boolean;
 }
 
+type ReservesResponse = {
+  _reserve0: BigNumber;
+  _reserve1: BigNumber;
+};
+
 export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeResponse> {
   protected override retryForInvalidResponse: boolean = true;
 
@@ -49,7 +54,9 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeRespons
       this.provider
     );
 
-    const { _reserve0, _reserve1 } = await uniswapV2Pair.getReserves();
+    const { _reserve0, _reserve1 } =
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      (await uniswapV2Pair.getReserves()) as ReservesResponse;
 
     return this.parseResponse(spotAssetId, _reserve0, _reserve1);
   }
@@ -111,12 +118,12 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeRespons
       return [];
     }
 
-    const lowAmountSell = this.getToken0SwapPrice(
+    const lowAmountSell = UniswapV2LikeFetcher.getToken0SwapPrice(
       response.reserve0Scaled,
       response.reserve1Scaled,
       new Decimal(1)
     );
-    const highAmountSell = this.getToken0SwapPrice(
+    const highAmountSell = UniswapV2LikeFetcher.getToken0SwapPrice(
       response.reserve0Scaled,
       response.reserve1Scaled,
       currentTokenScaler.fromSolidityValue(currentAssetTokensAmount)
@@ -128,12 +135,12 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeRespons
       10 ** pairedTokenScaler.tokenDecimals,
       DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE
     );
-    const lowAmountBuy = this.getToken1SwapPrice(
+    const lowAmountBuy = UniswapV2LikeFetcher.getToken1SwapPrice(
       response.reserve0Scaled,
       response.reserve1Scaled,
       new Decimal(1)
     );
-    const highAmountBuy = this.getToken1SwapPrice(
+    const highAmountBuy = UniswapV2LikeFetcher.getToken1SwapPrice(
       response.reserve0Scaled,
       response.reserve1Scaled,
       pairedTokenScaler.fromSolidityValue(pairedTokenTokensAmount)
@@ -155,7 +162,7 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeRespons
 
   // token1Amount_received = reserve_1 -(reserve_0 * reserve_1)/(reserve_0 + token0Amount)
   // token0Amount/ token1Amount_received
-  private getToken0SwapPrice(
+  private static getToken0SwapPrice(
     reserve0Scaled: Decimal,
     reserve1Scaled: Decimal,
     token0Amount: Decimal
@@ -168,7 +175,7 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeRespons
 
   // token0Amount_received = reserve_0 - (reserve_0 * reserve_1) / (reserve_1 + token1Amount)
   // token1Amount / token0AmountReceived
-  private getToken1SwapPrice(
+  private static getToken1SwapPrice(
     reserve0Scaled: Decimal,
     reserve1Scaled: Decimal,
     token1Amount: Decimal

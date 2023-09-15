@@ -4,6 +4,7 @@ jest.mock("ecb-euro-exchange-rates", () => {
   return {
     fetch: () => {
       return Promise.resolve(
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
         require("../../src/fetchers/ecb/example-response.json")
       );
     },
@@ -11,7 +12,7 @@ jest.mock("ecb-euro-exchange-rates", () => {
 });
 
 describe("ecb fetcher", () => {
-  const sut = fetchers["ecb"];
+  const sut = fetchers["ecb"]!;
 
   it("should properly fetch data", async () => {
     // given

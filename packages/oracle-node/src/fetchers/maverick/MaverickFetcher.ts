@@ -5,7 +5,7 @@ import {
   RedstoneTypes,
   RedstoneCommon,
 } from "@redstone-finance/utils";
-import { getRawPrice } from "../../db/local-db";
+import { getLastPriceOrFail } from "../../db/local-db";
 import {
   DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,
   calculateSlippage,
@@ -90,7 +90,7 @@ export class MaverickFetcher extends DexOnChainFetcher<MaverickResponse> {
     const { pairedToken } = this.config.tokens[dataFeedId];
     const { price } = response;
 
-    const pairedTokenPrice = this.getPairedTokenPrice(pairedToken);
+    const pairedTokenPrice = getLastPriceOrFail(pairedToken).value;
 
     const isCurrentDataFeedToken0 =
       this.config.tokens[dataFeedId].token0Symbol === dataFeedId;
@@ -141,14 +141,6 @@ export class MaverickFetcher extends DexOnChainFetcher<MaverickResponse> {
         simulationValueInUsd: DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE.toString(),
       },
     ];
-  }
-
-  protected getPairedTokenPrice(tokenSymbol: string): Decimal {
-    const lastPriceFromCache = getRawPrice(tokenSymbol);
-    if (!lastPriceFromCache) {
-      throw new Error(`Cannot get last price from cache for: ${tokenSymbol}`);
-    }
-    return new Decimal(lastPriceFromCache.value);
   }
 }
 

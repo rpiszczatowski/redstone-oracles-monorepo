@@ -1,6 +1,7 @@
 import { SushiswapFetcher } from "../SushiswapFetcher";
 import graphProxy from "../../../utils/graph-proxy";
 import axios from "axios";
+import { DexFetcherResponse } from "../../DexFetcher";
 
 const timestampToBlockProviderUrl = "https://coins.llama.fi/block/ethereum/";
 
@@ -16,13 +17,15 @@ export class SushiswapFetcherHistorical extends SushiswapFetcher {
     const pairIds = this.convertSymbolsToPairIds(ids, this.symbolToPairIdObj);
 
     const blockNumber = (
-      await axios.get(timestampToBlockProviderUrl + this.timestamp)
+      await axios.get<{ height: string }>(
+        timestampToBlockProviderUrl + this.timestamp
+      )
     ).data.height;
 
     const query = `{
       pairs(block: {number: ${blockNumber}} where: { id_in: ${JSON.stringify(
-      pairIds
-    )} }) {
+        pairIds
+      )} }) {
         id
         token0 {
           symbol
@@ -36,6 +39,9 @@ export class SushiswapFetcherHistorical extends SushiswapFetcher {
       }
     }`;
 
-    return await graphProxy.executeQuery(this.subgraphUrl, query);
+    return await graphProxy.executeQuery<DexFetcherResponse>(
+      this.subgraphUrl,
+      query
+    );
   }
 }

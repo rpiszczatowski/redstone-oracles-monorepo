@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import PriceSignerService from "../../src/signers/PriceSignerService";
 import { PriceDataBeforeSigning } from "../../src/types";
 import { SafeNumber } from "@redstone-finance/utils";

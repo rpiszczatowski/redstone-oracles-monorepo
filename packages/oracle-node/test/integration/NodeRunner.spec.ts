@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/unbound-method */
 import NodeRunner from "../../src/NodeRunner";
 import fetchers from "../../src/fetchers";
 import axios from "axios";
@@ -5,7 +6,11 @@ import ArweaveService from "../../src/arweave/ArweaveService";
 import { any } from "jest-mock-extended";
 import { timeout } from "../../src/utils/promise-timeout";
 import { MOCK_NODE_CONFIG, mockHardLimits } from "../helpers";
-import { NodeConfig } from "../../src/types";
+import {
+  Manifest,
+  NodeConfig,
+  PriceDataAfterAggregation,
+} from "../../src/types";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
@@ -15,6 +20,7 @@ import {
 import emptyManifest from "../../manifests/dev/empty.json";
 import * as Terminator from "../../src/Terminator";
 import PricesService from "../../src/fetchers/PricesService";
+import { SafeNumber } from "@redstone-finance/utils";
 
 const TEST_PROVIDER_EVM_ADDRESS = "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A";
 
@@ -23,7 +29,8 @@ const broadcastingUrl =
   "http://mock-direct-cache-service-url/data-packages/bulk";
 const priceDataBroadcastingUrl = "http://mock-price-cache-service-url/prices";
 
-const simulateSerialization = (obj: any) => JSON.parse(JSON.stringify(obj));
+const simulateSerialization = (obj: unknown) =>
+  JSON.parse(JSON.stringify(obj)) as unknown;
 
 const terminateWithManifestConfigErrorSpy = jest
   .spyOn(Terminator, "terminateWithManifestConfigError")
@@ -32,7 +39,7 @@ const terminateWithManifestConfigErrorSpy = jest
 jest.mock("../../src/signers/EvmPriceSigner", () => {
   return jest.fn().mockImplementation(() => {
     return {
-      signPricePackage: (pricePackage: any) => ({
+      signPricePackage: (pricePackage: unknown) => ({
         liteSignature: "mock_evm_signed_lite",
         signerAddress: "mock_evm_signer_address",
         pricePackage,
@@ -61,10 +68,10 @@ mockedAxios.post.mockImplementation((url) => {
   );
 });
 
-let manifest: any = null;
+let manifest: Manifest | undefined;
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 jest.mock("../../src/utils/objects", () => ({
-  // @ts-ignore
   ...jest.requireActual("../../src/utils/objects"),
   readJSON: () => null,
 }));
@@ -145,7 +152,7 @@ describe("NodeRunner", () => {
     });
 
     it("should throw if interval not divisble by 1000", async () => {
-      manifest.interval = 60001;
+      manifest!.interval = 60001;
       const sut = await NodeRunner.create({
         ...nodeConfig,
         overrideManifestUsingFile: manifest,
@@ -159,11 +166,11 @@ describe("NodeRunner", () => {
     });
 
     it("should throw if no maxDeviationPercent configured for token", async () => {
-      const { deviationCheck, ...manifestWithoutDeviationCheck } = manifest;
+      const { deviationCheck: _, ...manifestWithoutDeviationCheck } = manifest!;
 
       const sut = await NodeRunner.create({
         ...nodeConfig,
-        overrideManifestUsingFile: manifestWithoutDeviationCheck,
+        overrideManifestUsingFile: manifestWithoutDeviationCheck as Manifest,
       });
 
       await sut.run();
@@ -176,11 +183,11 @@ describe("NodeRunner", () => {
     });
 
     it("should throw if no sourceTimeout", async () => {
-      const { sourceTimeout, ...manifestWithoutSourceTimeout } = manifest;
+      const { sourceTimeout: _, ...manifestWithoutSourceTimeout } = manifest!;
 
       const sut = await NodeRunner.create({
         ...nodeConfig,
-        overrideManifestUsingFile: manifestWithoutSourceTimeout,
+        overrideManifestUsingFile: manifestWithoutSourceTimeout as Manifest,
       });
 
       await sut.run();
@@ -194,7 +201,8 @@ describe("NodeRunner", () => {
     it("should broadcast fetched and signed prices", async () => {
       await runTestNode();
 
-      const firstCallArgs = (axios.post as any).mock.calls[0];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+      const firstCallArgs = (axios.post as any).mock.calls[0] as string[];
 
       expect(firstCallArgs[0]).toEqual(broadcastingUrl);
       console.log(firstCallArgs[1]);
@@ -289,7 +297,8 @@ describe("NodeRunner", () => {
       // one for /bulk and the sconde one for prices
       expect(axios.post).toHaveBeenCalledTimes(2);
 
-      const secondCallArgs = (axios.post as any).mock.calls[1];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+      const secondCallArgs = (axios.post as any).mock.calls[1] as string[];
 
       // first arg
       expect(secondCallArgs[0]).toBe(priceDataBroadcastingUrl);
@@ -336,8 +345,10 @@ describe("NodeRunner", () => {
       expect(axios.post).toHaveBeenCalledWith(
         broadcastingUrl,
         expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           dataPackages: expect.arrayContaining([
             expect.objectContaining({
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               dataPoints: expect.arrayContaining([
                 expect.objectContaining({
                   dataFeedId: symbol,
@@ -352,16 +363,24 @@ describe("NodeRunner", () => {
 
     it("should not broadcast fetched and signed prices if values deviate too much (maxPercent is 0)", async () => {
       await savePrices([
-        { symbol: "BTC", value: 100, timestamp: Date.now() },
-      ] as any);
+        {
+          symbol: "BTC",
+          value: 100 as unknown as SafeNumber.ISafeNumber,
+          timestamp: Date.now(),
+        } as PriceDataAfterAggregation,
+      ]);
       await runTestNode();
       expectValueBroadcasted("ETH", 42);
     });
 
     it("should filter out too deviated sources", async () => {
       await savePrices([
-        { symbol: "BTC", value: 444, timestamp: Date.now() },
-      ] as any);
+        {
+          symbol: "BTC",
+          value: 444 as unknown as SafeNumber.ISafeNumber,
+          timestamp: Date.now(),
+        } as PriceDataAfterAggregation,
+      ]);
 
       // Mocking coingecko fetcher to provide deviated value
       fetchers["coingecko"] = {
@@ -375,8 +394,12 @@ describe("NodeRunner", () => {
 
     it("should filter out invalid sources", async () => {
       await savePrices([
-        { symbol: "BTC", value: 444, timestamp: Date.now() },
-      ] as any);
+        {
+          symbol: "BTC",
+          value: 444 as unknown as SafeNumber.ISafeNumber,
+          timestamp: Date.now(),
+        } as PriceDataAfterAggregation,
+      ]);
 
       // Mocking coingecko fetcher to provide invalid value
       fetchers["coingecko"] = {
@@ -470,11 +493,11 @@ describe("NodeRunner", () => {
   });
 
   describe("when overrideManifestUsingFile flag is null", () => {
-    let nodeConfigManifestFromAr: any;
+    let nodeConfigManifestFromAr: NodeConfig;
     beforeEach(() => {
       nodeConfigManifestFromAr = {
         ...nodeConfig,
-        overrideManifestUsingFile: null,
+        overrideManifestUsingFile: undefined,
       };
     });
 
@@ -482,13 +505,13 @@ describe("NodeRunner", () => {
       // given
       const arServiceSpy = jest
         .spyOn(ArweaveService.prototype, "getCurrentManifest")
-        .mockImplementation(() => Promise.resolve(manifest));
+        .mockImplementation(() => Promise.resolve(manifest!));
 
       const sut = await NodeRunner.create(nodeConfigManifestFromAr);
 
       await sut.run();
 
-      expect(fetchers.uniswap.fetchAll).toHaveBeenCalled();
+      expect(fetchers.uniswap!.fetchAll).toHaveBeenCalled();
 
       arServiceSpy.mockClear();
     });
@@ -500,7 +523,7 @@ describe("NodeRunner", () => {
         .spyOn(ArweaveService.prototype, "getCurrentManifest")
         .mockImplementation(async () => {
           await timeout(200);
-          return Promise.reject("no way!");
+          return await Promise.reject("no way!");
         });
 
       // this effectively makes manifest available after 100ms - so
@@ -508,7 +531,7 @@ describe("NodeRunner", () => {
       setTimeout(() => {
         arServiceSpy = jest
           .spyOn(ArweaveService.prototype, "getCurrentManifest")
-          .mockImplementation(() => Promise.resolve(manifest));
+          .mockImplementation(() => Promise.resolve(manifest!));
       }, 100);
       const sut = await NodeRunner.create(nodeConfigManifestFromAr);
       expect(sut).not.toBeNull();
@@ -522,9 +545,9 @@ describe("NodeRunner", () => {
     it("should continue working when update manifest fails", async () => {
       // given
       nodeConfigManifestFromAr.manifestRefreshInterval = 0;
-      let arServiceSpy = jest
+      const arServiceSpy = jest
         .spyOn(ArweaveService.prototype, "getCurrentManifest")
-        .mockResolvedValueOnce(manifest)
+        .mockResolvedValueOnce(manifest!)
         .mockRejectedValue("timeout");
 
       const sut = await NodeRunner.create(nodeConfigManifestFromAr);
@@ -535,7 +558,7 @@ describe("NodeRunner", () => {
       expect(ArweaveService.prototype.getCurrentManifest).toHaveBeenCalledTimes(
         2
       );
-      expect(fetchers.uniswap.fetchAll).toHaveBeenCalled();
+      expect(fetchers.uniswap!.fetchAll).toHaveBeenCalled();
       expect(axios.post).toHaveBeenCalledWith(broadcastingUrl, any());
       expect(axios.post).toHaveBeenCalledWith(priceDataBroadcastingUrl, any());
       arServiceSpy.mockClear();

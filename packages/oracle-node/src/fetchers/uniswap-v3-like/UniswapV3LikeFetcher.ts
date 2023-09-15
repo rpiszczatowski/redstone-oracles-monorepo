@@ -243,6 +243,7 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected createQuoterParams(
     tokenIn: string,
     tokenOut: string,

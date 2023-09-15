@@ -18,13 +18,15 @@ export class UniswapV3FetcherHistorical extends UniswapV3Fetcher {
   override async fetchData(ids: string[]) {
     const pairIds = this.convertSymbolsToPoolIds(ids, symbolToPoolIdObj);
     const blockNumber = (
-      await axios.get(timestampToBlockProviderUrl + this.timestamp)
+      await axios.get<{ height: string }>(
+        timestampToBlockProviderUrl + this.timestamp
+      )
     ).data.height;
 
     const query = `{
       pools(block: {number: ${blockNumber}}, where: { id_in: ${JSON.stringify(
-      pairIds
-    )} }) {
+        pairIds
+      )} }) {
         id
         token0 {
           id

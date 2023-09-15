@@ -20,7 +20,7 @@ const expectedResult = [
 jest.mock("axios");
 
 describe("sushiswap fetcher", () => {
-  const sut = fetchers["sushiswap"];
+  const sut = fetchers["sushiswap"]!;
 
   it("should properly fetch data", async () => {
     // Given
@@ -35,7 +35,8 @@ describe("sushiswap fetcher", () => {
 
   it("should retry data fetching", async () => {
     // Given
-    const exampleResponse = require(pathToExampleResponse);
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const exampleResponse = require(pathToExampleResponse) as unknown;
     let tryCounter = 0;
     const getResponse = () => {
       tryCounter++;

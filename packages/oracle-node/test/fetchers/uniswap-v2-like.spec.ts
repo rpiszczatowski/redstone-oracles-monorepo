@@ -1,8 +1,11 @@
-import { Contract } from "ethers";
-import { MockProvider, deployMockContract } from "ethereum-waffle";
+import {
+  MockProvider,
+  deployMockContract,
+  MockContract,
+} from "ethereum-waffle";
 import { UniswapV2LikeFetcher } from "../../src/fetchers/uniswap-v2-like/UniswapV2LikeFetcher";
 import abi from "../../src/fetchers/uniswap-v2-like/UniswapV2.abi.json";
-import { saveMockPriceInLocalDb } from "./_helpers";
+import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
@@ -10,7 +13,7 @@ import {
 } from "../../src/db/local-db";
 
 describe("UniswapV2Like", () => {
-  let uniswapV2LikeContract: Contract;
+  let uniswapV2LikeContract: MockContract;
   let provider: MockProvider;
 
   beforeAll(async () => {
@@ -18,10 +21,12 @@ describe("UniswapV2Like", () => {
     provider = new MockProvider();
     const [wallet] = provider.getWallets();
     uniswapV2LikeContract = await deployMockContract(wallet, abi);
-    await uniswapV2LikeContract.mock.getReserves.returns(
-      "37240658972367",
-      "17968718500361203250875",
-      1681731755
+    await asAwaitable(
+      uniswapV2LikeContract.mock.getReserves.returns(
+        "37240658972367",
+        "17968718500361203250875",
+        1681731755
+      )
     );
   });
 

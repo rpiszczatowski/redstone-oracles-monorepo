@@ -9,16 +9,18 @@ import {
 } from "../src/db/local-db";
 import PricesService, {
   PriceValidationArgs,
-  PricesBeforeAggregation,
   PricesDataFetched,
 } from "../src/fetchers/PricesService";
 import {
   NotSanitizedPriceDataBeforeAggregation,
   PriceDataAfterAggregation,
-  PriceDataBeforeAggregation,
   PriceDataFetchedValue,
 } from "../src/types";
-import { preparePrice, preparePrices } from "./fetchers/_helpers";
+import {
+  preparePrice,
+  preparePrices,
+  prepareSanitizeAndAggregatePrices,
+} from "./fetchers/_helpers";
 import { config } from "../src/config";
 
 jest.mock("../src/Terminator", () => ({
@@ -77,12 +79,11 @@ describe("PricesService", () => {
       };
 
       // When
-      const result: PricesBeforeAggregation<PriceDataFetchedValue> =
-        PricesService.groupPricesByToken(
-          { timestamp: fetchTimestamp },
-          pricesData,
-          nodeVersion
-        );
+      const result = PricesService.groupPricesByToken(
+        { timestamp: fetchTimestamp },
+        pricesData,
+        nodeVersion
+      );
 
       // Then
       expect(result).toEqual({
@@ -145,7 +146,9 @@ describe("PricesService", () => {
         if (source.includes("bad")) {
           throw new Error("test-error");
         } else {
-          return tokens.map((symbol) => ({ symbol, value: 1 }));
+          return await Promise.resolve(
+            tokens.map((symbol) => ({ symbol, value: 1 }))
+          );
         }
       };
 
@@ -210,14 +213,14 @@ describe("PricesService", () => {
         },
       });
 
-      const prices = preparePrices([
+      const prices = prepareSanitizeAndAggregatePrices([
         {
           symbol: "ETH",
-          value: SafeNumber.createSafeNumber(42),
+          value: 42,
         },
         {
           symbol: "BTC",
-          value: SafeNumber.createSafeNumber(442),
+          value: 442,
         },
       ]);
 
@@ -235,27 +238,27 @@ describe("PricesService", () => {
     });
 
     it("should properly calculate aggregated values (no deviations, no invalid)", async () => {
-      const prices: PriceDataBeforeAggregation[] = preparePrices([
+      const notSanitizedPrices = preparePrices([
         {
           symbol: "ETH",
           source: {
-            src1: SafeNumber.createSafeNumber(41),
-            src2: SafeNumber.createSafeNumber(43),
-            src3: SafeNumber.createSafeNumber(42),
+            src1: 41,
+            src2: 43,
+            src3: 42,
           },
         },
         {
           symbol: "BTC",
           source: {
-            src1: SafeNumber.createSafeNumber(442),
-            src2: SafeNumber.createSafeNumber(443),
-            src3: SafeNumber.createSafeNumber(442),
+            src1: 442,
+            src2: 443,
+            src3: 442,
           },
         },
       ]);
 
       const pricesAfterAggregation =
-        await pricesService.calculateAggregatedValues(prices);
+        await pricesService.calculateAggregatedValues(notSanitizedPrices);
 
       expect(pricesAfterAggregation.map((p) => p.value.toString())).toEqual([
         "42",
@@ -265,23 +268,21 @@ describe("PricesService", () => {
 
     it("should properly calculate aggregated values (some sources are too deviated)", async () => {
       await savePrices(
-        preparePrices([
-          { symbol: "ETH", value: SafeNumber.createSafeNumber(41) },
-        ])
+        prepareSanitizeAndAggregatePrices([{ symbol: "ETH", value: 41 }])
       );
-      const prices: PriceDataBeforeAggregation[] = preparePrices([
+      const notSanitizedPrices = preparePrices([
         {
           symbol: "ETH",
           source: {
-            src1: SafeNumber.createSafeNumber(40),
-            src2: SafeNumber.createSafeNumber(20),
-            src3: SafeNumber.createSafeNumber(44),
+            src1: 40,
+            src2: 20,
+            src3: 44,
           }, // value from src2 should be exluded
         },
       ]);
 
       const pricesAfterAggregation =
-        await pricesService.calculateAggregatedValues(prices);
+        await pricesService.calculateAggregatedValues(notSanitizedPrices);
 
       expect(pricesAfterAggregation.map((p) => p.value.toString())).toEqual([
         "42",
@@ -290,23 +291,21 @@ describe("PricesService", () => {
 
     it("should exclude price if all sources values are deviated", async () => {
       await savePrices(
-        preparePrices([
-          { symbol: "ETH", value: SafeNumber.createSafeNumber(42) },
-        ])
+        prepareSanitizeAndAggregatePrices([{ symbol: "ETH", value: 42 }])
       );
-      const prices: PriceDataBeforeAggregation[] = preparePrices([
+      const notSanitizedPrices = preparePrices([
         {
           symbol: "ETH",
           source: {
-            src1: SafeNumber.createSafeNumber(60),
-            src2: SafeNumber.createSafeNumber(20),
-            src3: SafeNumber.createSafeNumber(100000),
+            src1: 60,
+            src2: 20,
+            src3: 100000,
           },
         },
       ]);
 
       const pricesAfterAggregation =
-        await pricesService.calculateAggregatedValues(prices);
+        await pricesService.calculateAggregatedValues(notSanitizedPrices);
 
       expect(pricesAfterAggregation).toEqual([]);
     });
@@ -318,7 +317,7 @@ describe("PricesService", () => {
       recentPrices: PriceValueInLocalDB[],
       expectedValuesBySource: Record<string, string>
     ) => {
-      const priceWithExcludedSources = pricesService.sanitizeSourceValues(
+      const priceWithExcludedSources = PricesService.sanitizeSourceValues(
         price,
         recentPrices,
         emptyManifest.deviationCheck
@@ -326,7 +325,7 @@ describe("PricesService", () => {
       const comparableSources: Record<string, string> = {};
       Object.entries(priceWithExcludedSources.source).forEach(
         ([key, value]) => {
-          comparableSources[key] = value.toString() as any;
+          comparableSources[key] = value.toString();
         }
       );
       expect(comparableSources).toEqual(expectedValuesBySource);
@@ -335,47 +334,49 @@ describe("PricesService", () => {
     it("should exclude invalid sources", () => {
       const price = preparePrice({
         source: {
-          src1: [],
+          src1: [] as unknown as PriceDataFetchedValue,
           src2: -10,
           src3: 42,
           src4: null,
           src5: "error",
-          src6: {},
+          src6: {} as unknown as PriceDataFetchedValue,
           src7: 123,
-        } as any,
+        },
       });
       checkSourceValuesSanitization(price, [], { src3: "42", src7: "123" });
     });
 
-    it("should exclude deviated sources", async () => {
-      const price = preparePrice({
+    it("should exclude deviated sources", () => {
+      const notSanitizedPrices = preparePrice({
         symbol: "ETH",
         source: {
-          src1: SafeNumber.createSafeNumber(100),
-          src2: SafeNumber.createSafeNumber(44),
-          src3: SafeNumber.createSafeNumber(20),
-          src4: SafeNumber.createSafeNumber(41),
-          src5: SafeNumber.createSafeNumber(42),
+          src1: 100,
+          src2: 44,
+          src3: 20,
+          src4: 41,
+          src5: 42,
         },
       });
-      const recentPrices = [{ value: "42", timestamp: price.timestamp }];
-      checkSourceValuesSanitization(price, recentPrices, {
+      const recentPrices = [
+        { value: "42", timestamp: notSanitizedPrices.timestamp },
+      ];
+      checkSourceValuesSanitization(notSanitizedPrices, recentPrices, {
         src2: "44",
         src4: "41",
         src5: "42",
       });
     });
 
-    it("should exclude sources with too high slippage", async () => {
+    it("should exclude sources with too high slippage", () => {
       const simulationValueInUsd = config.simulationValueInUsdForSlippageCheck;
-      const price = preparePrice({
+      const notSanitizedPrices = preparePrice({
         symbol: "ETH",
         source: {
-          src1: SafeNumber.createSafeNumber(100),
-          src2: SafeNumber.createSafeNumber(101),
-          src3: SafeNumber.createSafeNumber(102),
-          src4: SafeNumber.createSafeNumber(103),
-          src5: SafeNumber.createSafeNumber(105),
+          src1: 100,
+          src2: 101,
+          src3: 102,
+          src4: 103,
+          src5: 105,
         },
         sourceMetadata: {
           // src1 should be excluded due to lack of "buy direction"
@@ -442,7 +443,7 @@ describe("PricesService", () => {
           },
         },
       });
-      checkSourceValuesSanitization(price, [], {
+      checkSourceValuesSanitization(notSanitizedPrices, [], {
         src2: "101",
         src4: "103",
       });
@@ -459,12 +460,10 @@ describe("PricesService", () => {
         deviationConfig: emptyManifest.deviationCheck,
         recentPrices: [],
       };
-      return pricesService
-        .getDeviationWithRecentValuesAverage({
-          ...defaultPriceValidationArgs,
-          ...partialPriceValidationArgs,
-        })
-        .unsafeToNumber();
+      return PricesService.getDeviationWithRecentValuesAverage({
+        ...defaultPriceValidationArgs,
+        ...partialPriceValidationArgs,
+      }).unsafeToNumber();
     };
 
     it("should properly calculate deviation with recent values", () => {
@@ -579,7 +578,7 @@ describe("PricesService", () => {
     } as unknown as PriceDataAfterAggregation;
 
     test("should pass assertion for enough sources", () => {
-      pricesService.assertSourcesNumber(priceObject, manifest);
+      PricesService.assertSourcesNumber(priceObject, manifest);
     });
 
     test("should pass assertion for exactly minValidSourcesPercentage", () => {
@@ -590,7 +589,7 @@ describe("PricesService", () => {
           testSource3: SafeNumber.createSafeNumber(44),
         },
       };
-      pricesService.assertSourcesNumber(newPriceObject, manifest);
+      PricesService.assertSourcesNumber(newPriceObject, manifest);
     });
 
     test("should not pass assertion for less than minValidSourcesPercentage", () => {
@@ -599,7 +598,7 @@ describe("PricesService", () => {
         source: { testSource3: SafeNumber.createSafeNumber(43) },
       };
       expect(() =>
-        pricesService.assertSourcesNumber(newPriceObject, manifest)
+        PricesService.assertSourcesNumber(newPriceObject, manifest)
       ).toThrowError(
         "Invalid sources number for symbol TestToken. Valid sources count: 1. Valid sources: testSource3"
       );
@@ -611,7 +610,7 @@ describe("PricesService", () => {
         source: {},
       };
       expect(() =>
-        pricesService.assertSourcesNumber(newPriceObject, manifest)
+        PricesService.assertSourcesNumber(newPriceObject, manifest)
       ).toThrowError(
         "Invalid sources number for symbol TestToken. Valid sources count: 0. Valid sources: "
       );

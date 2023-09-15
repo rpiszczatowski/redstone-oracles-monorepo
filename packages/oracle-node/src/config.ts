@@ -101,7 +101,7 @@ const parserFromString = {
 const getHardLimitsUrls = () => {
   const hardLimitsUrls = JSON.parse(
     getFromEnv("PRICES_HARD_LIMITS_URLS", DEFAULT_PRICES_HARD_LIMITS_URLS)
-  );
+  ) as string[];
 
   return hardLimitsUrls;
 };
@@ -111,8 +111,8 @@ const getOptionallyManifestData = () => {
     "OVERRIDE_MANIFEST_USING_FILE",
     ""
   );
-  if (!!overrideManifestUsingFile) {
-    return readJSON(overrideManifestUsingFile) as Manifest;
+  if (overrideManifestUsingFile) {
+    return readJSON<Manifest>(overrideManifestUsingFile);
   }
   return undefined;
 };
@@ -122,7 +122,7 @@ const getOptionallyCacheServiceUrls = () => {
     "OVERRIDE_DIRECT_CACHE_SERVICE_URLS",
     ""
   );
-  if (!!overrideDirectCacheServiceUrls) {
+  if (overrideDirectCacheServiceUrls) {
     return JSON.parse(overrideDirectCacheServiceUrls) as string[];
   }
   return undefined;
@@ -133,7 +133,7 @@ const getOptionallyPriceDataServiceUrls = () => {
     "OVERRIDE_PRICE_CACHE_SERVICE_URLS",
     ""
   );
-  if (!!overridePriceCacheServiceUrls) {
+  if (overridePriceCacheServiceUrls) {
     return JSON.parse(overridePriceCacheServiceUrls) as string[];
   }
   return undefined;
@@ -144,7 +144,9 @@ const ethereumPrivateKey = parserFromString.hex(
 );
 
 const getRpcUrls = (name: string, defaultValue: string[]): string[] => {
-  const rpcUrls = JSON.parse(getFromEnv(name, JSON.stringify(defaultValue)));
+  const rpcUrls = JSON.parse(
+    getFromEnv(name, JSON.stringify(defaultValue))
+  ) as string[];
 
   if (rpcUrls.length < 1) {
     throw new Error(`At least one RPC URL ${name} required`);

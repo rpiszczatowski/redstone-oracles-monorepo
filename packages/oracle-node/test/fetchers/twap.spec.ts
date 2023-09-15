@@ -23,7 +23,7 @@ const defaultPriceValues = {
 jest.mock("axios");
 
 describe("twap fetcher", () => {
-  const sut = fetchers["twap-I-5rWUehEv-MjdK9gFw09RxfSLQX9DIHxG614Wf8qo0"];
+  const sut = fetchers["twap-I-5rWUehEv-MjdK9gFw09RxfSLQX9DIHxG614Wf8qo0"]!;
 
   it("should properly fetch data", async () => {
     // Given

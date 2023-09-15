@@ -1,33 +1,32 @@
 import express from "express";
-import { Consola } from "consola";
 import { ethers } from "ethers";
 import axios from "axios";
 import jp from "jsonpath";
 
 import { fromBase64 } from "../utils/base64";
 import EvmPriceSigner from "../signers/EvmPriceSigner";
-import { NodeConfig } from "../types";
+import { CustomUrlDetails, NodeConfig } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
+import loggerFactory from "../utils/logger";
 
 const QUERY_PARAM_NAME = "custom-url-request-config-base64";
 const DEFAULT_TIMEOUT_MILLISECONDS = 10000;
-const logger = require("../utils/logger")(
-  "custom-url-requests-route"
-) as Consola;
 const evmSigner = new EvmPriceSigner();
+const logger = loggerFactory("custom-url-requests-route");
 
 export default function (app: express.Application, nodeConfig: NodeConfig) {
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
   app.get("/custom-url-requests", async (req, res) => {
     try {
       // Parsing request details
-      const customRequestConfig = parseCustomUrlDetails(
+      const customRequestConfig = parseCustomUrlDetails<CustomUrlDetails>(
         req.query[QUERY_PARAM_NAME] as string
       );
       const { url, jsonpath } = customRequestConfig;
 
       // Sending the request
       logger.info(`Fetching data from custom url: ${url}`);
-      const response = await axios.get(url, {
+      const response = await axios.get<unknown>(url, {
         timeout: DEFAULT_TIMEOUT_MILLISECONDS,
       });
       const fetchedData = response.data;
@@ -37,7 +36,7 @@ export default function (app: express.Application, nodeConfig: NodeConfig) {
 
       // Extracting value
       logger.info(`Extracting data using jsonpath: ${jsonpath}`);
-      const extractedValueArr = jp.query(fetchedData, jsonpath);
+      const extractedValueArr = jp.query(fetchedData, jsonpath) as number[];
       if (extractedValueArr.length !== 1) {
         throw new Error(`Extracted value must be a single number`);
       }
@@ -78,9 +77,9 @@ export default function (app: express.Application, nodeConfig: NodeConfig) {
   });
 }
 
-function parseCustomUrlDetails(customRequestParamBase64: string) {
+function parseCustomUrlDetails<T>(customRequestParamBase64: string) {
   const stringifiedConfig = fromBase64(customRequestParamBase64);
-  return JSON.parse(stringifiedConfig);
+  return JSON.parse(stringifiedConfig) as T;
 }
 
 function getSymbol(customRequestConfig: { url: string; jsonpath: string }) {

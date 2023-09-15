@@ -33,11 +33,11 @@ export class EvmFetcher extends BaseFetcher {
     this.requestHandlers = requestHandlers;
   }
 
-  override validateResponse(response: any): boolean {
+  override validateResponse(response: unknown): boolean {
     return !(response === undefined || response instanceof Error);
   }
 
-  async fetchData(ids: string[]) {
+  override async fetchData(ids: string[]) {
     const requests: MulticallRequest[] = [];
     for (const id of ids) {
       const requestHandlersForId = getRequestHandlersForDataFeedId(
@@ -50,7 +50,10 @@ export class EvmFetcher extends BaseFetcher {
     return await this.evmMulticallService.performMulticall(requests);
   }
 
-  extractPrices(response: MulticallParsedResponses, ids: string[]): PricesObj {
+  override extractPrices(
+    response: MulticallParsedResponses,
+    ids: string[]
+  ): PricesObj {
     return this.extractPricesSafely(ids, (id) => {
       const requestHandlersForId = getRequestHandlersForDataFeedId(
         id,

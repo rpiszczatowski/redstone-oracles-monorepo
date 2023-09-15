@@ -35,11 +35,11 @@ const filterDataPointsWithoutSkipSigning = (
   allTokensConfig: TokensConfig
 ) =>
   dataPoints.filter(
-    (dataPoint) => !allTokensConfig[dataPoint.dataFeedId].skipSigning
+    (dataPoint) => !allTokensConfig[dataPoint.dataFeedId]!.skipSigning
   );
 
 const countTokensWithoutSkipSigning = (allTokensConfig: TokensConfig) =>
   Object.values(allTokensConfig).reduce(
-    (count, tokenConfig) => (tokenConfig.skipSigning ? count : count + 1),
+    (count, tokenConfig) => (tokenConfig!.skipSigning ? count : count + 1),
     0
   );

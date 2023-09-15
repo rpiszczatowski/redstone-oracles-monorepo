@@ -14,8 +14,10 @@ export class NonUsdBasedFetcher extends MultiRequestFetcher {
     super("non-usd-based");
   }
 
-  async makeRequest(id: string): Promise<TokenPrices> {
-    const { mainToken, pairedToken } = this.extractTokensFromId(id);
+  // eslint-disable-next-line @typescript-eslint/require-await
+  override async makeRequest(id: string): Promise<TokenPrices> {
+    const { mainToken, pairedToken } =
+      NonUsdBasedFetcher.extractTokensFromId(id);
 
     const mainTokenPrice = getLastPrice(mainToken)?.value;
     const pairedTokenPrice = getLastPrice(pairedToken)?.value;
@@ -27,7 +29,7 @@ export class NonUsdBasedFetcher extends MultiRequestFetcher {
     return { mainTokenPrice, pairedTokenPrice };
   }
 
-  extractTokensFromId(id: string) {
+  static extractTokensFromId(id: string) {
     const tokensRegex = /([a-zA-Z0-9_]+)(?:\/|\.)([a-zA-Z0-9_]+)/;
     const tokens = id.match(tokensRegex);
     if (!tokens) {
@@ -41,7 +43,10 @@ export class NonUsdBasedFetcher extends MultiRequestFetcher {
     };
   }
 
-  extractPrice(dataFeedId: string, responses: RequestIdToResponse): number {
+  override extractPrice(
+    dataFeedId: string,
+    responses: RequestIdToResponse
+  ): number {
     const response = responses[dataFeedId] as TokenPrices;
     const { mainTokenPrice, pairedTokenPrice } = response;
     return mainTokenPrice / pairedTokenPrice;

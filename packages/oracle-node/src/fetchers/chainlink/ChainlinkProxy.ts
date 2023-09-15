@@ -1,4 +1,4 @@
-import { Contract, ethers } from "ethers";
+import { BigNumber, Contract, ContractFunction, ethers } from "ethers";
 import { getRequiredPropValue } from "../../utils/objects";
 import { contracts, abi } from "./constants";
 import { ethereumProvider } from "../../utils/blockchain-providers";
@@ -7,6 +7,12 @@ interface contractAddressesInterface {
   [priceFeedId: string]: string;
 }
 
+export type ChainlinkResults = {
+  [priceFeedId: string]: {
+    price: string;
+    decimalPlaces: number;
+  };
+};
 export default class ChainlinkProxy {
   private priceFeeds!: { [priceFeedId: string]: Contract };
   private addresses: contractAddressesInterface;
@@ -17,15 +23,24 @@ export default class ChainlinkProxy {
   }
 
   async getExchangeRates(ids: string[]) {
-    let results: { [priceFeedId: string]: any } = {};
+    const results: ChainlinkResults = {};
 
     await Promise.all(
       ids.map(async (id) => {
-        let priceFeedContract = getRequiredPropValue(this.priceFeeds, id);
+        const priceFeedContract = getRequiredPropValue<Contract>(
+          this.priceFeeds,
+          id
+        );
         const price = (
-          await priceFeedContract.latestRoundData()
+          await (
+            priceFeedContract.latestRoundData as ContractFunction<{
+              answer: BigNumber;
+            }>
+          )()
         ).answer.toString();
-        const decimalPlaces = await priceFeedContract.decimals();
+        const decimalPlaces = await (
+          priceFeedContract.decimals as ContractFunction<number>
+        )();
         results[id] = { price, decimalPlaces };
       })
     );

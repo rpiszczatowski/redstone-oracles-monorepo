@@ -1,10 +1,10 @@
-import { Consola } from "consola";
 import express from "express";
 import cors from "cors";
 import { setExpressRoutes } from "./routes/index";
 import { NodeConfig } from "./types";
+import loggerFactory from "./utils/logger";
 
-const logger = require("./utils/logger")("express") as Consola;
+const logger = loggerFactory("express");
 
 const PORT = 8080;
 

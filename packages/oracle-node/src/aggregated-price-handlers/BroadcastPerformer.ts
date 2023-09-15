@@ -1,9 +1,12 @@
 import { trackEnd, trackStart } from "../utils/performance-tracker";
-import { Consola } from "consola";
-const logger = require("./../utils/logger")("BroadcastPerformer") as Consola;
+import loggerFactory from "../utils/logger";
+import { AxiosError } from "axios";
+
+const logger = loggerFactory("BroadcastPerformer");
 
 export abstract class BroadcastPerformer {
-  async performBroadcast(promises: Promise<any>[], name: string) {
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  async performBroadcast(promises: Promise<void>[], name: string) {
     logger.info(`Broadcasting ${name}`);
     const broadcastingTrackingId = trackStart("broadcasting");
     try {
@@ -20,10 +23,11 @@ export abstract class BroadcastPerformer {
       }
 
       logger.info(`Broadcasting ${name} completed`);
-    } catch (e: any) {
+    } catch (err) {
+      const e = err as AxiosError;
       if (e.response !== undefined) {
         logger.error(
-          `Broadcasting ${name} failed: ` + e.response.data,
+          `Broadcasting ${name} failed: ` + String(e.response.data),
           e.stack
         );
       } else {

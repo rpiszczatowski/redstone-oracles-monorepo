@@ -3,16 +3,20 @@ import supportedExchanges from "../all-supported-exchanges.json";
 
 type Exchanges = keyof typeof exchanges;
 
-type MappingsForCCXT = Partial<{
-  [exchangeId in keyof typeof exchanges]: {
-    [symbolId in string]: string;
+type MappingsForCCXT = {
+  [exchangeId in keyof typeof exchanges]?: {
+    [symbolId: string]: string;
   };
-}>;
+};
 
 const mappings: MappingsForCCXT = {};
 
 for (const exchangeId of supportedExchanges) {
-  mappings[exchangeId as Exchanges] = require(`./${exchangeId}.json`);
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  mappings[exchangeId as Exchanges] = require(`./${exchangeId}.json`) as Record<
+    string,
+    string
+  >;
 }
 
 export default mappings;

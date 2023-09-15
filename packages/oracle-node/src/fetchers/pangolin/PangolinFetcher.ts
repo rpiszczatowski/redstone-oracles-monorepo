@@ -6,10 +6,14 @@ const subgraphUrl =
 export class PangolinFetcher extends DexFetcher {
   protected override retryForInvalidResponse: boolean = true;
 
-  constructor(name: string, private readonly symbolToPairIdFile: string) {
-    const symbolToPairIdObj: {
+  constructor(
+    name: string,
+    private readonly symbolToPairIdFile: string
+  ) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const symbolToPairIdObj = require(symbolToPairIdFile) as {
       [symbol: string]: string;
-    } = require(symbolToPairIdFile);
+    };
     super(name, subgraphUrl, symbolToPairIdObj);
   }
 }

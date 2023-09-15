@@ -16,6 +16,14 @@ interface LensProfile {
   };
 }
 
+type LensResponse = {
+  data: {
+    profiles: {
+      items: LensProfile[];
+    };
+  };
+};
+
 const LENS_GRAPHQL_URL = "https://api.lens.dev/";
 
 export class LensFetcher extends BaseFetcher {
@@ -23,7 +31,7 @@ export class LensFetcher extends BaseFetcher {
     super("lens");
   }
 
-  async fetchDataFromLens(ids: string[]) {
+  static async fetchDataFromLens(ids: string[]) {
     const query = `query Profiles {
       profiles(request: { handles: ${JSON.stringify(ids)}, limit: 50 }) {
         items {
@@ -37,15 +45,15 @@ export class LensFetcher extends BaseFetcher {
             totalMirrors
             totalPublications
             totalCollects
-          } 
+          }
         }
       }
     }`;
 
-    return await graphProxy.executeQuery(LENS_GRAPHQL_URL, query);
+    return await graphProxy.executeQuery<LensResponse>(LENS_GRAPHQL_URL, query);
   }
 
-  async fetchData(ids: string[]) {
+  override async fetchData(ids: string[]) {
     const maxLensQueryResponseCount = 50;
     const pagesCount = Math.floor(ids.length / maxLensQueryResponseCount) + 1;
     const profiles: LensProfile[] = [];
@@ -54,23 +62,23 @@ export class LensFetcher extends BaseFetcher {
         pageNumber * maxLensQueryResponseCount,
         pageNumber * maxLensQueryResponseCount + maxLensQueryResponseCount
       );
-      const response = await this.fetchDataFromLens(slicedIds);
+      const response = await LensFetcher.fetchDataFromLens(slicedIds);
       profiles.push(...response.data.profiles.items);
     }
     return profiles;
   }
 
-  override validateResponse(profiles: LensProfile[]): boolean {
+  override validateResponse(profiles: LensProfile[] | undefined): boolean {
     return profiles !== undefined && profiles.length > 0;
   }
 
-  extractPrices(profiles: LensProfile[]): ReputationObject {
+  override extractPrices(profiles: LensProfile[]): ReputationObject {
     return this.extractPricesSafely(profiles, (profile) =>
-      this.extractReputation(profile)
+      LensFetcher.extractReputation(profile)
     );
   }
 
-  private extractReputation(profile: LensProfile) {
+  private static extractReputation(profile: LensProfile) {
     const symbol = profile.handle;
     const {
       totalFollowers,

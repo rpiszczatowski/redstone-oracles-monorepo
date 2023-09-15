@@ -2,9 +2,10 @@ name: SDK tests
 on:
   push:
     paths:
+      - packages/sdk/**
+      - packages/utils/**
       - packages/oracles-smartweave-contracts/**
       - packages/protocol/**
-      - packages/sdk/**
       - .github/workflows/sdk-tests.yml
 
 jobs:

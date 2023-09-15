@@ -6,19 +6,21 @@ export class FixedValueFetcher extends BaseFetcher {
     super("fixed-value");
   }
 
-  async fetchData(_ids: string[], opts: FetcherOpts) {
-    return this.getFixedTokenValuesFromManifest(opts.manifest.tokens);
+  override async fetchData(_ids: string[], opts: FetcherOpts) {
+    return await Promise.resolve(
+      FixedValueFetcher.getFixedTokenValuesFromManifest(opts.manifest.tokens)
+    );
   }
 
-  extractPrices(response: Record<string, number>): PricesObj {
+  override extractPrices(response: Record<string, number>): PricesObj {
     return response;
   }
 
-  getFixedTokenValuesFromManifest(tokens: TokensConfig) {
+  static getFixedTokenValuesFromManifest(tokens: TokensConfig) {
     const fixedTokenValues: Record<string, number> = {};
     for (const [dataFeedId, config] of Object.entries(tokens)) {
-      if (config.fixedValue) {
-        fixedTokenValues[dataFeedId] = config.fixedValue;
+      if (config!.fixedValue) {
+        fixedTokenValues[dataFeedId] = config!.fixedValue;
       }
     }
     return fixedTokenValues;

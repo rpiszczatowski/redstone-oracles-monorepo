@@ -14,3 +14,4 @@ if (!process.env.DRY_RUN_TEST_TYPE) {
   process.env.AVALANCHE_RPC_URLS = '["http://mock-avalanche-rpc-url"]';
   process.env.COINMARKETCAP_API_KEY = "coinmarketcap-api-key";
 }
+require('decimal.js').set({ toExpPos: 9e15 });

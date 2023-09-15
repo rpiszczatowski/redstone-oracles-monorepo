@@ -28,8 +28,8 @@ export interface MulticallResult {
 }
 
 export interface Abis {
-  poolAbi: any[];
-  quoterAbi: any[];
+  poolAbi: unknown[];
+  quoterAbi: unknown[];
 }
 
 export interface FunctionNames {

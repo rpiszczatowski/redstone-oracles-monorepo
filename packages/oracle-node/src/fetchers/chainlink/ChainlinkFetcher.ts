@@ -1,6 +1,6 @@
 import { PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
-import ChainlinkProxy from "./ChainlinkProxy";
+import ChainlinkProxy, { ChainlinkResults } from "./ChainlinkProxy";
 
 export class ChainlinkFetcher extends BaseFetcher {
   private chainlinkProxy: ChainlinkProxy;
@@ -10,11 +10,11 @@ export class ChainlinkFetcher extends BaseFetcher {
     this.chainlinkProxy = new ChainlinkProxy();
   }
 
-  async fetchData(ids: string[]): Promise<any> {
+  override async fetchData(ids: string[]): Promise<ChainlinkResults> {
     return await this.chainlinkProxy.getExchangeRates(ids);
   }
 
-  extractPrices(response: any): PricesObj {
+  override extractPrices(response: ChainlinkResults): PricesObj {
     return this.extractPricesSafely(Object.keys(response), (id) => {
       const decimalPrice =
         Number(response[id].price) * Math.pow(10, -response[id].decimalPlaces);

@@ -9,6 +9,7 @@ import { MulticallParsedResponses } from "../../../../../../types";
 export type LidoDetailsKeys = keyof typeof lidoTokensContractDetails;
 
 export class LidoTokensRequestHandlers implements IEvmRequestHandlers {
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   prepareMulticallRequest(id: LidoDetailsKeys) {
     const { address, abi } = lidoTokensContractDetails[id];
     const stEthPerTokenFunction = {
@@ -23,6 +24,7 @@ export class LidoTokensRequestHandlers implements IEvmRequestHandlers {
     ]);
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   extractPrice(response: MulticallParsedResponses, id: LidoDetailsKeys) {
     const { address, underlyingToken } = lidoTokensContractDetails[id];
     const stEthPerTokenAsHex = extractValueFromMulticallResponse(

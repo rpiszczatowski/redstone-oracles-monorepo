@@ -23,7 +23,7 @@ const buildLocalCacheKey = (timestamp: number, dataFeedId: string) =>
 export const getDataPackageFromLocalCache = (
   timestamp: number,
   dataFeedId: string
-): RedstoneTypes.DataPackageFromGateway => {
+): RedstoneTypes.DataPackageFromGateway | undefined => {
   const localCacheKey = buildLocalCacheKey(timestamp, dataFeedId);
   return localCache[localCacheKey];
 };

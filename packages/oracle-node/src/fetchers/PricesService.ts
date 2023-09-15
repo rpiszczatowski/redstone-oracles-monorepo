@@ -1,5 +1,3 @@
-import axios from "axios";
-import { Consola } from "consola";
 import { v4 as uuidv4 } from "uuid";
 import { RedstoneTypes, SafeNumber } from "@redstone-finance/utils";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
@@ -11,10 +9,8 @@ import {
   Manifest,
   NotSanitizedPriceDataBeforeAggregation,
   PriceDataAfterAggregation,
-  PriceDataBeforeAggregation,
   PriceDataBeforeSigning,
   PriceDataFetched,
-  PriceDataFetchedValue,
   SanitizedPriceDataBeforeAggregation,
 } from "../types";
 import { stringifyError } from "../utils/error-stringifier";
@@ -23,10 +19,12 @@ import { promiseTimeout } from "../utils/promise-timeout";
 import fetchers from "./index";
 import { config } from "../config";
 import { createMetadataPerSource } from "./MetadataForRedstonePrice";
+import loggerFactory from "../utils/logger";
+import axios, { AxiosError } from "axios";
 
 export const VALUE_FOR_FAILED_FETCHER = "error";
 
-const logger = require("../utils/logger")("PricesFetcher") as Consola;
+const logger = loggerFactory("PricesFetcher");
 
 const TRADE_DIRECTIONS = [
   RedstoneTypes.TradeDirection.BUY,
@@ -34,8 +32,8 @@ const TRADE_DIRECTIONS = [
 ] as const;
 
 export type PricesDataFetched = { [source: string]: PriceDataFetched[] };
-export type PricesBeforeAggregation<T = number> = {
-  [token: string]: PriceDataBeforeAggregation<T>;
+export type PricesBeforeAggregation = {
+  [token in string]?: NotSanitizedPriceDataBeforeAggregation;
 };
 
 export interface PriceValidationArgs {
@@ -64,7 +62,7 @@ export default class PricesService {
     const promises: Promise<PricesDataFetched>[] = [];
 
     for (const source in tokensBySource) {
-      promises.push(this.safeFetchFromSource(source, tokensBySource[source]));
+      promises.push(this.safeFetchFromSource(source, tokensBySource[source]!));
     }
 
     return await Promise.all(promises);
@@ -81,7 +79,8 @@ export default class PricesService {
       return {
         [source]: pricesFromSource,
       };
-    } catch (e: any) {
+    } catch (err) {
+      const e = err as AxiosError;
       // We don't throw an error because we want to continue with
       // other fetchers even if some fetchers failed
       const resData = e.response ? e.response.data : "";
@@ -89,7 +88,7 @@ export default class PricesService {
       // We use warn level instead of error because
       // price fetching errors occur quite often
       logger.warn(
-        `Fetching failed for source: ${source}: ${resData}`,
+        `Fetching failed for source: ${source}: ${String(resData)}`,
         stringifyError(e)
       );
       return {
@@ -112,7 +111,7 @@ export default class PricesService {
     }
 
     const fetchPromise = () =>
-      fetchers[source].fetchAll(tokens, {
+      fetchers[source]!.fetchAll(tokens, {
         manifest: this.manifest,
       });
 
@@ -140,8 +139,8 @@ export default class PricesService {
     iterationContext: IterationContext,
     pricesData: PricesDataFetched,
     nodeVersion: string
-  ): PricesBeforeAggregation<PriceDataFetchedValue> {
-    const result: PricesBeforeAggregation<PriceDataFetchedValue> = {};
+  ): PricesBeforeAggregation {
+    const result: PricesBeforeAggregation = {};
 
     for (const source in pricesData) {
       for (const price of pricesData[source]) {
@@ -157,8 +156,8 @@ export default class PricesService {
           };
         }
 
-        result[price.symbol].source[source] = price.value;
-        result[price.symbol].sourceMetadata[source] =
+        result[price.symbol]!.source[source] = price.value;
+        result[price.symbol]!.sourceMetadata[source] =
           createMetadataPerSource(price);
       }
     }
@@ -187,11 +186,12 @@ export default class PricesService {
 
       try {
         // Filtering out invalid (or too deviated) values from the `source` object
-        const sanitizedPriceBeforeAggregation = this.sanitizeSourceValues(
-          price,
-          pricesInLocalDBForSymbol,
-          deviationCheckConfig
-        );
+        const sanitizedPriceBeforeAggregation =
+          PricesService.sanitizeSourceValues(
+            price,
+            pricesInLocalDBForSymbol,
+            deviationCheckConfig
+          );
 
         const aggregator = ManifestHelper.getAggregatorForToken(
           this.manifest,
@@ -201,16 +201,16 @@ export default class PricesService {
         // Calculating final aggregated value based on the values from the "valid" sources
         const priceAfterAggregation = aggregator.getAggregatedValue(
           sanitizedPriceBeforeAggregation,
-          prices as PriceDataBeforeAggregation[]
+          prices
         );
 
         // Throwing an error if price < 0 is invalid or too deviated
         priceAfterAggregation.value.assertNonNegative();
-        this.assertInHardLimits(
+        PricesService.assertInHardLimits(
           priceAfterAggregation.value,
           pricesLimits[price.symbol]
         );
-        this.assertStableDeviation({
+        PricesService.assertStableDeviation({
           value: priceAfterAggregation.value,
           timestamp: priceAfterAggregation.timestamp,
           deviationConfig: deviationCheckConfig,
@@ -218,11 +218,11 @@ export default class PricesService {
         });
 
         // Throwing an error if not enough sources for symbol
-        this.assertSourcesNumber(priceAfterAggregation, this.manifest);
+        PricesService.assertSourcesNumber(priceAfterAggregation, this.manifest);
 
         aggregatedPrices.push(priceAfterAggregation);
-      } catch (e: any) {
-        logger.error(`Symbol ${price.symbol}, ${e.stack}`);
+      } catch (e) {
+        logger.error(`Symbol ${price.symbol}, ${(e as Error).stack}`);
       }
     }
 
@@ -233,7 +233,7 @@ export default class PricesService {
    * This function converts all source values to Redstone Numbers
    * and excludes sources with invalid values
    * */
-  sanitizeSourceValues(
+  static sanitizeSourceValues(
     price: NotSanitizedPriceDataBeforeAggregation,
     recentPricesInLocalDBForSymbol: PriceValueInLocalDB[],
     deviationCheckConfig: DeviationCheckConfig
@@ -249,20 +249,26 @@ export default class PricesService {
 
         valueFromSourceNum.assertNonNegative();
 
-        this.assertStableDeviation({
+        PricesService.assertStableDeviation({
           value: valueFromSourceNum,
           timestamp: price.timestamp,
           deviationConfig: deviationCheckConfig,
           recentPrices: recentPricesInLocalDBForSymbol,
         });
 
-        this.assertAcceptableSlippageForSource(price, sourceName);
+        PricesService.assertAcceptableSlippageForSource(price, sourceName);
 
         newSources[sourceName] = valueFromSourceNum;
-      } catch (e: any) {
-        if ((valueFromSource as any as string) !== VALUE_FOR_FAILED_FETCHER) {
+      } catch (e) {
+        if (
+          (valueFromSource as unknown as string) !== VALUE_FOR_FAILED_FETCHER
+        ) {
           logger.error(
-            `Excluding token: "${price.symbol}", value: "${valueFromSource}" for source: "${sourceName}", reason: "${e.message}"`
+            `Excluding token: "${
+              price.symbol
+            }", value: "${valueFromSource}" for source: "${sourceName}", reason: "${
+              (e as Error).message
+            }"`
           );
         }
       }
@@ -271,30 +277,36 @@ export default class PricesService {
     return { ...price, source: newSources };
   }
 
-  assertInHardLimits(value: SafeNumber.ISafeNumber, priceLimits?: PriceLimits) {
+  static assertInHardLimits(
+    value: SafeNumber.ISafeNumber,
+    priceLimits?: PriceLimits
+  ) {
     if (
       priceLimits &&
       (value.gt(priceLimits.upper) || value.lt(priceLimits.lower))
     ) {
       const { lower, upper } = priceLimits;
       throw new Error(
-        `Value is out of hard limits (value: ${value}, limits: ${lower}-${upper})`
+        `Value is out of hard limits (value: ${String(
+          value
+        )}, limits: ${lower}-${upper})`
       );
     }
   }
 
-  assertStableDeviation(args: PriceValidationArgs) {
+  static assertStableDeviation(args: PriceValidationArgs) {
     const { deviationConfig } = args;
     const { deviationWithRecentValues } = deviationConfig;
 
-    const deviationPercent = this.getDeviationWithRecentValuesAverage(args);
+    const deviationPercent =
+      PricesService.getDeviationWithRecentValuesAverage(args);
 
     if (deviationPercent.gt(deviationWithRecentValues.maxPercent)) {
-      throw new Error(`Value is too deviated (${deviationPercent}%)`);
+      throw new Error(`Value is too deviated (${String(deviationPercent)}%)`);
     }
   }
 
-  assertAcceptableSlippageForSource(
+  static assertAcceptableSlippageForSource(
     price: NotSanitizedPriceDataBeforeAggregation,
     sourceName: string
   ) {
@@ -343,7 +355,7 @@ export default class PricesService {
   }
 
   // Calculates max deviation from average of recent values
-  getDeviationWithRecentValuesAverage(
+  static getDeviationWithRecentValuesAverage(
     args: PriceValidationArgs
   ): SafeNumber.ISafeNumber {
     const { value, timestamp, deviationConfig, recentPrices } = args;
@@ -373,10 +385,10 @@ export default class PricesService {
   filterPricesForSigning(
     prices: PriceDataAfterAggregation[]
   ): PriceDataAfterAggregation[] {
-    return prices.filter((p) => !this.manifest.tokens[p.symbol].skipSigning);
+    return prices.filter((p) => !this.manifest.tokens[p.symbol]!.skipSigning);
   }
 
-  preparePricesForSigning(
+  static preparePricesForSigning(
     prices: PriceDataAfterAggregation[],
     idArTransaction: string,
     providerAddress: string
@@ -404,7 +416,10 @@ export default class PricesService {
     return deviationCheckConfig;
   }
 
-  assertSourcesNumber(price: PriceDataAfterAggregation, manifest: Manifest) {
+  static assertSourcesNumber(
+    price: PriceDataAfterAggregation,
+    manifest: Manifest
+  ) {
     const { symbol, source } = price;
     const sources = Object.keys(source);
     const sourcesFetchedCount = sources.length;
@@ -424,11 +439,9 @@ export default class PricesService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   async fetchPricesLimits(): Promise<PricesLimits> {
-    if (
-      !config.pricesHardLimitsUrls ||
-      config.pricesHardLimitsUrls.length === 0
-    ) {
+    if (config.pricesHardLimitsUrls.length === 0) {
       return {};
     }
 

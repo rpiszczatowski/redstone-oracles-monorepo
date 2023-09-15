@@ -1,8 +1,5 @@
 import { DexFetcher } from "../DexFetcher";
-
-const symbolToPairIdObj: {
-  [symbol: string]: string;
-} = require("./uniswap-symbol-to-pair-id.json");
+import symbolToPairIdObj from "./uniswap-symbol-to-pair-id.json";
 
 const subgraphUrl =
   "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2";

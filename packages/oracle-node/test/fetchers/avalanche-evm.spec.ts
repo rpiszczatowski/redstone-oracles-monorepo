@@ -7,6 +7,7 @@ import {
 import { EvmFetcher } from "../../src/fetchers/evm-chain/shared/EvmFetcher";
 import { requestHandlers } from "../../src/fetchers/evm-chain/avalanche/evm-fetcher/sources";
 import {
+  asAwaitable,
   deployMulticallContract,
   saveMockPriceInLocalDb,
   saveMockPricesInLocalDb,
@@ -58,8 +59,12 @@ describe("Avalanche EVM fetcher", () => {
         wallet,
         yieldYakTokensContractsDetails.YY_AAVE_AVAX.abi
       );
-      await yycontract.mock.totalDeposits.returns("147818834870104122793011");
-      await yycontract.mock.totalSupply.returns("141732077110706865863209");
+      await asAwaitable(
+        yycontract.mock.totalDeposits.returns("147818834870104122793011")
+      );
+      await asAwaitable(
+        yycontract.mock.totalSupply.returns("141732077110706865863209")
+      );
 
       multicallContract = await deployMulticallContract(wallet);
 
@@ -92,8 +97,12 @@ describe("Avalanche EVM fetcher", () => {
         wallet,
         yieldYakTokensContractsDetails.YY_PTP_sAVAX.abi
       );
-      await yycontract.mock.totalDeposits.returns("24882891934878312264803");
-      await yycontract.mock.totalSupply.returns("23574725205283071781434");
+      await asAwaitable(
+        yycontract.mock.totalDeposits.returns("24882891934878312264803")
+      );
+      await asAwaitable(
+        yycontract.mock.totalSupply.returns("23574725205283071781434")
+      );
 
       multicallContract = await deployMulticallContract(wallet);
 
@@ -126,12 +135,16 @@ describe("Avalanche EVM fetcher", () => {
         wallet,
         DexLpTokenAbi
       );
-      await dexLpTokenContract.mock.getReserves.returns(
-        "116071821240319574811726",
-        2399967450763,
-        1681724100
+      await asAwaitable(
+        dexLpTokenContract.mock.getReserves.returns(
+          "116071821240319574811726",
+          2399967450763,
+          1681724100
+        )
       );
-      await dexLpTokenContract.mock.totalSupply.returns("374628493439219919");
+      await asAwaitable(
+        dexLpTokenContract.mock.totalSupply.returns("374628493439219919")
+      );
 
       multicallContract = await deployMulticallContract(wallet);
 
@@ -165,12 +178,16 @@ describe("Avalanche EVM fetcher", () => {
         wallet,
         DexLpTokenAbi
       );
-      await dexLpTokenContract.mock.getReserves.returns(
-        1830801156,
-        "33041173352087533019593",
-        1683827563
+      await asAwaitable(
+        dexLpTokenContract.mock.getReserves.returns(
+          1830801156,
+          "33041173352087533019593",
+          1683827563
+        )
       );
-      await dexLpTokenContract.mock.totalSupply.returns("7434434708217657");
+      await asAwaitable(
+        dexLpTokenContract.mock.totalSupply.returns("7434434708217657")
+      );
 
       multicallContract = await deployMulticallContract(wallet);
 
@@ -201,8 +218,12 @@ describe("Avalanche EVM fetcher", () => {
       const [wallet] = provider.getWallets();
 
       const mooTokenContract = await deployMockContract(wallet, BeefyVaultAbi);
-      await mooTokenContract.mock.balance.returns("71564564588400204");
-      await mooTokenContract.mock.totalSupply.returns("62713817908999769");
+      await asAwaitable(
+        mooTokenContract.mock.balance.returns("71564564588400204")
+      );
+      await asAwaitable(
+        mooTokenContract.mock.totalSupply.returns("62713817908999769")
+      );
 
       multicallContract = await deployMulticallContract(wallet);
 
@@ -236,7 +257,9 @@ describe("Avalanche EVM fetcher", () => {
         wallet,
         oracleAdapterContractsDetails.sAVAX.abi
       );
-      await oracleTokenContract.mock.latestAnswer.returns("2221594395");
+      await asAwaitable(
+        oracleTokenContract.mock.latestAnswer.returns("2221594395")
+      );
 
       multicallContract = await deployMulticallContract(wallet);
 
@@ -264,8 +287,10 @@ describe("Avalanche EVM fetcher", () => {
         wallet,
         glpManagerContractsDetails.GLP.abi
       );
-      await glpManagerContract.mock.getPrice.returns(
-        "770441001309746795129889619853"
+      await asAwaitable(
+        glpManagerContract.mock.getPrice.returns(
+          "770441001309746795129889619853"
+        )
       );
 
       multicallContract = await deployMulticallContract(wallet);
@@ -295,12 +320,14 @@ describe("Avalanche EVM fetcher", () => {
         wallet,
         steakHutTokensContractDetails["SHLB_BTC.b-AVAX_B"].abi
       );
-      await steakHutVaultContract.mock.getUnderlyingAssets.returns(
-        "10661",
-        "1894861017009646333"
+      await asAwaitable(
+        steakHutVaultContract.mock.getUnderlyingAssets.returns(
+          "10661",
+          "1894861017009646333"
+        )
       );
-      await steakHutVaultContract.mock.totalSupply.returns(
-        "373022375711998840044"
+      await asAwaitable(
+        steakHutVaultContract.mock.totalSupply.returns("373022375711998840044")
       );
       multicallContract = await deployMulticallContract(wallet);
 
@@ -333,22 +360,24 @@ describe("Avalanche EVM fetcher", () => {
         wallet,
         gmdTokensContractsDetails.abi
       );
-      await gmdTokenContract.mock.totalSupply.returns(
-        "13893284805458516865839"
+      await asAwaitable(
+        gmdTokenContract.mock.totalSupply.returns("13893284805458516865839")
       );
       const gmdVaultContract = await deployMockContract(wallet, GmdVaultAbi);
-      await gmdVaultContract.mock.poolInfo.returns(
-        "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
-        gmdTokenContract.address,
-        "57529812360454",
-        "14514081300794260141483",
-        "1683032305",
-        "15500000000000000000000",
-        "500",
-        "1250",
-        true,
-        true,
-        true
+      await asAwaitable(
+        gmdVaultContract.mock.poolInfo.returns(
+          "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+          gmdTokenContract.address,
+          "57529812360454",
+          "14514081300794260141483",
+          "1683032305",
+          "15500000000000000000000",
+          "500",
+          "1250",
+          true,
+          true,
+          true
+        )
       );
 
       multicallContract = await deployMulticallContract(wallet);
@@ -383,14 +412,16 @@ describe("Avalanche EVM fetcher", () => {
         wallet,
         traderJoeAutoPoolTokenContractDetails.TJ_AVAX_USDC_AUTO.abi
       );
-      await traderJoeAutoContract.mock.getBalances.returns(
-        "74327537225082812589017",
-        "288750527247"
+      await asAwaitable(
+        traderJoeAutoContract.mock.getBalances.returns(
+          "74327537225082812589017",
+          "288750527247"
+        )
       );
-      await traderJoeAutoContract.mock.totalSupply.returns(
-        "1460320130438534473"
+      await asAwaitable(
+        traderJoeAutoContract.mock.totalSupply.returns("1460320130438534473")
       );
-      await traderJoeAutoContract.mock.decimals.returns(12);
+      await asAwaitable(traderJoeAutoContract.mock.decimals.returns(12));
       multicallContract = await deployMulticallContract(wallet);
 
       traderJoeAutoPoolTokenContractDetails.TJ_AVAX_USDC_AUTO.address =
@@ -423,19 +454,27 @@ describe("Avalanche EVM fetcher", () => {
         wallet,
         curveTokensContractsDetails.erc20abi
       );
-      await erc20Contract.mock.totalSupply.returns("2932165587542432290261");
+      await asAwaitable(
+        erc20Contract.mock.totalSupply.returns("2932165587542432290261")
+      );
 
       const poolContract = await deployMockContract(
         wallet,
         curveTokensContractsDetails.abi
       );
-      await poolContract.mock.balances
-        .withArgs("0")
-        .returns("1119820024147240997756265");
-      await poolContract.mock.balances.withArgs("1").returns("3891897421");
-      await poolContract.mock.balances
-        .withArgs("2")
-        .returns("633420213309859800953");
+      await asAwaitable(
+        poolContract.mock.balances
+          .withArgs("0")
+          .returns("1119820024147240997756265")
+      );
+      await asAwaitable(
+        poolContract.mock.balances.withArgs("1").returns("3891897421")
+      );
+      await asAwaitable(
+        poolContract.mock.balances
+          .withArgs("2")
+          .returns("633420213309859800953")
+      );
 
       multicallContract = await deployMulticallContract(wallet);
 
@@ -479,13 +518,17 @@ describe("Avalanche EVM fetcher", () => {
         wallet,
         balancerTokensContractDetails["sAVAX-bb-a-WAVAX-BPT"].mainPoolAbi
       );
-      await mainPoolContract.mock.getRate.returns("1002100095172511274");
+      await asAwaitable(
+        mainPoolContract.mock.getRate.returns("1002100095172511274")
+      );
 
       const secondPoolContract = await deployMockContract(
         wallet,
         balancerTokensContractDetails["sAVAX-bb-a-WAVAX-BPT"].secondPoolAbi
       );
-      await secondPoolContract.mock.getRate.returns("1000918229247960000");
+      await asAwaitable(
+        secondPoolContract.mock.getRate.returns("1000918229247960000")
+      );
 
       multicallContract = await deployMulticallContract(wallet);
 

@@ -16,6 +16,7 @@ const GET_TRANCHE_VALUE_FUNCTION_NAME = "getTrancheValue";
 type LevelFinanceContractDetailsKeys = keyof typeof levelFinanceContractDetails;
 
 export class LevelFinanceTokensRequestHandlers implements IEvmRequestHandlers {
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   prepareMulticallRequest(id: LevelFinanceContractDetailsKeys) {
     const { address } = levelFinanceContractDetails[id];
     const totalSupplyRequest = buildMulticallRequests(
@@ -35,6 +36,7 @@ export class LevelFinanceTokensRequestHandlers implements IEvmRequestHandlers {
     return [...totalSupplyRequest, ...trancheValueRequest];
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   extractPrice(
     response: MulticallParsedResponses,
     id: LevelFinanceContractDetailsKeys

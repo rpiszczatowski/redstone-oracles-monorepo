@@ -14,11 +14,10 @@ export class EvmMulticallService {
       Multicall2.abi,
       this.provider
     );
-    const responses: [boolean, string][] =
-      await multicallContract.callStatic.tryAggregate(
-        false,
-        requests.map(({ address, data }) => [address, data])
-      );
+    const responses = (await multicallContract.callStatic.tryAggregate(
+      false,
+      requests.map(({ address, data }) => [address, data])
+    )) as [boolean, string][];
     const parsedResponses: MulticallParsedResponses = {};
     for (let i = 0; i < requests.length; i++) {
       const { name, address } = requests[i];
@@ -29,7 +28,7 @@ export class EvmMulticallService {
       if (!parsedResponses[address]) {
         parsedResponses[address] = [];
       }
-      parsedResponses[address].push(parsedResponse);
+      parsedResponses[address]!.push(parsedResponse);
     }
     return parsedResponses;
   }

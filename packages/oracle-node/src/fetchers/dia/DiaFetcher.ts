@@ -2,15 +2,10 @@ import {
   MultiRequestFetcher,
   RequestIdToResponse,
 } from "../MultiRequestFetcher";
-
-const axios = require("axios");
+import axios, { AxiosResponse } from "axios";
 
 const DIA_BASE_URL = "https://api.diadata.org/v1";
 const DIA_QUOTATION_PATH = "quotation";
-
-interface Response {
-  data: Quotation;
-}
 
 interface Quotation {
   Symbol: string;
@@ -22,13 +17,13 @@ export class DiaFetcher extends MultiRequestFetcher {
     super("dia");
   }
 
-  override makeRequest(id: string): Promise<Response> {
+  override makeRequest(id: string): Promise<AxiosResponse<Quotation>> {
     return axios.get(`${DIA_BASE_URL}/${DIA_QUOTATION_PATH}/${id}`);
   }
 
   override extractPrice(
     dataFeedId: string,
-    responses: RequestIdToResponse
+    responses: RequestIdToResponse<AxiosResponse<Quotation | undefined>>
   ): number | undefined {
     return responses[dataFeedId]?.data?.Price;
   }

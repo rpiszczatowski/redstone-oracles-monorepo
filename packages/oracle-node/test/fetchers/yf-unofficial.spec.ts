@@ -2,13 +2,18 @@ import fetchers from "../../src/fetchers/index";
 
 jest.mock("yahoo-finance2", () => ({
   quoteSummary: (symbol: string) => {
-    const exampleResponse = require("../../src/fetchers/yf-unofficial/example-response.json");
+    const exampleResponse =
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      require("../../src/fetchers/yf-unofficial/example-response.json") as Record<
+        string,
+        unknown
+      >;
     return Promise.resolve(exampleResponse[symbol]);
   },
 }));
 
 describe("yf-unofficial fetcher", () => {
-  const sut = fetchers["yf-unofficial"];
+  const sut = fetchers["yf-unofficial"]!;
 
   it("should properly fetch data", async () => {
     const result = await sut.fetchAll([

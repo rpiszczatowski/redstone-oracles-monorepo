@@ -6,7 +6,7 @@ jest.mock("axios");
 mockFetcherResponse("../../src/fetchers/coingecko/example-response.json");
 
 describe("coingecko fetcher", () => {
-  const sut = fetchers["coingecko"];
+  const sut = fetchers["coingecko"]!;
 
   it("should properly fetch data", async () => {
     const result = await sut.fetchAll(["BTC", "ETH", "AR"]);

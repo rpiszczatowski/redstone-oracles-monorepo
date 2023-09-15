@@ -32,9 +32,8 @@ describe("ArweaveService - getCurrentManifest", () => {
 
   test("Fetching failed, old manifest exists", async () => {
     server.use(invalidHandler);
-    const manifest = await arweaveService.getCurrentManifest(
-      devManifestWithTxId
-    );
+    const manifest =
+      await arweaveService.getCurrentManifest(devManifestWithTxId);
     expect(manifest).toEqual(devManifestWithTxId);
   });
 
@@ -47,9 +46,8 @@ describe("ArweaveService - getCurrentManifest", () => {
 
   test("Fetching failed with timeout, old manifest exists", async () => {
     server.use(bigDelayHandler);
-    const manifest = await arweaveService.getCurrentManifest(
-      devManifestWithTxId
-    );
+    const manifest =
+      await arweaveService.getCurrentManifest(devManifestWithTxId);
     expect(manifest).toEqual(devManifestWithTxId);
   });
 });

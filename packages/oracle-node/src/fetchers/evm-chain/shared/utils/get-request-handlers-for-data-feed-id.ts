@@ -2,7 +2,7 @@ import { IEvmRequestHandlers } from "../IEvmRequestHandlers";
 
 export const getRequestHandlersForDataFeedId = (
   id: string,
-  requestHandlers: Record<string, IEvmRequestHandlers>
+  requestHandlers: Record<string, IEvmRequestHandlers | undefined>
 ) => {
   const requestHandlersForDataFeedId = requestHandlers[id];
   if (!requestHandlersForDataFeedId) {

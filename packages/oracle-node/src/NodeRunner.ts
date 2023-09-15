@@ -1,4 +1,3 @@
-import { Consola } from "consola";
 import { ethers } from "ethers";
 import git from "git-last-commit";
 import { ExpressAppRunner } from "./ExpressAppRunner";
@@ -21,7 +20,6 @@ import {
   NodeConfig,
   NotSanitizedPriceDataBeforeAggregation,
   PriceDataAfterAggregation,
-  PriceDataFetchedValue,
 } from "./types";
 import { stringifyError } from "./utils/error-stringifier";
 import { fetchIp } from "./utils/ip-fetcher";
@@ -32,9 +30,10 @@ import {
   trackStart,
 } from "./utils/performance-tracker";
 import { TimeoutError, promiseTimeout } from "./utils/promise-timeout";
+import loggerFactory from "./utils/logger";
+import pjson from "../package.json";
 
-const logger = require("./utils/logger")("runner") as Consola;
-const pjson = require("../package.json") as any;
+const logger = loggerFactory("runner");
 
 const MANIFEST_LOAD_TIMEOUT_MS = 25 * 1000;
 const DIAGNOSTIC_INFO_PRINTING_INTERVAL = 60 * 1000;
@@ -101,12 +100,16 @@ export default class NodeRunner {
     if (nodeConfig.overrideManifestUsingFile) {
       manifestData = nodeConfig.overrideManifestUsingFile;
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       while (true) {
         logger.info("Fetching manifest data.");
         try {
           manifestData = await arweaveService.getCurrentManifest();
-        } catch (e: any) {
-          logger.error("Initial manifest read failed.", e.stack || e);
+        } catch (e) {
+          logger.error(
+            "Initial manifest read failed.",
+            (e as Error).stack || e
+          );
         }
         if (manifestData !== null) {
           logger.info("Fetched manifest", manifestData);
@@ -129,8 +132,8 @@ export default class NodeRunner {
 
     try {
       const scheduler = ManifestHelper.getScheduler(this.currentManifest!);
-      await scheduler.startIterations(this.runIteration);
-    } catch (e: any) {
+      await scheduler.startIterations(this.runIteration.bind(this));
+    } catch (e) {
       logger.error(stringifyError(e));
     }
   }
@@ -147,7 +150,7 @@ export default class NodeRunner {
     );
 
     // Printing git details
-    git.getLastCommit((err, commit) => {
+    git.getLastCommit((err: Error | null, commit) => {
       if (err) {
         logger.error(err);
       } else {
@@ -164,8 +167,11 @@ export default class NodeRunner {
     if (this.nodeConfig.printDiagnosticInfo) {
       const printDiagnosticInfo = () => {
         const memoryUsage = process.memoryUsage();
-        const activeRequests = (process as any)._getActiveRequests();
-        const activeHandles = (process as any)._getActiveHandles();
+        const activeRequests =
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+          (process as any)._getActiveRequests() as unknown[];
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
+        const activeHandles = (process as any)._getActiveHandles() as unknown[];
         logger.info(
           `Diagnostic info: ` +
             `Active requests count: ${activeRequests.length}. ` +
@@ -198,7 +204,7 @@ export default class NodeRunner {
     const processingAllTrackingId = trackStart("processing-all");
     try {
       await this.doProcessTokens(iterationContext);
-    } catch (e: any) {
+    } catch (e) {
       logger.error(stringifyError(e));
     } finally {
       trackEnd(processingAllTrackingId);
@@ -237,7 +243,7 @@ export default class NodeRunner {
       this.tokensBySource!
     );
     const pricesData: PricesDataFetched = mergeObjects(fetchedPrices);
-    const pricesBeforeAggregation: PricesBeforeAggregation<PriceDataFetchedValue> =
+    const pricesBeforeAggregation: PricesBeforeAggregation =
       PricesService.groupPricesByToken(
         iterationContext,
         pricesData,
@@ -246,7 +252,9 @@ export default class NodeRunner {
 
     const aggregatedPrices: PriceDataAfterAggregation[] =
       await this.pricesService!.calculateAggregatedValues(
-        Object.values(pricesBeforeAggregation)
+        Object.values(
+          pricesBeforeAggregation
+        ) as NotSanitizedPriceDataBeforeAggregation[]
       );
     NodeRunner.printAggregatedPrices(aggregatedPrices);
     trackEnd(fetchingAllTrackingId);
@@ -259,7 +267,9 @@ export default class NodeRunner {
     for (const price of prices) {
       const sourcesData = JSON.stringify(price.source);
       logger.info(
-        `Fetched price : ${price.symbol} : ${price.value} | ${sourcesData}`
+        `Fetched price : ${price.symbol} : ${String(
+          price.value
+        )} | ${sourcesData}`
       );
     }
   }
@@ -287,7 +297,7 @@ export default class NodeRunner {
         MANIFEST_LOAD_TIMEOUT_MS
       )
         .then((value) => {
-          this.handleLoadedManifest(value as Manifest);
+          this.handleLoadedManifest(value);
         })
         .catch((error) => {
           if (error instanceof TimeoutError) {

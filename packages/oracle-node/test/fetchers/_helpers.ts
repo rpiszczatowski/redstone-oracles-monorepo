@@ -4,8 +4,10 @@ import { SafeNumber } from "@redstone-finance/utils";
 import { Wallet } from "ethers";
 import { deployContract } from "ethereum-waffle";
 import {
+  NotSanitizedPriceDataBeforeAggregation,
   PriceDataAfterAggregation,
-  PriceDataBeforeAggregation,
+  PriceDataFetchedValue,
+  SanitizedPriceDataBeforeAggregation,
 } from "../../src/types";
 import Multicall2 from "../../src/fetchers/evm-chain/shared/abis/Multicall2.abi.json";
 
@@ -13,48 +15,55 @@ export const saveMockPriceInLocalDb = async (
   value: number,
   symbol: string = "USDT"
 ) => {
-  const priceToSave = preparePrice({
-    symbol,
-    value: SafeNumber.createSafeNumber(value),
-  });
-  await savePrices([priceToSave]);
+  const priceToSave = sanitizePrice(
+    preparePrice({
+      symbol,
+    })
+  );
+  const sanitizedValue = SafeNumber.createSafeNumber(value);
+  await savePrices([{ value: sanitizedValue, ...priceToSave }]);
 };
 
 export const saveMockPricesInLocalDb = async (
   values: number[],
   symbols: string[]
 ) => {
-  const pricesToPrepare = symbols.map((symbol, index) =>
-    preparePrice({
-      symbol,
-      value: SafeNumber.createSafeNumber(values[index]),
-    })
-  );
-  const pricesToSave = preparePrices(pricesToPrepare);
+  const pricesToSave = symbols.map((symbol, index) => ({
+    ...sanitizePrice(
+      preparePrice({
+        symbol,
+      })
+    ),
+    value: SafeNumber.createSafeNumber(values[index]),
+  }));
   await savePrices(pricesToSave);
 };
 
 export function mockFetcherResponse(pathToResponseFile: string) {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
-  const exampleResponse = require(pathToResponseFile);
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const exampleResponse = require(pathToResponseFile) as unknown;
   mockedAxios.get.mockResolvedValue({ data: exampleResponse });
   mockedAxios.post.mockResolvedValue({ data: exampleResponse });
 }
 
 export function mockFetcherResponseOnce(pathToResponseFile: string) {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
-  const exampleResponse = require(pathToResponseFile);
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const exampleResponse = require(pathToResponseFile) as unknown;
   mockedAxios.get.mockResolvedValueOnce({ data: exampleResponse });
   mockedAxios.post.mockResolvedValueOnce({ data: exampleResponse });
 }
 
-export function mockFetcherResponseWithFunction(getResponse: () => any) {
+export function mockFetcherResponseWithFunction(getResponse: () => unknown) {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
   mockedAxios.get.mockResolvedValue({ data: getResponse() });
   mockedAxios.post.mockResolvedValue({ data: getResponse() });
 }
 
-export function mockFetcherResponseOnceWithFunction(getResponse: () => any) {
+export function mockFetcherResponseOnceWithFunction(
+  getResponse: () => unknown
+) {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
   mockedAxios.get.mockResolvedValueOnce({ data: getResponse() });
   mockedAxios.post.mockResolvedValueOnce({ data: getResponse() });
@@ -69,7 +78,8 @@ export function mockFetcherProxy(
     return jest.fn().mockImplementation(() => {
       return {
         getExchangeRates: () => {
-          const exampleResponse = require(pathToResponseFile);
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          const exampleResponse = require(pathToResponseFile) as unknown;
 
           return Promise.resolve({
             data: exampleResponse,
@@ -80,11 +90,16 @@ export function mockFetcherProxy(
   });
 }
 
+// for testing purposes we allow to insert value property in not sanitized price to simplify tests setup
+type OptionalValue = {
+  value?: PriceDataFetchedValue;
+};
+
 export const preparePrice = (
-  partialPrice: Partial<PriceDataAfterAggregation>
-): any => {
+  partialPrice: Partial<NotSanitizedPriceDataBeforeAggregation> & OptionalValue
+): NotSanitizedPriceDataBeforeAggregation => {
   const testTimestamp = Date.now();
-  const defaultPrice: PriceDataBeforeAggregation = {
+  const defaultPrice: NotSanitizedPriceDataBeforeAggregation = {
     id: "00000000-0000-0000-0000-000000000000",
     symbol: "mock-symbol",
     source: {},
@@ -99,8 +114,51 @@ export const preparePrice = (
 };
 
 export const preparePrices = (
-  partialPrices: Partial<PriceDataAfterAggregation>[]
-): any[] => partialPrices.map(preparePrice);
+  partialPrices: Partial<
+    NotSanitizedPriceDataBeforeAggregation & OptionalValue
+  >[]
+): NotSanitizedPriceDataBeforeAggregation[] => partialPrices.map(preparePrice);
+
+export const sanitizePrice = (
+  notSanitizedPrice: NotSanitizedPriceDataBeforeAggregation & OptionalValue
+): SanitizedPriceDataBeforeAggregation => {
+  const newSoruces = {} as Record<string, SafeNumber.ISafeNumber>;
+  for (const s in notSanitizedPrice.source) {
+    newSoruces[s] = SafeNumber.createSafeNumber(notSanitizedPrice.source[s]!);
+  }
+  return {
+    ...notSanitizedPrice,
+    source: newSoruces,
+  };
+};
+
+export const sanitizePrices = (
+  notSanitizePrices: (NotSanitizedPriceDataBeforeAggregation & OptionalValue)[]
+) => notSanitizePrices.map(sanitizePrice);
+
+// we allow two options: value can be passed directly in the price object or as a separate property
+export const aggregatePrice = (
+  sanitizedPrice: SanitizedPriceDataBeforeAggregation & OptionalValue,
+  value?: PriceDataFetchedValue
+): PriceDataAfterAggregation => ({
+  ...sanitizedPrice,
+  value: SafeNumber.createSafeNumber(
+    (sanitizedPrice.value ?? value) as SafeNumber.NumberArg
+  ),
+});
+
+export const aggregatePrices = (
+  sanitizedPrices: (SanitizedPriceDataBeforeAggregation & OptionalValue)[],
+  values?: PriceDataFetchedValue[]
+): PriceDataAfterAggregation[] =>
+  sanitizedPrices.map((price, index) => aggregatePrice(price, values?.[index]));
+
+export const prepareSanitizeAndAggregatePrices = (
+  partialPrices: (Partial<NotSanitizedPriceDataBeforeAggregation> &
+    OptionalValue)[],
+  values?: PriceDataFetchedValue[]
+): PriceDataAfterAggregation[] =>
+  aggregatePrices(sanitizePrices(preparePrices(partialPrices)), values);
 
 export const deployMulticallContract = async (wallet: Wallet) => {
   return await deployContract(wallet, {

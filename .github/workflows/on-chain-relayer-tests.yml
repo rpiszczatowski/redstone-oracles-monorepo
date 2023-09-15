@@ -3,6 +3,11 @@ on:
   push:
     paths:
       - packages/on-chain-relayer/**
+      - packages/evm-connector/**
+      - packages/protocol/**
+      - packages/sdk/**
+      - packages/utils/**
+      - packages/rpc-providers/**
       - .github/workflows/on-chain-relayer-tests.yml
       - .github/workflows/on-chain-relayer-deploy-to-ecr.yml
 
@@ -26,6 +31,8 @@ jobs:
         run: cd ../evm-connector && yarn compile
       - name: Build
         run: yarn build
+      - name: Lint
+        run: yarn lint
       - name: Run tests
         run: yarn test
         env:

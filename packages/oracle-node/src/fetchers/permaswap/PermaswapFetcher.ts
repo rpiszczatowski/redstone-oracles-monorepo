@@ -12,11 +12,13 @@ type PermaswapResponse = {
 };
 
 export type PermaswapPoolsConfig = {
-  [symbol: string]: {
-    poolAddress: string;
-    pairedToken: string;
-    direction: "currentPriceDown" | "currentPriceUp";
-  };
+  [symbol: string]:
+    | {
+        poolAddress: string;
+        pairedToken: string;
+        direction: "currentPriceDown" | "currentPriceUp";
+      }
+    | undefined;
 };
 
 const PERMASWAP_ROUTER_URL = "https://router.permaswap.network/pool";
@@ -38,9 +40,9 @@ export class PermaswapFetcher extends MultiRequestFetcher {
 
   override extractPrice(
     dataFeedId: string,
-    responses: RequestIdToResponse
+    responses: RequestIdToResponse<PermaswapResponse>
   ): number | undefined {
-    const response: PermaswapResponse = responses[dataFeedId];
+    const response = responses[dataFeedId];
     if (response) {
       const { direction } = this.getPool(dataFeedId);
       const ratio = parseFloat(response[direction]);
@@ -59,7 +61,7 @@ export class PermaswapFetcher extends MultiRequestFetcher {
   }
 
   protected getPairedTokenPrice(assetId: string): number {
-    let { pairedToken } = this.getPool(assetId);
+    const { pairedToken } = this.getPool(assetId);
 
     const lastPriceFromCache = getLastPrice(pairedToken);
     if (!lastPriceFromCache) {

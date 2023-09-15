@@ -1,9 +1,9 @@
 import axios from "axios";
 import { PriceDataSigned, SignedPricePackage } from "../../types";
-import { Consola } from "consola";
 import { stringifyError } from "../../utils/error-stringifier";
+import loggerFactory from "../../utils/logger";
 
-const logger = require("../../utils/logger")("PriceDataBroadcaster") as Consola;
+const logger = loggerFactory("PriceDataBroadcaster");
 
 // TODO: add timeout to broadcasting
 

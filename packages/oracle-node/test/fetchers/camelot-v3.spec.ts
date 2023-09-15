@@ -2,6 +2,7 @@ import {
   MockProvider,
   deployMockContract,
   deployContract,
+  MockContract,
 } from "ethereum-waffle";
 import {
   clearLastPricesCache,
@@ -21,8 +22,8 @@ import { RedstoneCommon } from "@redstone-finance/utils";
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 describe("Camelot V3 fetcher", () => {
-  let quoterContract: Contract;
-  let poolContract: Contract;
+  let quoterContract: MockContract;
+  let poolContract: MockContract;
   let multicall: Contract;
   let provider: MockProvider;
   let mockTokenConfig: PoolsConfig;

@@ -1,5 +1,6 @@
-import { Consola } from "consola";
-const logger = require("./utils/logger")("Terminator") as Consola;
+import loggerFactory from "./utils/logger";
+
+const logger = loggerFactory("Terminator");
 
 enum ExitCodes {
   ManifestConfigError = 1,

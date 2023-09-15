@@ -3,6 +3,7 @@ import { MockProvider, deployMockContract } from "ethereum-waffle";
 import { EvmFetcher } from "../../src/fetchers/evm-chain/shared/EvmFetcher";
 import { requestHandlers } from "../../src/fetchers/evm-chain/ethereum/evm-fetcher/sources";
 import {
+  asAwaitable,
   deployMulticallContract,
   saveMockPriceInLocalDb,
   saveMockPricesInLocalDb,
@@ -42,18 +43,24 @@ describe("Ethereum EVM fetcher", () => {
         wallet,
         curveTokensContractsDetails.erc20abi
       );
-      await erc20Contract.mock.totalSupply.returns(
-        "317026235670089709931993389"
+      await asAwaitable(
+        erc20Contract.mock.totalSupply.returns("317026235670089709931993389")
       );
       const poolContract = await deployMockContract(
         wallet,
         curveTokensContractsDetails.abi
       );
-      await poolContract.mock.balances
-        .withArgs(0)
-        .returns("112592607687628212016974636");
-      await poolContract.mock.balances.withArgs(1).returns("106490055087428");
-      await poolContract.mock.balances.withArgs(2).returns("106266964025858");
+      await asAwaitable(
+        poolContract.mock.balances
+          .withArgs(0)
+          .returns("112592607687628212016974636")
+      );
+      await asAwaitable(
+        poolContract.mock.balances.withArgs(1).returns("106490055087428")
+      );
+      await asAwaitable(
+        poolContract.mock.balances.withArgs(2).returns("106266964025858")
+      );
 
       multicallContract = await deployMulticallContract(wallet);
 
@@ -92,8 +99,10 @@ describe("Ethereum EVM fetcher", () => {
         wallet,
         lidoTokensContractDetails.wstETH_FUNDAMENTAL.abi
       );
-      await wstethContract.mock.stEthPerToken.returns("1136995300838313055");
-      await wstethContract.mock.decimals.returns(18);
+      await asAwaitable(
+        wstethContract.mock.stEthPerToken.returns("1136995300838313055")
+      );
+      await asAwaitable(wstethContract.mock.decimals.returns(18));
 
       multicallContract = await deployMulticallContract(wallet);
 

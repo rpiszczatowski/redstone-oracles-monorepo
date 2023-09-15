@@ -1,12 +1,15 @@
 import { IEvmRequestHandlers } from "../IEvmRequestHandlers";
 
-type Class<T> = new (...args: any[]) => T;
+export type Class<T, R = unknown> = new (args: Record<string, R>) => T;
 
-export const buildRequestHandlersFromContractDetails = (
-  contractDetails: Record<string, any>,
-  evmRequestHandlers: Class<IEvmRequestHandlers>
+export const buildRequestHandlersFromContractDetails = <T>(
+  contractDetails: Record<string, T>,
+  evmRequestHandlers: Class<IEvmRequestHandlers, T>
 ) =>
-  Object.keys(contractDetails).reduce((obj, id) => {
-    obj[id] = new evmRequestHandlers(contractDetails);
-    return obj;
-  }, {} as Record<string, IEvmRequestHandlers>);
+  Object.keys(contractDetails).reduce(
+    (obj, id) => {
+      obj[id] = new evmRequestHandlers(contractDetails);
+      return obj;
+    },
+    {} as Record<string, IEvmRequestHandlers>
+  );

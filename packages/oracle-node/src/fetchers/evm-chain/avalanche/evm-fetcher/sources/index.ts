@@ -1,4 +1,7 @@
-import { buildRequestHandlersFromContractDetails } from "../../../shared/utils/build-request-handlers-from-contract-details";
+import {
+  buildRequestHandlersFromContractDetails,
+  Class,
+} from "../../../shared/utils/build-request-handlers-from-contract-details";
 import { YieldYakTokensRequestHandlers } from "../../../shared/request-handlers/YieldYakTokensRequestHandlers";
 import { yieldYakTokensContractsDetails } from "./yield-yak/yieldYakTokensContractsDetails";
 import { DexLpTokensRequestHandlers } from "../../../shared/request-handlers/DexLpTokensRequestHandlers";
@@ -16,9 +19,14 @@ import { GmdRequestHandler } from "./gmd/GmdRequestHandlers";
 import { traderJoeAutoPoolTokenContractDetails } from "./trader-joe-auto/traderJoeAutoPoolTokenContractsDetails";
 import { TraderJoeAutoRequestHandlers } from "./trader-joe-auto/TraderJoeAutoRequestHandlers";
 import { curveTokensContractsDetails } from "./curve-lp-tokens/curveTokensContractsDetails";
-import { CurveRequestHandlers } from "../../../shared/request-handlers/CurveRequestHandlers";
+import {
+  CurveRequestHandlers,
+  TokenContractDetails,
+  TokenContractDetailsObject,
+} from "../../../shared/request-handlers/CurveRequestHandlers";
 import { balancerTokensContractDetails } from "./balancer/balancerTokensContractDetails";
 import { BalancerRequestHandlers } from "./balancer/BalancerRequestHandlers";
+import { IEvmRequestHandlers } from "../../../shared/IEvmRequestHandlers";
 
 export const requestHandlers = {
   ...buildRequestHandlersFromContractDetails(
@@ -54,8 +62,11 @@ export const requestHandlers = {
     TraderJoeAutoRequestHandlers
   ),
   ...buildRequestHandlersFromContractDetails(
-    curveTokensContractsDetails,
-    CurveRequestHandlers
+    curveTokensContractsDetails as TokenContractDetailsObject,
+    CurveRequestHandlers as unknown as Class<
+      IEvmRequestHandlers,
+      TokenContractDetails
+    >
   ),
   ...buildRequestHandlersFromContractDetails(
     balancerTokensContractDetails,

@@ -1,8 +1,6 @@
 import { DexFetcher } from "../DexFetcher";
 
-const symbolToPairIdObj: {
-  [symbol: string]: string;
-} = require("./sushiswap-symbol-to-pair-id.json");
+import symbolToPairIdObj from "./sushiswap-symbol-to-pair-id.json";
 
 const subgraphUrl =
   "https://api.thegraph.com/subgraphs/name/sushiswap/exchange";

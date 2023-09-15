@@ -7,7 +7,10 @@ import Decimal from "decimal.js";
 export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherResponse> {
   protected override retryForInvalidResponse: boolean = true;
 
-  constructor(name: string, private readonly curveFetcher: CurveFetcher) {
+  constructor(
+    name: string,
+    private readonly curveFetcher: CurveFetcher
+  ) {
     super(name);
   }
 
@@ -22,7 +25,7 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     }
 
     const currentBlockNumber = await provider.getBlockNumber();
-    const blockSequence = this.getBlocksSequence(
+    const blockSequence = MultiBlockCurveFetcher.getBlocksSequence(
       currentBlockNumber,
       multiBlockConfig.intervalLength,
       multiBlockConfig.sequenceStep
@@ -64,7 +67,7 @@ export class MultiBlockCurveFetcher extends DexOnChainFetcher<CurveFetcherRespon
     return this.curveFetcher.calculateSpotPrice(assetId, response);
   }
 
-  private getBlocksSequence(
+  private static getBlocksSequence(
     lastBlock: number,
     intervalLength: number,
     sequenceStep: number

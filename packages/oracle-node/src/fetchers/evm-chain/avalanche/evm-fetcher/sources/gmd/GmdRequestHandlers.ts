@@ -14,6 +14,7 @@ const INDEXES_OF_GLP_TOKEN_ADDRESS_FROM_CONTRACT = [90, 130];
 const INDEXES_OF_TOTAL_STAKED_FROM_CONTRACT = [194, 258];
 
 export class GmdRequestHandler implements IEvmRequestHandlers {
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   prepareMulticallRequest(id: GmdContractsDetailsKeys) {
     const { address, poolInfoArg } =
       gmdTokensContractsDetails.contractDetails[id];
@@ -30,6 +31,7 @@ export class GmdRequestHandler implements IEvmRequestHandlers {
     return [...poolInfoRequest, ...totalSupplyRequest];
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   extractPrice(
     response: MulticallParsedResponses,
     id: GmdContractsDetailsKeys

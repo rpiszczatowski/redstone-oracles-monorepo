@@ -25,7 +25,8 @@
     "docker:build": "docker build -f Dockerfile.public -t redstone-node .",
     "run-ts": "ts-node",
     "copy-jsons": "cd dist && find . -name '*.json' | cpio -pdm ../../oracle-node-obfuscated",
-    "obfuscate": "npx javascript-obfuscator ./dist --output ../oracle-node-obfuscated"
+    "obfuscate": "npx javascript-obfuscator ./dist --output ../oracle-node-obfuscated",
+    "lint": "eslint ."
   },
   "license": "MIT",
   "author": "Redstone Team <dev@redstone.finance>",
@@ -79,6 +80,7 @@
     "@types/lodash": "^4.14.168",
     "@types/luxon": "^3.3.0",
     "@types/node": "^14.14.31",
+    "@types/node-schedule": "^2.1.0",
     "@types/prompts": "^2.0.14",
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^8.3.0",
@@ -94,7 +96,7 @@
     "msw": "^1.2.1",
     "open": "^8.0.4",
     "plotly": "^1.0.6",
-    "prettier": "^2.6.2",
+    "prettier": "^3.0.3",
     "prompts": "^2.4.2",
     "replace-in-file": "^6.3.2",
     "supertest": "^6.2.3",

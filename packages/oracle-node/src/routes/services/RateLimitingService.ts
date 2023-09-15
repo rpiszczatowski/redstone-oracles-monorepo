@@ -1,10 +1,10 @@
-import { Consola } from "consola";
+import loggerFactory from "../../utils/logger";
 
-const logger = require("../../utils/logger")("score-by-address") as Consola;
+const logger = loggerFactory("score-by-address");
 
-export interface RecordedAddresses {
-  [address: string]: { timestamps: number[] };
-}
+export type RecordedAddresses = {
+  [address in string]?: { timestamps: number[] };
+};
 
 const RATE_LIMIT_INTERVAL_MILLISECONDS = 60 * 60 * 1000;
 const MAX_NUMBER_OF_REQUESTS = 5;
@@ -21,7 +21,7 @@ export const recordRequestSentByAddress = (
   if (!recordedAddresses[address]?.timestamps) {
     recordedAddresses[address] = { timestamps: [] };
   }
-  recordedAddresses[address].timestamps.push(timestamp);
+  recordedAddresses[address]!.timestamps.push(timestamp);
   clearOutdatedTimestampsByAddress(address);
 };
 
@@ -39,7 +39,7 @@ const clearOutdatedTimestampsByAddress = (address: string) => {
 
 export const hasAddressReachedRateLimit = (addressFromMessage: string) => {
   const addressDetails = recordedAddresses[addressFromMessage];
-  return Boolean(addressDetails?.timestamps.length >= MAX_NUMBER_OF_REQUESTS);
+  return (addressDetails?.timestamps.length ?? 0) >= MAX_NUMBER_OF_REQUESTS;
 };
 
 export const clearRecordedAddresses = () => {

@@ -56,7 +56,7 @@ export const getTokensFromManifest = (manifest: Manifest) =>
   Object.keys(manifest.tokens);
 
 export const getSourcesForToken = (manifest: Manifest, dataFeedId: string) =>
-  manifest.tokens[dataFeedId].source;
+  manifest.tokens[dataFeedId]!.source;
 
 export const runTestNode = async (manifest: Manifest) => {
   const sut = await NodeRunner.create({
@@ -77,12 +77,15 @@ export const getPricesPerDataFeedId = (dataPackages: SignedDataPackage[]) => {
 };
 
 export const getTokensFromMainManifestWithSources = () =>
-  Object.entries(mainManifest.tokens).reduce((tokens, [dataFeedId, config]) => {
-    if (Object.keys(config).length > 0) {
-      tokens[dataFeedId] = config;
-    }
-    return tokens;
-  }, {} as Record<string, TokenConfig>);
+  Object.entries(mainManifest.tokens).reduce(
+    (tokens, [dataFeedId, config]) => {
+      if (Object.keys(config).length > 0) {
+        tokens[dataFeedId] = config;
+      }
+      return tokens;
+    },
+    {} as Record<string, TokenConfig>
+  );
 
 export const getMainManifestWithTokensWithSources = () => {
   return {
@@ -95,14 +98,14 @@ export const removeSkippedItemsFromManifest = (manifest: Manifest) => {
   const skippedSources = JSON.parse(
     process.env.SKIPPED_SOURCES ?? "[]"
   ) as string[];
-  let filteredTokens: TokensConfig = {};
+  const filteredTokens: TokensConfig = {};
   for (const token in manifest.tokens) {
-    const filteredSources = manifest.tokens[token].source?.filter(
+    const filteredSources = manifest.tokens[token]!.source?.filter(
       (s) => !skippedSources.includes(s)
     );
     if (filteredSources && filteredSources.length > 0) {
       filteredTokens[token] = manifest.tokens[token];
-      filteredTokens[token].source = filteredSources;
+      filteredTokens[token]!.source = filteredSources;
     }
   }
   manifest.tokens = filteredTokens;
@@ -111,7 +114,7 @@ export const removeSkippedItemsFromManifest = (manifest: Manifest) => {
 export const getTokensWithoutSkipSigning = (manifest: Manifest) => {
   const tokensWithoutSkipSigning: string[] = [];
   for (const [dataFeedId, config] of Object.entries(manifest.tokens)) {
-    if (!config.skipSigning) {
+    if (!config!.skipSigning) {
       tokensWithoutSkipSigning.push(dataFeedId);
     }
   }

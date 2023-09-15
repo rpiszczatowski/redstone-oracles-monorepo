@@ -1,4 +1,3 @@
-import axios from "axios";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
@@ -22,7 +21,7 @@ describe("kyber fetcher", () => {
     await closeLocalLevelDB();
   });
 
-  const sut = fetchers["kyber"];
+  const sut = fetchers["kyber"]!;
 
   beforeEach(() => {
     mockFetcherResponse("../../src/fetchers/kyber/example-response.json");

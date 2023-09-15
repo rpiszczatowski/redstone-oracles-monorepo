@@ -23,8 +23,8 @@ import {
 import { getDryRunTestConfig } from "./dry-run-tests-configs";
 import {
   Manifest,
+  NotSanitizedPriceDataBeforeAggregation,
   PriceDataAfterAggregation,
-  PriceDataBeforeAggregation,
   PriceSource,
   SanitizedPriceDataBeforeAggregation,
 } from "../../src/types";
@@ -34,9 +34,11 @@ import { config as nodeConfig } from "../../src/config";
 const TWENTY_MINUTES_IN_MILLISECONDS = 1000 * 60 * 20;
 jest.setTimeout(TWENTY_MINUTES_IN_MILLISECONDS);
 
-type SourceDataPerToken = Record<string, PriceSource<unknown>>;
+type SourceDataPerToken = Partial<Record<string, PriceSource<unknown>>>;
 
 const config = getDryRunTestConfig();
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (nodeConfig as any) = {
   ...nodeConfig,
   ethereumAddress: config.ethereumAddress ?? HARDHAT_MOCK_ADDRESS,
@@ -52,13 +54,15 @@ describe("Main dry run test", () => {
     PriceDataAfterAggregation,
     [
       price: SanitizedPriceDataBeforeAggregation,
-      allPrices?: PriceDataBeforeAggregation<number>[] | undefined
+      allPrices?: NotSanitizedPriceDataBeforeAggregation[] | undefined,
     ]
   >;
 
   beforeAll(() => {
-    jest.spyOn(DataPackage.prototype, "sign").mockImplementation(function () {
-      //@ts-ignore
+    jest.spyOn(DataPackage.prototype, "sign").mockImplementation(function (
+      this: DataPackage
+    ) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       return new SignedDataPackage(this, {
         r: "r",
         s: "s",

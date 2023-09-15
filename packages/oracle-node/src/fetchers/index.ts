@@ -99,4 +99,4 @@ export default {
   ...twapCacheServicesMinuteFetchers,
   ...camelotV3Fetchers,
   ...pancakeSwapFetchers,
-} as { [name: string]: Fetcher };
+} as { [name: string]: Fetcher | undefined };

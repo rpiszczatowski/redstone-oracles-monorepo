@@ -23,7 +23,7 @@ const BTC_DECIMALS = 8;
 const AVAX_DECIMALS = 18;
 const JOE_DECIMALS = 18;
 const GMX_DECIMALS = 18;
-const TOKENS_DECIMALS: Record<string, number> = {
+const TOKENS_DECIMALS: Record<string, number | undefined> = {
   USDC: STABLECOIN_DECIMALS,
   USDT: STABLECOIN_DECIMALS,
   "USDT.e": STABLECOIN_DECIMALS,
@@ -35,6 +35,7 @@ const TOKENS_DECIMALS: Record<string, number> = {
 };
 
 export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   prepareMulticallRequest(id: SteakHutTokensDetailsKeys) {
     const { abi, address } = getContractDetailsFromConfig<
       SteakHutTokensDetailsKeys,
@@ -50,6 +51,7 @@ export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
     return buildMulticallRequests(abi, address, functionsNamesWithValues);
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   extractPrice(
     response: MulticallParsedResponses,
     id: SteakHutTokensDetailsKeys
@@ -79,7 +81,8 @@ export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
       [firstToken]: firstUnderlyingAsset,
       [secondToken]: secondUnderlyingAsset,
     };
-    const serializedUnderlyingTokens = this.serializeDecimals(underlyingTokens);
+    const serializedUnderlyingTokens =
+      SteakHutTokensRequestHandlers.serializeDecimals(underlyingTokens);
 
     const [firstUnderlyingAssetValue, secondUnderlyingAssetValue] =
       Object.values(serializedUnderlyingTokens);
@@ -95,7 +98,7 @@ export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
   }
 
   // We divide each underlying asset value by decimals of the token
-  serializeDecimals(tokenReserves: Record<string, Decimal>) {
+  static serializeDecimals(tokenReserves: Record<string, Decimal>) {
     const serializedTokenReserves = {} as Record<string, Decimal>;
     for (const tokenName of Object.keys(tokenReserves)) {
       const tokenDecimals = TOKENS_DECIMALS[tokenName] ?? DEFAULT_DECIMALS;

@@ -8,11 +8,11 @@ import { getLastPrice } from "../../db/local-db";
 const poolIdToSymbol = _.invert(symbolToPoolIdObj);
 
 interface SymbolToPoolId {
-  [symbol: string]: string;
+  [symbol: string]: string | undefined;
 }
 
 export interface UniswapV3Response {
-  data: {
+  data?: {
     pools: Pool[];
   };
 }
@@ -39,7 +39,7 @@ export class UniswapV3Fetcher extends BaseFetcher {
     super("uniswap-v3");
   }
 
-  async fetchData(ids: string[]) {
+  override async fetchData(ids: string[]) {
     const pairIds = this.convertSymbolsToPoolIds(ids, symbolToPoolIdObj);
 
     const query = `{
@@ -60,16 +60,19 @@ export class UniswapV3Fetcher extends BaseFetcher {
     return await graphProxy.executeQuery(subgraphUrl, query);
   }
 
-  override validateResponse(response: UniswapV3Response): boolean {
+  override validateResponse(response: UniswapV3Response | undefined): boolean {
     return response !== undefined && response.data !== undefined;
   }
 
-  extractPrices(response: UniswapV3Response): PricesObj {
+  override extractPrices(response: UniswapV3Response): PricesObj {
     const pricesObj: { [symbol: string]: number } = {};
 
-    for (const pool of response.data.pools) {
+    for (const pool of response.data!.pools) {
       const currentDataFeedId = poolIdToSymbol[pool.id];
-      const price = this.calculateTokenPrice(pool, currentDataFeedId);
+      const price = UniswapV3Fetcher.calculateTokenPrice(
+        pool,
+        currentDataFeedId
+      );
       if (price) {
         pricesObj[currentDataFeedId] = price;
       }
@@ -77,12 +80,15 @@ export class UniswapV3Fetcher extends BaseFetcher {
     return pricesObj;
   }
 
-  private calculateTokenPrice(
+  private static calculateTokenPrice(
     pool: Pool,
     currentDataFeedId: string
   ): number | undefined {
     const { tokenPriceInTermsOfOther, otherTokenPrice } =
-      this.prepareValuesBasedOnCurrentDataFeed(pool, currentDataFeedId);
+      UniswapV3Fetcher.prepareValuesBasedOnCurrentDataFeed(
+        pool,
+        currentDataFeedId
+      );
 
     if (tokenPriceInTermsOfOther && otherTokenPrice) {
       return tokenPriceInTermsOfOther * otherTokenPrice.value;
@@ -90,7 +96,7 @@ export class UniswapV3Fetcher extends BaseFetcher {
     return undefined;
   }
 
-  private prepareValuesBasedOnCurrentDataFeed(
+  private static prepareValuesBasedOnCurrentDataFeed(
     pool: Pool,
     currentDataFeedId: string
   ) {

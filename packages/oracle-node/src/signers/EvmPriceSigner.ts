@@ -9,21 +9,22 @@ import {
   SignedPricePackage,
 } from "../types";
 import _ from "lodash";
-import { SafeNumber } from "@redstone-finance/utils";
 
 /** IMPORTANT: This function as side effect convert Class instances to pure objects */
-const sortDeepObjects = <T>(arr: T[]): T[] => sortDeepObjectArrays(arr);
+const sortDeepObjects = <T>(arr: T[]): T[] => sortDeepObjectArrays<T>(arr);
 
 const serializePriceValue = (value: number): number => {
   if (typeof value === "number") {
     return Math.round(value * 10 ** 8);
   } else {
-    throw new Error(`Don't know how to serialize ${value} to price value`);
+    throw new Error(
+      `Don't know how to serialize ${String(value)} to price value`
+    );
   }
 };
 
 export default class EvmPriceSigner {
-  getLiteDataBytesString(priceData: SerializedPriceData): string {
+  static getLiteDataBytesString(priceData: SerializedPriceData): string {
     // Calculating lite price data bytes array
     let data = "";
     for (let i = 0; i < priceData.symbols.length; i++) {
@@ -38,16 +39,16 @@ export default class EvmPriceSigner {
     return data;
   }
 
-  private getLiteDataToSign(priceData: SerializedPriceData): string {
-    const data = this.getLiteDataBytesString(priceData);
+  private static getLiteDataToSign(priceData: SerializedPriceData): string {
+    const data = EvmPriceSigner.getLiteDataBytesString(priceData);
     return bufferToHex(keccak256(toBuffer("0x" + data)));
   }
 
-  calculateLiteEvmSignature(
+  static calculateLiteEvmSignature(
     priceData: SerializedPriceData,
     privateKey: string
   ): string {
-    const data = this.getLiteDataToSign(priceData);
+    const data = EvmPriceSigner.getLiteDataToSign(priceData);
     return personalSign({ privateKey: toBuffer(privateKey), data });
   }
 
@@ -66,7 +67,7 @@ export default class EvmPriceSigner {
     }
   }
 
-  serializeToMessage(pricePackage: PricePackage): SerializedPriceData {
+  static serializeToMessage(pricePackage: PricePackage): SerializedPriceData {
     // We clean and sort prices to be sure that prices
     // always have the same format
     const cleanPricesData = pricePackage.prices.map((p) => ({
@@ -88,26 +89,27 @@ export default class EvmPriceSigner {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   signPricePackage(
     pricePackage: PricePackage,
     privateKey: string
   ): SignedPricePackage {
-    const serializedPriceData = this.serializeToMessage(pricePackage);
+    const serializedPriceData = EvmPriceSigner.serializeToMessage(pricePackage);
     return {
       pricePackage,
       signerAddress: new ethers.Wallet(privateKey).address,
-      liteSignature: this.calculateLiteEvmSignature(
+      liteSignature: EvmPriceSigner.calculateLiteEvmSignature(
         serializedPriceData,
         privateKey
       ),
     };
   }
 
-  verifyLiteSignature(signedPricePackage: SignedPricePackage): boolean {
-    const serializedPriceData = this.serializeToMessage(
+  static verifyLiteSignature(signedPricePackage: SignedPricePackage): boolean {
+    const serializedPriceData = EvmPriceSigner.serializeToMessage(
       signedPricePackage.pricePackage
     );
-    const data = this.getLiteDataToSign(serializedPriceData);
+    const data = EvmPriceSigner.getLiteDataToSign(serializedPriceData);
 
     const signer = recoverPersonalSignature({
       data,

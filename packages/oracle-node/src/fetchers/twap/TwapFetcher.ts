@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import EvmPriceSigner from "../../signers/EvmPriceSigner";
 import {
   MultiRequestFetcher,
@@ -27,11 +27,12 @@ export class TwapFetcher extends MultiRequestFetcher {
     super(`twap-${sourceProviderId}`);
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   getRequestContext(): number {
     return Date.now();
   }
 
-  async makeRequest(id: string): Promise<any> {
+  async makeRequest(id: string): Promise<unknown> {
     const timestamp = Date.now();
     const { assetSymbol, millisecondsOffset } =
       TwapFetcher.parseTwapAssetId(id);
@@ -51,22 +52,21 @@ export class TwapFetcher extends MultiRequestFetcher {
 
   override extractPrice(
     dataFeedId: string,
-    responses: RequestIdToResponse
+    responses: RequestIdToResponse<AxiosResponse<HistoricalPrice[]>>
   ): number | undefined {
-    const response = responses[dataFeedId];
+    const response = responses[dataFeedId]!;
     this.verifySignatures(response.data);
     return TwapFetcher.getTwapValue(response.data);
   }
 
-  private async verifySignatures(prices: HistoricalPrice[]) {
+  private verifySignatures(prices: HistoricalPrice[]) {
     for (const price of prices) {
-      await this.verifySignature(price);
+      this.verifySignature(price);
     }
   }
 
-  private async verifySignature(price: HistoricalPrice) {
-    const evmSigner = new EvmPriceSigner();
-    const isSignatureValid = evmSigner.verifyLiteSignature({
+  private verifySignature(price: HistoricalPrice) {
+    const isSignatureValid = EvmPriceSigner.verifyLiteSignature({
       pricePackage: {
         prices: [
           {

@@ -16,7 +16,7 @@ export const correctManifest: Manifest = {
   },
 };
 
-const buildDeviationCheckConfig = (config: Record<string, any>) => ({
+const buildDeviationCheckConfig = (config: Record<string, unknown>) => ({
   deviationCheck: { deviationWithRecentValues: config },
 });
 

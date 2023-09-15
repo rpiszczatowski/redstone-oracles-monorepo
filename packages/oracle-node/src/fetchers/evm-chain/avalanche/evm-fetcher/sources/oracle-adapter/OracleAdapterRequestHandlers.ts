@@ -15,6 +15,7 @@ export type OracleAdapterDetailsValues =
 const ORACLE_ADAPTER_PRICE_PRECISION = 8;
 
 export class OracleAdapterRequestHandlers implements IEvmRequestHandlers {
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   prepareMulticallRequest(id: OracleAdapterDetailsKeys) {
     const { abi, address } = getContractDetailsFromConfig<
       OracleAdapterDetailsKeys,
@@ -25,6 +26,7 @@ export class OracleAdapterRequestHandlers implements IEvmRequestHandlers {
     return buildMulticallRequests(abi, address, functionsNamesWithValues);
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   extractPrice(
     response: MulticallParsedResponses,
     id: OracleAdapterDetailsKeys
