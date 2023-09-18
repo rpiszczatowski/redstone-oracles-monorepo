@@ -7,7 +7,6 @@ import { validateManifest } from "./validate-manifest";
 
 export type TokensBySource = { [source: string]: string[] | undefined };
 
-const DEFAULT_MIN_VALID_SOURCE_PERCENTAGE = 50;
 const DEFAULT_SCHEDULER_NAME = "interval";
 
 export default class ManifestHelper {
@@ -69,12 +68,6 @@ export default class ManifestHelper {
       throw new Error(`Cannot define all sources count for symbol ${symbol}`);
     }
     return allSourcesCount;
-  }
-
-  static getMinValidSourcesPercentage(manifest: Manifest) {
-    return (
-      manifest.minValidSourcesPercentage ?? DEFAULT_MIN_VALID_SOURCE_PERCENTAGE
-    );
   }
 
   static getAggregatorForToken(manifest: Manifest, symbol: string) {

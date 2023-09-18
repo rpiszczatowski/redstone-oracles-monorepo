@@ -217,9 +217,6 @@ export default class PricesService {
           recentPrices: pricesInLocalDBForSymbol,
         });
 
-        // Throwing an error if not enough sources for symbol
-        PricesService.assertSourcesNumber(priceAfterAggregation, this.manifest);
-
         aggregatedPrices.push(priceAfterAggregation);
       } catch (e) {
         logger.error(`Symbol ${price.symbol}, ${(e as Error).stack}`);
@@ -414,29 +411,6 @@ export default class PricesService {
         this.manifest
       );
     return deviationCheckConfig;
-  }
-
-  static assertSourcesNumber(
-    price: PriceDataAfterAggregation,
-    manifest: Manifest
-  ) {
-    const { symbol, source } = price;
-    const sources = Object.keys(source);
-    const sourcesFetchedCount = sources.length;
-    const minValidSourcesPercentage =
-      ManifestHelper.getMinValidSourcesPercentage(manifest);
-    const allSourcesCount = ManifestHelper.getAllSourceCount(symbol, manifest);
-    const validSourcesPercentage =
-      (sourcesFetchedCount / allSourcesCount) * 100;
-    const isSourcesNumberValid =
-      validSourcesPercentage >= minValidSourcesPercentage;
-    if (!isSourcesNumberValid) {
-      throw new Error(
-        `Invalid sources number for symbol ${symbol}. ` +
-          `Valid sources count: ${sourcesFetchedCount}. ` +
-          `Valid sources: ${sources.join(",")}`
-      );
-    }
   }
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this

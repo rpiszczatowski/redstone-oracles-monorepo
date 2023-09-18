@@ -556,67 +556,6 @@ describe("PricesService", () => {
     });
   });
 
-  describe("assertSourcesNumber", () => {
-    const manifest = {
-      ...emptyManifest,
-      tokens: {
-        TestToken: {
-          source: ["testSource1", "testSource2", "testSource3", "testSource4"],
-        },
-      },
-      minValidSourcesPercentage: 50,
-    };
-
-    const priceObject = {
-      value: 43,
-      symbol: "TestToken",
-      source: {
-        testSource1: SafeNumber.createSafeNumber(42),
-        testSource2: SafeNumber.createSafeNumber(44),
-        testSource4: SafeNumber.createSafeNumber(43),
-      },
-    } as unknown as PriceDataAfterAggregation;
-
-    test("should pass assertion for enough sources", () => {
-      PricesService.assertSourcesNumber(priceObject, manifest);
-    });
-
-    test("should pass assertion for exactly minValidSourcesPercentage", () => {
-      const newPriceObject = {
-        ...priceObject,
-        source: {
-          testSource1: SafeNumber.createSafeNumber(42),
-          testSource3: SafeNumber.createSafeNumber(44),
-        },
-      };
-      PricesService.assertSourcesNumber(newPriceObject, manifest);
-    });
-
-    test("should not pass assertion for less than minValidSourcesPercentage", () => {
-      const newPriceObject = {
-        ...priceObject,
-        source: { testSource3: SafeNumber.createSafeNumber(43) },
-      };
-      expect(() =>
-        PricesService.assertSourcesNumber(newPriceObject, manifest)
-      ).toThrowError(
-        "Invalid sources number for symbol TestToken. Valid sources count: 1. Valid sources: testSource3"
-      );
-    });
-
-    test("should not pass assertion for zero sources", () => {
-      const newPriceObject = {
-        ...priceObject,
-        source: {},
-      };
-      expect(() =>
-        PricesService.assertSourcesNumber(newPriceObject, manifest)
-      ).toThrowError(
-        "Invalid sources number for symbol TestToken. Valid sources count: 0. Valid sources: "
-      );
-    });
-  });
-
   describe("doFetchFromSource", () => {
     test("should shutdown if fetcher for given source doesn't exist", async () => {
       const pricesService = new PricesService({
