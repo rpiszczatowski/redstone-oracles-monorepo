@@ -1,10 +1,8 @@
 import { ethers } from "ethers";
 import { performance } from "perf_hooks";
 import { config } from "../config";
-import axios from "axios";
 import loggerFactory from "./logger";
 import git from "git-last-commit";
-import { RedstoneCommon } from "@redstone-finance/utils";
 import TelemetrySendService from "../telemetry/TelemetrySendService";
 
 const logger = loggerFactory("utils/performance-tracker");
@@ -105,18 +103,6 @@ function saveMetric(label: string, executionTime: number) {
 
 async function sendMetric(metric: string) {
   telemetrySendService.queueToSendMetric(metric);
-  const requestConfig = {
-    headers: {
-      Authorization: `Token ${config.telemetryAuthorizationToken}`,
-    },
-  };
-  try {
-    await axios.post(config.telemetryUrl, metric, requestConfig);
-  } catch (error) {
-    logger.error(
-      `Failed saving metric: ${RedstoneCommon.stringifyError(error)}`
-    );
-  }
 }
 
 function getCommitShortHash(): Promise<string> {
