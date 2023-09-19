@@ -6,7 +6,6 @@ import {
   signOnDemandDataPackage,
 } from "@redstone-finance/protocol";
 import { NodeConfig } from "../types";
-import { stringifyError } from "../utils/error-stringifier";
 import {
   recordRequestSentByAddress,
   hasAddressReachedRateLimit,
@@ -50,7 +49,7 @@ export const setScoreByAddressRoute = (
 
       res.json(signedDataPackage.toObj());
     } catch (error) {
-      const errText = stringifyError((error as Error).message);
+      const errText = (error as Error).message;
       res.status(400).json({
         error: errText,
       });

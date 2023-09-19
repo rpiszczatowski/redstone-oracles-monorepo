@@ -1,6 +1,6 @@
 import axios from "axios";
 import { PriceDataSigned, SignedPricePackage } from "../../types";
-import { stringifyError } from "../../utils/error-stringifier";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import loggerFactory from "../../utils/logger";
 
 const logger = loggerFactory("PriceDataBroadcaster");
@@ -20,7 +20,9 @@ export class PriceDataBroadcaster {
         )
         .then(() => logger.info(`Broadcasting to ${url} completed`))
         .catch((e) =>
-          logger.error(`Broadcasting to ${url} failed: ${stringifyError(e)}`)
+          logger.error(
+            `Broadcasting to ${url} failed: ${RedstoneCommon.stringifyError(e)}`
+          )
         );
     });
 
@@ -45,7 +47,9 @@ export class PriceDataBroadcaster {
         .then(() => logger.info(`Broadcasting package to ${url} completed`))
         .catch((e) =>
           logger.error(
-            `Broadcasting package to ${url} failed: ${stringifyError(e)}`
+            `Broadcasting package to ${url} failed: ${RedstoneCommon.stringifyError(
+              e
+            )}`
           )
         );
     });

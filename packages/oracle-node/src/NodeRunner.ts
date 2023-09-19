@@ -21,7 +21,7 @@ import {
   NotSanitizedPriceDataBeforeAggregation,
   PriceDataAfterAggregation,
 } from "./types";
-import { stringifyError } from "./utils/error-stringifier";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import { fetchIp } from "./utils/ip-fetcher";
 import { mergeObjects } from "./utils/objects";
 import {
@@ -134,7 +134,7 @@ export default class NodeRunner {
       const scheduler = ManifestHelper.getScheduler(this.currentManifest!);
       await scheduler.startIterations(this.runIteration.bind(this));
     } catch (e) {
-      logger.error(stringifyError(e));
+      logger.error(RedstoneCommon.stringifyError(e));
     }
   }
 
@@ -205,7 +205,7 @@ export default class NodeRunner {
     try {
       await this.doProcessTokens(iterationContext);
     } catch (e) {
-      logger.error(stringifyError(e));
+      logger.error(RedstoneCommon.stringifyError(e));
     } finally {
       trackEnd(processingAllTrackingId);
     }

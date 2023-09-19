@@ -2,7 +2,7 @@ import axios from "axios";
 import jp from "jsonpath";
 import { FetcherOpts, PricesObj } from "../../types";
 import { BaseFetcher } from "../BaseFetcher";
-import { stringifyError } from "../../utils/error-stringifier";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 const CUSTOM_URL_REQUEST_TIMEOUT_MILLISECONDS = 10000;
 
@@ -28,7 +28,7 @@ export class CustomUrlsFetcher extends BaseFetcher {
           responses[id] = response.data;
         })
         .catch((err) => {
-          const errMsg = stringifyError(err);
+          const errMsg = RedstoneCommon.stringifyError(err);
           this.logger.error(
             `Request to url failed. Url: ${url} Error: ${errMsg}`
           );

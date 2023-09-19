@@ -1,5 +1,5 @@
 import { PricesObj, PricesObjWithMetadata } from "../types";
-import { stringifyError } from "../utils/error-stringifier";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import { BaseFetcher, normalizePriceObj } from "./BaseFetcher";
 
 export interface RequestIdToResponse<T = unknown> {
@@ -42,11 +42,13 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
         requestId,
       };
     } catch (e) {
-      this.logger.error(`Request failed: ${requestId}. ${stringifyError(e)}`);
+      this.logger.error(
+        `Request failed: ${requestId}. ${RedstoneCommon.stringifyError(e)}`
+      );
       return {
         requestId,
         success: false,
-        response: stringifyError(e),
+        response: RedstoneCommon.stringifyError(e),
       };
     }
   }
@@ -89,7 +91,9 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
         }
       } catch (e) {
         this.logger.error(
-          `Extracting price failed for: ${dataFeedId}. ${stringifyError(e)}`
+          `Extracting price failed for: ${dataFeedId}. ${RedstoneCommon.stringifyError(
+            e
+          )}`
         );
       }
     }

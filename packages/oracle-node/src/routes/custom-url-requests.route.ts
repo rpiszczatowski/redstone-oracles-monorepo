@@ -6,7 +6,6 @@ import jp from "jsonpath";
 import { fromBase64 } from "../utils/base64";
 import EvmPriceSigner from "../signers/EvmPriceSigner";
 import { CustomUrlDetails, NodeConfig } from "../types";
-import { stringifyError } from "../utils/error-stringifier";
 import loggerFactory from "../utils/logger";
 
 const QUERY_PARAM_NAME = "custom-url-request-config-base64";
@@ -66,7 +65,7 @@ export default function (app: express.Application, nodeConfig: NodeConfig) {
         timestamp,
       });
     } catch (e) {
-      const errText = stringifyError(e);
+      const errText = (e as Error).message;
       // TODO: improve error catching later:
       // differentiate types of errors and
       // use appropriate HTTP error codes

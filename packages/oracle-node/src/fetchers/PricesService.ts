@@ -13,7 +13,7 @@ import {
   PriceDataFetched,
   SanitizedPriceDataBeforeAggregation,
 } from "../types";
-import { stringifyError } from "../utils/error-stringifier";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import { trackEnd, trackStart } from "../utils/performance-tracker";
 import { promiseTimeout } from "../utils/promise-timeout";
 import fetchers from "./index";
@@ -89,7 +89,7 @@ export default class PricesService {
       // price fetching errors occur quite often
       logger.warn(
         `Fetching failed for source: ${source}: ${String(resData)}`,
-        stringifyError(e)
+        RedstoneCommon.stringifyError(e)
       );
       return {
         [source]: tokens.map((symbol) => ({

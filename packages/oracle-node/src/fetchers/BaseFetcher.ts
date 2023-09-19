@@ -7,7 +7,7 @@ import {
   PricesObj,
   PricesObjWithMetadata,
 } from "../types";
-import { stringifyError } from "../utils/error-stringifier";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import createLogger from "../utils/logger";
 import { isDefined } from "../utils/objects";
 
@@ -158,7 +158,7 @@ export abstract class BaseFetcher implements Fetcher {
         pricesObj[pricePair.id] = pricePair.value!;
       } catch (e) {
         this.logger.error(
-          `Extracting price failed for id: ${id}, error: ${stringifyError(
+          `Extracting price failed for id: ${id}, error: ${RedstoneCommon.stringifyError(
             e
           )}, item that failed: ${JSON.stringify(item)}`
         );

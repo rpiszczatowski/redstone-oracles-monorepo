@@ -1,6 +1,6 @@
 import axios from "axios";
 import { SignedDataPackage, UniversalSigner } from "@redstone-finance/protocol";
-import { stringifyError } from "../../utils/error-stringifier";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
 import loggerFactory from "../../utils/logger";
 
@@ -30,7 +30,9 @@ export class HttpBroadcaster implements DataPackageBroadcaster {
         .post(url + "/data-packages/bulk", signedDataPackagesPostReqBody)
         .then(() => logger.info(`Broadcasting to ${url} completed`))
         .catch((e) =>
-          logger.error(`Broadcasting to ${url} failed: ${stringifyError(e)}`)
+          logger.error(
+            `Broadcasting to ${url} failed: ${RedstoneCommon.stringifyError(e)}`
+          )
         );
     });
 
