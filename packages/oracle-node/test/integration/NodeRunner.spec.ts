@@ -49,7 +49,9 @@ jest.mock("../../src/signers/EvmPriceSigner", () => {
 });
 
 jest.mock("../../src/fetchers/coingecko/CoingeckoFetcher");
-jest.mock("../../src/fetchers/uniswap/UniswapFetcher");
+jest.mock(
+  "../../src/fetchers/evm-chain/shared/uniswap-v3-on-chain/UniswapV3OnChainFetcher.ts"
+);
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -109,7 +111,7 @@ describe("NodeRunner", () => {
     fetchers["coingecko"] = {
       fetchAll: jest.fn().mockResolvedValue([{ symbol: "BTC", value: 444 }]),
     };
-    fetchers["uniswap"] = {
+    fetchers["uniswap-v3-ethereum-on-chain-weth-500"] = {
       fetchAll: jest.fn().mockResolvedValue([
         { symbol: "BTC", value: 445 },
         {
@@ -123,7 +125,7 @@ describe("NodeRunner", () => {
 
     manifest = {
       ...emptyManifest,
-      defaultSource: ["uniswap"],
+      defaultSource: ["uniswap-v3-ethereum-on-chain-weth-500"],
       tokens: {
         BTC: {
           source: ["coingecko"],
@@ -209,7 +211,7 @@ describe("NodeRunner", () => {
       expect(simulateSerialization(firstCallArgs[1])).toEqual(
         simulateSerialization({
           requestSignature:
-            "0x31374eb4f1e6a7e12925ce6852c08548f18b01db0cac1c75dac97432d0782a1940e3f1165f59b6b525c162baa6a2bd73f0619d81dc02ab8596d8bd387a860c821c",
+            "0x912125a175d02c45453f142fab55eb2569e5f011f6e48ab90c95fcc207eddc82210596dcdafadac021d9467fcecd406fb3f90896d8201065352020933cb7ef881c",
           dataPackages: [
             {
               signature:
@@ -224,7 +226,7 @@ describe("NodeRunner", () => {
                       coingecko: {
                         value: "444",
                       },
-                      uniswap: {
+                      "uniswap-v3-ethereum-on-chain-weth-500": {
                         value: "445",
                       },
                     },
@@ -242,7 +244,7 @@ describe("NodeRunner", () => {
                   dataFeedId: "ETH",
                   metadata: {
                     sourceMetadata: {
-                      uniswap: {
+                      "uniswap-v3-ethereum-on-chain-weth-500": {
                         value: "42",
                       },
                     },
@@ -264,7 +266,7 @@ describe("NodeRunner", () => {
                       coingecko: {
                         value: "444",
                       },
-                      uniswap: {
+                      "uniswap-v3-ethereum-on-chain-weth-500": {
                         value: "445",
                       },
                     },
@@ -276,7 +278,7 @@ describe("NodeRunner", () => {
                   dataFeedId: "ETH",
                   metadata: {
                     sourceMetadata: {
-                      uniswap: {
+                      "uniswap-v3-ethereum-on-chain-weth-500": {
                         value: "42",
                       },
                     },
@@ -311,10 +313,13 @@ describe("NodeRunner", () => {
             id: "00000000-0000-0000-0000-000000000000",
             permawebTx: "mock-permaweb-tx",
             provider: TEST_PROVIDER_EVM_ADDRESS,
-            source: { coingecko: 444, uniswap: 445 },
+            source: {
+              coingecko: 444,
+              "uniswap-v3-ethereum-on-chain-weth-500": 445,
+            },
             sourceMetadata: {
               coingecko: { value: "444" },
-              uniswap: { value: "445" },
+              "uniswap-v3-ethereum-on-chain-weth-500": { value: "445" },
             },
             symbol: "BTC",
             timestamp: 111111000,
@@ -326,9 +331,9 @@ describe("NodeRunner", () => {
             id: "00000000-0000-0000-0000-000000000000",
             permawebTx: "mock-permaweb-tx",
             provider: TEST_PROVIDER_EVM_ADDRESS,
-            source: { uniswap: 42 },
+            source: { "uniswap-v3-ethereum-on-chain-weth-500": 42 },
             sourceMetadata: {
-              uniswap: { value: "42" },
+              "uniswap-v3-ethereum-on-chain-weth-500": { value: "42" },
             },
             symbol: "ETH",
             timestamp: 111111000,
@@ -416,7 +421,7 @@ describe("NodeRunner", () => {
       fetchers["coingecko"] = {
         fetchAll: jest.fn().mockResolvedValue([{ symbol: "BTC", value: -1 }]),
       };
-      fetchers["uniswap"] = {
+      fetchers["uniswap-v3-ethereum-on-chain-weth-500"] = {
         fetchAll: jest.fn().mockResolvedValue([
           { symbol: "BTC", value: -10 },
           {
@@ -446,7 +451,7 @@ describe("NodeRunner", () => {
           },
         ]),
       };
-      fetchers["uniswap"] = {
+      fetchers["uniswap-v3-ethereum-on-chain-weth-500"] = {
         fetchAll: jest.fn().mockResolvedValue([
           { symbol: "BTC", value: 440 },
           {
@@ -472,7 +477,7 @@ describe("NodeRunner", () => {
           },
         ]),
       };
-      fetchers["uniswap"] = {
+      fetchers["uniswap-v3-ethereum-on-chain-weth-500"] = {
         fetchAll: jest.fn().mockResolvedValue([
           { symbol: "BTC", value: 440 },
           {
@@ -511,7 +516,9 @@ describe("NodeRunner", () => {
 
       await sut.run();
 
-      expect(fetchers.uniswap!.fetchAll).toHaveBeenCalled();
+      expect(
+        fetchers["uniswap-v3-ethereum-on-chain-weth-500"]!.fetchAll
+      ).toHaveBeenCalled();
 
       arServiceSpy.mockClear();
     });
@@ -558,7 +565,9 @@ describe("NodeRunner", () => {
       expect(ArweaveService.prototype.getCurrentManifest).toHaveBeenCalledTimes(
         2
       );
-      expect(fetchers.uniswap!.fetchAll).toHaveBeenCalled();
+      expect(
+        fetchers["uniswap-v3-ethereum-on-chain-weth-500"]!.fetchAll
+      ).toHaveBeenCalled();
       expect(axios.post).toHaveBeenCalledWith(broadcastingUrl, any());
       expect(axios.post).toHaveBeenCalledWith(priceDataBroadcastingUrl, any());
       arServiceSpy.mockClear();

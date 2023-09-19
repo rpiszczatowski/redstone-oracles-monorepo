@@ -33,6 +33,14 @@
       "symbol1": "WETH",
       "symbol1Decimals": 18,
       "pairedToken": "ETH"
+    },
+    "WBTC": {
+      "address": "0xceff51756c56ceffca006cd410b03ffc46dd3a58",
+      "symbol0": "WBTC",
+      "symbol0Decimals": 8,
+      "symbol1": "WETH",
+      "symbol1Decimals": 18,
+      "pairedToken": "ETH"
     }
   }
 }

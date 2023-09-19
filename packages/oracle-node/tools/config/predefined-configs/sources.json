@@ -19,11 +19,6 @@
     "url": "https://www.coingecko.com/",
     "color": "#98c355"
   },
-  "sushiswap": {
-    "logoURI": "https://sushi.com/static/media/logo.dec926df.png",
-    "url": "https://sushi.com/",
-    "color": "#e45d9d"
-  },
   "coinbaseprime": {
     "logoURI": "https://images.ctfassets.net/q5ulk4bp65r7/1rFQCqoq8hipvVJSKdU3fQ/21ab733af7a8ab404e29b873ffb28348/coinbase-icon2.svg",
     "url": "https://exchange.coinbase.com",
@@ -33,11 +28,6 @@
     "logoURI": "https://images.ctfassets.net/q5ulk4bp65r7/1rFQCqoq8hipvVJSKdU3fQ/21ab733af7a8ab404e29b873ffb28348/coinbase-icon2.svg",
     "url": "https://pro.coinbase.com/",
     "color": "#2a67d0"
-  },
-  "uniswap": {
-    "logoURI": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Uniswap_Logo.svg/1026px-Uniswap_Logo.svg.png",
-    "url": "https://uniswap.org/",
-    "color": "#e23275"
   },
   "kyber": {
     "logoURI": "https://cdn-images-1.medium.com/max/1200/1*GyIk0KJkOtyH96AM6njwXg.png",
@@ -273,36 +263,6 @@
     "logoURI": "https://play-lh.googleusercontent.com/a-8r_reU9BcRojYNn9t0MDOZ1VK6cYfZItW2Gu7fpeEQJ83f6aGOiaktWf46g4Mg0pRB",
     "url": "https://vcc.exchange",
     "color": "#3b89e0"
-  },
-  "pangolin": {
-    "logoURI": "https://raw.githubusercontent.com/pangolindex/tokens/main/assets/0x60781C2586D68229fde47564546784ab3fACA982/logo.png",
-    "url": "https://pangolin.exchange/",
-    "color": "#e87a35"
-  },
-  "pangolin-png": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-png.png",
-    "url": "https://pangolin.exchange/",
-    "color": "#e87a35"
-  },
-  "pangolin-qi": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-png.png",
-    "url": "https://pangolin.exchange/",
-    "color": "#4fb1e8"
-  },
-  "pangolin-wavax": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-png.png",
-    "url": "https://pangolin.exchange/",
-    "color": "#000000"
-  },
-  "pangolin-usdt": {
-    "logoURI": "https://cdn.redstone.finance/sources/pangolin-usdt.png",
-    "url": "https://pangolin.exchange/",
-    "color": "#48a07c"
-  },
-  "trader-joe": {
-    "logoURI": "https://avatars.githubusercontent.com/u/82165905?s=200&v=4",
-    "url": "https://www.traderjoexyz.com/",
-    "color": "#e2786f"
   },
   "custom-urls": {
     "logoURI": "https://redstone.finance/assets/img/redstone-logo-full.svg",

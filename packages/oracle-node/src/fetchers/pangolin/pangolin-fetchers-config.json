@@ -1,8 +1,0 @@
-{
-  "pangolin-wavax": {
-    "symbolToPairIdFile": "./symbol-to-pair-id/pangolin-wavax-symbol-to-pair-id.json"
-  },
-  "pangolin-usdc": {
-    "symbolToPairIdFile": "./symbol-to-pair-id/pangolin-usdc-symbol-to-pair-id.json"
-  }
-}
