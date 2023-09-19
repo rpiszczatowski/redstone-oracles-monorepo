@@ -4,6 +4,7 @@ import { config } from "../config";
 import axios from "axios";
 import loggerFactory from "./logger";
 import git from "git-last-commit";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 const logger = loggerFactory("utils/performance-tracker");
 
@@ -61,17 +62,20 @@ export function trackEnd(trackingId: string): void {
 }
 
 export async function sendNodeTelemetry() {
-  console.log("Sending node telemetry");
-  const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
-  const evmAddress = new ethers.Wallet(evmPrivateKey).address;
-  const dockerImageTag = await getCommitShortHash();
-
   if (isTelemetryEnabled()) {
+    logger.info("Sending node telemetry");
+    const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
+    const evmAddress = new ethers.Wallet(evmPrivateKey).address;
+    const dockerImageTag = await getCommitShortHash();
     const measurementName = "nodeTelemetry";
     const tags = `address=${evmAddress}`;
     const fields = `dockerImageTag="${dockerImageTag}"`;
     sendMetric(measurementName, tags, fields);
   }
+}
+
+export function isTelemetryEnabled() {
+  return config.telemetryUrl !== "" && config.telemetryAuthorizationToken;
 }
 
 export function printTrackingState() {
@@ -103,25 +107,18 @@ async function sendMetric(
 
   const requestConfig = {
     headers: {
-      Authorization: `Token ${config.telemetryAuthorizationToken}`,
+      Authorization: `Token a${config.telemetryAuthorizationToken}`,
     },
   };
-  axios
-    .post(config.telemetryUrl, requestData, requestConfig)
-    .catch((e) =>
-      console.error(
-        `Failed saving metric: ${measurementName}: ${e.response.status}, ${e.response.data.message}`
-      )
+  try {
+    await axios.post(config.telemetryUrl, requestData, requestConfig);
+  } catch (error) {
+    logger.error(
+      `Failed saving metric: ${measurementName}: ${RedstoneCommon.stringifyError(
+        error
+      )}`
     );
-}
-
-function isTelemetryEnabled() {
-  const isTelemetryEnabled =
-    config.telemetryUrl !== "" && config.telemetryAuthorizationToken;
-  if (!isTelemetryEnabled) {
-    console.warn("Telemetry is not enabled");
   }
-  return isTelemetryEnabled;
 }
 
 function getCommitShortHash(): Promise<string> {

@@ -32,7 +32,10 @@ import {
 import { TimeoutError, promiseTimeout } from "./utils/promise-timeout";
 import loggerFactory from "./utils/logger";
 import pjson from "../package.json";
-import { sendNodeTelemetry } from "./utils/performance-tracker";
+import {
+  sendNodeTelemetry,
+  isTelemetryEnabled,
+} from "./utils/performance-tracker";
 
 const logger = loggerFactory("runner");
 
@@ -162,6 +165,10 @@ export default class NodeRunner {
         );
       }
     });
+
+    logger.info(
+      `Node telemetry is ${isTelemetryEnabled() ? "enabled" : "disabled"}`
+    );
   }
 
   private maybeRunDiagnosticInfoPrinting() {
