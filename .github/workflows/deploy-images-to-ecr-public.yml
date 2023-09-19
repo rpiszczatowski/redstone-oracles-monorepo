@@ -26,8 +26,7 @@ jobs:
           ORACLE_NODE_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-oracle-node
           TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
           docker build -t "$ORACLE_NODE_DOCKER_NAME:$TAG" \
-            -f packages/oracle-node/Dockerfile \
-             . \
+            -f packages/oracle-node/Dockerfile . \
 
           # Push images to ECR Public
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
