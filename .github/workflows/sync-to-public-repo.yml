@@ -5,7 +5,7 @@ on:
     branches:
       - main
 jobs:
-  sync:
+  sync-oracle-node-to-public-repo:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 

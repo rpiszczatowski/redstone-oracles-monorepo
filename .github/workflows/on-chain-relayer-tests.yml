@@ -1,4 +1,4 @@
-name: On-chain relayer CI
+name: On-chain Relayer CI
 on:
   push:
     paths:
@@ -9,10 +9,10 @@ on:
       - packages/utils/**
       - packages/rpc-providers/**
       - .github/workflows/on-chain-relayer-tests.yml
-      - .github/workflows/on-chain-relayer-deploy-to-ecr.yml
+      - .github/workflows/deploy-images-to-ecr-public.yml
 
 jobs:
-  run-tests:
+  on-chain-relayer-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
