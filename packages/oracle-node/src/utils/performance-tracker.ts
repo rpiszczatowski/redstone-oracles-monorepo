@@ -58,7 +58,7 @@ export function trackEnd(trackingId: string): void {
   // Clear the start value
   delete tasks[trackingId];
 
-  saveMetric(label, executionTime);
+  sendNodePerformanceMetric(label, executionTime);
 }
 
 export async function sendNodeTelemetry() {
@@ -71,8 +71,8 @@ export async function sendNodeTelemetry() {
     const tags = `address=${evmAddress}`;
     const fields = `dockerImageTag="${dockerImageTag}"`;
     const metric = `${measurementName},${tags} ${fields} ${Date.now()}`;
-    sendMetric(metric);
-    telemetrySendService.sendMetricsBatch();
+    telemetrySendService.queueToSendMetric(metric);
+    await telemetrySendService.sendMetricsBatch();
   }
 }
 
@@ -85,7 +85,7 @@ export function printTrackingState() {
   logger.info(`Perf tracker tasks: ${tasksCount}`, JSON.stringify(tasks));
 }
 
-function saveMetric(label: string, executionTime: number) {
+function sendNodePerformanceMetric(label: string, executionTime: number) {
   const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
   const evmAddress = new ethers.Wallet(evmPrivateKey).address;
   const labelWithPrefix = `${evmAddress.slice(0, 14)}-${label}`;
@@ -97,12 +97,8 @@ function saveMetric(label: string, executionTime: number) {
     const tags = `label=${label},address=${evmAddress}`;
     const fields = `executionTime=${executionTime}`;
     const metric = `${measurementName},${tags} ${fields} ${Date.now()}`;
-    sendMetric(metric);
+    telemetrySendService.queueToSendMetric(metric);
   }
-}
-
-async function sendMetric(metric: string) {
-  telemetrySendService.queueToSendMetric(metric);
 }
 
 function getCommitShortHash(): Promise<string> {
