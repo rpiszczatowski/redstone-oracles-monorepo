@@ -5,8 +5,10 @@ import axios from "axios";
 import loggerFactory from "./logger";
 import git from "git-last-commit";
 import { RedstoneCommon } from "@redstone-finance/utils";
+import TelemetrySendService from "../telemetry/TelemetrySendService";
 
 const logger = loggerFactory("utils/performance-tracker");
+const telemetrySendService = new TelemetrySendService();
 
 const tasks: {
   [trackingId: string]:
@@ -70,7 +72,9 @@ export async function sendNodeTelemetry() {
     const measurementName = "nodeTelemetry";
     const tags = `address=${evmAddress}`;
     const fields = `dockerImageTag="${dockerImageTag}"`;
-    sendMetric(measurementName, tags, fields);
+    const metric = `${measurementName},${tags} ${fields} ${Date.now()}`;
+    sendMetric(metric);
+    telemetrySendService.sendMetricsBatch();
   }
 }
 
@@ -94,29 +98,23 @@ function saveMetric(label: string, executionTime: number) {
     const measurementName = "nodePerformance";
     const tags = `label=${label},address=${evmAddress}`;
     const fields = `executionTime=${executionTime}`;
-    sendMetric(measurementName, tags, fields);
+    const metric = `${measurementName},${tags} ${fields} ${Date.now()}`;
+    sendMetric(metric);
   }
 }
 
-async function sendMetric(
-  measurementName: string,
-  tags: string,
-  fields: string
-) {
-  const requestData = `${measurementName},${tags} ${fields} ${Date.now()}`;
-
+async function sendMetric(metric: string) {
+  telemetrySendService.queueToSendMetric(metric);
   const requestConfig = {
     headers: {
-      Authorization: `Token a${config.telemetryAuthorizationToken}`,
+      Authorization: `Token ${config.telemetryAuthorizationToken}`,
     },
   };
   try {
-    await axios.post(config.telemetryUrl, requestData, requestConfig);
+    await axios.post(config.telemetryUrl, metric, requestConfig);
   } catch (error) {
     logger.error(
-      `Failed saving metric: ${measurementName}: ${RedstoneCommon.stringifyError(
-        error
-      )}`
+      `Failed saving metric: ${RedstoneCommon.stringifyError(error)}`
     );
   }
 }
