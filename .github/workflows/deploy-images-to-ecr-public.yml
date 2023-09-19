@@ -26,7 +26,6 @@ jobs:
           ORACLE_NODE_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-oracle-node
           TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
           docker build -t "$ORACLE_NODE_DOCKER_NAME:$TAG" \
-            --build-arg DOCKER_IMAGE_TAG=$TAG \
             -f packages/oracle-node/Dockerfile \
              . \
 

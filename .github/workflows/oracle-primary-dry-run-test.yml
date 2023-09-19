@@ -29,6 +29,5 @@ jobs:
           STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
           HISTORICAL_DATA_PACKAGES_URL: https://oracle-gateway-2.a.redstone.finance
           SKIPPED_SOURCES: '["binance", "binancecoinm", "binanceusdm", "bybit"]'
-          DOCKER_IMAGE_TAG: "ci"
           TELEMETRY_URL: ${{ secrets.TELEMETRY_URL }}
           TELEMETRY_AUTHORIZATION_TOKEN: ${{ secrets.TELEMETRY_AUTHORIZATION_TOKEN }}

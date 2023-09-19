@@ -3,6 +3,7 @@ import { performance } from "perf_hooks";
 import { config } from "../config";
 import axios from "axios";
 import loggerFactory from "./logger";
+import git from "git-last-commit";
 
 const logger = loggerFactory("utils/performance-tracker");
 
@@ -59,15 +60,16 @@ export function trackEnd(trackingId: string): void {
   saveMetric(label, executionTime);
 }
 
-export function sendNodeTelemetry() {
+export async function sendNodeTelemetry() {
   console.log("Sending node telemetry");
   const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
   const evmAddress = new ethers.Wallet(evmPrivateKey).address;
+  const dockerImageTag = await getCommitShortHash();
 
   if (isTelemetryEnabled()) {
     const measurementName = "nodeTelemetry";
     const tags = `address=${evmAddress}`;
-    const fields = `dockerImageTag="${config.dockerImageTag}"`;
+    const fields = `dockerImageTag="${dockerImageTag}"`;
     sendMetric(measurementName, tags, fields);
   }
 }
@@ -120,4 +122,17 @@ function isTelemetryEnabled() {
     console.warn("Telemetry is not enabled");
   }
   return isTelemetryEnabled;
+}
+
+function getCommitShortHash(): Promise<string> {
+  return new Promise((resolve) =>
+    git.getLastCommit((err: Error | null, commit) => {
+      if (err) {
+        logger.error(err);
+        throw err;
+      } else {
+        return resolve(commit.hash.slice(0, 8));
+      }
+    })
+  );
 }

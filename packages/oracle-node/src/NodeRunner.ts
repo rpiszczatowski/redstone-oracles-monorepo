@@ -199,7 +199,7 @@ export default class NodeRunner {
     await this.safeProcessManifestTokens(iterationContext);
 
     printTrackingState();
-    sendNodeTelemetry();
+    await sendNodeTelemetry();
   }
 
   private async safeProcessManifestTokens(iterationContext: IterationContext) {

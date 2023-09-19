@@ -60,7 +60,6 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   historicalDataPackagesUrl: "",
   telemetryUrl: "",
   telemetryAuthorizationToken: "",
-  dockerImageTag: "no_tag_tests",
 };
 
 export const mockHardLimits = {

@@ -42,7 +42,6 @@ export const getDryRunTestNodeConfig = (manifest: Manifest) => ({
   pricesHardLimitsUrls: [""],
   telemetryUrl: "",
   telemetryAuthorizationToken: "",
-  dockerImageTag: "no_tag_dry_run",
 });
 
 export const MockScheduler = {

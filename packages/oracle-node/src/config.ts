@@ -261,5 +261,4 @@ export const config: NodeConfig = Object.freeze({
   ),
   telemetryUrl: getFromEnv("TELEMETRY_URL", ""),
   telemetryAuthorizationToken: getFromEnv("TELEMETRY_AUTHORIZATION_TOKEN", ""),
-  dockerImageTag: getFromEnv("DOCKER_IMAGE_TAG", "no_tag"),
 });

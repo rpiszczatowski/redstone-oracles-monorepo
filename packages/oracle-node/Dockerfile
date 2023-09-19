@@ -60,8 +60,6 @@ COPY --from=build /app/packages/oracles-smartweave-contracts/package.json ./pack
 
 RUN yarn install --frozen-lockfile --non-interactive --production=true
 
-ARG DOCKER_IMAGE_TAG
-
 ENV ENABLE_JSON_LOGS=true
 ENV ENABLE_PERFORMANCE_TRACKING=true
 ENV PRINT_DIAGNOSTIC_INFO=true
@@ -69,6 +67,5 @@ ENV MANIFEST_REFRESH_INTERVAL=120000
 ENV OVERRIDE_MANIFEST_USING_FILE=
 ENV ECDSA_PRIVATE_KEY=
 ENV OVERRIDE_PRICE_CACHE_SERVICE_URLS="[]"
-ENV DOCKER_IMAGE_TAG=$DOCKER_IMAGE_TAG
 
 CMD cd packages/oracle-node && node index.js

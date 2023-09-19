@@ -195,7 +195,6 @@ export interface NodeConfig {
   historicalDataPackagesUrl: string;
   telemetryUrl: string;
   telemetryAuthorizationToken: string;
-  dockerImageTag: string;
 }
 
 export interface MulticallRequest {
