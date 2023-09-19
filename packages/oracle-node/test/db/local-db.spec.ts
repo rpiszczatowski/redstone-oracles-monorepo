@@ -1,4 +1,4 @@
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber } from "@redstone-finance/utils";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
@@ -149,8 +149,8 @@ describe("Local DB", () => {
       for (const assetIndex of ["0", "42", "1500"]) {
         const symbol = getTestSymbol(assetIndex);
         expect(pricesFromDB).toHaveProperty(symbol);
-        expect(pricesFromDB[symbol].length).toBe(expectedPricesCountPerAsset);
-        for (const priceFromDB of pricesFromDB[symbol]) {
+        expect(pricesFromDB[symbol]!.length).toBe(expectedPricesCountPerAsset);
+        for (const priceFromDB of pricesFromDB[symbol]!) {
           expect(priceFromDB.timestamp).toBeGreaterThanOrEqual(
             timestamp - PRICES_TTL_MILLISECONDS
           );

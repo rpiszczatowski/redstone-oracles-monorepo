@@ -2,7 +2,7 @@ import { BlockTag, TransactionRequest } from "@ethersproject/abstract-provider";
 import { Deferrable } from "@ethersproject/properties";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { utils } from "ethers";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import { sleepMS } from "./common";
 import {
   PROVIDER_OPERATION_TIMEOUT,
@@ -81,7 +81,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       `Agreement provider after ${PROVIDER_OPERATION_TIMEOUT} [ms] during call`
     );
 
-    return callResult;
+    return await callResult;
   }
 
   private electBlockNumber = RedstoneCommon.memoize({
@@ -102,9 +102,11 @@ export class ProviderWithAgreement extends ProviderWithFallback {
 
       if (blockNumbers.length === 0) {
         throw new AggregateError(
-          `Failed to getBlockNumber from at least one provider: ${blockNumbersResults.map(
-            (result) => (result as PromiseRejectedResult).reason
-          )}`
+          blockNumbersResults.map(
+            (result) =>
+              new Error(String((result as PromiseRejectedResult).reason))
+          ),
+          `Failed to getBlockNumber from at least one provider`
         );
       }
 
@@ -132,9 +134,8 @@ export class ProviderWithAgreement extends ProviderWithFallback {
 
       const syncProvider = async (providerIndex: number) => {
         while (!stop && blockPerProvider[providerIndex] < electedBlockNumber) {
-          blockPerProvider[providerIndex] = await this.providers[
-            providerIndex
-          ].getBlockNumber();
+          blockPerProvider[providerIndex] =
+            await this.providers[providerIndex].getBlockNumber();
           await sleepMS(this.agreementConfig.sleepBetweenBlockSync);
         }
       };
@@ -178,13 +179,14 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         try {
           await syncProvider(providerIndex);
           await call(providerIndex);
-        } catch (e: any) {
-          errors.push(e);
+        } catch (e) {
+          errors.push(e as Error);
         } finally {
           handleProviderResult();
         }
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       this.providers.forEach((_, providerIndex) => syncThenCall(providerIndex));
     });
   }

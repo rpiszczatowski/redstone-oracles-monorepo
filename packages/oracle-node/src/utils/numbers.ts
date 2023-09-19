@@ -1,13 +1,13 @@
-import { Consola } from "consola";
-import { Decimal } from "decimal.js";
-const logger = require("./logger")("utils/numbers") as Consola;
+import loggerFactory from "./logger";
 
-export const safelyConvertAnyValueToNumber = (value: any): number => {
+const logger = loggerFactory("utils/numbers");
+
+export const safelyConvertAnyValueToNumber = (value: unknown): number => {
   if (["string", "number"].includes(typeof value)) {
     return Number(value);
   } else {
     logger.warn(
-      `Value can not be converted to a valid number. Received: ${value}`
+      `Value can not be converted to a valid number. Received: ${String(value)}`
     );
     return NaN;
   }

@@ -1,4 +1,4 @@
-import { RedstoneTypes } from "redstone-utils";
+import { RedstoneTypes } from "@redstone-finance/utils";
 
 const ONE_DAY_IN_MILLISECONDS = 1000 * 60 * 60 * 24;
 
@@ -23,7 +23,7 @@ const buildLocalCacheKey = (timestamp: number, dataFeedId: string) =>
 export const getDataPackageFromLocalCache = (
   timestamp: number,
   dataFeedId: string
-): RedstoneTypes.DataPackageFromGateway => {
+): RedstoneTypes.DataPackageFromGateway | undefined => {
   const localCacheKey = buildLocalCacheKey(timestamp, dataFeedId);
   return localCache[localCacheKey];
 };

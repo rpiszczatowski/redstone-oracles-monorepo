@@ -1,15 +1,18 @@
 import { ethers } from "ethers";
 import { performance } from "perf_hooks";
-import { Consola } from "consola";
 import { config } from "../config";
 import axios from "axios";
+import loggerFactory from "./logger";
 
-const logger = require("./logger")("utils/performance-tracker") as Consola;
+const logger = loggerFactory("utils/performance-tracker");
+
 const tasks: {
-  [trackingId: string]: {
-    label: string;
-    startTime: number;
-  };
+  [trackingId: string]:
+    | {
+        label: string;
+        startTime: number;
+      }
+    | undefined;
 } = {};
 
 export function trackStart(label: string): string {
@@ -47,8 +50,8 @@ export function trackEnd(trackingId: string): void {
 
   // Calculating time elapsed from the task trackStart
   // execution for the same label
-  const executionTime = performance.now() - tasks[trackingId].startTime;
-  const label = tasks[trackingId].label;
+  const executionTime = performance.now() - tasks[trackingId]!.startTime;
+  const label = tasks[trackingId]!.label;
 
   // Clear the start value
   delete tasks[trackingId];
@@ -74,7 +77,7 @@ export function printTrackingState() {
   logger.info(`Perf tracker tasks: ${tasksCount}`, JSON.stringify(tasks));
 }
 
-async function saveMetric(label: string, executionTime: number): Promise<void> {
+function saveMetric(label: string, executionTime: number) {
   const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
   const evmAddress = new ethers.Wallet(evmPrivateKey).address;
   const labelWithPrefix = `${evmAddress.slice(0, 14)}-${label}`;

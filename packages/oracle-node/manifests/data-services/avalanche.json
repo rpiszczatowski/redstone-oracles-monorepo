@@ -14,7 +14,6 @@
     "ETH": {
       "source": [
         "ascendex",
-        "bequant",
         "binance",
         "binancecoinm",
         "binanceusdm",
@@ -22,7 +21,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -34,7 +32,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -44,14 +41,12 @@
       "source": [
         "bitfinex2",
         "bittrex",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
         "coinmarketcap",
         "currencycom",
-        "kraken",
-        "uniswap"
+        "kraken"
       ],
       "deviationCheck": {
         "deviationWithRecentValues": {
@@ -98,7 +93,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -109,7 +103,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit",
@@ -129,7 +122,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -141,7 +133,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -157,10 +148,8 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coingecko",
         "coinmarketcap",
-        "currencycom",
         "huobipro",
         "kraken",
         "kucoin",
@@ -244,9 +233,7 @@
         "gate",
         "kucoin",
         "latoken",
-        "mexc",
-        "pangolin-on-chain-wavax",
-        "trader-joe-on-chain-wavax"
+        "mexc"
       ],
       "skipSigning": true
     },
@@ -301,8 +288,7 @@
         "coingecko",
         "coinmarketcap",
         "hitbtc",
-        "lbank",
-        "oceanex"
+        "lbank"
       ],
       "skipSigning": true
     },
@@ -338,14 +324,8 @@
     "SHLB_BTC.b-AVAX_B": {
       "source": ["avalanche-evm-fetcher"]
     },
-    "SHLB_USDT.e-USDt_C": {
-      "source": ["avalanche-evm-fetcher"]
-    },
     "SHLB_JOE-AVAX_B": {
       "source": ["avalanche-evm-fetcher"]
-    },
-    "USDT.e": {
-      "source": ["trader-joe-on-chain-wavax", "pangolin-on-chain-wavax"]
     },
     "SOFR": {
       "source": ["newyorkfed"]
@@ -379,7 +359,6 @@
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
-        "coinmarketcap",
         "coinmarketcap",
         "huobipro",
         "trader-joe-v2-avalanche-on-chain-usdc",

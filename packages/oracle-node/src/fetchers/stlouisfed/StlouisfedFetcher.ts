@@ -34,13 +34,13 @@ export class StlouisfedFetcher extends BaseFetcher {
     return getRequiredPropValue(symbolToId, symbol);
   }
 
-  fetchData(ids: string[]) {
+  override async fetchData(ids: string[]) {
     if (ids.length != 1 || ids[0] !== THE_ONLY_SUPPORTED_ID) {
       throw new Error(
         `Only ${THE_ONLY_SUPPORTED_ID} is supported. Received: ${ids.join(",")}`
       );
     }
-    return axios.get<StlouisfedResponse>(STLOUISFED_OBERSVATIONS_URL, {
+    return await axios.get<StlouisfedResponse>(STLOUISFED_OBERSVATIONS_URL, {
       params: {
         series_id: ids[0],
         api_key: config.stlouisfedApiKey!,
@@ -49,7 +49,9 @@ export class StlouisfedFetcher extends BaseFetcher {
     });
   }
 
-  extractPrices(response: AxiosResponse<StlouisfedResponse>): PricesObj {
+  override extractPrices(
+    response: AxiosResponse<StlouisfedResponse>
+  ): PricesObj {
     const pricesObj: PricesObj = {};
 
     const lastObservation = _.last(response.data.observations)?.value;

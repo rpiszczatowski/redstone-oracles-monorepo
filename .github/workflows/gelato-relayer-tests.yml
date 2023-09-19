@@ -12,7 +12,7 @@ on:
       - .github/workflows/gelato-relayer-tests.yml
 
 jobs:
-  tests:
+  gelato-relayer-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -24,6 +24,8 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
+      - name: Lint
+        run: yarn lint
       - name: Run tests
         run: yarn test
         env:

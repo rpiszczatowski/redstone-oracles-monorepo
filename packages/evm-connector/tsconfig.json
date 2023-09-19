@@ -6,7 +6,6 @@
     "declarationMap": true,
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "exactOptionalPropertyTypes": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
@@ -21,7 +20,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "ES2021",
+    "target": "ES2021"
   },
   "include": [
     "./src",
@@ -30,10 +29,14 @@
     "package.json",
     "./contracts",
     "./hardhat.config.ts",
+    "benchmarks"
   ],
   "references": [
     {
       "path": "../protocol/tsconfig.build.json"
+    },
+    {
+      "path": "../utils/tsconfig.build.json"
     },
     {
       "path": "../sdk/tsconfig.build.json"

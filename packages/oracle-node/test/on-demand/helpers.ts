@@ -4,10 +4,10 @@ const transactionNotFromCoinbase = {
   from: "0x95222290dd7278aa3ddd389cc1e1d165cc4bafe5",
   to: "0x473780deaf4a2ac070bbba936b0cdefe7f267dfc",
   value: "1324545",
-} as any;
+} as unknown;
 
 export const getResponseWithOuterTransaction = () => {
-  const mockedResponse = { result: [] as any[] };
+  const mockedResponse = { result: [] as unknown[] };
   mockedResponse.result = [
     ...exampleResponse.result,
     transactionNotFromCoinbase,
@@ -16,7 +16,7 @@ export const getResponseWithOuterTransaction = () => {
 };
 
 export const getSlicedResponseWithOuterTransaction = () => {
-  const mockedResponse = { result: [] as any[] };
+  const mockedResponse = { result: [] as unknown[] };
   mockedResponse.result = exampleResponse.result.slice(0, 3);
   mockedResponse.result = [
     ...mockedResponse.result,
@@ -26,7 +26,7 @@ export const getSlicedResponseWithOuterTransaction = () => {
 };
 
 export const getMultipliedResponse = () => {
-  const multipliedResponse: any[] = [];
+  const multipliedResponse: unknown[] = [];
   [...new Array(1000).keys()].forEach(() =>
     multipliedResponse.push(...exampleResponse.result)
   );

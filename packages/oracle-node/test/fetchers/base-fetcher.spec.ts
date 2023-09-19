@@ -1,4 +1,5 @@
 import { BaseFetcher } from "../../src/fetchers/BaseFetcher";
+import { PriceDataFetchedValue } from "../../src/types";
 import { isDefined } from "../../src/utils/objects";
 
 class BaseFetcherImpl extends BaseFetcher {
@@ -6,14 +7,18 @@ class BaseFetcherImpl extends BaseFetcher {
     super("test");
   }
 
-  fetchData(ids: string[]): Promise<any> {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  override async fetchData(_ids: string[]) {
     throw new Error("Method not implemented.");
   }
 
   extractPrices(response: Record<string, number>) {
     return this.extractPricesSafely(Object.keys(response), (item) => {
       if (item === "NULL") {
-        return undefined as any;
+        return undefined as unknown as {
+          id: string;
+          value: PriceDataFetchedValue;
+        };
       }
 
       let price;
@@ -23,15 +28,15 @@ class BaseFetcherImpl extends BaseFetcher {
         throw new Error("Price fail");
       }
       if (response[item] === 420) {
-        price = undefined as any;
+        price = undefined;
       }
 
-      let id;
+      let id: string;
       if (item === "FAIL") {
         throw new Error("Id fail");
       }
       if (item === "MISSING") {
-        id = undefined as any;
+        id = undefined as unknown as string;
       } else {
         id = item.toLocaleUpperCase();
       }
@@ -54,13 +59,15 @@ describe("base fetcher", () => {
     });
 
     it("should isolate extract id failure", () => {
-      expect(sut.extractPrices({ a: 10.5, FAIL: 2 } as any)).toEqual({
+      expect(sut.extractPrices({ a: 10.5, FAIL: 2 })).toEqual({
         A: 11,
       });
     });
 
     it("should isolate extract price failure", () => {
-      expect(sut.extractPrices({ a: 10.5, b: null } as any)).toEqual({
+      expect(
+        sut.extractPrices({ a: 10.5, b: null as unknown as number })
+      ).toEqual({
         A: 11,
       });
     });

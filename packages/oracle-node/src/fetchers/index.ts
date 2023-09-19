@@ -1,19 +1,14 @@
 import { Fetcher } from "../types";
 import ccxtFetchers from "./ccxt/all-ccxt-fetchers";
-import pangolinFetchers from "./pangolin/all-pangolin-fetchers";
 import { YfUnofficialFetcher } from "./yf-unofficial/YfUnofficialFetcher";
 import { CustomUrlsFetcher } from "./custom-urls/CustomUrlsFetcher";
-import { TraderJoeFetcher } from "./trader-joe/TraderJoeFetcher";
 import { CoingeckoFetcher } from "./coingecko/CoingeckoFetcher";
-import { SushiswapFetcher } from "./sushiswap/SushiswapFetcher";
-import { UniswapFetcher } from "./uniswap/UniswapFetcher";
 import { KyberFetcher } from "./kyber/KyberFetcher";
 import { EcbFetcher } from "./ecb/EcbFetcher";
 import { DrandFetcher } from "./drand/DrandFetcher";
 import { DiaFetcher } from "./dia/DiaFetcher";
 import twapFetchers from "./twap/all-twap-fetchers";
 import { avalancheEvmFetcher } from "./evm-chain/avalanche/evm-fetcher/AvalancheEvmFetcher";
-import { PlatypusFetcher } from "./platypus/PlatypusFetcher";
 import { LensFetcher } from "./lens/LensFetcher";
 import { ChainlinkFetcher } from "./chainlink/ChainlinkFetcher";
 import { XtFetcher } from "./xt/XtFetcher";
@@ -21,7 +16,6 @@ import { BandFetcher } from "./band/BandFetcher";
 import { CoinMarketCapFetcher } from "./coinmarketcap/CoinMarketCapFetcher";
 import { MockFetcher } from "./mock-fetcher/mock-fetcher";
 import { KaikoFetcher } from "./kaiko/KaikoFetcher";
-import { UniswapV3Fetcher } from "./uniswap-v3/UniswapV3Fetcher";
 import balancerFetchers from "./balancer/all-balancer-fetchers";
 import uniswapV3Fetchers from "./evm-chain/shared/uniswap-v3-on-chain/all-uniswap-v3-fetchers";
 import velodromeFetchers from "./evm-chain/optimism/velodrome/all-velodrome-fetchers";
@@ -52,12 +46,8 @@ import { WombatFetcher } from "./wombat/WombatFetcher";
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
   "custom-urls": new CustomUrlsFetcher(),
-  "trader-joe": new TraderJoeFetcher(),
   mock: new MockFetcher(),
   coingecko: new CoingeckoFetcher(),
-  sushiswap: new SushiswapFetcher(),
-  uniswap: new UniswapFetcher(),
-  "uniswap-v3": new UniswapV3Fetcher(),
   drand: new DrandFetcher(),
   deribit: new DeribitFetcher(),
   dia: new DiaFetcher(),
@@ -65,7 +55,6 @@ export default {
   ecb: new EcbFetcher(),
   band: new BandFetcher(),
   "avalanche-evm-fetcher": avalancheEvmFetcher,
-  platypus: new PlatypusFetcher(),
   chainlink: new ChainlinkFetcher(),
   lens: new LensFetcher(),
   xt: new XtFetcher(),
@@ -82,7 +71,6 @@ export default {
   "fixed-value": new FixedValueFetcher(),
   wombat: new WombatFetcher(),
   ...ccxtFetchers,
-  ...pangolinFetchers,
   ...twapFetchers,
   ...uniswapV3Fetchers,
   ...sushiswapEthereumOnChainFetchers,
@@ -99,4 +87,4 @@ export default {
   ...twapCacheServicesMinuteFetchers,
   ...camelotV3Fetchers,
   ...pancakeSwapFetchers,
-} as { [name: string]: Fetcher };
+} as { [name: string]: Fetcher | undefined };

@@ -1,7 +1,6 @@
 import { deployMockContract } from "@ethereum-waffle/mock-contract";
-import Decimal from "decimal.js";
 import { deployContract, MockContract, MockProvider } from "ethereum-waffle";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
@@ -10,11 +9,10 @@ import {
 import abi from "../../src/fetchers/curve/CurveFactory.abi.json";
 import { CurveFetcher } from "../../src/fetchers/curve/CurveFetcher";
 import multicall3Json from "../abis/Multicall3.deployment.json";
-import { saveMockPriceInLocalDb } from "./_helpers";
+import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
 
 const toCurvePrecision = (value: string) => value + "0".repeat(18);
 jest.setTimeout(10_000);
-Decimal.set({ toExpPos: 9e15 });
 
 describe("Curve", () => {
   let mockContract: MockContract;
@@ -26,7 +24,7 @@ describe("Curve", () => {
     const [wallet] = provider.getWallets();
     mockContract = await deployMockContract(wallet, abi);
 
-    const multicall = await deployContract(wallet, multicall3Json as any);
+    const multicall = await deployContract(wallet, multicall3Json);
     RedstoneCommon.overrideMulticallAddress(multicall.address);
   });
 
@@ -40,22 +38,28 @@ describe("Curve", () => {
 
   test("Should properly fetch data, where tokens have same decimals", async () => {
     // sample data taken from https://etherscan.io/address/0x828b154032950c8ff7cf8085d841723db2696056#readContract get_dy(0,1,10**18)
-    await mockContract.mock.get_dy.returns("1000130962107597656");
+    await asAwaitable(mockContract.mock.get_dy.returns("1000130962107597656"));
 
     // for sell slippage x9
-    await mockContract.mock.get_dy
-      .withArgs(0, 1, toCurvePrecision("10"))
-      .returns("9000130962107597656");
+    await asAwaitable(
+      mockContract.mock.get_dy
+        .withArgs(0, 1, toCurvePrecision("10"))
+        .returns("9000130962107597656")
+    );
 
     // for buy slippage x10
-    await mockContract.mock.get_dy
-      .withArgs(1, 0, "9997190746829739307")
-      .returns("10001309621075976560");
+    await asAwaitable(
+      mockContract.mock.get_dy
+        .withArgs(1, 0, "9997190746829739307")
+        .returns("10001309621075976560")
+    );
 
-    await mockContract.mock.balances.withArgs(0).returns(toCurvePrecision("2"));
-    await mockContract.mock.balances
-      .withArgs(1)
-      .returns(toCurvePrecision("100"));
+    await asAwaitable(
+      mockContract.mock.balances.withArgs(0).returns(toCurvePrecision("2"))
+    );
+    await asAwaitable(
+      mockContract.mock.balances.withArgs(1).returns(toCurvePrecision("100"))
+    );
     await saveMockPriceInLocalDb(1000, "ETH");
     await saveMockPriceInLocalDb(1000.2810042582364, "STETH");
 
@@ -101,26 +105,38 @@ describe("Curve", () => {
 
   test("Should properly fetch data, where tokens have different decimals", async () => {
     // sample data taken from https://etherscan.io/address/0xbEbc44782C7dB0a1A60Cb6fe97d0b483032FF1C7#readContract
-    await mockContract.mock.get_dy
-      .withArgs(0, 1, toCurvePrecision("1"))
-      .returns("999835");
-    await mockContract.mock.get_dy
-      .withArgs(1, 0, "1000000")
-      .returns("999965813579867719");
+    await asAwaitable(
+      mockContract.mock.get_dy
+        .withArgs(0, 1, toCurvePrecision("1"))
+        .returns("999835")
+    );
+    await asAwaitable(
+      mockContract.mock.get_dy
+        .withArgs(1, 0, "1000000")
+        .returns("999965813579867719")
+    );
 
-    await mockContract.mock.get_dy
-      .withArgs(0, 1, "10000150024754084918000")
-      .returns("9998339080");
+    await asAwaitable(
+      mockContract.mock.get_dy
+        .withArgs(0, 1, "10000150024754084918000")
+        .returns("9998339080")
+    );
 
-    await mockContract.mock.get_dy
-      .withArgs(1, 0, "10000000000")
-      .returns("9999655307777900385229");
+    await asAwaitable(
+      mockContract.mock.get_dy
+        .withArgs(1, 0, "10000000000")
+        .returns("9999655307777900385229")
+    );
 
     await saveMockPriceInLocalDb(0.9999849977496624, "STETH");
     await saveMockPriceInLocalDb(1, "USDT");
 
-    await mockContract.mock.balances.withArgs(0).returns(toCurvePrecision("2"));
-    await mockContract.mock.balances.withArgs(1).returns("3000000");
+    await asAwaitable(
+      mockContract.mock.balances.withArgs(0).returns(toCurvePrecision("2"))
+    );
+    await asAwaitable(
+      mockContract.mock.balances.withArgs(1).returns("3000000")
+    );
 
     const fetcher = new CurveFetcher("curve-test", {
       STETH: {

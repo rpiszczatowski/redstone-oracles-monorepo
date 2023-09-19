@@ -1,4 +1,4 @@
-name: Rpc-providers CI
+name: Rpc Providers CI
 on:
   push:
     paths:
@@ -6,7 +6,7 @@ on:
       - .github/workflows/rpc-providers-tests.yml
 
 jobs:
-  run-tests:
+  rpc-providers-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -21,6 +21,8 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
+      - name: Lint
+        run: yarn lint
       - name: Run tests
         run: yarn test
         env:

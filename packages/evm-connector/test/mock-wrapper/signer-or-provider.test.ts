@@ -2,7 +2,7 @@ import chai, { expect } from "chai";
 import { ethers } from "hardhat";
 import { SampleRedstoneConsumerNumericMock } from "../../typechain-types";
 import { WrapperBuilder } from "../../src/index";
-import { utils } from "redstone-protocol";
+import { utils } from "@redstone-finance/protocol";
 import { mockNumericPackages } from "../tests-common";
 import chaiAsPromised from "chai-as-promised";
 
@@ -51,9 +51,8 @@ describe("SignerOrProviderTest", function () {
         mockNumericPackages
       );
 
-    const tx = await wrappedContract.saveOracleValueInContractStorage(
-      DATA_FEED_ID
-    );
+    const tx =
+      await wrappedContract.saveOracleValueInContractStorage(DATA_FEED_ID);
     await tx.wait();
   });
 });

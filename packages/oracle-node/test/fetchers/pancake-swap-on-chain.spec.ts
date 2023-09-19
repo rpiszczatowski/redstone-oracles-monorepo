@@ -18,7 +18,7 @@ import PancakeSwapPoolAbi from "../../src/fetchers/evm-chain/ethereum/pancake-sw
 import PancakeSwapQuoterAbi from "../../src/fetchers/evm-chain/ethereum/pancake-swap-on-chain/PancakeSwapQuoter.abi.json";
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { PoolsConfig } from "../../src/fetchers/uniswap-v3-like/types";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 

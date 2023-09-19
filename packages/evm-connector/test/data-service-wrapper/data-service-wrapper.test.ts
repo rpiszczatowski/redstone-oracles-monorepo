@@ -1,8 +1,7 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import { Contract } from "ethers";
 import { ethers } from "hardhat";
-import { utils } from "redstone-protocol";
+import { utils } from "@redstone-finance/protocol";
 import { WrapperBuilder } from "../../src/index";
 import { SampleRedstoneConsumerNumericMockManyDataFeeds } from "../../typechain-types";
 import { expectedNumericValues } from "../tests-common";
@@ -16,7 +15,9 @@ const dataFeedIdsB32 = [
   utils.convertStringToBytes32("BTC"),
 ];
 
-const checkExpectedValues = async (contract: Contract) => {
+const checkExpectedValues = async (
+  contract: SampleRedstoneConsumerNumericMockManyDataFeeds
+) => {
   const firstValueFromContract = await contract.firstValue();
   const secondValueFromContract = await contract.secondValue();
 
@@ -26,10 +27,10 @@ const checkExpectedValues = async (contract: Contract) => {
   expect(secondValueFromContract.toNumber()).to.be.equal(
     expectedNumericValues["BTC"]
   );
-}
+};
 
 const runTest = async (
-  contract: Contract,
+  contract: SampleRedstoneConsumerNumericMockManyDataFeeds,
   urls?: string[],
   dataServiceId?: string,
   uniqueSignersCount?: number
@@ -47,14 +48,17 @@ const runTest = async (
   await checkExpectedValues(contract);
 };
 
-const runTestWithManualPayload = async (contract: Contract, payload: string) => {
+const runTestWithManualPayload = async (
+  contract: SampleRedstoneConsumerNumericMockManyDataFeeds,
+  payload: string
+) => {
   const tx = await contract.save2ValuesInStorageWithManualPayload(
     dataFeedIdsB32,
     payload
   );
   await tx.wait();
   await checkExpectedValues(contract);
-}
+};
 
 describe("DataServiceWrapper", () => {
   before(() => server.listen());
@@ -96,7 +100,7 @@ describe("DataServiceWrapper", () => {
       );
     });
 
-    it("Should get urls from redstone-protocol if not provided", async () => {
+    it("Should get urls from @redstone-finance/protocol if not provided", async () => {
       await runTest(contract, undefined, "mock-data-service-tests");
     });
 
@@ -128,7 +132,7 @@ describe("DataServiceWrapper", () => {
   });
 
   describe("With RedstoneDataServiceConsumer contract", () => {
-    let contract: Contract;
+    let contract: SampleRedstoneConsumerNumericMockManyDataFeeds;
 
     beforeEach(async () => {
       const ContractFactory = await ethers.getContractFactory(

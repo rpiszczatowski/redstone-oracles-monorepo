@@ -1,34 +1,25 @@
 {
-  "name": "starknet-relayer",
+  "name": "@redstone-finance/starknet-relayer",
   "prettier": "redstone-prettier-config",
-  "version": "0.0.1",
+  "version": "0.3.0",
   "types": "dist/index.d.ts",
   "license": "MIT",
+  "private": true,
   "scripts": {
-    "build": "rm -rf dist && tsc -build",
+    "build": "rm -rf dist && tsc --build tsconfig.build.json",
     "start": "node dist/src/start-relayer.js",
     "start:dev": "yarn build && ts-node src/start-relayer.ts",
-    "get-price": "yarn build && node dist/src/scripts/get-price.js"
+    "get-price": "yarn build && node dist/src/scripts/get-price.js",
+    "lint": "eslint ."
   },
   "dependencies": {
+    "@redstone-finance/sdk": "^0.3.0",
+    "@redstone-finance/starknet-connector": "^0.3.0",
     "dotenv": "^16.0.3",
-    "ethers": "^5.7.2",
-    "redstone-sdk": ">=1.8.1",
-    "@redstone-finance/starknet-connector": "^0.4.0"
+    "ethers": "^5.7.2"
   },
   "devDependencies": {
-    "@types/node": "^18.13.0",
+    "@types/node": "^18.14.6",
     "typescript": "^5.2.2"
-  },
-  "references": [
-    {
-      "path": "../protocol"
-    },
-    {
-      "path": "../sdk"
-    },
-    {
-      "path": "../starknet-connector"
-    }
-  ]
+  }
 }

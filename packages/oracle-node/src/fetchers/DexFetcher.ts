@@ -3,9 +3,11 @@ import graphProxy from "../utils/graph-proxy";
 import { BaseFetcher } from "./BaseFetcher";
 
 export interface DexFetcherResponse {
-  data: {
-    pairs: Pair[];
-  };
+  data:
+    | {
+        pairs: Pair[];
+      }
+    | undefined;
 }
 
 export interface Pair {
@@ -29,7 +31,7 @@ interface Token {
 }
 
 interface SymbolToPairId {
-  [symbol: string]: string;
+  [symbol: string]: string | undefined;
 }
 
 export class DexFetcher extends BaseFetcher {
@@ -43,7 +45,7 @@ export class DexFetcher extends BaseFetcher {
     super(name);
   }
 
-  async fetchData(ids: string[]): Promise<DexFetcherResponse> {
+  override async fetchData(ids: string[]): Promise<DexFetcherResponse> {
     const pairIds = this.convertSymbolsToPairIds(ids, this.symbolToPairIdObj);
 
     const query = `{
@@ -64,11 +66,14 @@ export class DexFetcher extends BaseFetcher {
     return await graphProxy.executeQuery(this.subgraphUrl, query);
   }
 
-  override validateResponse(response: DexFetcherResponse): boolean {
+  override validateResponse(response: DexFetcherResponse | undefined): boolean {
     return response !== undefined && response.data !== undefined;
   }
 
-  extractPrices(response: DexFetcherResponse, assetIds: string[]): PricesObj {
+  override extractPrices(
+    response: DexFetcherResponse,
+    assetIds: string[]
+  ): PricesObj {
     return this.extractPricesSafely(assetIds, (assetId) =>
       this.extractPricePair(assetId, response)
     );
@@ -79,7 +84,7 @@ export class DexFetcher extends BaseFetcher {
     response: DexFetcherResponse
   ) {
     const pairId = this.symbolToPairIdObj[currentAssetId];
-    const pair = response.data.pairs.find((pair) => pair.id === pairId);
+    const pair = response.data!.pairs.find((pair) => pair.id === pairId);
 
     if (!pair) {
       this.logger.warn(

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Cron } from "@nestjs/schedule";
-import { getOracleRegistryState } from "redstone-sdk";
+import { getOracleRegistryState } from "@redstone-finance/sdk";
 import config from "../config";
 import {
   decompressMsg,
@@ -8,11 +8,13 @@ import {
   getStreamIdForNodeByEvmAddress,
   StreamrClient,
   Subscription,
-} from "redstone-streamr-proxy";
+} from "@redstone-finance/streamr-proxy";
 import { DataPackagesService } from "../data-packages/data-packages.service";
+import { ReceivedDataPackage } from "../data-packages/data-packages.interface";
+import { RedstoneOraclesState } from "@redstone-finance/oracles-smartweave-contracts";
 
 interface StreamrSubscriptions {
-  [nodeEvmAddress: string]: Subscription;
+  [nodeEvmAddress: string]: Subscription | undefined;
 }
 
 interface NodeLike {
@@ -36,6 +38,7 @@ export class StreamrListenerService {
 
   @Cron(CRON_EXPRESSION_EVERY_1_MINUTE)
   handleCron() {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.syncStreamrListening();
   }
 
@@ -48,7 +51,7 @@ export class StreamrListenerService {
     // Start listening to new nodes' streams
     for (const nodeEvmAddress of nodeEvmAddresses) {
       if (this.subscriptionsState[nodeEvmAddress] === undefined) {
-        this.listenToNodeStream(nodeEvmAddress);
+        await this.listenToNodeStream(nodeEvmAddress);
       }
     }
 
@@ -81,9 +84,11 @@ export class StreamrListenerService {
       async (message: unknown) => {
         try {
           this.logger.log(`Received a message from stream: ${streamId}`);
-          const dataPackagesReceived = decompressMsg(message as Uint8Array);
+          const dataPackagesReceived = decompressMsg<ReceivedDataPackage[]>(
+            message as Uint8Array
+          );
           const dataPackagesToSave =
-            await this.dataPackageService.prepareReceivedDataPackagesForBulkSaving(
+            await DataPackagesService.prepareReceivedDataPackagesForBulkSaving(
               dataPackagesReceived,
               nodeEvmAddress
             );
@@ -103,18 +108,22 @@ export class StreamrListenerService {
 
   cancelListeningToNodeStream(nodeEvmAddress: string) {
     const subscription = this.subscriptionsState[nodeEvmAddress];
-    if (!!subscription) {
+    if (subscription) {
       delete this.subscriptionsState[nodeEvmAddress];
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       this.streamrClient.unsubscribe(subscription);
     }
   }
 
   // The function is left here to have it mockable in tests.
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   getAllowedDataServiceIds(): string[] {
     return config.allowedStreamrDataServiceIds;
   }
 
-  private prepareActiveNodeEvmAddresses(oracleRegistryState: any): string[] {
+  private prepareActiveNodeEvmAddresses(
+    oracleRegistryState: RedstoneOraclesState
+  ): string[] {
     const nodes: NodeLike[] = Object.values(oracleRegistryState.nodes);
     this.logger.log(`Found ${nodes.length} node evm addresses`);
 

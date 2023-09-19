@@ -1,14 +1,15 @@
-name: SDK tests
+name: SDK CI
 on:
   push:
     paths:
+      - packages/sdk/**
+      - packages/utils/**
       - packages/oracles-smartweave-contracts/**
       - packages/protocol/**
-      - packages/sdk/**
       - .github/workflows/sdk-tests.yml
 
 jobs:
-  build:
+  redstone-sdk-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:

@@ -21,6 +21,7 @@ export class CcxtFetcher extends BaseFetcher {
   constructor(name: Exchanges) {
     super(name);
     const exchangeClass = ccxt[name];
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (!exchangeClass) {
       throw new Error(`Exchange ${name} is not accessible through CCXT`);
     }
@@ -33,14 +34,14 @@ export class CcxtFetcher extends BaseFetcher {
   }
 
   override convertIdToSymbol(id: string) {
-    return getRequiredPropValue(this.idToSymbol, id);
+    return getRequiredPropValue<string>(this.idToSymbol, id);
   }
 
   override convertSymbolToId(symbol: string) {
-    return getRequiredPropValue(this.symbolToId, symbol);
+    return getRequiredPropValue<string>(this.symbolToId, symbol);
   }
 
-  async fetchData(ids: string[]): Promise<any> {
+  override async fetchData(ids: string[]): Promise<unknown> {
     if (!this.exchange.has["fetchTickers"]) {
       throw new Error(
         `Exchange ${this.name} doesn't support fetchTickers method`
@@ -50,19 +51,19 @@ export class CcxtFetcher extends BaseFetcher {
     return await this.exchange.fetchTickers(ids);
   }
 
-  extractPrices(response: any): PricesObj {
+  override extractPrices(response: Ticker[]): PricesObj {
     return this.extractPricesSafely(
-      Object.values(response) as Ticker[],
-      this.extractPricePair.bind(this)
+      Object.values(response),
+      CcxtFetcher.extractPricePair
     );
   }
 
-  private extractPricePair(ticker: Ticker) {
+  static extractPricePair = (ticker: Ticker) => {
     const pairSymbol = ticker.symbol;
     if (ticker.last === undefined) {
       throw new Error(`Price not returned for: ${pairSymbol}`);
     }
-    const lastPrice = ticker.last!;
+    const lastPrice = ticker.last;
     // Second condition is special case for binancecoinm
     if (pairSymbol.endsWith("/USD") || pairSymbol.includes("/USD:")) {
       return { value: lastPrice, id: pairSymbol };
@@ -73,5 +74,5 @@ export class CcxtFetcher extends BaseFetcher {
       return { value: lastPrice * lastUsdInStablePrice, id: pairSymbol };
     }
     throw new Error(`Cannot get last price from cache for ${stableCoinSymbol}`);
-  }
+  };
 }

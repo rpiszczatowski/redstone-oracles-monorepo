@@ -1,11 +1,11 @@
-name: Monorepo integration tests
+name: Integration tests
 
 on:
   push:
     branches: "**"
 
 jobs:
-  core:
+  integration-tests-core:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -26,7 +26,7 @@ jobs:
         run: node dist/src/simple-price-propagation-core.js
         env:
           NODE_ENV: test
-  core-with-node-failure:
+  intergration-tests-core-with-node-failure:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -45,7 +45,7 @@ jobs:
         run: node dist/src/prices-updates-node-failures.js
         env:
           NODE_ENV: test
-  classic:
+  integration-tests-classic:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:

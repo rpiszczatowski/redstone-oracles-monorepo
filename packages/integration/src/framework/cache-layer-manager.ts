@@ -1,4 +1,4 @@
-import { consts } from "redstone-protocol";
+import { consts } from "@redstone-finance/protocol";
 import { ChildProcess, spawnSync } from "child_process";
 import fs from "fs";
 import { installAndBuild } from "./integration-test-compile";
@@ -17,12 +17,12 @@ import {
 
 export type CacheLayerInstance = {
   instanceId: string;
-  mongoDbProcess?: ChildProcess | undefined;
-  directCacheServiceProcess?: ChildProcess | undefined;
-  publicCacheServiceProcess?: ChildProcess | undefined;
+  mongoDbProcess?: ChildProcess;
+  directCacheServiceProcess?: ChildProcess;
+  publicCacheServiceProcess?: ChildProcess;
   directCacheServicePort?: number;
   publicCacheServicePort?: number;
-  dotenvPath?: string | undefined;
+  dotenvPath?: string;
 };
 
 const CACHE_SERVICE_DIR = "../cache-service";
@@ -259,7 +259,7 @@ export const verifyPricesNotInCacheService = async (
   try {
     await verifyPricesInCacheService(cacheLayerInstances, expectedPrices);
     throw new Error("IMPOSSIBLE");
-  } catch (e: unknown) {
+  } catch (e) {
     if ((e as Error).message === "IMPOSSIBLE") {
       throw new Error(
         "IMPOSSIBLE: prices were updated even though there was no active node. Most probably there is a bug in testing code."

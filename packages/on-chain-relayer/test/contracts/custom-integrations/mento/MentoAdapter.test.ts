@@ -67,7 +67,7 @@ describe("MentoAdapter", () => {
         mockSignersCount: 10,
         dataPoints,
         timestampMilliseconds,
-      }) as MentoAdapterBase;
+      });
 
     // Prepare arguments
     const proposedTimestamp = timestampMilliseconds;
@@ -103,9 +103,8 @@ describe("MentoAdapter", () => {
     sortedOracles = await deployMockSortedOracles();
 
     // Deploying mento adapter
-    const MentoAdapterFactory = await ethers.getContractFactory(
-      "MentoAdapterMock"
-    );
+    const MentoAdapterFactory =
+      await ethers.getContractFactory("MentoAdapterMock");
     mentoAdapter = await MentoAdapterFactory.deploy(sortedOracles.address);
     await mentoAdapter.deployed();
 

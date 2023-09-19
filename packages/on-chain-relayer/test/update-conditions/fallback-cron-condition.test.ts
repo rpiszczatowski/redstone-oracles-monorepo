@@ -3,7 +3,6 @@ import { config } from "../../src/config";
 import {
   dateStrToMilliseconds,
   mockEnvVariables,
-  originalDateNow,
   restoreOriginalSystemTime,
   setCurrentSystemTime,
 } from "../helpers";

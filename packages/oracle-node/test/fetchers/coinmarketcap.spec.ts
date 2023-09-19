@@ -3,7 +3,7 @@ import { mockFetcherResponse } from "./_helpers";
 jest.mock("axios");
 
 describe("CoinMarketCap fetcher", () => {
-  const sut = fetchers["coinmarketcap"];
+  const sut = fetchers["coinmarketcap"]!;
 
   beforeEach(() => {
     mockFetcherResponse(

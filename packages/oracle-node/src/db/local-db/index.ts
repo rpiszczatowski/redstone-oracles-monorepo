@@ -17,13 +17,13 @@ export interface PriceValueInLocalDB {
   value: string;
 }
 
-export interface PriceValuesInLocalDB {
-  [symbol: string]: PriceValueInLocalDB[];
-}
+export type PriceValuesInLocalDB = {
+  [token in string]?: PriceValueInLocalDB[];
+};
 
-interface LastPrices {
-  [symbol: string]: PriceValueInLocalDB;
-}
+type LastPrices = {
+  [token in string]?: PriceValueInLocalDB;
+};
 
 let db: Level<string, string>;
 let pricesSublevel: AbstractSublevel<
@@ -63,7 +63,9 @@ export const getPrices = async (
   const resultValues: PriceValuesInLocalDB = {};
   for (let symbolIndex = 0; symbolIndex < symbols.length; symbolIndex++) {
     const symbol = symbols[symbolIndex];
-    const valuesForSymbol = valuesForSymbols[symbolIndex];
+    const valuesForSymbol = valuesForSymbols[symbolIndex] as
+      | PriceValueInLocalDB[]
+      | undefined;
     resultValues[symbol] = valuesForSymbol || [];
   }
 
@@ -87,7 +89,7 @@ export const savePrices = async (prices: PriceDataAfterAggregation[]) => {
       timestamp: price.timestamp,
     };
 
-    const filteredPricesForSymbol = pricesFromDB[price.symbol].filter(
+    const filteredPricesForSymbol = pricesFromDB[price.symbol]!.filter(
       (p) =>
         p.timestamp >
         currentTimestamp - config.ttlForPricesInLocalDBInMilliseconds
@@ -150,7 +152,6 @@ export const getLastPriceOrFail = (symbol: string) => {
 
   return lastPrice;
 };
-
 
 export const getRawPriceOrFail = (symbol: string) => {
   const lastPrice = getRawPrice(symbol);

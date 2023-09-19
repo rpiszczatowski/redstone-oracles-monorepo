@@ -13,7 +13,7 @@ interface BandResponse {
         px: number;
         multiplier: number;
         [otherOptions: string]: unknown;
-      }
+      },
     ];
   };
 }
@@ -23,7 +23,7 @@ export class BandFetcher extends BaseFetcher {
     super("band");
   }
 
-  async fetchData() {
+  override async fetchData() {
     const requestCurriences = new URLSearchParams();
     for (const symbol of symbols) {
       requestCurriences.append("symbols", symbol);
@@ -35,7 +35,7 @@ export class BandFetcher extends BaseFetcher {
     return response;
   }
 
-  extractPrices(response: BandResponse): PricesObj {
+  override extractPrices(response: BandResponse): PricesObj {
     const pricesArray = response.data.price_results;
 
     return this.extractPricesSafely(pricesArray, (asset) => ({

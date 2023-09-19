@@ -12,7 +12,7 @@ import {
 import {
   DataPointPlainObj,
   SignedDataPackagePlainObj,
-} from "redstone-protocol";
+} from "@redstone-finance/protocol";
 import { IsNumberOrString } from "../utils/IsNumberOrString";
 import { CachedDataPackage } from "./data-packages.model";
 
@@ -74,7 +74,7 @@ export class GetDataPackagesStatsQuery {
 }
 
 export interface DataPackagesResponse {
-  [dataFeedId: string]: CachedDataPackage[];
+  [dataFeedId: string]: CachedDataPackage[] | undefined;
 }
 
 export interface DataPackagesStatsResponse {

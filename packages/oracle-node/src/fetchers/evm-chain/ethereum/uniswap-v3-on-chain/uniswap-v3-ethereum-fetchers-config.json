@@ -241,6 +241,18 @@
       "token1Decimals": 18,
       "fee": 3000,
       "pairedToken": "ETH"
+    },
+    "UNI": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x1d42064fc4beb5f8aaf85f4617ae8b3b5b8bd801",
+      "token0Symbol": "UNI",
+      "token1Symbol": "WETH",
+      "token0Address": "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+      "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "fee": 3000,
+      "pairedToken": "ETH"
     }
   },
   "uniswap-v3-ethereum-on-chain-weth-500": {
@@ -751,9 +763,9 @@
     "FRAX": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0xc63b0708e2f7e69cb8a1df0e1389a98c35a76d52",
-      "token0Symbol": "GHO",
+      "token0Symbol": "FRAX",
       "token1Symbol": "USDC",
-      "token0Address": "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f",
+      "token0Address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
       "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       "token0Decimals": 18,
       "token1Decimals": 6,
@@ -762,9 +774,9 @@
     "GHO": {
       "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
       "poolAddress": "0x5c95d4B1C3321CF898D25949F41D50Be2dB5bc1d",
-      "token0Symbol": "FRAX",
+      "token0Symbol": "GHO",
       "token1Symbol": "USDC",
-      "token0Address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+      "token0Address": "0x40D16FC0246aD3160Ccc09B8D0D3A2cD28aE6C2f",
       "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       "token0Decimals": 18,
       "token1Decimals": 6,
@@ -887,6 +899,19 @@
       "token0Decimals": 6,
       "token1Decimals": 6,
       "fee": 100
+    }
+  },
+  "uniswap-v3-ethereum-on-chain-usdt-3000": {
+    "WBTC": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x9Db9e0e53058C89e5B94e29621a205198648425B",
+      "token0Symbol": "WBTC",
+      "token1Symbol": "USDT",
+      "token0Address": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+      "token1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "token0Decimals": 8,
+      "token1Decimals": 6,
+      "fee": 3000
     }
   }
 }

@@ -1,6 +1,7 @@
 import { ethers } from "hardhat";
 import fs from "fs";
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
   const adapterContractFactory = await ethers.getContractFactory(
     "PriceFeedsAdapterWithoutRoundsOneSignerMock"

@@ -2,7 +2,7 @@ import {
   INumericDataPoint,
   DataPackage,
   NumericDataPoint,
-} from "redstone-protocol";
+} from "@redstone-finance/protocol";
 import {
   MAX_MOCK_SIGNERS_COUNT,
   getMockSignerAddress,
@@ -11,6 +11,7 @@ import {
 } from "../helpers/test-utils";
 import { version } from "../../package.json";
 import { MockDataPackageConfig, MockWrapper } from "./MockWrapper";
+import { Contract } from "ethers";
 
 export interface SimpleNumericMockConfig {
   mockSignersCount: number;
@@ -18,7 +19,9 @@ export interface SimpleNumericMockConfig {
   dataPoints: INumericDataPoint[];
 }
 
-export class SimpleNumericMockWrapper extends MockWrapper {
+export class SimpleNumericMockWrapper<
+  T extends Contract,
+> extends MockWrapper<T> {
   constructor(simpleNumericMockConfig: SimpleNumericMockConfig) {
     if (simpleNumericMockConfig.mockSignersCount > MAX_MOCK_SIGNERS_COUNT) {
       throw new Error(

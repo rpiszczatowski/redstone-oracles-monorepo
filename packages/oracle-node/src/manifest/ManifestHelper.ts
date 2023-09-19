@@ -5,7 +5,7 @@ import { Manifest } from "../types";
 import { arbitrumProvider } from "../utils/blockchain-providers";
 import { validateManifest } from "./validate-manifest";
 
-export type TokensBySource = { [source: string]: string[] };
+export type TokensBySource = { [source: string]: string[] | undefined };
 
 const DEFAULT_MIN_VALID_SOURCE_PERCENTAGE = 50;
 const DEFAULT_SCHEDULER_NAME = "interval";
@@ -17,7 +17,7 @@ export default class ManifestHelper {
     const result: TokensBySource = {};
 
     for (const token in manifest.tokens) {
-      const source = manifest.tokens[token].source;
+      const source = manifest.tokens[token]?.source;
 
       let sourcesForToken: string[];
       // If no source is defined for token
@@ -37,7 +37,7 @@ export default class ManifestHelper {
 
       for (const singleSource of sourcesForToken) {
         if (result[singleSource]) {
-          result[singleSource].push(token);
+          result[singleSource]!.push(token);
         } else {
           result[singleSource] = [token];
         }
@@ -64,8 +64,7 @@ export default class ManifestHelper {
 
   static getAllSourceCount(symbol: string, manifest: Manifest) {
     const allSourcesCount =
-      manifest.tokens?.[symbol]?.source?.length ??
-      manifest?.defaultSource?.length;
+      manifest.tokens[symbol]?.source?.length ?? manifest.defaultSource?.length;
     if (!allSourcesCount) {
       throw new Error(`Cannot define all sources count for symbol ${symbol}`);
     }
@@ -74,7 +73,7 @@ export default class ManifestHelper {
 
   static getMinValidSourcesPercentage(manifest: Manifest) {
     return (
-      manifest?.minValidSourcesPercentage ?? DEFAULT_MIN_VALID_SOURCE_PERCENTAGE
+      manifest.minValidSourcesPercentage ?? DEFAULT_MIN_VALID_SOURCE_PERCENTAGE
     );
   }
 
@@ -89,20 +88,20 @@ export default class ManifestHelper {
 
     const schedulerGetters = {
       "on-each-arbitrum-block": () => new OnBlockScheduler(arbitrumProvider),
-      interval: (manifest: Manifest) => new CronScheduler(manifest.interval!),
+      interval: (manifest: Manifest) => new CronScheduler(manifest.interval),
     };
 
     return schedulerGetters[schedulerName](manifest);
   }
 
   static getDataFeedDecimals(manifest: Manifest, symbol: string) {
-    const dataFeedDetails = manifest?.tokens?.[symbol];
+    const dataFeedDetails = manifest.tokens[symbol];
     if (!dataFeedDetails) {
       throw new Error(
         `Missing token ${symbol} in the manifest, cannot get decimals`
       );
     }
-    return dataFeedDetails?.decimals;
+    return dataFeedDetails.decimals;
   }
 
   static getAllTokensConfig(manifest: Manifest) {

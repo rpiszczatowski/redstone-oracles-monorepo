@@ -7,7 +7,7 @@ import {
   PricesObj,
   PricesObjWithMetadata,
 } from "../types";
-import { stringifyError } from "../utils/error-stringifier";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import createLogger from "../utils/logger";
 import { isDefined } from "../utils/objects";
 
@@ -28,15 +28,16 @@ export abstract class BaseFetcher implements Fetcher {
   }
 
   // All the abstract methods below must be implemented in fetchers
-  abstract fetchData(ids: string[], opts?: FetcherOpts): Promise<any>;
+  abstract fetchData(ids: string[], opts?: FetcherOpts): Promise<unknown>;
   abstract extractPrices(
-    response: any,
+    response: unknown,
     ids?: string[],
     opts?: FetcherOpts
   ): PricesObjWithMetadata | PricesObj;
 
   // This method may be overridden to extend validation
-  validateResponse(response: any): boolean {
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  validateResponse(response: unknown): boolean {
     return response !== undefined;
   }
 
@@ -44,7 +45,8 @@ export abstract class BaseFetcher implements Fetcher {
     return this.name;
   }
 
-  serializeResponse(response: any): string {
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
+  serializeResponse(response: unknown): string {
     return JSON.stringify(response);
   }
 
@@ -84,6 +86,7 @@ export abstract class BaseFetcher implements Fetcher {
   // This method converts internal asset id (asset identifier on fetcher level)
   // to an asset symbol (asset identifier on manifest level)
   // It can be overridden by any fetcher
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertIdToSymbol(id: string): string {
     return id;
   }
@@ -91,6 +94,7 @@ export abstract class BaseFetcher implements Fetcher {
   // This method converts asset symbol (asset identifier on manifest level)
   // to an internal asset id (asset identifier on fetcher level)
   // It can be overridden by any fetcher
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected convertSymbolToId(symbol: string): string {
     return symbol;
   }
@@ -152,9 +156,9 @@ export abstract class BaseFetcher implements Fetcher {
         }
 
         pricesObj[pricePair.id] = pricePair.value!;
-      } catch (e: unknown) {
+      } catch (e) {
         this.logger.error(
-          `Extracting price failed for id: ${id}, error: ${stringifyError(
+          `Extracting price failed for id: ${id}, error: ${RedstoneCommon.stringifyError(
             e
           )}, item that failed: ${JSON.stringify(item)}`
         );

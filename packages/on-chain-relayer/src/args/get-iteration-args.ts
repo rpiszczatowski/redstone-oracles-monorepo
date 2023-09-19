@@ -1,5 +1,5 @@
 import { getLastRoundParamsFromContract } from "../core/contract-interactions/get-last-round-params";
-import { ValuesForDataFeeds } from "redstone-sdk";
+import { ValuesForDataFeeds } from "@redstone-finance/sdk";
 import { getValuesForDataFeeds } from "../core/contract-interactions/get-values-for-data-feeds";
 import { shouldUpdate } from "../core/update-conditions/should-update";
 import {
@@ -23,13 +23,11 @@ export const getIterationArgs = async (
   const relayerConfig = config();
   const { dataFeeds, updateConditions } = relayerConfig;
 
-  const lastUpdateTimestamps = await getLastRoundParamsFromContract(
-    adapterContract
-  );
+  const lastUpdateTimestamps =
+    await getLastRoundParamsFromContract(adapterContract);
 
-  const uniqueSignersThreshold = await getUniqueSignersThresholdFromContract(
-    adapterContract
-  );
+  const uniqueSignersThreshold =
+    await getUniqueSignersThresholdFromContract(adapterContract);
 
   // We fetch latest values from contract only if we want to check value deviation
   const shouldCheckValueDeviation =

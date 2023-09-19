@@ -13,7 +13,7 @@ jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe("custom URL fetcher", () => {
-  const sut = fetchers["custom-urls"];
+  const sut = fetchers["custom-urls"]!;
 
   it("Should properly fetch data", async () => {
     // Given

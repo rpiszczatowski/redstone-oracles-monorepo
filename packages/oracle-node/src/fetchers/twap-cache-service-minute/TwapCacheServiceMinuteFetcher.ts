@@ -2,8 +2,8 @@ import axios from "axios";
 import {
   deserializeSignedPackage,
   recoverSignerAddress,
-} from "redstone-protocol";
-import { RedstoneTypes } from "redstone-utils";
+} from "@redstone-finance/protocol";
+import { RedstoneTypes } from "@redstone-finance/utils";
 import Decimal from "decimal.js";
 import {
   MultiRequestFetcher,
@@ -16,7 +16,7 @@ import {
 } from "../../db/local-db/twap-cache";
 import { config } from "../../config";
 
-type CacheServiceResponsePromise =
+export type CacheServiceResponsePromise =
   PromiseSettledResult<RedstoneTypes.DataPackageFromGatewayResponse>;
 
 const ONE_MINUTE_IN_MILLISECONDS = 60 * 1000;
@@ -74,14 +74,14 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
     const { dataFeedId, minutesOffset } =
       TwapCacheServiceMinuteFetcher.parseTwapAssetId(twapDataFeedId);
     TwapCacheServiceMinuteFetcher.validateResponsesCount(
-      twapResponses,
+      twapResponses!,
       dataFeedId,
       minutesOffset
     );
 
     const dataPackagesToCalculateTwap: RedstoneTypes.DataPackageFromGateway[] =
       [];
-    for (const response of twapResponses) {
+    for (const response of twapResponses!) {
       const dataPackageFromThisNode =
         TwapCacheServiceMinuteFetcher.getDataPackageFromThisNode(
           response,
@@ -151,7 +151,7 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
       response.status === "fulfilled" ? response.value : undefined;
     if (dataPackagesResponse) {
       const dataPackages = dataPackagesResponse[dataFeedId];
-      if (dataPackages?.length > 0) {
+      if (dataPackages !== undefined && dataPackages.length > 0) {
         return dataPackages.find(
           (dataPackage) =>
             dataPackage.signerAddress.toLowerCase() ===
@@ -173,7 +173,9 @@ export class TwapCacheServiceMinuteFetcher extends MultiRequestFetcher {
         dataPackage,
       });
 
-      if (singerAddress !== config.ethereumAddress) {
+      if (
+        singerAddress.toLowerCase() !== config.ethereumAddress.toLowerCase()
+      ) {
         throw new Error(
           "This node haven't signed package used to calculate TWAP"
         );

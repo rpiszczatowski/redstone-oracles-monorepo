@@ -23,7 +23,7 @@ export const tryConvertUsdToTokenAmount = (
   let rawPrice = undefined;
   try {
     rawPrice = getRawPrice(assetId)?.value;
-  } catch (e: unknown) {
+  } catch (e) {
     // ignore
   }
   if (!rawPrice) {

@@ -1,8 +1,7 @@
 import { IScheduler, IterationContext } from "./IScheduler";
 import { intervalMsToCronFormat } from "../utils/intervals";
 import { roundTimestamp } from "../utils/timestamps";
-
-const schedule = require("node-schedule");
+import schedule from "node-schedule";
 
 export class CronScheduler implements IScheduler {
   constructor(private timestampMillisecondsInterval: number) {}
@@ -18,8 +17,8 @@ export class CronScheduler implements IScheduler {
     const cronScheduleString = intervalMsToCronFormat(
       this.timestampMillisecondsInterval
     );
-    schedule.scheduleJob(cronScheduleString, () => {
-      runIterationFn({
+    schedule.scheduleJob(cronScheduleString, async () => {
+      await runIterationFn({
         timestamp: roundTimestamp(Date.now()),
       });
     });

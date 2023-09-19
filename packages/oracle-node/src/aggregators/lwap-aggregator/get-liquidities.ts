@@ -1,12 +1,15 @@
 import { buildLiquidityDataFeedId } from "../../fetchers/liquidity/utils";
 import { PricesWithLiquidity } from "./lwap-aggregator";
-import { PriceDataBeforeAggregation, PriceSource } from "../../types";
-import { SafeNumber } from "redstone-utils";
+import {
+  NotSanitizedPriceDataBeforeAggregation,
+  PriceSource,
+} from "../../types";
+import { SafeNumber } from "@redstone-finance/utils";
 
 export const getTickLiquidities = (
   symbol: string,
   sourcesNames: PriceSource<SafeNumber.ISafeNumber>,
-  possiblyDeviatedPrices: PriceDataBeforeAggregation[]
+  possiblyDeviatedPrices: NotSanitizedPriceDataBeforeAggregation[]
 ) => {
   const pricesWithLiquidity: PricesWithLiquidity[] = [];
   for (const [sourceName, price] of Object.entries(sourcesNames)) {
@@ -22,7 +25,7 @@ export const getTickLiquidities = (
     const theOnlySourceValue = Object.values(liquidity.source)[0];
     pricesWithLiquidity.push({
       price,
-      liquidity: SafeNumber.createSafeNumber(theOnlySourceValue),
+      liquidity: SafeNumber.createSafeNumber(theOnlySourceValue!),
     });
   }
   return pricesWithLiquidity;

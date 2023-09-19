@@ -1,7 +1,7 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { ethers } from "hardhat";
-import { utils } from "redstone-protocol";
+import { utils } from "@redstone-finance/protocol";
 import { WrapperBuilder } from "../../src/index";
 import { SampleRedstoneConsumerNumericMockManyDataFeeds } from "../../typechain-types";
 import { expectedNumericValues } from "../tests-common";
@@ -50,9 +50,8 @@ describe("DataPackagesWrapper", () => {
   it("Should work properly with manual payload", async () => {
     const dataPackagesResponse = getValidDataPackagesResponse();
     const dpWrapper = new DataPackagesWrapper(dataPackagesResponse);
-    const redstonePayload = await dpWrapper.getRedstonePayloadForManualUsage(
-      contract
-    );
+    const redstonePayload =
+      await dpWrapper.getRedstonePayloadForManualUsage(contract);
     const tx = await contract.save2ValuesInStorageWithManualPayload(
       dataFeedIds,
       redstonePayload

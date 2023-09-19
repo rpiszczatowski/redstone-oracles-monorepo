@@ -1,4 +1,4 @@
-import { BigNumber, Signer } from "ethers";
+import { BigNumber } from "ethers";
 import { ISortedOracles, MentoAdapterBase } from "../../../typechain-types";
 
 export interface MentoContracts {
@@ -71,9 +71,7 @@ export const prepareLinkedListLocationsForMentoAdapterReport = async ({
   // Calculating proposed oracle values
   const wrappedContract = wrapContract(mentoAdapter.connect(ZERO_ADDRESS));
   const proposedValuesNormalized =
-    await wrappedContract.getNormalizedOracleValuesFromTxCalldata(
-      dataFeedIds,
-    );
+    await wrappedContract.getNormalizedOracleValuesFromTxCalldata(dataFeedIds);
 
   // Fetching current values and oracle addresses
   const ratesPerToken = await Promise.all(

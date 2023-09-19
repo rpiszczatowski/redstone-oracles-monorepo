@@ -2,7 +2,7 @@ import {
   ContractParamsProvider,
   ContractParamsProviderMock,
   IPricesContractAdapter,
-} from "redstone-sdk";
+} from "@redstone-finance/sdk";
 import {
   deployPricesContract,
   SAMPLE_PACKAGES_TIMESTAMP,
@@ -98,7 +98,7 @@ describe("Prices contract", () => {
 
     try {
       await adapter.getPricesFromPayload(paramsProvider);
-    } catch (e: any) {
+    } catch (e) {
       expect(e).not.toBeNull();
     }
   });

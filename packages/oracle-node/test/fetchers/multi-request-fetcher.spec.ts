@@ -36,7 +36,7 @@ class MultiRequestFetcherMock extends MultiRequestFetcher {
     super("mock");
   }
 
-  override makeRequest(id: string): Promise<any> {
+  override makeRequest(id: string): Promise<unknown> {
     switch (id) {
       case "Reject":
         return Promise.reject();
@@ -45,17 +45,16 @@ class MultiRequestFetcherMock extends MultiRequestFetcher {
           throw new Error("Whoops!");
         });
       default:
-        const responseValue = id;
-        return Promise.resolve(responseValue);
+        return Promise.resolve(id);
     }
   }
 
   override extractPrice(
     dataFeedId: string,
-    responses: RequestIdToResponse
+    responses: RequestIdToResponse<number>
   ): number | undefined {
     if (responses[dataFeedId]) {
-      return responses[dataFeedId] * 100;
+      return responses[dataFeedId]! * 100;
     }
     return undefined;
   }

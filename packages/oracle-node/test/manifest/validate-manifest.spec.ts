@@ -38,7 +38,7 @@ describe("validate-manifest", () => {
 
   test("should throw error if priceAggregator is invalid value", () => {
     const manifests = buildInvalidValuesManifests("priceAggregator");
-    manifests.forEach((manifest, index) =>
+    manifests.forEach((manifest, _index) =>
       expect(() => validateManifest(manifest)).toThrowError(
         "Invalid manifest configuration - priceAggregator: Invalid input"
       )

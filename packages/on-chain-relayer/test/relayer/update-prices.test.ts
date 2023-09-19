@@ -16,11 +16,14 @@ import { server } from "./mock-server";
 import { parseUnits } from "ethers/lib/utils";
 import * as getProviderOrSigner from "../../src/core/contract-interactions/get-provider-or-signer";
 import { getUpdatePricesArgs } from "../../src/args/get-update-prices-args";
+import { Wallet } from "ethers";
 
 chai.use(chaiAsPromised);
 
 const mockToken1Address = "0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9"; // CELO token address
 const mockToken2Address = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"; // cUSD token address
+const TEST_PRIVATE_KEY =
+  "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 
 describe("update-prices", () => {
   before(() => {
@@ -35,16 +38,18 @@ describe("update-prices", () => {
     const PriceFeedsAdapterFactory = await ethers.getContractFactory(
       "PriceFeedsAdapterWithoutRoundsMock"
     );
-    const priceFeedsAdapter: PriceFeedsAdapterWithoutRoundsMock =
+    let priceFeedsAdapter: PriceFeedsAdapterWithoutRoundsMock =
       await PriceFeedsAdapterFactory.deploy();
     await priceFeedsAdapter.deployed();
+    priceFeedsAdapter = priceFeedsAdapter.connect(
+      new Wallet(TEST_PRIVATE_KEY).connect(ethers.provider)
+    );
 
     // Update prices
-    const lastUpdateTimestamps = await getLastRoundParamsFromContract(
-      priceFeedsAdapter
-    );
+    const _lastUpdateTimestamps =
+      await getLastRoundParamsFromContract(priceFeedsAdapter);
     const dataPackages = await getDataPackagesResponse();
-    const updatePricesArgs = await getUpdatePricesArgs(
+    const updatePricesArgs = getUpdatePricesArgs(
       dataPackages,
       priceFeedsAdapter
     );
@@ -59,15 +64,15 @@ describe("update-prices", () => {
   });
 
   it("should update prices in mento adapter", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
     (getProviderOrSigner as any).getProvider = () => ethers.provider;
 
     // Deploying sorted oracles
     const sortedOracles = await deployMockSortedOracles();
 
     // Deploying mento adapter
-    const MentoAdapterFactory = await ethers.getContractFactory(
-      "MentoAdapterMock"
-    );
+    const MentoAdapterFactory =
+      await ethers.getContractFactory("MentoAdapterMock");
     const mentoAdapter = await MentoAdapterFactory.deploy(
       sortedOracles.address
     );
@@ -85,14 +90,10 @@ describe("update-prices", () => {
     mockEnvVariables(overrideMockConfig);
 
     // Update prices
-    const lastUpdateTimestamps = await getLastRoundParamsFromContract(
-      mentoAdapter
-    );
+    const _lastUpdateTimestamps =
+      await getLastRoundParamsFromContract(mentoAdapter);
     const dataPackages = await getDataPackagesResponse();
-    const updatePricesArgs = await getUpdatePricesArgs(
-      dataPackages,
-      mentoAdapter
-    );
+    const updatePricesArgs = getUpdatePricesArgs(dataPackages, mentoAdapter);
 
     await updatePrices(updatePricesArgs);
 

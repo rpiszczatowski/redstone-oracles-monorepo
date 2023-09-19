@@ -18,6 +18,7 @@ jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 const EXAMPLE_ADDRESS = "0x473780deaf4a2ac070bbba936b0cdefe7f267dfc";
+// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
 (CoinbaseKyd as any).RETRY_INTERVAL = 10;
 
 describe("Coinbase KYD", () => {
@@ -37,9 +38,8 @@ describe("Coinbase KYD", () => {
     test("should return level 3", async () => {
       await saveMockPriceInLocalDb(1165.69, "ETH");
       mockedAxios.get.mockResolvedValueOnce({ data: exampleResponse });
-      const addressLevel = await determineAddressLevelByCoinbaseData(
-        EXAMPLE_ADDRESS
-      );
+      const addressLevel =
+        await determineAddressLevelByCoinbaseData(EXAMPLE_ADDRESS);
       expect(addressLevel).toBe(3);
     });
 
@@ -49,9 +49,8 @@ describe("Coinbase KYD", () => {
       mockedAxios.get.mockResolvedValueOnce({
         data: mockedResponse,
       });
-      const addressLevel = await determineAddressLevelByCoinbaseData(
-        EXAMPLE_ADDRESS
-      );
+      const addressLevel =
+        await determineAddressLevelByCoinbaseData(EXAMPLE_ADDRESS);
       expect(addressLevel).toBe(2);
     });
 
@@ -61,9 +60,8 @@ describe("Coinbase KYD", () => {
       mockedAxios.get.mockResolvedValueOnce({
         data: mockedResponse,
       });
-      const addressLevel = await determineAddressLevelByCoinbaseData(
-        EXAMPLE_ADDRESS
-      );
+      const addressLevel =
+        await determineAddressLevelByCoinbaseData(EXAMPLE_ADDRESS);
       expect(addressLevel).toBe(1);
     });
 
@@ -77,9 +75,8 @@ describe("Coinbase KYD", () => {
         .mockResolvedValueOnce({
           data: exampleResponse,
         });
-      const addressLevel = await determineAddressLevelByCoinbaseData(
-        EXAMPLE_ADDRESS
-      );
+      const addressLevel =
+        await determineAddressLevelByCoinbaseData(EXAMPLE_ADDRESS);
       expect(addressLevel).toBe(3);
     });
 
@@ -94,9 +91,8 @@ describe("Coinbase KYD", () => {
         .mockResolvedValueOnce({
           data: mockedResponse,
         });
-      const addressLevel = await determineAddressLevelByCoinbaseData(
-        EXAMPLE_ADDRESS
-      );
+      const addressLevel =
+        await determineAddressLevelByCoinbaseData(EXAMPLE_ADDRESS);
       expect(addressLevel).toBe(2);
     });
 
@@ -114,9 +110,8 @@ describe("Coinbase KYD", () => {
         .mockResolvedValueOnce({
           data: mockedResponse,
         });
-      const addressLevel = await determineAddressLevelByCoinbaseData(
-        EXAMPLE_ADDRESS
-      );
+      const addressLevel =
+        await determineAddressLevelByCoinbaseData(EXAMPLE_ADDRESS);
       expect(addressLevel).toBe(2);
     });
 
@@ -126,9 +121,8 @@ describe("Coinbase KYD", () => {
       mockedAxios.get.mockRejectedValueOnce({}).mockResolvedValueOnce({
         data: mockedResponse,
       });
-      const addressLevel = await determineAddressLevelByCoinbaseData(
-        EXAMPLE_ADDRESS
-      );
+      const addressLevel =
+        await determineAddressLevelByCoinbaseData(EXAMPLE_ADDRESS);
       expect(addressLevel).toBe(1);
     });
 

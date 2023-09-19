@@ -1,14 +1,17 @@
-name: Cache service tests
+name: Cache Service CI
 on:
   push:
     paths:
       - packages/cache-service/**
       - packages/protocol/**
+      - packages/streamr-proxy/**
+      - packages/utils/**
       - packages/sdk/**
       - .github/workflows/cache-service-tests.yml
+      - .github/workflows/deploy-images-to-ecr-public.yml
 
 jobs:
-  build:
+  cache-service-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:
@@ -20,6 +23,8 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
+      - name: Lint
+        run: yarn lint
       - name: Run tests
         run: yarn test
         env:

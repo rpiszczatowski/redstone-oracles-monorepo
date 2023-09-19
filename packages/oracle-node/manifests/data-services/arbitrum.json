@@ -14,7 +14,6 @@
     "ETH": {
       "source": [
         "ascendex",
-        "bequant",
         "binance",
         "binancecoinm",
         "binanceusdm",
@@ -22,7 +21,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -34,7 +32,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -47,10 +44,8 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coingecko",
         "coinmarketcap",
-        "currencycom",
         "huobipro",
         "kraken",
         "kucoin",
@@ -75,7 +70,6 @@
     },
     "USDC.e": {
       "source": [
-        "camelot-usdt",
         "uniswap-v3-arbitrum-on-chain-weth-500",
         "uniswap-v3-arbitrum-on-chain-weth-3000",
         "uniswap-v3-arbitrum-on-chain-arb-500",
@@ -96,14 +90,12 @@
       "source": [
         "bitfinex2",
         "bittrex",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
         "coinmarketcap",
         "currencycom",
-        "kraken",
-        "uniswap"
+        "kraken"
       ],
       "deviationCheck": {
         "deviationWithRecentValues": {
@@ -123,7 +115,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -135,7 +126,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -206,13 +196,14 @@
         "fraxswap-on-chain-fxs",
         "fraxswap-on-chain-weth",
         "uniswap-v2-on-chain-fxs",
-        "uniswap-v3"
+        "uniswap-v3-ethereum-on-chain-usdc-500",
+        "uniswap-v3-ethereum-on-chain-dai-500",
+        "uniswap-v3-ethereum-on-chain-usdt-500"
       ]
     },
     "UNI": {
       "source": [
         "ascendex",
-        "band",
         "bequant",
         "binance",
         "binancecoinm",
@@ -220,8 +211,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
-        "chainlink",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -234,12 +223,10 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit",
-        "sushiswap",
-        "uniswap"
+        "uniswap-v3-ethereum-on-chain-weth-3000"
       ]
     },
     "LINK": {
@@ -253,7 +240,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -264,7 +250,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit",
@@ -353,8 +338,7 @@
         "coingecko",
         "coinmarketcap",
         "hitbtc",
-        "lbank",
-        "oceanex"
+        "lbank"
       ],
       "skipSigning": true
     },
@@ -431,6 +415,18 @@
     },
     "YY_WOMBEX_DAI": {
       "source": ["arbitrum-evm-fetcher"]
+    },
+    "arbJnrLLP": {
+      "source": ["arbitrum-evm-fetcher"]
+    },
+    "arbMzeLLP": {
+      "source": ["arbitrum-evm-fetcher"]
+    },
+    "arbSnrLLP": {
+      "source": ["arbitrum-evm-fetcher"]
+    },
+    "LVL": {
+      "source": ["bitget", "coingecko", "coinmarketcap", "mexc"]
     }
   }
 }

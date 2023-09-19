@@ -1,4 +1,4 @@
-name: Rpc-providers CI
+name: Utils CI
 on:
   push:
     paths:
@@ -6,7 +6,7 @@ on:
       - .github/workflows/utils-tests.yml
 
 jobs:
-  run-tests:
+  redstone-utils-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:

@@ -14,13 +14,13 @@ interface Tokens {
   name: string;
   decimals: number;
 }
-interface TokenContractDetails {
+export interface TokenContractDetails {
   erc20Address: string;
   poolAddress: string;
   tokens: Tokens[];
 }
-type TokenContractDetailsObject = Record<string, TokenContractDetails>;
-type CurveTokensContractsDetails = TokenContractDetailsObject & {
+export type TokenContractDetailsObject = Record<string, TokenContractDetails>;
+export type CurveTokensContractsDetails = TokenContractDetailsObject & {
   abi: string;
   erc20abi: string;
 };
@@ -88,10 +88,14 @@ export class CurveRequestHandlers implements IEvmRequestHandlers {
       "balances"
     );
 
-    return this.calculateTokenBalancesSum(balances, tokensToFetchPrice, tokens);
+    return CurveRequestHandlers.calculateTokenBalancesSum(
+      balances,
+      tokensToFetchPrice,
+      tokens
+    );
   }
 
-  calculateTokenBalancesSum(
+  static calculateTokenBalancesSum(
     balances: (string | undefined)[],
     tokensToFetchPrice: Record<string, Decimal>,
     tokens: Tokens[]

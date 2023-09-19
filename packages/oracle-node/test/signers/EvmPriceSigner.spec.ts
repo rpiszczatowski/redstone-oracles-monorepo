@@ -1,7 +1,6 @@
-import { ethers } from "ethers";
 import EvmPriceSigner from "../../src/signers/EvmPriceSigner";
 import { PricePackage, SignedPricePackage } from "../../src/types";
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber } from "@redstone-finance/utils";
 
 const evmSigner = new EvmPriceSigner();
 const ethereumPrivateKey =
@@ -41,7 +40,7 @@ describe("evmSignPricesAndVerify", () => {
       "0xff73e1315ce97f1621c461df47e74eab5eebde0ca0c340c494f1fe4a03d7ba36370f098113ed584e629f1312d863ee0f934418194667f9979e31b7a9757958aa1b"
     );
     // then
-    expect(evmSigner.verifyLiteSignature(signedPricesData)).toEqual(true);
+    expect(EvmPriceSigner.verifyLiteSignature(signedPricesData)).toEqual(true);
   });
 
   it("should fail verifying wrong lite signature", () => {
@@ -71,7 +70,7 @@ describe("evmSignPricesAndVerify", () => {
       "0xf3988ee68070dc7ca1339ebc8780eb57702d655bda61dd38a4b0ab56b34fe49c52dbbde6903c4884554f39da5a28ba5c66041a2b0d263863c6580f86939d1b9f1c"
     );
     expect(
-      evmSigner.verifyLiteSignature({
+      EvmPriceSigner.verifyLiteSignature({
         ...signedPricesData,
         pricePackage: anotherPricesPackage,
       })
@@ -91,7 +90,7 @@ describe("evmSignPricesAndVerify", () => {
     };
 
     // when
-    const signedPricesData: SignedPricePackage = evmSigner.signPricePackage(
+    const signedPricesData = evmSigner.signPricePackage(
       pricePackage,
       ethereumPrivateKey
     );
@@ -101,7 +100,7 @@ describe("evmSignPricesAndVerify", () => {
       "0xf3988ee68070dc7ca1339ebc8780eb57702d655bda61dd38a4b0ab56b34fe49c52dbbde6903c4884554f39da5a28ba5c66041a2b0d263863c6580f86939d1b9f1c"
     );
     expect(
-      evmSigner.verifyLiteSignature({
+      EvmPriceSigner.verifyLiteSignature({
         ...signedPricesData,
         signerAddress: "0x1111111111111111111111111111111111111111",
       })
@@ -139,7 +138,7 @@ describe("evmSignPricesAndVerify", () => {
     };
 
     // when
-    const signedPricesData: SignedPricePackage = evmSigner.signPricePackage(
+    const signedPricesData = evmSigner.signPricePackage(
       pricePackage1,
       ethereumPrivateKey
     );
@@ -149,7 +148,7 @@ describe("evmSignPricesAndVerify", () => {
       "0xe9cc60e70cd279532c111006c9e70d7a550703e842d63626c655fb3297d982ef4adfc53df93c62aaec21ec7ea1624153635e3fb7159ed3eacd1b82fc42fb85171c"
     );
     expect(
-      evmSigner.verifyLiteSignature({
+      EvmPriceSigner.verifyLiteSignature({
         ...signedPricesData,
         pricePackage: pricePackageWithDifferentOrder,
       })

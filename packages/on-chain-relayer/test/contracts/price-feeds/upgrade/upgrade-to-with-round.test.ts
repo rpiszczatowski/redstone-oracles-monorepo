@@ -203,7 +203,7 @@ async function updatePriceInAdapter(
         value,
       },
     ],
-  }) as IRedstoneAdapter;
+  });
 
   // round 1
   await wrappedContract.updateDataFeedsValues(timestamp);
@@ -225,7 +225,7 @@ async function assertCommonPriceFeedWorks(
   expect(await priceFeedWithoutRounds.latestRound()).to.eq(expectedRound);
   const blockTime = await time.latest();
   const expectedPriceScaled = (expectedPrice * 1e8).toString();
-  await expect(await priceFeedWithoutRounds.latestAnswer()).to.eq(
+  expect(await priceFeedWithoutRounds.latestAnswer()).to.eq(
     expectedPriceScaled
   );
 

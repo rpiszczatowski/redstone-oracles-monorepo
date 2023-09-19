@@ -3,11 +3,17 @@ on:
   push:
     paths:
       - packages/oracle-node/**
+      - packages/protocol/**
+      - packages/rpc-providers/**
+      - packages/sdk/**
+      - packages/oracles-smartweave-contracts/**
+      - packages/utils/**
+      - packages/streamr-proxy/**
       - .github/workflows/oracle-tests.yml
-      - .github/workflows/deploy-to-ecr-public.yml
+      - .github/workflows/deploy-images-to-ecr-public.yml
 
 jobs:
-  tests:
+  oracle-node-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     defaults:
@@ -19,6 +25,10 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
+      - name: Lint
+        run: yarn lint
+      - name: Lint streamr-proxy
+        run: cd ../streamr-proxy && yarn lint
       - name: Run tests
         run: yarn test:ci
         env:

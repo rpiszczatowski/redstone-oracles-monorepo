@@ -1,10 +1,9 @@
 import { config } from "./config";
 import { ContractConnectorFactory } from "./starknet/ContractConnectorFactory";
-import { startSimpleRelayer } from "redstone-sdk";
+import { startSimpleRelayer } from "@redstone-finance/sdk";
 
-(async () => {
-  await startSimpleRelayer(
-    config,
-    ContractConnectorFactory.makePriceManagerContractConnector()
-  );
-})();
+// eslint-disable-next-line  @typescript-eslint/no-floating-promises -- Disabled for top-level functions
+startSimpleRelayer(
+  config,
+  ContractConnectorFactory.makePriceManagerContractConnector()
+);

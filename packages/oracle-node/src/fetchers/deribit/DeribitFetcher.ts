@@ -25,7 +25,7 @@ export class DeribitFetcher extends MultiRequestFetcher {
 
   override extractPrice(
     dataFeedId: string,
-    responses: RequestIdToResponse
+    responses: RequestIdToResponse<AxiosResponse<DeribitResult | undefined>>
   ): number | undefined {
     const price = responses[dataFeedId]?.data?.result.index_price;
     return price ? Number(price) : undefined;

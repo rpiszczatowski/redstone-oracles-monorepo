@@ -1,19 +1,19 @@
 import { PricesObj, PricesObjWithMetadata } from "../types";
-import { stringifyError } from "../utils/error-stringifier";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import { BaseFetcher, normalizePriceObj } from "./BaseFetcher";
 
-export interface RequestIdToResponse<T = any> {
-  [requestId: string]: T;
+export interface RequestIdToResponse<T = unknown> {
+  [requestId: string]: T | undefined;
 }
 
 interface ExtendedPromiseResult {
-  response: any;
+  response: unknown;
   requestId: string;
   success: boolean;
 }
 
 export abstract class MultiRequestFetcher extends BaseFetcher {
-  abstract makeRequest(requestId: string): Promise<any>;
+  abstract makeRequest(requestId: string): Promise<unknown>;
   abstract extractPrice(
     dataFeedId: string,
     responses: RequestIdToResponse
@@ -21,17 +21,15 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
 
   // This function can be overriden to fetch more custom data
   // e.g. base prices required for final prices calculation
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   prepareRequestIds(requestedDataFeedIds: string[]): string[] {
     return requestedDataFeedIds;
   }
 
   // This method may be overridden to extend validation
   override validateResponse(responses: ExtendedPromiseResult[]): boolean {
-    return (
-      responses !== undefined &&
-      responses.some(
-        (singleResponse: ExtendedPromiseResult) => !!singleResponse.response
-      )
+    return responses.some(
+      (singleResponse: ExtendedPromiseResult) => !!singleResponse.response
     );
   }
 
@@ -43,25 +41,29 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
         response,
         requestId,
       };
-    } catch (e: any) {
-      this.logger.error(`Request failed: ${requestId}. ${stringifyError(e)}`);
+    } catch (e) {
+      this.logger.error(
+        `Request failed: ${requestId}. ${RedstoneCommon.stringifyError(e)}`
+      );
       return {
         requestId,
         success: false,
-        response: stringifyError(e),
+        response: RedstoneCommon.stringifyError(e),
       };
     }
   }
 
-  override fetchData(dataFeedIds: string[]): Promise<ExtendedPromiseResult[]> {
-    const promises: Promise<any>[] = [];
+  override async fetchData(
+    dataFeedIds: string[]
+  ): Promise<ExtendedPromiseResult[]> {
+    const promises: Promise<ExtendedPromiseResult>[] = [];
     const requestIds = this.prepareRequestIds(dataFeedIds);
 
     for (const requestId of requestIds) {
       promises.push(this.makeSafeRequest(requestId));
     }
 
-    return Promise.all(promises);
+    return await Promise.all(promises);
   }
 
   override extractPrices(
@@ -87,9 +89,11 @@ export abstract class MultiRequestFetcher extends BaseFetcher {
         if (extractedPrice !== undefined) {
           pricesObj[dataFeedId] = normalizePriceObj(extractedPrice);
         }
-      } catch (e: any) {
+      } catch (e) {
         this.logger.error(
-          `Extracting price failed for: ${dataFeedId}. ${stringifyError(e)}`
+          `Extracting price failed for: ${dataFeedId}. ${RedstoneCommon.stringifyError(
+            e
+          )}`
         );
       }
     }

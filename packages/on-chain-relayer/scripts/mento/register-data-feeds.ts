@@ -14,6 +14,7 @@ const DATA_FEEDS = {
   USDC: "0xA1A8003936862E7a15092A91898D69fa8bCE290c",
 };
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
   const mentoAdapterContract = getAdapterContract() as MentoAdapterBase;
   for (const [symbol, tokenAddress] of Object.entries(DATA_FEEDS)) {

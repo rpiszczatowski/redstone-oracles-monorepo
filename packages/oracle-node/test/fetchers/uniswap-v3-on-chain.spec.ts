@@ -18,7 +18,7 @@ import UniswapV3Pool from "../../src/fetchers/evm-chain/shared/uniswap-v3-on-cha
 import UniswapV3Quoter from "../../src/fetchers/evm-chain/shared/uniswap-v3-on-chain/UniswapV3Quoter.abi.json";
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import Decimal from "decimal.js";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 

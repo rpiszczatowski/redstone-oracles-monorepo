@@ -1,5 +1,6 @@
 import abi from "../../../../shared/abis/CurveToken.abi.json";
 import erc20abi from "../../../../shared/abis/CurveErc20.abi.json";
+import { CurveTokensContractsDetails } from "../../../../shared/request-handlers/CurveRequestHandlers";
 
 export const curveTokensContractsDetails = {
   erc20abi,
@@ -13,4 +14,4 @@ export const curveTokensContractsDetails = {
       { name: "ETH", decimals: 18 },
     ],
   },
-};
+} as unknown as CurveTokensContractsDetails;

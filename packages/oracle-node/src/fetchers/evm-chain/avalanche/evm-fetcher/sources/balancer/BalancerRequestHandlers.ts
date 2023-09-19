@@ -10,6 +10,7 @@ export type BalancerTokensDetailsKeys =
   keyof typeof balancerTokensContractDetails;
 
 export class BalancerRequestHandlers implements IEvmRequestHandlers {
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   prepareMulticallRequest(id: BalancerTokensDetailsKeys) {
     const { mainPoolAbi, mainPoolAddress, secondPoolAbi, secondPoolAddress } =
       balancerTokensContractDetails[id];
@@ -37,6 +38,7 @@ export class BalancerRequestHandlers implements IEvmRequestHandlers {
     return [...firstPoolMulticallRequests, ...secondPoolMulticallRequests];
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   extractPrice(
     response: MulticallParsedResponses,
     id: BalancerTokensDetailsKeys
@@ -44,11 +46,12 @@ export class BalancerRequestHandlers implements IEvmRequestHandlers {
     const { mainPoolAddress, secondPoolAddress, tokensToFetch, tokenDecimals } =
       balancerTokensContractDetails[id];
 
-    const { mainPoolReserve, secondPoolReserve } = this.getReserves(
-      response,
-      mainPoolAddress,
-      secondPoolAddress
-    );
+    const { mainPoolReserve, secondPoolReserve } =
+      BalancerRequestHandlers.getReserves(
+        response,
+        mainPoolAddress,
+        secondPoolAddress
+      );
 
     const firstTokenPrice = getRawPriceOrFail(tokensToFetch[0]);
     const secondTokenPrice = getRawPriceOrFail(tokensToFetch[1]);
@@ -68,7 +71,7 @@ export class BalancerRequestHandlers implements IEvmRequestHandlers {
       .toNumber();
   }
 
-  private getReserves(
+  private static getReserves(
     response: MulticallParsedResponses,
     mainPoolAddress: string,
     secondPoolAddress: string

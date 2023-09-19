@@ -3,6 +3,7 @@ import { MockProvider, deployMockContract } from "ethereum-waffle";
 import { EvmFetcher } from "../../src/fetchers/evm-chain/shared/EvmFetcher";
 import { requestHandlers } from "../../src/fetchers/evm-chain/arbitrum/evm-fetcher/sources";
 import {
+  asAwaitable,
   deployMulticallContract,
   saveMockPriceInLocalDb,
   saveMockPricesInLocalDb,
@@ -18,6 +19,11 @@ import { yieldYakTokensContractsDetails } from "../../src/fetchers/evm-chain/arb
 import YieldYakLPTokenAbi from "../../src/fetchers/evm-chain/shared/abis/YieldYakLPToken.abi.json";
 import { dexLpTokensContractsDetails } from "../../src/fetchers/evm-chain/arbitrum/evm-fetcher/sources/dex-lp-tokens/dexLpTokensContractsDetails";
 import DexLpTokenAbi from "../../src/fetchers/evm-chain/shared/abis/DexLpToken.abi.json";
+import { levelFinanceContractDetails } from "../../src/fetchers/evm-chain/arbitrum/evm-fetcher/sources/level-finance/leveFinanceContractDetails";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { LIQUIDITY_CALCULATOR_ADDRESS } from "../../src/fetchers/evm-chain/arbitrum/evm-fetcher/sources/level-finance/LevelFinanceTokensRequestHandlers";
+import LevelFinanceLpTokenAbi from "../../src/fetchers/evm-chain/arbitrum/evm-fetcher/sources/level-finance/LevelFinanceLpToken.abi.json";
+import LevelFinanceLiquidityCalculatorAbi from "../../src/fetchers/evm-chain/arbitrum/evm-fetcher/sources/level-finance/LevelFinanceLiquidityCalculator.abi.json";
 
 jest.setTimeout(15000);
 
@@ -42,8 +48,12 @@ describe("Arbitrum EVM fetcher", () => {
       provider = new MockProvider();
       const [wallet] = provider.getWallets();
       const beefyContract = await deployMockContract(wallet, BeefyVaultAbi);
-      await beefyContract.mock.balance.returns("2488713301502775226721");
-      await beefyContract.mock.totalSupply.returns("2373975350528778878698");
+      await asAwaitable(
+        beefyContract.mock.balance.returns("2488713301502775226721")
+      );
+      await asAwaitable(
+        beefyContract.mock.totalSupply.returns("2373975350528778878698")
+      );
 
       multicallContract = await deployMulticallContract(wallet);
 
@@ -73,8 +83,10 @@ describe("Arbitrum EVM fetcher", () => {
         wallet,
         YieldYakLPTokenAbi
       );
-      await yieldYakContract.mock.totalDeposits.returns("400488970");
-      await yieldYakContract.mock.totalSupply.returns("400000000");
+      await asAwaitable(
+        yieldYakContract.mock.totalDeposits.returns("400488970")
+      );
+      await asAwaitable(yieldYakContract.mock.totalSupply.returns("400000000"));
 
       multicallContract = await deployMulticallContract(wallet);
 
@@ -108,13 +120,15 @@ describe("Arbitrum EVM fetcher", () => {
         wallet,
         DexLpTokenAbi
       );
-      await dexLpTokenContract.mock.getReserves.returns(
-        "22695143440192357835227",
-        "1047489210335175121050",
-        1693378156
+      await asAwaitable(
+        dexLpTokenContract.mock.getReserves.returns(
+          "22695143440192357835227",
+          "1047489210335175121050",
+          1693378156
+        )
       );
-      await dexLpTokenContract.mock.totalSupply.returns(
-        "4354205571809301622184"
+      await asAwaitable(
+        dexLpTokenContract.mock.totalSupply.returns("4354205571809301622184")
       );
 
       multicallContract = await deployMulticallContract(wallet);
@@ -136,6 +150,51 @@ describe("Arbitrum EVM fetcher", () => {
       const result = await fetcher.fetchAll(["SUSHI_DPX_ETH_LP"]);
       expect(result).toEqual([
         { symbol: "SUSHI_DPX_ETH_LP", value: 828.874171569813 },
+      ]);
+    });
+  });
+
+  describe("Level finance - arbMzeLLP", () => {
+    beforeAll(async () => {
+      provider = new MockProvider();
+      const [wallet] = provider.getWallets();
+
+      const lpTokenContract = await deployMockContract(
+        wallet,
+        LevelFinanceLpTokenAbi
+      );
+      await asAwaitable(
+        lpTokenContract.mock.totalSupply.returns("1138455647148900835319062")
+      );
+
+      const liquidityCalculatorContract = await deployMockContract(
+        wallet,
+        LevelFinanceLiquidityCalculatorAbi
+      );
+      await asAwaitable(
+        liquidityCalculatorContract.mock.getTrancheValue.returns(
+          "870471667555050807323983275164889675"
+        )
+      );
+
+      multicallContract = await deployMulticallContract(wallet);
+
+      levelFinanceContractDetails.arbMzeLLP.address = lpTokenContract.address;
+      (LIQUIDITY_CALCULATOR_ADDRESS as unknown) =
+        liquidityCalculatorContract.address;
+    });
+
+    test("Should properly fetch data", async () => {
+      const fetcher = new EvmFetcher(
+        "arbitrum-evm-test-fetcher",
+        { mainProvider: provider },
+        multicallContract.address,
+        requestHandlers
+      );
+
+      const result = await fetcher.fetchAll(["arbMzeLLP"]);
+      expect(result).toEqual([
+        { symbol: "arbMzeLLP", value: 764607448463.2075 },
       ]);
     });
   });

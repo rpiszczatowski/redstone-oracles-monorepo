@@ -1,7 +1,7 @@
 import chai, { expect } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import { WrapperBuilder } from "@redstone-finance/evm-connector";
-import { utils } from "redstone-protocol";
+import { utils } from "@redstone-finance/protocol";
 import { ethers, upgrades } from "hardhat";
 import { IRedstoneAdapter } from "../../../../typechain-types";
 import { formatBytes32String } from "ethers/lib/utils";
@@ -53,7 +53,7 @@ export const describeCommonPriceFeedsAdapterTests = ({
     ).usingSimpleNumericMock({
       timestampMilliseconds: mockDataTimestamp,
       ...(args.mockWrapperConfig || defaultMockWrapperConfig),
-    }) as IRedstoneAdapter;
+    });
 
     // Update one data feed
     await time.setNextBlockTimestamp(mockBlockTimestamp);
@@ -74,9 +74,8 @@ export const describeCommonPriceFeedsAdapterTests = ({
     // Validating values
     const dataFeedIds = Object.keys(args.expectedValues);
     const dataFeedIdsBytes32 = dataFeedIds.map(utils.convertStringToBytes32);
-    const values = await adapterContract.getValuesForDataFeeds(
-      dataFeedIdsBytes32
-    );
+    const values =
+      await adapterContract.getValuesForDataFeeds(dataFeedIdsBytes32);
     for (let i = 0; i < values.length; i++) {
       const expectedValue = args.expectedValues[dataFeedIds[i]];
       expect(values[i].toNumber()).to.eq(expectedValue * 10 ** 8);
@@ -97,9 +96,8 @@ export const describeCommonPriceFeedsAdapterTests = ({
 
   beforeEach(async () => {
     // Deploy a new adapter contract
-    const adapterContractFactory = await ethers.getContractFactory(
-      adapterContractName
-    );
+    const adapterContractFactory =
+      await ethers.getContractFactory(adapterContractName);
     adapterContract =
       (await adapterContractFactory.deploy()) as IRedstoneAdapter;
   });
@@ -108,9 +106,8 @@ export const describeCommonPriceFeedsAdapterTests = ({
     let contractV1: IRedstoneAdapter;
 
     beforeEach(async () => {
-      const adapterContractFactory = await ethers.getContractFactory(
-        adapterContractName
-      );
+      const adapterContractFactory =
+        await ethers.getContractFactory(adapterContractName);
 
       contractV1 = (await upgrades.deployProxy(
         adapterContractFactory
@@ -119,6 +116,7 @@ export const describeCommonPriceFeedsAdapterTests = ({
 
     it("should properly initialize", async () => {
       expect(contractV1).to.not.be.undefined;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
       await expect((contractV1 as any).initialize()).to.rejectedWith(
         "Initializable: contract is already initialized"
       );
@@ -130,6 +128,7 @@ export const describeCommonPriceFeedsAdapterTests = ({
       );
 
       expect(
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
         await (contractV1 as any).getAuthorisedSignerIndex(
           "0x70997970c51812dc3a010c7d01b50e0d17dc79c8"
         )
@@ -162,6 +161,7 @@ export const describeCommonPriceFeedsAdapterTests = ({
 
       it("should change authorized updaters", async () => {
         expect(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
           await (updatedContract as any).getAuthorisedSignerIndex(
             "0xb323240B8185C1918A338Bd76A6473E20A25fa62"
           )
@@ -175,7 +175,7 @@ export const describeCommonPriceFeedsAdapterTests = ({
     const btcDataFeedIndex = await adapterContract.getDataFeedIndex(
       formatBytes32String("BTC")
     );
-    await expect(btcDataFeedIndex.toNumber()).to.eq(0);
+    expect(btcDataFeedIndex.toNumber()).to.eq(0);
   });
 
   it("should revert trying to get index if data feed is not supported", async () => {
@@ -184,7 +184,7 @@ export const describeCommonPriceFeedsAdapterTests = ({
     ).to.be.revertedWith("DataFeedIdNotFound");
   });
 
-  it("should revert trying to update by unauthorised updater", async () => {
+  it("should revert trying to update by unauthorised updater", () => {
     expect(1).to.be.equal(1);
   });
 
@@ -274,7 +274,9 @@ export const describeCommonPriceFeedsAdapterTests = ({
           mockSignersCount: 2,
         },
       })
-    ).to.be.revertedWith("InsufficientNumberOfUniqueSigners(0, 2)");
+    )
+      .to.be.revertedWith("InsufficientNumberOfUniqueSigners")
+      .withArgs(0, 2);
   });
 
   it("should revert for too few signers", async () => {
@@ -286,7 +288,9 @@ export const describeCommonPriceFeedsAdapterTests = ({
           mockSignersCount: 1,
         },
       })
-    ).to.be.revertedWith("InsufficientNumberOfUniqueSigners(1, 2)");
+    )
+      .to.be.revertedWith("InsufficientNumberOfUniqueSigners")
+      .withArgs(1, 2);
   });
 
   it("should properly update data feeds one time", async () => {

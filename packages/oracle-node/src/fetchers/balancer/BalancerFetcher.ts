@@ -2,7 +2,11 @@ import { BigNumberish, providers } from "ethers";
 import { AddressZero } from "@ethersproject/constants";
 import Decimal from "decimal.js";
 import { ContractCallContext } from "ethereum-multicall";
-import { MathUtils, RedstoneTypes, RedstoneCommon } from "redstone-utils";
+import {
+  MathUtils,
+  RedstoneTypes,
+  RedstoneCommon,
+} from "@redstone-finance/utils";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import {
   DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE,

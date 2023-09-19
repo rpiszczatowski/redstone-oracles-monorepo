@@ -1,4 +1,4 @@
-name: Evm connector tests
+name: Evm Connector CI
 on:
   push:
     paths:
@@ -6,7 +6,7 @@ on:
       - .github/workflows/evm-connector-tests.yml
 
 jobs:
-  build:
+  evm-connector-tests:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     defaults:

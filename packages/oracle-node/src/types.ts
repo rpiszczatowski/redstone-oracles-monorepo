@@ -1,4 +1,4 @@
-import { RedstoneTypes, SafeNumber } from "redstone-utils";
+import { RedstoneTypes, SafeNumber } from "@redstone-finance/utils";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
@@ -14,7 +14,7 @@ export interface Manifest {
 }
 
 export interface TokensConfig {
-  [symbol: string]: TokenConfig;
+  [symbol: string]: TokenConfig | undefined;
 }
 
 export interface SourceTimeout {
@@ -23,7 +23,7 @@ export interface SourceTimeout {
 }
 
 export interface TokenConfig {
-  source?: string[];
+  source?: string[] | undefined;
   deviationCheck?: DeviationCheckConfig;
   customUrlDetails?: CustomUrlDetails;
   comment?: string;
@@ -65,7 +65,7 @@ export type NotSanitizedPriceDataBeforeAggregation =
 export interface Aggregator {
   getAggregatedValue: (
     price: SanitizedPriceDataBeforeAggregation,
-    allPrices?: PriceDataBeforeAggregation<number>[]
+    allPrices?: NotSanitizedPriceDataBeforeAggregation[]
   ) => PriceDataAfterAggregation;
 }
 
@@ -84,30 +84,25 @@ export interface PricesObj {
 export interface PricesObjWithMetadata {
   [symbol: string]: {
     value: PriceDataFetchedValue;
-    metadata?: RedstoneTypes.MetadataPerSource | undefined;
+    metadata?: RedstoneTypes.MetadataPerSource;
   };
 }
 
 export interface PriceDataFetched {
   symbol: string;
   value: PriceDataFetchedValue; // usually it is a positive number, but it may also be 0, null, undefined or "error"
-  metadata?: RedstoneTypes.MetadataPerSource | undefined;
+  metadata?: RedstoneTypes.MetadataPerSource;
 }
 
-export type PriceDataFetchedValue =
-  | number
-  | string
-  | null
-  | undefined
-  | "error";
+export type PriceDataFetchedValue = number | string | null | undefined;
 
-export interface PriceDataBeforeAggregation<T = number> {
+interface PriceDataBeforeAggregation<T> {
   id: string;
   symbol: string;
   source: PriceSource<T>;
-  sourceMetadata: Record<string, RedstoneTypes.MetadataPerSource>;
+  sourceMetadata: Record<string, RedstoneTypes.MetadataPerSource | undefined>;
   timestamp: number;
-  blockNumber?: number | undefined;
+  blockNumber?: number;
   version: string;
 }
 
@@ -115,13 +110,14 @@ export interface PriceSource<T> {
   [sourceName: string]: T;
 }
 
-export interface PriceDataAfterAggregation<V = SafeNumber.ISafeNumber>
+interface PriceDataWithAggregate<V>
   extends SanitizedPriceDataBeforeAggregation {
   value: V;
 }
+export interface PriceDataAfterAggregation
+  extends PriceDataWithAggregate<SafeNumber.ISafeNumber> {}
 
-export interface PriceDataBeforeSigning
-  extends PriceDataAfterAggregation<number> {
+export interface PriceDataBeforeSigning extends PriceDataWithAggregate<number> {
   permawebTx: string;
   provider: string;
 }
@@ -167,10 +163,10 @@ export interface NodeConfig {
   printDiagnosticInfo: boolean;
   manifestRefreshInterval: number;
   privateKeys: PrivateKeys;
-  overrideManifestUsingFile?: Manifest | undefined;
+  overrideManifestUsingFile?: Manifest;
   ethereumAddress: string;
-  overrideDirectCacheServiceUrls?: string[] | undefined;
-  overridePriceCacheServiceUrls?: string[] | undefined;
+  overrideDirectCacheServiceUrls?: string[];
+  overridePriceCacheServiceUrls?: string[];
   coinbaseIndexerMongoDbUrl?: string;
   levelDbLocation: string;
   etherscanApiUrl?: string;
@@ -210,7 +206,7 @@ export interface MulticallRequest {
 
 // If value is undefined it means that request failed
 export type MulticallParsedResponses = {
-  [address in string]: {
+  [address in string]?: {
     [functionName in string]?: string;
   }[];
 };

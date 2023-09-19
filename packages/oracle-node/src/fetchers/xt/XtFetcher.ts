@@ -8,6 +8,9 @@ import symbolToId from "./symbol-to-id.json";
 const url = `https://sapi.xt.com/v4/public/ticker/price?symbols=`;
 
 type PriceResult = { p: string; s: string };
+type XtResponse = {
+  result: PriceResult[];
+};
 
 export class XtFetcher extends BaseFetcher {
   constructor() {
@@ -15,21 +18,21 @@ export class XtFetcher extends BaseFetcher {
   }
 
   override convertIdToSymbol(id: string) {
-    return getRequiredPropValue(_.invert(symbolToId), id);
+    return getRequiredPropValue<string>(_.invert(symbolToId), id);
   }
 
   override convertSymbolToId(symbol: string) {
-    return getRequiredPropValue(symbolToId, symbol);
+    return getRequiredPropValue<string>(symbolToId, symbol);
   }
 
-  async fetchData(ids: string[]) {
+  override async fetchData(ids: string[]) {
     const urlWithSymbols = `${url}${ids.join(",")}`;
-    const response = await axios.get(urlWithSymbols);
+    const response = await axios.get<XtResponse>(urlWithSymbols);
     return response.data;
   }
 
-  extractPrices(response: any): PricesObj {
-    const results = response.result as PriceResult[];
+  override extractPrices(response: XtResponse): PricesObj {
+    const results = response.result;
     return this.extractPricesSafely(results, (result) => ({
       value: Number(result.p),
       id: result.s,

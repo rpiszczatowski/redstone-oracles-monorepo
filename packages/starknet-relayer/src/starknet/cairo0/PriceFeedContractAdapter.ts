@@ -1,5 +1,5 @@
 import { Contract } from "starknet";
-import { PriceFeedRoundData } from "redstone-sdk";
+import { PriceFeedRoundData } from "@redstone-finance/sdk";
 
 export class PriceFeedContractAdapter {
   constructor(private readonly contract: Contract) {}
@@ -7,7 +7,7 @@ export class PriceFeedContractAdapter {
   async readLatestRoundData(): Promise<PriceFeedRoundData> {
     return (
       (await this.contract.call("latest_round_data")) as {
-        [key: string]: any;
+        round: PriceFeedRoundData;
       }
     )["round"];
   }

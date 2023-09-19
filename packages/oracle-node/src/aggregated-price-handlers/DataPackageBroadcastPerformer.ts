@@ -4,11 +4,9 @@ import PricesService from "./../fetchers/PricesService";
 import {
   DataPackage,
   DataPoint,
-  Metadata,
   NumericDataPoint,
   SignedDataPackage,
-} from "redstone-protocol";
-import { Consola } from "consola";
+} from "@redstone-finance/protocol";
 import {
   DataPackageBroadcaster,
   HttpBroadcaster,
@@ -21,7 +19,9 @@ import { IterationContext } from "../schedulers/IScheduler";
 import { validateDataPointsForBigPackage } from "../validators/validate-data-feed-for-big-package";
 import { BroadcastPerformer } from "./BroadcastPerformer";
 import { ManifestDataProvider } from "./ManifestDataProvider";
-const logger = require("./../utils/logger")("runner") as Consola;
+import loggerFactory from "../utils/logger";
+
+const logger = loggerFactory("runner");
 
 const DEFAULT_HTTP_BROADCASTER_URLS = [
   "https://direct-1.cache-service.redstone.finance",
@@ -88,7 +88,9 @@ export class DataPackageBroadcastPerformer
         dataPoints.push(dataPoint);
       } catch (e) {
         logger.error(
-          `Failed to convert price object to data point for ${price.symbol} (${price.value})`
+          `Failed to convert price object to data point for ${
+            price.symbol
+          } (${String(price.value)})`
         );
       }
     }

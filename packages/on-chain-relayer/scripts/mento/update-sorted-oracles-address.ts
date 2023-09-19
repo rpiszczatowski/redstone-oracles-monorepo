@@ -6,6 +6,7 @@ import { MentoAdapterBase } from "../../typechain-types";
 
 const NEW_SORTED_ORACLES_ADDRESS = "0xFdd8bD58115FfBf04e47411c1d228eCC45E93075";
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
   const mentoAdapterContract = getAdapterContract() as MentoAdapterBase;
 

@@ -1,4 +1,3 @@
-import { Consola } from "consola";
 import _ from "lodash";
 import EvmPriceSigner from "./EvmPriceSigner";
 import {
@@ -7,13 +6,13 @@ import {
   SignedPricePackage,
 } from "../types";
 import { trackStart, trackEnd } from "../utils/performance-tracker";
+import loggerFactory from "../utils/logger";
 
-const logger = require("../utils/logger")("ArweaveService") as Consola;
+const logger = loggerFactory("ArweaveService");
 
 // Business service that supplies signing operations required by Redstone-Node
 export default class PriceSignerService {
   private evmSigner: EvmPriceSigner;
-
   constructor(private readonly ethereumPrivateKey: string) {
     this.evmSigner = new EvmPriceSigner();
   }
@@ -36,6 +35,7 @@ export default class PriceSignerService {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/require-await
   private async signSinglePrice(
     price: PriceDataBeforeSigning
   ): Promise<PriceDataSigned> {

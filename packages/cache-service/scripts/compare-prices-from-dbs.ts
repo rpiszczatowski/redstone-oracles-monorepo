@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { DataPointPlainObj, consts } from "redstone-protocol";
+import { DataPointPlainObj, consts } from "@redstone-finance/protocol";
 import { CachedDataPackage } from "../src/data-packages/data-packages.model";
 import {
   formatTime,
@@ -54,6 +54,7 @@ const TOKENS_ONLY_IN_ONE_DB = [
   "IB01.L",
 ];
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
   console.log(`Comparing prices from ${DAYS} days`);
   const timestampsConfigs = defineTimestampsIntervals();
@@ -334,7 +335,7 @@ function logDataPointsMismatchWarnings(
     console.log(
       `Data points mismatch, timestamp: ${formatTime(
         timestampAsNumber
-      )}, data points from ${type} DB, difference: ${[...diff]}`
+      )}, data points from ${type} DB, difference: ${[...diff].join(",")}`
     )
   );
 }

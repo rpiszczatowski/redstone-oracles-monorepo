@@ -3,7 +3,7 @@ import { Fragment, Interface } from "ethers/lib/utils";
 
 export interface FunctionNamesWithValues {
   name: string;
-  values?: any[];
+  values?: unknown[];
 }
 
 export interface MulticallRequest {

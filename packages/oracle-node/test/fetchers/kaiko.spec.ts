@@ -22,7 +22,7 @@ function mock(tokens: { symbol: string; value: number }[]) {
 jest.mock("axios");
 
 describe("kaiko fetcher", () => {
-  const sut = fetchers["kaiko"];
+  const sut = fetchers["kaiko"]!;
 
   it("should properly fetch data with proper tokens", async () => {
     mock(properTokens);

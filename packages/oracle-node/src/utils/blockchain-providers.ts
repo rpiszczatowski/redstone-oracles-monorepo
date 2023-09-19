@@ -1,6 +1,6 @@
 import { providers } from "ethers";
 import { config } from "../config";
-import { ProviderWithAgreement } from "redstone-rpc-providers";
+import { ProviderWithAgreement } from "@redstone-finance/rpc-providers";
 
 const produceProvider = (
   rpcUrls: string[],

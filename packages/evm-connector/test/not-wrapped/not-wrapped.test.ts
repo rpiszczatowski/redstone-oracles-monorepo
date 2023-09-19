@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
-import { utils } from "redstone-protocol";
+import { utils } from "@redstone-finance/protocol";
 import { SampleRedstoneConsumerNumericMock } from "../../typechain-types";
 
 describe("Not Wrapped Contract", function () {
@@ -19,6 +19,8 @@ describe("Not Wrapped Contract", function () {
       contract.saveOracleValueInContractStorage(
         utils.convertStringToBytes32("BTC")
       )
-    ).to.be.revertedWith("CalldataMustHaveValidPayload()");
+    )
+      .to.be.revertedWith("CalldataMustHaveValidPayload")
+      .withArgs();
   });
 });

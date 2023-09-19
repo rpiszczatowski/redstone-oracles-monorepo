@@ -14,6 +14,7 @@ const FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [0, 66];
 const SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [66, 130];
 
 export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   prepareMulticallRequest(id: TraderJoeAutoPoolTokensDetailsKeys) {
     const { abi, address } = traderJoeAutoPoolTokenContractDetails[id];
     const functionsNamesWithValues = [
@@ -30,6 +31,7 @@ export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
     return buildMulticallRequests(abi, address, functionsNamesWithValues);
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   extractPrice(
     response: MulticallParsedResponses,
     id: TraderJoeAutoPoolTokensDetailsKeys
@@ -37,19 +39,22 @@ export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
     const { tokensToFetch } = traderJoeAutoPoolTokenContractDetails[id];
 
     const { firstBalance, firstToken, secondBalance, secondToken } =
-      this.getBalances(response, id);
+      TraderJoeAutoRequestHandlers.getBalances(response, id);
 
     const tokensPrices = getTokensPricesFromLocalCache(tokensToFetch);
     const firstTokenPrice = firstBalance.mul(tokensPrices[firstToken]);
     const secondTokenPrice = secondBalance.mul(tokensPrices[secondToken]);
     const pricesSum = firstTokenPrice.add(secondTokenPrice);
 
-    const totalSupply = this.getTotalSupply(response, id);
+    const totalSupply = TraderJoeAutoRequestHandlers.getTotalSupply(
+      response,
+      id
+    );
 
     return pricesSum.div(totalSupply).toNumber();
   }
 
-  getBalances(
+  static getBalances(
     response: MulticallParsedResponses,
     id: TraderJoeAutoPoolTokensDetailsKeys
   ) {
@@ -87,7 +92,7 @@ export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
     };
   }
 
-  getTotalSupply(
+  static getTotalSupply(
     response: MulticallParsedResponses,
     id: TraderJoeAutoPoolTokensDetailsKeys
   ) {

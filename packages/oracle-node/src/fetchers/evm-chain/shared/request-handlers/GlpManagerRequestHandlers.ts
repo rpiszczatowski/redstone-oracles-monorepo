@@ -6,7 +6,7 @@ import { getContractDetailsFromConfig } from "../utils/get-contract-details-from
 import { GLP_MANAGER_PRICE_PRECISION, TEN_AS_BASE_OF_POWER } from "../contants";
 import { MulticallParsedResponses } from "../../../../types";
 
-interface TokenContractDetails {
+export interface TokenContractDetails {
   abi: string;
   address: string;
 }

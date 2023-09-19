@@ -17,7 +17,7 @@ import {
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { Contract } from "ethers";
 import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 const FETCHER_TO_TEST = "trader-joe-v2-avalanche-on-chain-usdc";
 const TOKEN_TO_TEST = "EUROC";

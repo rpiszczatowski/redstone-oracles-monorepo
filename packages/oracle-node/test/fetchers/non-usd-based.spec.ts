@@ -7,7 +7,7 @@ import fetchers from "../../src/fetchers/index";
 import { saveMockPricesInLocalDb } from "./_helpers";
 
 describe("Non USD based fetcher", () => {
-  const fetcher = fetchers["non-usd-based"];
+  const fetcher = fetchers["non-usd-based"]!;
 
   beforeAll(async () => {
     setupLocalDb();

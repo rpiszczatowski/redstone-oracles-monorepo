@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ValuesForDataFeeds } from "redstone-sdk";
+import { ValuesForDataFeeds } from "@redstone-finance/sdk";
 import { config } from "../../src/config";
 import { shouldUpdate } from "../../src/core/update-conditions/should-update";
 import {
@@ -33,11 +33,11 @@ describe("should-update", () => {
       config()
     );
     expect(shouldUpdatePrices).to.be.false;
-    expect(JSON.parse(warningMessage)[0]).to.match(
+    expect((JSON.parse(warningMessage) as string[])[0]).to.match(
       /Not enough time has passed to update prices/
     );
 
-    expect(JSON.parse(warningMessage)[1]).to.match(
+    expect((JSON.parse(warningMessage) as string[])[1]).to.match(
       /Value has not deviated enough to/
     );
   });

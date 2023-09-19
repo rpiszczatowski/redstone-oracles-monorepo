@@ -19,8 +19,7 @@ import {
 import { balancerEthereumConfigs } from "../../src/fetchers/balancer/balancer-ethereum-configs";
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { Contract } from "ethers";
-import Decimal from "decimal.js";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 describe("balancer multi fetcher", () => {
   let provider: MockProvider;
@@ -28,9 +27,6 @@ describe("balancer multi fetcher", () => {
   let vaultContract: MockContract;
 
   beforeAll(async () => {
-    // make sure numbers longer that 20 digits are not serialized using scientific notation
-    // as ethers fails to parse scientific notation
-    Decimal.set({ toExpPos: 9e15 });
     setupLocalDb();
 
     provider = new MockProvider();

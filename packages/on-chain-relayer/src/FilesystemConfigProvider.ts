@@ -20,7 +20,7 @@ const readJSON = <T>(path: string): T => {
   const content = fs.readFileSync(path, "utf-8");
   try {
     return JSON.parse(content) as T;
-  } catch (e: any) {
+  } catch (e) {
     throw new Error(`File "${path}" does not contain a valid JSON`);
   }
 };
@@ -35,7 +35,7 @@ const getJSONFromEnv = <T>(
   }
   try {
     return JSON.parse(envVal) as T;
-  } catch (e: any) {
+  } catch (e) {
     if (!optional) {
       throw e;
     }
@@ -49,7 +49,7 @@ export const fileSystemConfigProvider: ConfigProvider = () => {
 
   const env: OnChainRelayerEnv = {
     relayerIterationInterval: Number(getFromEnv("RELAYER_ITERATION_INTERVAL")),
-    rpcUrls: JSON.parse(getFromEnv("RPC_URLS")!),
+    rpcUrls: JSON.parse(getFromEnv("RPC_URLS")!) as string[],
     privateKey: getFromEnv("PRIVATE_KEY")!,
     gasLimit: Number.parseInt(getFromEnv("GAS_LIMIT")!),
     gasMultiplier: Number.parseFloat(

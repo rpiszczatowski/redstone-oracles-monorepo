@@ -1,0 +1,24 @@
+name: Starknet Connector CI
+on:
+  push:
+    paths:
+      - packages/starknet-connector/**
+      - packages/sdk/**
+      - packages/protocol/**
+      - .github/workflows/starknet-connector-tests.yml
+
+jobs:
+  starknet-connector-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: packages/starknet-connector
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install modules
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Lint
+        run: yarn lint

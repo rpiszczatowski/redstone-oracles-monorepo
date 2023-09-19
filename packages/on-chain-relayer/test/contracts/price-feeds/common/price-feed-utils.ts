@@ -5,6 +5,7 @@ import { IRedstoneAdapter, PriceFeedBase } from "../../../../typechain-types";
 import { formatBytes32String } from "ethers/lib/utils";
 import { WrapperBuilder } from "@redstone-finance/evm-connector";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
+import { ContractTransaction } from "ethers";
 
 interface PriceFeedTestsParams {
   priceFeedContractName: string;
@@ -36,7 +37,10 @@ export const describeCommonPriceFeedTests = ({
     await adapter.deployed();
     await priceFeed.deployed();
 
-    const tx = await (priceFeed as any).setAdapterAddress(adapter.address);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+    const tx = (await priceFeed.setAdapterAddress(
+      adapter.address
+    )) as ContractTransaction;
     await tx.wait();
 
     return {
@@ -90,13 +94,13 @@ export const describeCommonPriceFeedTests = ({
       mockDataTimestamp = prevBlockTime * 1000;
       await time.setNextBlockTimestamp(curBlockTime);
 
-      const wrappedContract = (await WrapperBuilder.wrap(
+      const wrappedContract = WrapperBuilder.wrap(
         contracts.adapter
       ).usingSimpleNumericMock({
         mockSignersCount: 2,
         timestampMilliseconds: mockDataTimestamp,
         dataPoints: [{ dataFeedId: "BTC", value: 42 }],
-      })) as IRedstoneAdapter;
+      });
 
       const tx = await wrappedContract.updateDataFeedsValues(mockDataTimestamp);
       await tx.wait();
@@ -142,6 +146,7 @@ export const describeCommonPriceFeedTests = ({
 
     it("should initialize properly", async () => {
       expect(contractV1).to.not.be.undefined;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any
       await expect((contractV1 as any).initialize()).to.rejectedWith(
         "Initializable: contract is already initialized"
       );

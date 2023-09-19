@@ -1,11 +1,10 @@
 import fetchers from "../../src/fetchers/index";
+import exampleResponse from "../../src/fetchers/chainlink/example-response.json";
 
 jest.mock("../../src/fetchers/chainlink/ChainlinkProxy", () => {
   return jest.fn().mockImplementation(() => {
     return {
       getExchangeRates: () => {
-        const exampleResponse = require("../../src/fetchers/chainlink/example-response.json");
-
         return Promise.resolve(exampleResponse);
       },
     };
@@ -13,7 +12,7 @@ jest.mock("../../src/fetchers/chainlink/ChainlinkProxy", () => {
 });
 
 describe("chainlink fetcher", () => {
-  const sut = fetchers["chainlink"];
+  const sut = fetchers["chainlink"]!;
 
   it("should properly fetch data", async () => {
     // Given

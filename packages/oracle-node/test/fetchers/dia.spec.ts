@@ -26,7 +26,7 @@ function mock(tokens: string[]) {
 jest.mock("axios");
 
 describe("dia fetcher", () => {
-  const sut = fetchers["dia"];
+  const sut = fetchers["dia"]!;
 
   it("should properly fetch data with proper tokens", async () => {
     // Given
@@ -41,7 +41,7 @@ describe("dia fetcher", () => {
 
   it("should properly fetch data with one improper token", async () => {
     // Given
-    let tokens = properTokens;
+    const tokens = properTokens;
     properTokens.push(wrongToken);
     mock(tokens);
 

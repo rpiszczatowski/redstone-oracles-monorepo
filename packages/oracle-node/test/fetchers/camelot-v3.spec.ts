@@ -2,6 +2,7 @@ import {
   MockProvider,
   deployMockContract,
   deployContract,
+  MockContract,
 } from "ethereum-waffle";
 import {
   clearLastPricesCache,
@@ -16,13 +17,13 @@ import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import CamelotPoolAbi from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotPool.abi.json";
 import CamelotQuoter from "../../src/fetchers/evm-chain/arbitrum/camelot-v3/CamelotQuoter.abi.json";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 
 describe("Camelot V3 fetcher", () => {
-  let quoterContract: Contract;
-  let poolContract: Contract;
+  let quoterContract: MockContract;
+  let poolContract: MockContract;
   let multicall: Contract;
   let provider: MockProvider;
   let mockTokenConfig: PoolsConfig;

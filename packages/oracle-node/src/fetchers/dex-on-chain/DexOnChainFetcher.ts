@@ -1,5 +1,4 @@
-import { appendFileSync, writeFileSync } from "fs";
-import { RedstoneCommon, RedstoneTypes } from "redstone-utils";
+import { RedstoneCommon, RedstoneTypes } from "@redstone-finance/utils";
 import { PricesObjWithMetadata } from "../../types";
 import {
   isLiquidity,
@@ -45,14 +44,18 @@ export abstract class DexOnChainFetcher<T> extends MultiRequestFetcher {
     // we don't care if we fail here, cause it is only metadata
     try {
       metadata.slippage = this.calculateSlippage(dataFeedId, response);
-    } catch (e) {}
+    } catch (e) {
+      // ignore
+    }
 
     try {
       metadata.liquidity = this.calculateLiquidity(
         dataFeedId,
         response
       )?.toString();
-    } catch (e) {}
+    } catch (e) {
+      // ignore
+    }
 
     // return undefined instead of empty metadata
     if (Object.keys(metadata).length === 0) {
@@ -139,8 +142,8 @@ export const getDefinedResponse = <T>(
 ): T => {
   RedstoneCommon.assert(
     !!responses[dataFeedId],
-    `responses are defined for ${Object.keys(
-      responses
+    `responses are defined for ${Object.keys(responses).join(
+      ","
     )} missing response for ${dataFeedId}`
   );
 

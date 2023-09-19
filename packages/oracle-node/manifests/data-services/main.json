@@ -15,7 +15,6 @@
       "source": [
         "ascendex",
         "band",
-        "bequant",
         "binance",
         "binancecoinm",
         "binanceusdm",
@@ -23,8 +22,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
-        "chainlink",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -38,7 +35,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -56,7 +52,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -69,7 +64,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -79,15 +73,13 @@
       "source": [
         "bitfinex2",
         "bittrex",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
         "currencycom",
         "kaiko",
         "kaiko-v2",
-        "kraken",
-        "uniswap"
+        "kraken"
       ]
     },
     "BNB": {
@@ -104,12 +96,9 @@
         "gate",
         "hitbtc",
         "huobipro",
-        "kaiko",
-        "kaiko-v2",
         "kucoin",
         "mexc",
         "lbank",
-        "oceanex",
         "okx",
         "phemex",
         "poloniex",
@@ -124,9 +113,7 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coingecko",
-        "currencycom",
         "huobipro",
         "kraken",
         "kucoin",
@@ -145,7 +132,6 @@
     },
     "USDC.e": {
       "source": [
-        "camelot-usdt",
         "uniswap-v3-arbitrum-on-chain-weth-500",
         "uniswap-v3-arbitrum-on-chain-weth-3000",
         "uniswap-v3-arbitrum-on-chain-arb-500",
@@ -167,7 +153,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coingecko",
         "currencycom",
         "hitbtc",
@@ -176,7 +161,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -193,7 +177,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -202,7 +185,6 @@
         "huobipro",
         "kraken",
         "kucoin",
-        "oceanex",
         "okx"
       ]
     },
@@ -212,9 +194,7 @@
         "binance",
         "binanceusdm",
         "bitcoincom",
-        "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -226,8 +206,7 @@
         "lbank",
         "okx",
         "poloniex",
-        "probit",
-        "uniswap"
+        "probit"
       ]
     },
     "DOGE": {
@@ -240,7 +219,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -250,21 +228,13 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
       ]
     },
     "BUSD": {
-      "source": [
-        "binance",
-        "bitcoincom",
-        "coingecko",
-        "hitbtc",
-        "lbank",
-        "oceanex"
-      ]
+      "source": ["binance", "bitcoincom", "coingecko", "hitbtc", "lbank"]
     },
     "SOL": {
       "source": [
@@ -293,7 +263,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -303,7 +272,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -384,7 +352,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -395,7 +362,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -429,10 +395,7 @@
         "binancecoinm",
         "binanceusdm",
         "bitfinex2",
-        "bittrex",
         "btcturk",
-        "cex",
-        "chainlink",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -441,32 +404,30 @@
         "hitbtc",
         "hollaex",
         "huobipro",
-        "kaiko",
-        "kaiko-v2",
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit",
-        "sushiswap",
-        "uniswap"
+        "uniswap-v3-ethereum-on-chain-weth-3000"
       ]
     },
     "WBTC": {
       "source": [
         "bittrex",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
         "hitbtc",
-        "huobipro",
         "okx",
         "poloniex",
-        "sushiswap",
-        "uniswap"
+        "sushiswap-ethereum-on-chain-weth",
+        "uniswap-v3-ethereum-on-chain-weth-3000",
+        "uniswap-v3-ethereum-on-chain-weth-500",
+        "uniswap-v3-ethereum-on-chain-usdc-3000",
+        "uniswap-v3-ethereum-on-chain-usdt-3000",
+        "uniswap-v3-ethereum-on-chain-usdc-500"
       ]
     },
     "ATOM": {
@@ -478,7 +439,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -487,7 +447,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -504,19 +463,15 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
         "currencycom",
         "hitbtc",
         "huobipro",
-        "kaiko",
-        "kaiko-v2",
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit",
@@ -525,7 +480,7 @@
       ]
     },
     "LEO": {
-      "source": ["bitfinex2", "coingecko", "hitbtc", "okx", "probit"]
+      "source": ["bitfinex2", "coingecko", "okx", "probit"]
     },
     "OKB": {
       "source": ["coingecko", "lbank", "okx", "poloniex", "probit"]
@@ -546,7 +501,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -585,7 +539,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex"
       ]
@@ -593,14 +546,12 @@
     "BCH": {
       "source": [
         "ascendex",
-        "bequant",
         "binance",
         "binancecoinm",
         "binanceusdm",
         "bitcoincom",
         "bitfinex2",
         "bittrex",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -610,7 +561,6 @@
         "huobipro",
         "kraken",
         "kucoin",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -622,7 +572,6 @@
     "XLM": {
       "source": [
         "ascendex",
-        "bequant",
         "binance",
         "binancecoinm",
         "binanceusdm",
@@ -630,7 +579,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -639,7 +587,6 @@
         "huobipro",
         "kraken",
         "kucoin",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -682,7 +629,6 @@
         "binanceusdm",
         "bitcoincom",
         "bitfinex2",
-        "bittrex",
         "btcturk",
         "coinbaseprime",
         "coinbasepro",
@@ -692,7 +638,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -718,7 +663,6 @@
         "kucoin",
         "lbank",
         "mexc",
-        "oceanex",
         "okx",
         "phemex",
         "poloniex",
@@ -777,8 +721,7 @@
         "balancer-ethereum-dai",
         "balancer-ethereum-weth",
         "coingecko",
-        "sushiswap-ethereum-on-chain-dai",
-        "uniswap-v3"
+        "uniswap-v3-ethereum-on-chain-weth-3000"
       ]
     },
     "CANTO": {
@@ -815,14 +758,7 @@
       ]
     },
     "KAVA": {
-      "source": [
-        "ascendex",
-        "binance",
-        "binanceusdm",
-        "cex",
-        "huobipro",
-        "kraken"
-      ]
+      "source": ["ascendex", "binance", "binanceusdm", "huobipro", "kraken"]
     },
     "UFT": {
       "source": ["binance", "bitrue", "coingecko", "gate", "huobipro", "mexc"]
@@ -843,9 +779,6 @@
     "SOFRAI_EFFECTIVE_DATE": {
       "source": ["newyorkfed"],
       "decimals": 0
-    },
-    "JUSDC": {
-      "source": ["camelot-weth"]
     },
     "JGLP": {
       "source": ["camelot-usdc"]
@@ -870,7 +803,6 @@
         "balancer-arbitrum-weth",
         "balancer-ethereum-weth",
         "coingecko",
-        "maverick",
         "uniswap-v3-ethereum-on-chain-weth-500"
       ]
     },
@@ -878,7 +810,7 @@
       "source": ["ethereum-evm-fetcher"]
     },
     "PLS": {
-      "source": ["bitget", "bkex", "coingecko", "camelot-weth"]
+      "source": ["bitget", "coingecko", "camelot-weth"]
     },
     "CMP": {
       "source": ["bybit", "coingecko", "xt"]
@@ -1033,8 +965,6 @@
         "phemex",
         "okx",
         "xt",
-        "velodrome-on-chain-weth",
-        "velodrome-on-chain-usdc",
         "uniswap-v3-optimism-on-chain-weth-3000",
         "uniswap-v3-optimism-on-chain-usdc-3000"
       ]
@@ -1074,12 +1004,7 @@
       ]
     },
     "AURA": {
-      "source": [
-        "balancer-ethereum-weth",
-        "bitget",
-        "kucoin",
-        "uniswap-v3-ethereum-on-chain-weth-3000"
-      ]
+      "source": ["balancer-ethereum-weth", "bitget", "kucoin"]
     },
     "PREMIA": {
       "source": [
@@ -1154,6 +1079,18 @@
         "wombat"
       ]
     },
+    "arbJnrLLP": {
+      "source": ["arbitrum-evm-fetcher"]
+    },
+    "arbMzeLLP": {
+      "source": ["arbitrum-evm-fetcher"]
+    },
+    "arbSnrLLP": {
+      "source": ["arbitrum-evm-fetcher"]
+    },
+    "LVL": {
+      "source": ["bitget", "coingecko", "coinmarketcap", "mexc"]
+    },
     "ANS": {
       "source": ["permaswap"]
     },
@@ -1170,7 +1107,7 @@
       "source": ["permaswap"]
     },
     "AUD": {
-      "source": ["binance", "currencycom", "ecb", "kraken", "twelve-data"]
+      "source": ["currencycom", "ecb", "kraken", "twelve-data"]
     },
     "GBP": {
       "source": ["binance", "currencycom", "ecb", "kraken", "twelve-data"]
@@ -1186,13 +1123,13 @@
       ]
     },
     "JPY": {
-      "source": ["ecb", "twelve-data"]
+      "source": ["ecb"]
     },
     "CHF": {
       "source": ["ecb", "twelve-data"]
     },
     "NOK": {
-      "source": ["currencycom", "ecb", "twelve-data"]
+      "source": ["ecb", "twelve-data"]
     },
     "MXN": {
       "source": ["ecb", "twelve-data"]
@@ -1255,7 +1192,7 @@
       "source": ["currencycom", "twelve-data", "yf-unofficial"]
     },
     "COPPER": {
-      "source": ["currencycom", "twelve-data", "yf-unofficial"]
+      "source": ["currencycom", "yf-unofficial"]
     },
     "IBM": {
       "source": ["twelve-data"]
@@ -1564,7 +1501,13 @@
       "source": ["currencycom"]
     },
     "ENTROPY": {
-      "source": ["drand"]
+      "source": ["drand"],
+      "deviationCheck": {
+        "deviationWithRecentValues": {
+          "maxPercent": 9007199254740991,
+          "maxDelayMilliseconds": 300000
+        }
+      }
     },
     "AAPL": {
       "source": ["currencycom", "twelve-data"]
@@ -1851,11 +1794,8 @@
     "sAVAX": {
       "source": ["avalanche-evm-fetcher"]
     },
-    "GLP_AVALANCHE": {
+    "GLP": {
       "source": ["avalanche-evm-fetcher"]
-    },
-    "GLP_ARBITRUM": {
-      "source": ["arbitrum-evm-fetcher"]
     },
     "YY_GLP": {
       "source": ["avalanche-evm-fetcher"]
@@ -1866,21 +1806,11 @@
     "SHLB_BTC.b-AVAX_B": {
       "source": ["avalanche-evm-fetcher"]
     },
-    "SHLB_USDT.e-USDt_C": {
-      "source": ["avalanche-evm-fetcher"]
-    },
     "SHLB_JOE-AVAX_B": {
       "source": ["avalanche-evm-fetcher"]
     },
-    "USDT.e": {
-      "source": ["trader-joe-on-chain-wavax", "pangolin-on-chain-wavax"]
-    },
     "SWETH": {
-      "source": [
-        "balancer-ethereum-weth",
-        "maverick",
-        "uniswap-v3-ethereum-on-chain-weth-500"
-      ]
+      "source": ["balancer-ethereum-weth"]
     },
     "gmdUSDC": {
       "source": ["avalanche-evm-fetcher"]

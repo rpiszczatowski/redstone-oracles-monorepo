@@ -12,7 +12,7 @@ export class YfUnofficialFetcher extends MultiRequestFetcher {
   }
 
   override makeRequest(dataFeedId: string): Promise<QuoteSummaryResult> {
-    const symbol = getRequiredPropValue(symbolToId, dataFeedId);
+    const symbol: string = getRequiredPropValue(symbolToId, dataFeedId);
     return yahooFinance.quoteSummary(symbol, {
       modules: ["price"],
     });
@@ -20,7 +20,7 @@ export class YfUnofficialFetcher extends MultiRequestFetcher {
 
   override extractPrice(
     dataFeedId: string,
-    responses: { [datafeedId: string]: QuoteSummaryResult }
+    responses: { [datafeedId: string]: QuoteSummaryResult | undefined }
   ): number | undefined {
     const details = responses[dataFeedId];
     return details?.price?.regularMarketPrice;

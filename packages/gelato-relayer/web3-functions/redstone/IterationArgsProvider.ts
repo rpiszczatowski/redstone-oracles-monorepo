@@ -9,7 +9,7 @@ import {
   RedstoneAdapterBase,
   setConfigProvider,
   UpdatePricesArgs,
-} from "redstone-on-chain-relayer";
+} from "@redstone-finance/on-chain-relayer";
 import {
   IterationArgs,
   IterationArgsProviderEnv,
@@ -58,6 +58,7 @@ export class IterationArgsProvider
     return await getIterationArgs(adapterContract);
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   async getTransactionData({
     adapterContract,
     wrapContract,
@@ -78,8 +79,8 @@ export class IterationArgsProvider
     env: IterationArgsProviderEnv
   ) {
     const manifest = (
-      await axios.get(`${userArgs.manifestUrl}?t=${Date.now()}`)
-    ).data as OnChainRelayerManifest;
+      await axios.get(`${String(userArgs.manifestUrl)}?t=${Date.now()}`)
+    ).data as OnChainRelayerManifest | undefined;
 
     if (!manifest) {
       throw "Manifest fetching error";

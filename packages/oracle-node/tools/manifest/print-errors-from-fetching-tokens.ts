@@ -18,8 +18,8 @@ import fetchers from "../../src/fetchers";
 
     try {
       console.log(`Fetching tokens values for ${sourceId}...`);
-      await fetcher.fetchAll(Object.keys(tokens));
-    } catch (error: any) {
+      await fetcher!.fetchAll(Object.keys(tokens));
+    } catch (error) {
       console.log(error);
     }
   }

@@ -21,9 +21,7 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coingecko",
-        "currencycom",
         "huobipro",
         "kraken",
         "kucoin",
@@ -51,14 +49,13 @@
       "source": [
         "bitfinex2",
         "bittrex",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
         "currencycom",
         "kaiko",
-        "kraken",
-        "uniswap"
+        "kaiko-v2",
+        "kraken"
       ],
 
       "deviationCheck": {
@@ -114,7 +111,6 @@
         "curve-usdc-multi-block",
         "fraxswap-on-chain-fxs",
         "fraxswap-on-chain-weth",
-        "kaiko",
         "uniswap-v2-on-chain-fxs",
         "uniswap-v3-ethereum-on-chain-usdc-500",
         "uniswap-v3-ethereum-on-chain-dai-500",
@@ -131,7 +127,6 @@
     "ETH": {
       "source": [
         "ascendex",
-        "bequant",
         "binance",
         "binancecoinm",
         "binanceusdm",
@@ -139,7 +134,6 @@
         "bitfinex2",
         "bittrex",
         "btcturk",
-        "cex",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -150,7 +144,6 @@
         "kraken",
         "kucoin",
         "lbank",
-        "oceanex",
         "okx",
         "poloniex",
         "probit"
@@ -183,11 +176,7 @@
       "source": ["ethereum-evm-fetcher"]
     },
     "SWETH": {
-      "source": [
-        "balancer-ethereum-weth",
-        "maverick",
-        "uniswap-v3-ethereum-on-chain-weth-500"
-      ]
+      "source": ["balancer-ethereum-weth"]
     },
     "3Crv": {
       "source": ["ethereum-evm-fetcher"]
@@ -240,7 +229,6 @@
         "kucoin",
         "lbank",
         "mexc",
-        "oceanex",
         "okx",
         "phemex",
         "poloniex",
@@ -340,6 +328,32 @@
         "curve-weth",
         "pancake-swap-on-chain-weth-500",
         "wombat"
+      ]
+    },
+    "ARB": {
+      "source": [
+        "ascendex",
+        "binance",
+        "binanceusdm",
+        "bitget",
+        "bitmart",
+        "bitrue",
+        "bybit",
+        "coinbaseprime",
+        "coinbasepro",
+        "coingecko",
+        "huobipro",
+        "gate",
+        "kraken",
+        "kucoin",
+        "lbank",
+        "mexc",
+        "phemex",
+        "okx",
+        "uniswap-v3-arbitrum-on-chain-weth-500",
+        "uniswap-v3-arbitrum-on-chain-weth-3000",
+        "uniswap-v3-arbitrum-on-chain-usdc-500",
+        "uniswap-v3-arbitrum-on-chain-usdc-3000"
       ]
     }
   }

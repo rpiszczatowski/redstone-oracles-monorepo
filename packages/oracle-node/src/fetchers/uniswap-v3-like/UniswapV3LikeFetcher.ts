@@ -1,7 +1,11 @@
 import { Decimal } from "decimal.js";
 import { ContractCallContext } from "ethereum-multicall";
 import { providers } from "ethers";
-import { MathUtils, RedstoneTypes, RedstoneCommon } from "redstone-utils";
+import {
+  MathUtils,
+  RedstoneTypes,
+  RedstoneCommon,
+} from "@redstone-finance/utils";
 import { getLastPriceOrFail } from "../../db/local-db";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import { TEN_AS_BASE_OF_POWER } from "../evm-chain/shared/contants";
@@ -239,6 +243,7 @@ export class UniswapV3LikeFetcher extends DexOnChainFetcher<MulticallResult> {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   protected createQuoterParams(
     tokenIn: string,
     tokenOut: string,

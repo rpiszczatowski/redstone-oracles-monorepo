@@ -4,7 +4,7 @@ import { mockFetcherResponse } from "./_helpers";
 jest.mock("axios");
 
 describe("twelve-data fetcher", () => {
-  const sut = fetchers["twelve-data"];
+  const sut = fetchers["twelve-data"]!;
 
   beforeEach(() => {
     mockFetcherResponse("../../src/fetchers/twelve-data/example-response.json");

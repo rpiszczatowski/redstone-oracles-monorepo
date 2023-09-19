@@ -1,7 +1,6 @@
 import { deployMockContract } from "@ethereum-waffle/mock-contract";
 import { deployContract, MockContract, MockProvider } from "ethereum-waffle";
-import { BigNumber } from "ethers";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import {
   clearPricesSublevel,
   closeLocalLevelDB,
@@ -14,7 +13,7 @@ import {
   MultiBlockCurveFetcher,
 } from "../../src/fetchers/curve/MultiBlockCurveFetcher";
 import multicall3Json from "../abis/Multicall3.deployment.json";
-import { saveMockPriceInLocalDb } from "./_helpers";
+import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
 
 jest.setTimeout(15_000);
 const toCurvePrecision = (value: string) => value + "0".repeat(18);
@@ -48,7 +47,7 @@ describe("Curve Multi Block", () => {
     return new MultiBlockCurveFetcher("curve-multi-block-test", curveFetcher);
   };
 
-  beforeAll(async () => {
+  beforeAll(() => {
     setupLocalDb();
   });
 
@@ -62,13 +61,15 @@ describe("Curve Multi Block", () => {
     await clearPricesSublevel();
     provider = new MockProvider();
     const [wallet] = provider.getWallets();
-    const multicall = await deployContract(wallet, multicall3Json as any);
+    const multicall = await deployContract(wallet, multicall3Json);
     RedstoneCommon.overrideMulticallAddress(multicall.address);
     mockContract = await deployMockContract(wallet, abi);
-    await mockContract.mock.balances.withArgs(0).returns(toCurvePrecision("2"));
-    await mockContract.mock.balances
-      .withArgs(1)
-      .returns(toCurvePrecision("100"));
+    await asAwaitable(
+      mockContract.mock.balances.withArgs(0).returns(toCurvePrecision("2"))
+    );
+    await asAwaitable(
+      mockContract.mock.balances.withArgs(1).returns(toCurvePrecision("100"))
+    );
   });
 
   test("Should properly fetch data with 1 block", async () => {
@@ -240,12 +241,12 @@ describe("Curve Multi Block", () => {
   });
 });
 
-const mockGetDyCalls = async (contract: MockContract, returns: any[]) => {
+const mockGetDyCalls = async (contract: MockContract, returns: unknown[]) => {
   // this is the mock for slippage requests
-  await contract.mock.get_dy.returns("1000130962107597656");
+  await asAwaitable(contract.mock.get_dy.returns("1000130962107597656"));
   for (const item of returns) {
-    await contract.mock.get_dy
-      .withArgs(1, 0, toCurvePrecision("1"))
-      .returns(item);
+    await asAwaitable(
+      contract.mock.get_dy.withArgs(1, 0, toCurvePrecision("1")).returns(item)
+    );
   }
 };

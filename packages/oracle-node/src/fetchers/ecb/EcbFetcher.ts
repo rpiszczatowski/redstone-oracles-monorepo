@@ -7,24 +7,31 @@ export class EcbFetcher extends BaseFetcher {
     super("ecb");
   }
 
-  async fetchData(): Promise<any> {
+  override async fetchData(): Promise<exchangeRates.IExchangeRateResult> {
     return await exchangeRates.fetch();
   }
 
-  extractPrices(response: any, ids: string[]): PricesObj {
+  override extractPrices(
+    response: exchangeRates.IExchangeRateResult,
+    ids: (keyof exchangeRates.IExchangeRates)[]
+  ): PricesObj {
     const { rates } = response;
     const usdRate = rates.USD;
 
     return this.extractPricesSafely(ids, (id) =>
-      this.extractPricePair(id, usdRate, rates)
+      EcbFetcher.extractPricePair(id, usdRate, rates)
     );
   }
 
-  private extractPricePair(id: string, usdRate: any, rates: any) {
-    if (id === "EUR") {
+  private static extractPricePair = (
+    id: keyof exchangeRates.IExchangeRates,
+    usdRate: number,
+    rates: exchangeRates.IExchangeRates
+  ) => {
+    if ((id as string) === "EUR") {
       return { value: usdRate, id };
     } else {
       return { value: (1 / rates[id]) * usdRate, id };
     }
-  }
+  };
 }

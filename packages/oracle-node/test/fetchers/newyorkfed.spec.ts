@@ -4,7 +4,7 @@ import { mockFetcherResponse } from "./_helpers";
 jest.mock("axios");
 
 describe("newyorkfed fetcher", () => {
-  const sut = fetchers["newyorkfed"];
+  const sut = fetchers["newyorkfed"]!;
 
   beforeEach(() => {
     mockFetcherResponse("../../src/fetchers/newyorkfed/example-response.json");

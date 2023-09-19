@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { ethers, network } from "hardhat";
-import { ScoreType } from "redstone-protocol";
+import { ScoreType } from "@redstone-finance/protocol";
 import { WrapperBuilder } from "../../src/index";
 import { SampleKydServiceConsumer } from "../../typechain-types";
 import { server } from "./mock-server";
@@ -42,9 +42,9 @@ describe("SampleKydServiceConsumer", () => {
       ],
       ScoreType.coinbaseKYD
     );
-    await expect(wrappedContract.executeActionPassingKYD()).to.be.revertedWith(
-      `UserDidNotPassKYD("0x70997970C51812dc3A010C7d01b50e0d17dc79C8")`
-    );
+    await expect(wrappedContract.executeActionPassingKYD())
+      .to.be.revertedWith(`UserDidNotPassKYD`)
+      .withArgs("0x70997970C51812dc3A010C7d01b50e0d17dc79C8");
   });
 
   it("Should revert if invalid response from one node", async () => {
@@ -55,9 +55,9 @@ describe("SampleKydServiceConsumer", () => {
       ],
       ScoreType.coinbaseKYD
     );
-    await expect(wrappedContract.executeActionPassingKYD()).to.be.revertedWith(
-      "InsufficientNumberOfUniqueSigners(1, 2)"
-    );
+    await expect(wrappedContract.executeActionPassingKYD())
+      .to.be.revertedWith("InsufficientNumberOfUniqueSigners")
+      .withArgs(1, 2);
   });
 
   it("Should revert if one value from node is not equal", async () => {
@@ -68,9 +68,9 @@ describe("SampleKydServiceConsumer", () => {
       ],
       ScoreType.coinbaseKYD
     );
-    await expect(wrappedContract.executeActionPassingKYD()).to.be.revertedWith(
-      "AllValuesMustBeEqual()"
-    );
+    await expect(wrappedContract.executeActionPassingKYD())
+      .to.be.revertedWith("AllValuesMustBeEqual")
+      .withArgs();
   });
 
   it("Should revert if two calls to the same node", async () => {
@@ -81,9 +81,9 @@ describe("SampleKydServiceConsumer", () => {
       ],
       ScoreType.coinbaseKYD
     );
-    await expect(wrappedContract.executeActionPassingKYD()).to.be.revertedWith(
-      "InsufficientNumberOfUniqueSigners(1, 2)"
-    );
+    await expect(wrappedContract.executeActionPassingKYD())
+      .to.be.revertedWith("InsufficientNumberOfUniqueSigners")
+      .withArgs(1, 2);
   });
 });
 

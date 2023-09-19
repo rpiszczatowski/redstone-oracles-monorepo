@@ -1,15 +1,10 @@
-import {
-  NotSanitizedPriceDataBeforeAggregation,
-  PriceDataAfterAggregation,
-  SanitizedPriceDataBeforeAggregation,
-} from "../../src/types";
 import medianAggregator from "../../src/aggregators/median-aggregator";
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber } from "@redstone-finance/utils";
 
 describe("medianAggregator", () => {
   it("should properly aggregate prices from different sources", () => {
     // Given
-    const input: SanitizedPriceDataBeforeAggregation = {
+    const input = {
       id: "",
       source: {
         src1: SafeNumber.createSafeNumber(3),
@@ -27,8 +22,7 @@ describe("medianAggregator", () => {
     };
 
     // When
-    const result: PriceDataAfterAggregation =
-      medianAggregator.getAggregatedValue(input);
+    const result = medianAggregator.getAggregatedValue(input);
 
     // Then
     expect(result.value.toString()).toEqual("6");

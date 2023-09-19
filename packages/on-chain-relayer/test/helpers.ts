@@ -5,12 +5,13 @@ import {
   DataPackage,
   INumericDataPoint,
   NumericDataPoint,
-} from "redstone-protocol";
-import { DataPackagesResponse } from "redstone-sdk";
+} from "@redstone-finance/protocol";
+import { DataPackagesResponse } from "@redstone-finance/sdk";
 import { formatBytes32String } from "ethers/lib/utils";
-import { setConfigProvider } from "../src";
+import { setConfigProvider, RelayerConfig } from "../src";
 import { ethers } from "hardhat";
 import { MS_IN_ONE_MINUTE } from "../src/make-config-provider";
+import { FactoryOptions } from "hardhat/types";
 
 export const ethDataFeed = formatBytes32String("ETH");
 export const btcDataFeed = formatBytes32String("BTC");
@@ -46,7 +47,9 @@ export const getWrappedContractAndUpdateBlockTimestamp = async (
   });
 };
 
-export const mockEnvVariables = (overrideMockConfig: any = {}) => {
+export const mockEnvVariables = (
+  overrideMockConfig: Record<string, unknown> = {}
+) => {
   setConfigProvider(() => {
     return {
       relayerIterationInterval: "10",
@@ -64,9 +67,10 @@ export const mockEnvVariables = (overrideMockConfig: any = {}) => {
       minDeviationPercentage: 10,
       adapterContractType: "price-feeds",
       fallbackOffsetInMS:
-        (overrideMockConfig.fallbackOffsetInMinutes ?? 0) * MS_IN_ONE_MINUTE,
+        ((overrideMockConfig.fallbackOffsetInMinutes as number | undefined) ??
+          0) * MS_IN_ONE_MINUTE,
       ...overrideMockConfig,
-    };
+    } as unknown as RelayerConfig;
   });
 };
 
@@ -109,7 +113,7 @@ export const getDataPackagesResponse = async (
       if (!signedDataPackages[dataPointObj.dataFeedId as DataPointsKeys]) {
         signedDataPackages[dataPointObj.dataFeedId as DataPointsKeys] = [];
       }
-      signedDataPackages[dataPointObj.dataFeedId as DataPointsKeys].push(
+      signedDataPackages[dataPointObj.dataFeedId as DataPointsKeys]!.push(
         signedDataPackage
       );
     }
@@ -136,7 +140,7 @@ export const deployMockSortedOracles = async (signer?: Signer) => {
         AddressSortedLinkedListWithMedian: sortedLinkedListContract.address,
       },
       signer,
-    }
+    } as FactoryOptions
   );
   const contract = await MockSortedOraclesFactory.deploy();
   await contract.deployed();

@@ -1,5 +1,5 @@
-import { compressMsg } from "redstone-streamr-proxy";
-import { consts } from "redstone-protocol";
+import { compressMsg } from "@redstone-finance/streamr-proxy";
+import { consts } from "@redstone-finance/protocol";
 import "../common/set-test-envs";
 import {
   MOCK_DATA_SERVICE_ID,
@@ -8,21 +8,26 @@ import {
   mockOracleRegistryState,
 } from "../common/mock-values";
 import { connectToTestDB, dropTestDatabase } from "../common/test-db";
-import { DataPackage } from "../../src/data-packages/data-packages.model";
+import {
+  DataPackage,
+  DataPackageDocument,
+} from "../../src/data-packages/data-packages.model";
 import { sleep } from "../common/test-utils";
 import { StreamrListenerService } from "../../src/streamr-listener/streamr-listener.service";
 import { DataPackagesService } from "../../src/data-packages/data-packages.service";
 import { BundlrService } from "../../src/bundlr/bundlr.service";
 
-jest.mock("redstone-sdk", () => ({
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+jest.mock("@redstone-finance/sdk", () => ({
   __esModule: true,
-  ...jest.requireActual("redstone-sdk"),
+  ...jest.requireActual("@redstone-finance/sdk"),
   getOracleRegistryState: jest.fn(() => mockOracleRegistryState),
 }));
 
-jest.mock("redstone-streamr-proxy", () => ({
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+jest.mock("@redstone-finance/streamr-proxy", () => ({
   __esModule: true,
-  ...jest.requireActual("redstone-streamr-proxy"),
+  ...jest.requireActual("@redstone-finance/streamr-proxy"),
   StreamrClient: jest.fn().mockImplementation(() => ({
     subscribe(_streamId: string, callback: (msg: Uint8Array) => void) {
       callback(compressMsg(getMockDataPackages()));
@@ -69,11 +74,9 @@ describe("Streamr Listener (e2e)", () => {
     await streamrListenerService.syncStreamrListening();
     await sleep(1000);
 
-    const dataPackagesInDB = await DataPackage.find();
+    const dataPackagesInDB = await DataPackage.find<DataPackageDocument>();
     const dataPackagesInDBCleaned = dataPackagesInDB.map((dp) => {
-      const { _id, __v, ...rest } = dp.toJSON() as any;
-      _id;
-      __v;
+      const { _id, __v, ...rest } = dp.toJSON();
       return rest;
     });
 
@@ -124,7 +127,7 @@ describe("Streamr Listener (e2e)", () => {
     await streamrListenerService.syncStreamrListening();
     // mocking race first bundlr fails then DB try to save
     dataPackageServiceSaveManySpy.mockImplementationOnce(
-      () => sleep(20) as any
+      () => sleep(20) as Promise<void>
     );
     bundlrSaveDataPackagesSpy.mockImplementationOnce(() => Promise.reject());
 
@@ -141,7 +144,9 @@ describe("Streamr Listener (e2e)", () => {
     await streamrListenerService.syncStreamrListening();
 
     // mocking race first data fails then bundlr try to save
-    bundlrSaveDataPackagesSpy.mockImplementationOnce(() => sleep(20) as any);
+    bundlrSaveDataPackagesSpy.mockImplementationOnce(
+      () => sleep(20) as Promise<void>
+    );
     dataPackageServiceSaveManySpy.mockImplementationOnce(() =>
       Promise.reject()
     );

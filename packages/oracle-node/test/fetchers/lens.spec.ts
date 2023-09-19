@@ -4,7 +4,7 @@ import { mockFetcherResponse } from "./_helpers";
 jest.mock("axios");
 
 describe("lens fetcher", () => {
-  const fetcher = fetchers["lens"];
+  const fetcher = fetchers["lens"]!;
 
   beforeEach(() => {
     mockFetcherResponse("../../src/fetchers/lens/example-response.json");

@@ -41,7 +41,7 @@ describe("permaswap fetcher", () => {
     await closeLocalLevelDB();
   });
 
-  const sut = fetchers["permaswap"];
+  const sut = fetchers["permaswap"]!;
 
   it("should properly fetch ARDRIVE price", async () => {
     await saveMockPricesInLocalDb([9], ["AR"]);

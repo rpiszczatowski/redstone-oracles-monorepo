@@ -1,12 +1,13 @@
 import { Provider } from "fuels";
-import { ContractParamsProvider } from "redstone-sdk";
+import { ContractParamsProvider } from "@redstone-finance/sdk";
 import { connectPricesContract } from "./prices-contract-test-utils";
+import { BigNumberish } from "ethers";
 
 jest.setTimeout(10 * 60000);
 
-const IS_LOCAL = 1;
+const IS_LOCAL = true as boolean;
 
-// 	For the beta-2 node the 'fuels' version must not be greater than 0.32.0
+// For the beta-2 node the 'fuels' version must not be greater than 0.32.0
 const provider = IS_LOCAL
   ? undefined
   : new Provider("https://beta-3.fuel.network/graphql");
@@ -20,7 +21,7 @@ describe("Gas Usage of integrated and initialized prices contract", () => {
     // c + n * p = a_n,
     // so... p = (a_n - a_1) / ( n - 1), c = a_1 - p
 
-    for (let obj of [
+    for (const obj of [
       { func: "get_prices", num: 12, subject: "packages" },
       { func: "write_prices", num: 12, subject: "packages" },
       { func: "read_prices", num: 4, subject: "feeds" },
@@ -54,7 +55,12 @@ describe("Gas Usage of integrated and initialized prices contract", () => {
     });
 
     let gasUsage = await adapter.getPricesFromPayload(paramsProvider);
-    logAndSaveResults("get_prices", uniqueSignerCount, dataFeeds, gasUsage[0]);
+    logAndSaveResults(
+      "get_prices",
+      uniqueSignerCount,
+      dataFeeds,
+      Number(gasUsage[0])
+    );
 
     gasUsage = (await adapter.writePricesFromPayloadToContract(
       paramsProvider
@@ -63,13 +69,18 @@ describe("Gas Usage of integrated and initialized prices contract", () => {
       "write_prices",
       uniqueSignerCount,
       dataFeeds,
-      gasUsage[0]
+      Number(gasUsage[0])
     );
 
     gasUsage = (await adapter.readPricesFromContract(
       paramsProvider
     )) as number[];
-    logAndSaveResults("read_prices", uniqueSignerCount, dataFeeds, gasUsage[0]);
+    logAndSaveResults(
+      "read_prices",
+      uniqueSignerCount,
+      dataFeeds,
+      Number(gasUsage[0])
+    );
 
     const timestampGasUsage = await adapter.readTimestampFromContract();
     logAndSaveResults(
@@ -84,12 +95,15 @@ describe("Gas Usage of integrated and initialized prices contract", () => {
     method: string,
     uniqueSignerCount: number,
     dataFeeds: string[],
-    gasUsage: number
+    gasUsage: BigNumberish
   ) {
     console.log(
-      `Gas usage for ${method}, ${uniqueSignerCount} signer(s), ${dataFeeds.length} feed(s): ${gasUsage}`
+      `Gas usage for ${method}, ${uniqueSignerCount} signer(s), ${
+        dataFeeds.length
+      } feed(s): ${Number(gasUsage)}`
     );
 
-    results[`${method}:${uniqueSignerCount}:${dataFeeds.length}`] = gasUsage;
+    results[`${method}:${uniqueSignerCount}:${dataFeeds.length}`] =
+      Number(gasUsage);
   }
 });

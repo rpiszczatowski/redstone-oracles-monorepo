@@ -1,6 +1,5 @@
 import { BigNumber, constants, utils } from "ethers";
 import axios, { AxiosResponse } from "axios";
-import { Consola } from "consola";
 import { getLastPrice } from "../db/local-db";
 import { config } from "../config";
 import { Transaction } from "../db/remote-mongo/models/Transaction";
@@ -9,8 +8,9 @@ import {
   level2Addresses,
   level3Addresses,
 } from "./mock-addresses";
+import loggerFactory from "../utils/logger";
 
-const logger = require("../utils/logger")("score-by-address") as Consola;
+const logger = loggerFactory("score-by-address");
 
 const BIG_END_BLOCK = 99999999;
 const TXS_PER_PAGE = 10000;
@@ -119,7 +119,7 @@ const fetchTransactionForAddress = async (
     retryInterval: RETRY_INTERVAL,
   });
 
-  let transactions = (response.data as QueryResponse).result;
+  const transactions = response.data.result;
   validateEtherscanResponse(transactions);
   let transactionFromNextPage = [] as RawTx[];
   if (transactions.length >= TXS_PER_PAGE) {
@@ -157,9 +157,10 @@ const validateEtherscanConfig = () => {
   return { etherscanApiUrl, etherscanApiKey };
 };
 
-const validateEtherscanResponse = (transactions: any) => {
+const validateEtherscanResponse = (transactions: unknown) => {
   if (typeof transactions !== "object") {
-    const errMsg = "Invalid type of response from etherscan: " + transactions;
+    const errMsg =
+      "Invalid type of response from etherscan: " + String(transactions);
     throw new Error(errMsg);
   }
 };
@@ -209,13 +210,13 @@ const retryRequestIfFailedOrRateLimited = async ({
   }
   try {
     const response = await request();
-    const status = (response.data as QueryResponse).status;
-    const message = (response.data as QueryResponse).message;
+    const status = response.data.status;
+    const message = response.data.message;
     const needRetry =
       Number(status) === 0 && message !== "No transactions found";
     if (needRetry) {
       await sleep(retryInterval);
-      return retryRequestIfFailedOrRateLimited({
+      return await retryRequestIfFailedOrRateLimited({
         request,
         retryCount: retryCount - 1,
         retryInterval,
@@ -224,7 +225,7 @@ const retryRequestIfFailedOrRateLimited = async ({
     return response;
   } catch {
     await sleep(retryInterval);
-    return retryRequestIfFailedOrRateLimited({
+    return await retryRequestIfFailedOrRateLimited({
       request,
       retryCount: retryCount - 1,
       retryInterval,

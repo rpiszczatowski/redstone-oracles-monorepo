@@ -3,14 +3,14 @@ import { BigNumber, utils } from "ethers";
 import {
   redstoneOraclesInitialState,
   RedstoneOraclesState,
-} from "redstone-oracles-smartweave-contracts";
+} from "@redstone-finance/oracles-smartweave-contracts";
 import {
   INumericDataPoint,
   RedstonePayload,
   SignedDataPackage,
   SignedDataPackagePlainObj,
-} from "redstone-protocol";
-import { SafeNumber } from "redstone-utils";
+} from "@redstone-finance/protocol";
+import { SafeNumber } from "@redstone-finance/utils";
 import { resolveDataServiceUrls } from "./data-services-urls";
 
 const DEFAULT_DECIMALS = 8;
@@ -20,13 +20,13 @@ export interface DataPackagesRequestParams {
   dataServiceId: string;
   uniqueSignersCount: number;
   dataFeeds?: string[];
-  urls?: string[] | undefined;
+  urls?: string[];
   valuesToCompare?: ValuesForDataFeeds;
-  historicalTimestamp?: number | undefined;
+  historicalTimestamp?: number;
 }
 
 export interface DataPackagesResponse {
-  [dataFeedId: string]: SignedDataPackage[];
+  [dataFeedId: string]: SignedDataPackage[] | undefined;
 }
 
 export interface ValuesForDataFeeds {
@@ -158,7 +158,7 @@ export const requestDataPackages = async (
   const promises = prepareDataPackagePromises(reqParams);
   try {
     return await Promise.any(promises);
-  } catch (e: unknown) {
+  } catch (e) {
     const errMessage = `Request failed ${JSON.stringify({
       reqParams,
     })}, Original error: ${errToString(e)}`;
@@ -191,7 +191,9 @@ export const requestRedstonePayload = async (
   unsignedMetadataMsg?: string
 ): Promise<string> => {
   const signedDataPackagesResponse = await requestDataPackages(reqParams);
-  const signedDataPackages = Object.values(signedDataPackagesResponse).flat();
+  const signedDataPackages = Object.values(
+    signedDataPackagesResponse
+  ).flat() as SignedDataPackage[];
 
   return RedstonePayload.prepare(signedDataPackages, unsignedMetadataMsg || "");
 };

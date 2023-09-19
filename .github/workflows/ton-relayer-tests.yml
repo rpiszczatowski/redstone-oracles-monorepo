@@ -1,0 +1,28 @@
+name: Ton Relayer CI
+on:
+  push:
+    paths:
+      - packages/ton-relayer/**
+      - packages/ton-connector/**
+      - packages/sdk/**
+      - packages/protocol/**
+      - .github/workflows/ton-relayer-tests.yml
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: packages/ton-relayer
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.15
+      - name: Install modules
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Lint
+        run: yarn lint

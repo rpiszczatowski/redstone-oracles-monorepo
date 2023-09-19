@@ -1,12 +1,17 @@
-import { DataPackagesRequestParams, requestDataPackages } from "redstone-sdk";
+import {
+  DataPackagesRequestParams,
+  requestDataPackages,
+} from "@redstone-finance/sdk";
 import { BaseWrapper } from "./BaseWrapper";
 import { version } from "../../package.json";
-import { resolveDataServiceUrls } from "redstone-sdk";
-import { SignedDataPackage } from "redstone-protocol";
+import { resolveDataServiceUrls } from "@redstone-finance/sdk";
+import { SignedDataPackage } from "@redstone-finance/protocol";
+import { Contract } from "ethers";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 export type DataPackagesRequestInput = Partial<DataPackagesRequestParams>;
 
-export class DataServiceWrapper extends BaseWrapper {
+export class DataServiceWrapper<T extends Contract> extends BaseWrapper<T> {
   constructor(
     private readonly dataPackagesRequestParams: DataPackagesRequestInput
   ) {
@@ -22,7 +27,7 @@ export class DataServiceWrapper extends BaseWrapper {
     const dataPackagesRequestParams =
       await this.resolveDataPackagesRequestParams();
     const dpResponse = await requestDataPackages(dataPackagesRequestParams);
-    return Object.values(dpResponse).flat();
+    return Object.values(dpResponse).flat() as SignedDataPackage[];
   }
 
   private async resolveDataPackagesRequestParams(): Promise<
@@ -43,6 +48,7 @@ export class DataServiceWrapper extends BaseWrapper {
 
     if (!this.dataPackagesRequestParams.urls) {
       fetchedParams.urls = resolveDataServiceUrls(
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         fetchedParams.dataServiceId ??
           this.dataPackagesRequestParams.dataServiceId
       );
@@ -53,23 +59,25 @@ export class DataServiceWrapper extends BaseWrapper {
 
   private async getDataServiceIdFromContract(): Promise<string> {
     try {
-      const dataServiceId = await this.contract.getDataServiceId();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      const dataServiceId = (await this.contract.getDataServiceId()) as string;
       return dataServiceId;
-    } catch (e: any) {
+    } catch (e) {
       throw new Error(
         `DataServiceId not provided and failed to get it from underlying contract. Error: ` +
-          e?.message
+          RedstoneCommon.stringifyError(e)
       );
     }
   }
 
   private async getUniqueSignersThresholdFromContract(): Promise<number> {
     try {
-      return await this.contract.getUniqueSignersThreshold();
-    } catch (e: any) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      return (await this.contract.getUniqueSignersThreshold()) as number;
+    } catch (e) {
       throw new Error(
         `UniqueSignersCount not provided and failed to get it from underlying contract. Error: ` +
-          e?.message
+          RedstoneCommon.stringifyError(e)
       );
     }
   }

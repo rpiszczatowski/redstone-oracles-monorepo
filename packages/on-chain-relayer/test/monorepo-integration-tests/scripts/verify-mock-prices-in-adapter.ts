@@ -4,6 +4,7 @@ import { formatBytes32String } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 import { PriceFeedsAdapterWithoutRounds } from "../../../typechain-types";
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
   const ContractFactory = await ethers.getContractFactory(
     "PriceFeedsAdapterWithoutRoundsOneSignerMock"

@@ -1,7 +1,7 @@
 {
-  "name": "redstone-sdk",
+  "name": "@redstone-finance/sdk",
   "prettier": "redstone-prettier-config",
-  "version": "1.8.2",
+  "version": "0.3.0",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "license": "MIT",
@@ -10,21 +10,20 @@
     "clean": "rm -rf dist",
     "build": "yarn clean && tsc --build",
     "preversion": "yarn build",
-    "postversion": "git commit -a -m \"build: $npm_package_name@$npm_package_version\" && git push",
     "pack-package": "yarn build && cd dist && npm pack",
     "lint": "eslint ."
   },
   "dependencies": {
-    "axios": "^0.27.2",
-    "ethers": "^5.7.2",
-    "redstone-oracles-smartweave-contracts": "*",
-    "redstone-protocol": "*",
-    "redstone-utils": "^0.1.0"
+    "@redstone-finance/oracles-smartweave-contracts": "^0.3.0",
+    "@redstone-finance/protocol": "^0.3.0",
+    "@redstone-finance/utils": "^0.3.0",
+    "axios": "^1.5.0",
+    "ethers": "^5.7.2"
   },
   "devDependencies": {
     "@types/jest": "^29.5.4",
     "jest": "^29.6.4",
-    "msw": "^0.47.4",
+    "msw": "^1.2.1",
     "ts-jest": "^29.1.1",
     "typescript": "^5.2.2"
   }

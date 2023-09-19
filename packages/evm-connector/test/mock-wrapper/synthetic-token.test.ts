@@ -4,7 +4,7 @@ import { SampleSyntheticToken } from "../../typechain-types";
 import { expect } from "chai";
 import { Signer } from "ethers";
 import { NUMBER_OF_MOCK_NUMERIC_SIGNERS } from "../tests-common";
-import { utils } from "redstone-protocol";
+import { utils } from "@redstone-finance/protocol";
 import {
   getMockNumericPackage,
   getRange,
@@ -15,7 +15,7 @@ import {
 
 describe("SampleSyntheticToken", function () {
   let sampleContract: SampleSyntheticToken,
-    wrappedContract: any,
+    wrappedContract: SampleSyntheticToken,
     signer: Signer,
     address: string;
 

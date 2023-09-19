@@ -1,9 +1,12 @@
 import { BigNumber } from "ethers";
-import { INumericDataPoint } from "redstone-protocol";
-import { DataPackagesResponse, ValuesForDataFeeds } from "redstone-sdk";
+import { INumericDataPoint } from "@redstone-finance/protocol";
+import {
+  DataPackagesResponse,
+  ValuesForDataFeeds,
+} from "@redstone-finance/sdk";
 import { RelayerConfig } from "../../types";
 import { formatUnits } from "ethers/lib/utils";
-import { MathUtils } from "redstone-utils";
+import { MathUtils } from "@redstone-finance/utils";
 
 const DEFAULT_DECIMALS = 8;
 
@@ -21,7 +24,7 @@ export const checkValueDeviationCondition = (
     const valueFromContract =
       valuesFromContract[dataFeedId] ?? BigNumber.from(0);
 
-    for (const { dataPackage } of dataPackages[dataFeedId]) {
+    for (const { dataPackage } of dataPackages[dataFeedId]!) {
       for (const dataPoint of dataPackage.dataPoints) {
         const dataPointObj = dataPoint.toObj() as INumericDataPoint;
 
@@ -35,7 +38,7 @@ export const checkValueDeviationCondition = (
         logTrace.addPerDataFeedLog(
           dataPackage.timestampMilliseconds,
           valueFromContractAsDecimal,
-          dataPackages[dataFeedId].length,
+          dataPackages[dataFeedId]!.length,
           dataPointObj
         );
 
@@ -73,12 +76,13 @@ const calculateDeviation = (
 class ValueDeviationLogTrace {
   private perDataFeedId: Record<
     string,
-    {
-      valueFromContract: number;
-      valuesFromNode: number[];
-      timestamp: number;
-      packagesCount: number;
-    }
+    | {
+        valueFromContract: number;
+        valuesFromNode: number[];
+        timestamp: number;
+        packagesCount: number;
+      }
+    | undefined
   > = {};
   private maxDeviation!: string;
   private thresholdDeviation!: string;
@@ -90,7 +94,8 @@ class ValueDeviationLogTrace {
     dataPoint: INumericDataPoint
   ) {
     const dataFeedId = dataPoint.dataFeedId;
-    if (!this.perDataFeedId[dataFeedId]) {
+    const perData = this.perDataFeedId[dataFeedId];
+    if (!perData) {
       this.perDataFeedId[dataFeedId] = {
         valueFromContract: valueFromContract,
         valuesFromNode: [dataPoint.value],
@@ -98,7 +103,7 @@ class ValueDeviationLogTrace {
         timestamp,
       };
     } else {
-      this.perDataFeedId[dataFeedId].valuesFromNode.push(dataPoint.value);
+      perData.valuesFromNode.push(dataPoint.value);
     }
   }
 

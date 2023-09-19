@@ -2,6 +2,7 @@ import {
   MockProvider,
   deployMockContract,
   deployContract,
+  MockContract,
 } from "ethereum-waffle";
 import {
   clearLastPricesCache,
@@ -15,13 +16,13 @@ import VelodromPool from "../../src/fetchers/evm-chain/optimism/velodrome/abi.js
 import multicall3Json from "../abis/Multicall3.deployment.json";
 import { VelodromeOnChainFetcher } from "../../src/fetchers/evm-chain/optimism/velodrome/VelodromeOnChainFetcher";
 import { PoolsConfig } from "../../src/fetchers/evm-chain/optimism/velodrome/types";
-import { RedstoneCommon } from "redstone-utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 const MOCK_TOKEN_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
 const MOCK_TOKEN2_ADDRESS = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc3";
 
 describe("velodrome fetcher", () => {
-  let poolContract: Contract;
+  let poolContract: MockContract;
   let multicall: Contract;
   let provider: MockProvider;
   let mockTokenConfig: PoolsConfig;

@@ -1,8 +1,8 @@
-import { SafeNumber } from "redstone-utils";
+import { SafeNumber } from "@redstone-finance/utils";
 import {
   Aggregator,
+  NotSanitizedPriceDataBeforeAggregation,
   PriceDataAfterAggregation,
-  PriceDataBeforeAggregation,
   SanitizedPriceDataBeforeAggregation,
 } from "../../types";
 import { getTickLiquidities } from "./get-liquidities";
@@ -15,7 +15,7 @@ export interface PricesWithLiquidity {
 export const lwapAggregator: Aggregator = {
   getAggregatedValue(
     price: SanitizedPriceDataBeforeAggregation,
-    allPrices?: PriceDataBeforeAggregation[]
+    allPrices?: NotSanitizedPriceDataBeforeAggregation[]
   ): PriceDataAfterAggregation {
     return {
       ...price,
@@ -26,7 +26,7 @@ export const lwapAggregator: Aggregator = {
 
 const getLwapValue = (
   price: SanitizedPriceDataBeforeAggregation,
-  allPrices?: PriceDataBeforeAggregation[]
+  allPrices?: NotSanitizedPriceDataBeforeAggregation[]
 ): SafeNumber.ISafeNumber => {
   if (!allPrices) {
     throw new Error(

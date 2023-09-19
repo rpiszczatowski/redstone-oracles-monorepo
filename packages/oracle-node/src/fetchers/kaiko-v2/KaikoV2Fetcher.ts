@@ -3,7 +3,13 @@ import {
   RequestIdToResponse,
 } from "../MultiRequestFetcher";
 import { config } from "../../config";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+
+type KaikoResponse = {
+  data: {
+    price: string;
+  }[];
+};
 
 const KAIKO_PRICES_URL =
   "https://eu.market-api.kaiko.io/v2/data/trades.v1/spot_exchange_rate";
@@ -24,12 +30,12 @@ export class KaikoV2Fetcher extends MultiRequestFetcher {
     super("kaiko-v2");
   }
 
-  buildKaikoApiUrl = (id: string): string => {
+  static buildKaikoApiUrl = (id: string): string => {
     return `${KAIKO_PRICES_URL}/${id.toLowerCase()}/usd`;
   };
 
-  override makeRequest(id: string): Promise<any> {
-    return axios.get(this.buildKaikoApiUrl(id), {
+  override makeRequest(id: string): Promise<AxiosResponse<KaikoResponse>> {
+    return axios.get(KaikoV2Fetcher.buildKaikoApiUrl(id), {
       headers: KAIKO_REQUEST_HEADERS,
       params: KAIKO_REQUEST_PARAMS,
     });
@@ -37,7 +43,7 @@ export class KaikoV2Fetcher extends MultiRequestFetcher {
 
   override extractPrice(
     dataFeedId: string,
-    responses: RequestIdToResponse
+    responses: RequestIdToResponse<AxiosResponse<KaikoResponse | undefined>>
   ): number | undefined {
     const price = responses[dataFeedId]?.data?.data[0].price;
     return price ? Number(price) : undefined;

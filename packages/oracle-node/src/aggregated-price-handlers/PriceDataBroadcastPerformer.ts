@@ -29,9 +29,9 @@ export class PriceDataBroadcastPerformer
 
   async handle(
     aggregatedPrices: PriceDataAfterAggregation[],
-    pricesService: PricesService
+    _pricesService: PricesService
   ): Promise<void> {
-    const pricesReadyForSigning = pricesService.preparePricesForSigning(
+    const pricesReadyForSigning = PricesService.preparePricesForSigning(
       aggregatedPrices,
       "",
       config.providerIdForPriceBroadcasting || this.providerAddress

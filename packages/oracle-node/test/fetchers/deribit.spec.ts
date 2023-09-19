@@ -21,7 +21,7 @@ function mock(tokens: { symbol: string; value: number }[]) {
 jest.mock("axios");
 
 describe("deribit fetcher", () => {
-  const sut = fetchers["deribit"];
+  const sut = fetchers["deribit"]!;
 
   it("should properly fetch data with proper tokens", async () => {
     mock(properTokens);
