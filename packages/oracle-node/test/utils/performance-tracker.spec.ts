@@ -7,12 +7,12 @@ import {
 import { config as nodeConfig } from "../../src/config";
 
 describe("performance-tracker", () => {
-  test("should send telemetry when valid config", async () => {
+  test("should queue telemetry when valid config", async () => {
     await expect(queueNodeTelemetry()).resolves.not.toThrowError();
     expect(isTelemetryEnabled()).toBe(true);
   });
 
-  test("should end track with sending telemetry when valid config", () => {
+  test("should end track with queue telemetry when valid config", () => {
     const trackingId = trackStart("testLabel");
     trackEnd(trackingId);
     expect(isTelemetryEnabled()).toBe(true);
@@ -29,7 +29,7 @@ describe("performance-tracker", () => {
     expect(isTelemetryEnabled()).toBe(true);
   });
 
-  test("should end track without sending telemetry when invalid config", () => {
+  test("should end track without queue telemetry when invalid config", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (nodeConfig as any) = {
       ...nodeConfig,
