@@ -9,16 +9,13 @@ concurrency:
 
 jobs:
   long-primary-dry-run:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     timeout-minutes: 15
     defaults:
       run:
         working-directory: packages/integration
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.15
       - name: Install deps
         run: yarn
       - name: Build
