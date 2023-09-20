@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
 COPY .yarnrc .
+COPY tsconfig-common.json .
 
 COPY packages/oracle-node/package.json ./packages/oracle-node/
 COPY packages/protocol/package.json ./packages/protocol/
