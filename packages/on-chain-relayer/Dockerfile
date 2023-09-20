@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
 COPY .yarnrc .
+COPY tsconfig-common.json .
 
 COPY packages/on-chain-relayer/package.json ./packages/on-chain-relayer/
 COPY packages/protocol/package.json ./packages/protocol/
@@ -58,6 +59,6 @@ COPY --from=build /app/packages/rpc-providers/package.json ./packages/rpc-provid
 COPY --from=build /app/packages/oracles-smartweave-contracts/dist ./packages/oracles-smartweave-contracts/dist
 COPY --from=build /app/packages/oracles-smartweave-contracts/package.json ./packages/oracles-smartweave-contracts
 
-RUN yarn install --frozen-lockfile --non-interactive --production=true
+RUN yarn install --frozen-lockfile --non-interactive --production=true && yarn cache clean
 
 CMD cd packages/on-chain-relayer && node src/run-relayer.js

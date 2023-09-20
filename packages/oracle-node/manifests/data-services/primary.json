@@ -3,7 +3,7 @@
   "priceAggregator": "median",
   "defaultSource": ["coingecko"],
   "sourceTimeout": 7000,
-  "minValidSourcesPercentage": 40,
+  "minValidSourcesPercentage": 1,
   "deviationCheck": {
     "deviationWithRecentValues": {
       "maxPercent": 30,
@@ -176,7 +176,7 @@
       "source": ["ethereum-evm-fetcher"]
     },
     "SWETH": {
-      "source": ["balancer-ethereum-weth"]
+      "source": ["balancer-ethereum-weth", "maverick"]
     },
     "3Crv": {
       "source": ["ethereum-evm-fetcher"]
@@ -354,6 +354,31 @@
         "uniswap-v3-arbitrum-on-chain-weth-3000",
         "uniswap-v3-arbitrum-on-chain-usdc-500",
         "uniswap-v3-arbitrum-on-chain-usdc-3000"
+      ]
+    },
+    "OP": {
+      "source": [
+        "ascendex",
+        "binance",
+        "binancecoinm",
+        "binanceusdm",
+        "bitget",
+        "bitmart",
+        "bitrue",
+        "bybit",
+        "coinbaseprime",
+        "coinbasepro",
+        "coingecko",
+        "huobipro",
+        "gate",
+        "kucoin",
+        "latoken",
+        "mexc",
+        "phemex",
+        "okx",
+        "xt",
+        "uniswap-v3-optimism-on-chain-weth-3000",
+        "uniswap-v3-optimism-on-chain-usdc-3000"
       ]
     }
   }
