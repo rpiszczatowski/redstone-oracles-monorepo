@@ -65,7 +65,7 @@ export async function sendNodeTelemetry() {
   if (isTelemetryEnabled()) {
     logger.info("Sending node telemetry");
     const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
-    const evmAddress = new ethers.Wallet(evmPrivateKey).address;
+    const evmAddress = ethers.utils.computeAddress(evmPrivateKey);
     const dockerImageTag = await getCommitShortHash();
     const measurementName = "nodeTelemetry";
     const tags = `address=${evmAddress}`;
@@ -89,7 +89,7 @@ export function printTrackingState() {
 
 function sendNodePerformanceMetric(label: string, executionTime: number) {
   const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
-  const evmAddress = new ethers.Wallet(evmPrivateKey).address;
+  const evmAddress = ethers.utils.computeAddress(evmPrivateKey);
   const labelWithPrefix = `${evmAddress.slice(0, 14)}-${label}`;
 
   logger.info(`Metric: ${labelWithPrefix}. Value: ${executionTime}`);
