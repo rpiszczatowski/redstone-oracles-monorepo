@@ -25,5 +25,3 @@ jobs:
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
           COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
           SKIPPED_SOURCES: '["binance", "binancecoinm", "binanceusdm", "bybit", "kaiko", "kaiko-v2"]'
-          TELEMETRY_URL: ${{ secrets.TELEMETRY_URL }}
-          TELEMETRY_AUTHORIZATION_TOKEN: ${{ secrets.TELEMETRY_AUTHORIZATION_TOKEN }}

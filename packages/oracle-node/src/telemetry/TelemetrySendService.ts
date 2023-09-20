@@ -6,7 +6,17 @@ import { RedstoneCommon } from "@redstone-finance/utils";
 const logger = loggerFactory("telemetry/TelemetrySendService");
 
 export default class TelemetrySendService {
+  private static instance: TelemetrySendService | undefined;
   private metrics: string[] = [];
+
+  private constructor() {}
+
+  static getInstance(): TelemetrySendService {
+    if (!TelemetrySendService.instance) {
+      TelemetrySendService.instance = new TelemetrySendService();
+    }
+    return TelemetrySendService.instance;
+  }
 
   queueToSendMetric(metric: string) {
     this.metrics.push(metric);

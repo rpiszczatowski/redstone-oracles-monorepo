@@ -6,7 +6,7 @@ import git from "git-last-commit";
 import TelemetrySendService from "../telemetry/TelemetrySendService";
 
 const logger = loggerFactory("utils/performance-tracker");
-const telemetrySendService = new TelemetrySendService();
+const telemetrySendService = TelemetrySendService.getInstance();
 
 const tasks: {
   [trackingId: string]:
@@ -58,10 +58,10 @@ export function trackEnd(trackingId: string): void {
   // Clear the start value
   delete tasks[trackingId];
 
-  sendNodePerformanceMetric(label, executionTime);
+  queueNodePerformanceMetric(label, executionTime);
 }
 
-export async function sendNodeTelemetry() {
+export async function queueNodeTelemetry() {
   if (isTelemetryEnabled()) {
     logger.info("Sending node telemetry");
     const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
@@ -72,7 +72,6 @@ export async function sendNodeTelemetry() {
     const fields = `dockerImageTag="${dockerImageTag}"`;
     const metric = `${measurementName},${tags} ${fields} ${Date.now()}`;
     telemetrySendService.queueToSendMetric(metric);
-    await telemetrySendService.sendMetricsBatch();
   }
 }
 
@@ -87,7 +86,7 @@ export function printTrackingState() {
   logger.info(`Perf tracker tasks: ${tasksCount}`, JSON.stringify(tasks));
 }
 
-function sendNodePerformanceMetric(label: string, executionTime: number) {
+function queueNodePerformanceMetric(label: string, executionTime: number) {
   const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
   const evmAddress = ethers.utils.computeAddress(evmPrivateKey);
   const labelWithPrefix = `${evmAddress.slice(0, 14)}-${label}`;

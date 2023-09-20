@@ -33,9 +33,10 @@ import { TimeoutError, promiseTimeout } from "./utils/promise-timeout";
 import loggerFactory from "./utils/logger";
 import pjson from "../package.json";
 import {
-  sendNodeTelemetry,
+  queueNodeTelemetry,
   isTelemetryEnabled,
 } from "./utils/performance-tracker";
+import TelemetrySendService from "./telemetry/TelemetrySendService";
 
 const logger = loggerFactory("runner");
 
@@ -53,6 +54,7 @@ export default class NodeRunner {
   private tokensBySource?: TokensBySource;
   private newManifest: Manifest | null = null;
   private readonly manifestDataProvider = new ManifestDataProvider();
+  private readonly telemetrySendService = TelemetrySendService.getInstance();
 
   private readonly aggregatedPriceHandlers: AggregatedPriceHandler[];
 
@@ -206,7 +208,8 @@ export default class NodeRunner {
     await this.safeProcessManifestTokens(iterationContext);
 
     printTrackingState();
-    await sendNodeTelemetry();
+    await queueNodeTelemetry();
+    await this.telemetrySendService.sendMetricsBatch();
   }
 
   private async safeProcessManifestTokens(iterationContext: IterationContext) {

@@ -27,6 +27,4 @@ jobs:
           COINGECKO_API_KEY: ${{ secrets.COINGECKO_API_KEY }}
           COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
           STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
-          TELEMETRY_URL: ${{ secrets.TELEMETRY_URL }}
-          TELEMETRY_AUTHORIZATION_TOKEN: ${{ secrets.TELEMETRY_AUTHORIZATION_TOKEN }}
           SKIPPED_SOURCES: '["binance", "binancecoinm", "binanceusdm", "bybit", "kaiko", "kaiko-v2", "twelve-data", "twelve-data-etf-uk"]'

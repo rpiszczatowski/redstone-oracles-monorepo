@@ -24,5 +24,3 @@ jobs:
           NODE_ENV: test
           TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
           SKIPPED_SOURCES: '["binance"]'
-          TELEMETRY_URL: ${{ secrets.TELEMETRY_URL }}
-          TELEMETRY_AUTHORIZATION_TOKEN: ${{ secrets.TELEMETRY_AUTHORIZATION_TOKEN }}

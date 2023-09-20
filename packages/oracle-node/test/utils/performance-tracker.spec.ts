@@ -1,6 +1,6 @@
 import {
   isTelemetryEnabled,
-  sendNodeTelemetry,
+  queueNodeTelemetry,
   trackStart,
   trackEnd,
 } from "../../src/utils/performance-tracker";
@@ -8,27 +8,29 @@ import { config as nodeConfig } from "../../src/config";
 
 describe("performance-tracker", () => {
   test("should send telemetry when valid config", async () => {
-    await expect(sendNodeTelemetry()).resolves.not.toThrowError();
+    await expect(queueNodeTelemetry()).resolves.not.toThrowError();
     expect(isTelemetryEnabled()).toBe(true);
   });
 
-  test("should end track with sending telemetry when valid config", async () => {
+  test("should end track with sending telemetry when valid config", () => {
     const trackingId = trackStart("testLabel");
     trackEnd(trackingId);
     expect(isTelemetryEnabled()).toBe(true);
   });
 
   test("should not throw error when fail to send telemetry", async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (nodeConfig as any) = {
       ...nodeConfig,
       telemetryUrl: "testUrl",
       telemetryAuthorizationToken: "testToken",
     };
-    await expect(sendNodeTelemetry()).resolves.not.toThrowError();
+    await expect(queueNodeTelemetry()).resolves.not.toThrowError();
     expect(isTelemetryEnabled()).toBe(true);
   });
 
-  test("should end track without sending telemetry when invalid config", async () => {
+  test("should end track without sending telemetry when invalid config", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (nodeConfig as any) = {
       ...nodeConfig,
       telemetryUrl: "testUrl",
@@ -39,7 +41,8 @@ describe("performance-tracker", () => {
     expect(isTelemetryEnabled()).toBe(true);
   });
 
-  test("should return false when no telemetry config", async () => {
+  test("should return false when no telemetry config", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (nodeConfig as any) = {
       ...nodeConfig,
       telemetryUrl: "",
