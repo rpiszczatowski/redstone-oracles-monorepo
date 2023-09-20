@@ -77,7 +77,9 @@ export async function sendNodeTelemetry() {
 }
 
 export function isTelemetryEnabled() {
-  return config.telemetryUrl !== "" && config.telemetryAuthorizationToken;
+  return (
+    config.telemetryUrl !== "" && config.telemetryAuthorizationToken !== ""
+  );
 }
 
 export function printTrackingState() {
