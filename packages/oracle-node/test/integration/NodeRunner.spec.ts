@@ -296,8 +296,8 @@ describe("NodeRunner", () => {
     it("should broadcast fetched and signed price data", async () => {
       await runTestNode();
 
-      // one for /bulk and the sconde one for prices
-      expect(axios.post).toHaveBeenCalledTimes(2);
+      // one for /bulk, one for prices and one for telemetry
+      expect(axios.post).toHaveBeenCalledTimes(3);
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
       const secondCallArgs = (axios.post as any).mock.calls[1] as string[];
