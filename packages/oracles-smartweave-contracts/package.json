@@ -17,5 +17,9 @@
     "prompts": "^2.4.2",
     "replace-in-file": "^6.3.5",
     "warp-contracts": "^1.2.47"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "c7b70dfbd7450063c8aabb891b2fc46e75df440a"
 }

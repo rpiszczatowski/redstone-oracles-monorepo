@@ -16,5 +16,9 @@
     "decimal.js": "^10.4.3",
     "ethereum-multicall": "^2.19.0",
     "ethers": "^5.7.2"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "c7b70dfbd7450063c8aabb891b2fc46e75df440a"
 }

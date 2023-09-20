@@ -19,5 +19,9 @@
   },
   "files": [
     "dist/**/*"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "c7b70dfbd7450063c8aabb891b2fc46e75df440a"
 }

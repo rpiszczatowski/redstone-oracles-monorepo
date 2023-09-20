@@ -29,5 +29,9 @@
     "hardhat": "^2.14.0",
     "sinon": "^15.0.3",
     "solidity-coverage": "^0.8.1"
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "c7b70dfbd7450063c8aabb891b2fc46e75df440a"
 }
