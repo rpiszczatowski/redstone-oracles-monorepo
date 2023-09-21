@@ -36,7 +36,7 @@ import {
   queueNodeTelemetry,
   isTelemetryEnabled,
 } from "./utils/performance-tracker";
-import TelemetrySendService from "./telemetry/TelemetrySendService";
+import { telemetrySendService } from "./telemetry/TelemetrySendService";
 
 const logger = loggerFactory("runner");
 
@@ -54,7 +54,6 @@ export default class NodeRunner {
   private tokensBySource?: TokensBySource;
   private newManifest: Manifest | null = null;
   private readonly manifestDataProvider = new ManifestDataProvider();
-  private readonly telemetrySendService = TelemetrySendService.getInstance();
 
   private readonly aggregatedPriceHandlers: AggregatedPriceHandler[];
 
@@ -208,8 +207,9 @@ export default class NodeRunner {
     await this.safeProcessManifestTokens(iterationContext);
 
     printTrackingState();
-    await queueNodeTelemetry();
-    await this.telemetrySendService.sendMetricsBatch();
+    queueNodeTelemetry()
+      .then(() => telemetrySendService.sendMetricsBatch())
+      .catch(() => logger.info("Failed to send telemetry"));
   }
 
   private async safeProcessManifestTokens(iterationContext: IterationContext) {

@@ -3,10 +3,9 @@ import { performance } from "perf_hooks";
 import { config } from "../config";
 import loggerFactory from "./logger";
 import git from "git-last-commit";
-import TelemetrySendService from "../telemetry/TelemetrySendService";
+import { telemetrySendService } from "../telemetry/TelemetrySendService";
 
 const logger = loggerFactory("utils/performance-tracker");
-const telemetrySendService = TelemetrySendService.getInstance();
 
 const tasks: {
   [trackingId: string]:
