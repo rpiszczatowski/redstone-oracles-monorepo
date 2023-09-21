@@ -207,9 +207,8 @@ export default class NodeRunner {
     await this.safeProcessManifestTokens(iterationContext);
 
     printTrackingState();
-    queueNodeTelemetry()
-      .then(() => telemetrySendService.sendMetricsBatch())
-      .catch(() => logger.info("Failed to send telemetry"));
+    await queueNodeTelemetry();
+    void telemetrySendService.sendMetricsBatch();
   }
 
   private async safeProcessManifestTokens(iterationContext: IterationContext) {
