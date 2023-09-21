@@ -1,84 +1,123 @@
-name: Deploy images to AWS ECR Public
+name: Deploy docker images to AWS ECR Public
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: "**"
 
 jobs:
-  oracle-node-deploy:
+  oracle-node-image:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    name: Deploy oracle node image
+    name: oracle node docker image
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Configure AWS credentials
+        if: ${{ github.ref_name == 'main' }}
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - name: Build and Push Docker images to ECR public
-        id: build-and-push
+      - name: Setup env variables
         run: |
-          # Build images (for node)
-          ORACLE_NODE_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-oracle-node
-          TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
-          docker build -t "$ORACLE_NODE_DOCKER_NAME:$TAG" \
-            -f packages/oracle-node/Dockerfile . \
-
-          # Push images to ECR Public
+          echo IMAGE=public.ecr.aws/y7v2w8b2/redstone-oracle-node >> "$GITHUB_ENV"
+          echo TAG=$(echo ${GITHUB_SHA} | cut -c1-7) >> "$GITHUB_ENV"
+      - name: Build docker image
+        run: |
+          docker build -t "$IMAGE:$TAG" -f packages/oracle-node/Dockerfile .
+      - name: Push docker image to ECR public
+        if: ${{ github.ref_name == 'main' }}
+        run: |
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          docker push $ORACLE_NODE_DOCKER_NAME:$TAG
+          docker push $IMAGE:$TAG
+      - name: Print image details
+        run: |
+          docker history --no-trunc $IMAGE:$TAG
+          IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
+          echo "image size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
 
-  cache-service-deploy:
+  cache-service-image:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    name: Deploy cache service image
+    name: cache service docker image
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Configure AWS credentials
+        if: ${{ github.ref_name == 'main' }}
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - name: Build and Push Docker images to ECR public
-        id: build-and-push
+      - name: Setup env variables
         run: |
-          # Build images (for cache-service)
-          CACHE_SERVICE_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-cache-service
-          TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
-          docker build -t "$CACHE_SERVICE_DOCKER_NAME:$TAG" \
-            -f packages/cache-service/Dockerfile . \
-
-          # Push images to ECR Public
+          echo IMAGE=public.ecr.aws/y7v2w8b2/redstone-cache-service >> "$GITHUB_ENV"
+          echo TAG=$(echo ${GITHUB_SHA} | cut -c1-7) >> "$GITHUB_ENV"
+      - name: Build docker image
+        run: |
+          docker build -t "$IMAGE:$TAG" -f packages/cache-service/Dockerfile .
+      - name: Push docker image to ECR public
+        if: ${{ github.ref_name == 'main' }}
+        run: |
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          docker push $CACHE_SERVICE_DOCKER_NAME:$TAG
+          docker push $IMAGE:$TAG
+      - name: Print image details
+        run: |
+          docker history --no-trunc $IMAGE:$TAG
+          IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
+          echo "image size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
 
-  on-chain-relayer-deploy:
+  on-chain-relayer-image:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    name: Deploy on-chain relayer image
+    name: on-chain relayer docker image
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Configure AWS credentials
+        if: ${{ github.ref_name == 'main' }}
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      - name: Build and Push Docker images to ECR public
-        id: build-and-push
+      - name: Setup env variables
         run: |
-          # Build images (for on-chain relayer)
-          ON_CHAIN_RELAYER_DOCKER_NAME=public.ecr.aws/y7v2w8b2/redstone-on-chain-relayer
-          TAG=$(echo ${GITHUB_SHA} | cut -c1-7)
-          docker build -t "$ON_CHAIN_RELAYER_DOCKER_NAME:$TAG" -f packages/on-chain-relayer/Dockerfile .
-
-          # Push images to ECR Public
+          echo IMAGE=public.ecr.aws/y7v2w8b2/redstone-on-chain-relayer >> "$GITHUB_ENV"
+          echo TAG=$(echo ${GITHUB_SHA} | cut -c1-7) >> "$GITHUB_ENV"
+      - name: Build docker image
+        run: |
+          docker build -t "$IMAGE:$TAG" -f packages/on-chain-relayer/Dockerfile .
+      - name: Push docker image to ECR public
+        if: ${{ github.ref_name == 'main' }}
+        run: |
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          docker push $ON_CHAIN_RELAYER_DOCKER_NAME:$TAG
+          docker push $IMAGE:$TAG
+      - name: Print image details
+        run: |
+          docker history --no-trunc $IMAGE:$TAG
+          IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
+          echo "image size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
+
+  ton-relayer-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: ton relayer docker image
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup env variables
+        run: |
+          echo IMAGE=public.ecr.aws/y7v2w8b2/redstone-ton-relayer >> "$GITHUB_ENV"
+          echo TAG=$(echo ${GITHUB_SHA} | cut -c1-7) >> "$GITHUB_ENV"
+      - name: Build docker image
+        run: |
+          docker build -t "$IMAGE:$TAG" -f packages/ton-relayer/Dockerfile .
+      - name: Print image details
+        run: |
+          docker history --no-trunc $IMAGE:$TAG
+          IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
+          echo "image size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
+      # for now we do not publish ton-relayer docker images
