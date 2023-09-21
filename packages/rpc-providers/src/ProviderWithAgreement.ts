@@ -9,6 +9,9 @@ import {
   ProviderWithFallback,
   ProviderWithFallbackConfig,
 } from "./ProviderWithFallback";
+import { ethers } from "ethers";
+import TelemetrySendService from "./TelemetrySendService";
+import { json } from "stream/consumers";
 
 const BLOCK_NUMBER_TTL = 200;
 
@@ -40,18 +43,29 @@ const defaultConfig: Omit<
 
 export class ProviderWithAgreement extends ProviderWithFallback {
   private readonly agreementConfig: ProviderWithAgreementConfig;
+  private telemetrySendService: TelemetrySendService;
+  private address: string;
 
   constructor(
     providers: JsonRpcProvider[],
+    telemetryUrl: string,
+    telemetryAuth: string,
+    address: string,
     config: Partial<
       ProviderWithAgreementConfig & ProviderWithFallbackConfig
     > = {}
   ) {
     super(providers, config);
+    console.log("AGREEMENT PROVIDER CONSTRUCTOR10");
     this.agreementConfig = {
       ...defaultConfig,
       ...config,
     };
+    this.address = address;
+    this.telemetrySendService = new TelemetrySendService(
+      telemetryUrl,
+      telemetryAuth
+    );
     const numberOfProvidersThatHaveToAgree =
       this.agreementConfig.numberOfProvidersThatHaveToAgree;
     if (
@@ -62,9 +76,15 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         "numberOfProvidersWhichHaveToAgree should be >= 2 and > then supplied providers count"
       );
     }
+    const send = this.telemetrySendService;
+    setInterval(function () {
+      console.log("SENDINGGGG");
+      send.sendMetricsBatch();
+    }, 10 * 1000);
   }
 
   override getBlockNumber(): Promise<number> {
+    console.log("getBlockNumberssss");
     return this.electBlockNumber();
   }
 
@@ -72,6 +92,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     transaction: Deferrable<TransactionRequest>,
     blockTag?: BlockTag
   ): Promise<string> {
+    console.log("CALLLLLLLLLL");
     const electedBlockTag = utils.hexlify(
       blockTag ?? (await this.electBlockNumber())
     );
@@ -86,14 +107,64 @@ export class ProviderWithAgreement extends ProviderWithFallback {
 
   private electBlockNumber = RedstoneCommon.memoize({
     functionToMemoize: async () => {
+      console.log("ELECTTTT");
       // collect block numbers
       const blockNumbersResults = await Promise.allSettled(
-        this.providers.map((provider) =>
-          RedstoneCommon.timeout(
+        this.providers.map(async (provider) => {
+          console.log("SOME PROVIDER");
+          const jsonProvider1 = provider as JsonRpcProvider;
+          const url1 = jsonProvider1.connection.url;
+          console.log(url1);
+          const start = Date.now();
+          const result = RedstoneCommon.timeout(
             provider.getBlockNumber(),
             this.agreementConfig.getBlockNumberTimeoutMS
-          )
-        )
+          );
+          // .then((x) => {
+          //   console.log("RESULT: " + x);
+          //   return x;
+          // })
+          // .catch((fail) => {
+          //   console.log("RESULT FAIL");
+          //   console.log(fail);
+          //   return -1;
+          // });
+
+          console.log("Sent request1");
+          const measurementName = "electBlockNumber";
+          const jsonProvider = provider as JsonRpcProvider;
+          const url = jsonProvider.connection.url;
+          const network = jsonProvider.network.name;
+          try {
+            console.log("TRY 1");
+            const promiseResult = await result;
+            const stop = Date.now();
+            const executionTime = stop - start;
+            const tags = `address=${this.address},success=true,url=${url
+              .split("=")
+              .join("-")},network=${network.split(" ").join("-")}`;
+            const fields = `executionTime=${executionTime},blockNumber=${promiseResult}`;
+            const metric = `${measurementName},${tags} ${fields} ${start}`;
+            console.log("TRY 2");
+            this.telemetrySendService.queueToSendMetric(metric);
+            console.log("TRY 3");
+            return promiseResult;
+          } catch (error) {
+            console.log("ERROR 1");
+            console.log(error);
+            const stop = Date.now();
+            const executionTime = stop - start;
+            const tags = `address=${this.address},success=false,url=${url
+              .split("=")
+              .join("-")},network=${network.split(" ").join("_")}`;
+            const fields = `executionTime=${executionTime}`;
+            const metric = `${measurementName},${tags} ${fields} ${start}`;
+            this.telemetrySendService.queueToSendMetric(metric);
+            console.log("ERROR 2");
+          }
+
+          return result;
+        })
       );
 
       const blockNumbers = blockNumbersResults

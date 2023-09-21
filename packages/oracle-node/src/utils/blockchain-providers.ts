@@ -1,5 +1,6 @@
 import { providers } from "ethers";
 import { config } from "../config";
+import { ethers } from "ethers";
 import { ProviderWithAgreement } from "@redstone-finance/rpc-providers";
 
 const produceProvider = (
@@ -12,7 +13,13 @@ const produceProvider = (
     const rpcProviders = rpcUrls.map(
       (rpcUrl) => new providers.StaticJsonRpcProvider(rpcUrl, network)
     );
-    return new ProviderWithAgreement(rpcProviders);
+    console.log("AGREEMENT PROVIDER INIT");
+    return new ProviderWithAgreement(
+      rpcProviders,
+      config.telemetryUrl,
+      config.telemetryAuthorizationToken,
+      ethers.utils.computeAddress(config.privateKeys.ethereumPrivateKey)
+    );
   }
   throw new Error(
     `At least one rpc url has to be specified for network ${network.name}`
