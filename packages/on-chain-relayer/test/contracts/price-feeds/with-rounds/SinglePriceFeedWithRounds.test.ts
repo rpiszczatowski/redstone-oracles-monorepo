@@ -4,19 +4,15 @@ import { describeCommonPriceFeedTests } from "../common/price-feed-utils";
 
 chai.use(chaiAsPromised);
 
-describe("PriceFeedWithRounds", () => {
+describe("SinglePriceFeedWithRounds", () => {
   describeCommonPriceFeedTests({
-    priceFeedContractName: "PriceFeedWithRoundsMock",
-    adapterContractName: "PriceFeedsAdapterWithRoundsMock",
-    expectedRoundIdAfterOneUpdate: 1,
+    priceFeedContractName: "SinglePriceFeedWithRoundsMock",
+    adapterContractName: "SinglePriceFeedAdapterWithRoundsMock",
+    expectedRoundIdAfterOneUpdate: 0,
   });
 
   // TODO: implement
   describe("Tests for getting historical price feed values", () => {
-    it("should properly get round data for several rounds", () => {
-      expect(1).to.be.equal(1);
-    });
-
     it("should revert trying to get round data for invalid rounds", () => {
       expect(1).to.be.equal(1);
     });

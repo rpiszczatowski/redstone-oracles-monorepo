@@ -17,7 +17,7 @@ import {SinglePriceFeedAdapterBase} from "../SinglePriceFeedAdapterBase.sol";
  * We also recommend to override `getDataFeedIndex` function with hardcoded
  * values, as it can significantly reduce gas usage
  */
-abstract contract SinglePriceFeedsAdapterWithoutRounds is SinglePriceFeedAdapterBase {
+abstract contract SinglePriceFeedAdapterWithoutRounds is SinglePriceFeedAdapterBase {
   bytes32 constant VALUES_MAPPING_STORAGE_LOCATION = 0x4dd0c77efa6f6d590c97573d8c70b714546e7311202ff7c11c484cc841d91bfc; // keccak256("RedStone.oracleValuesMapping");
 
   /**
