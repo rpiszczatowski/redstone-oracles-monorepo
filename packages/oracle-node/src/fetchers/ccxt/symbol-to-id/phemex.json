@@ -9,5 +9,6 @@
   "ARB": "ARB/USDT",
   "OP": "OP/USDT",
   "DYDX": "DYDX/USDT",
-  "GMX": "GMX/USDT"
+  "GMX": "GMX/USDT",
+  "USDC": "USDC/USDT"
 }

@@ -8,5 +8,8 @@
   "GMX": "GMX/USDT",
   "FXS": "FXS/USDC",
   "BAL": "BAL/USDT",
-  "MNT": "MNT/USDT"
+  "MNT": "MNT/USDT",
+  "ETH": "ETH/USDT",
+  "BTC": "BTC/USDT",
+  "USDC": "USDC/USDT"
 }

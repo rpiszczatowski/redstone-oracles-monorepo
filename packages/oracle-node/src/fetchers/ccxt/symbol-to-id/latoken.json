@@ -6,5 +6,8 @@
   "ALCX": "ALCX/USDT",
   "JOE": "JOE/USDT",
   "FXS": "FXS/USDT",
-  "BAL": "BAL/USDT"
+  "BAL": "BAL/USDT",
+  "ETH": "ETH/USDT",
+  "BTC": "BTC/USDT",
+  "USDC": "USDC/USDT"
 }

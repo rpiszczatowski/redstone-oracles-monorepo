@@ -253,6 +253,18 @@
       "token1Decimals": 18,
       "fee": 3000,
       "pairedToken": "ETH"
+    },
+    "USDT": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x4e68ccd3e89f51c3074ca5072bbac773960dfa36",
+      "token0Symbol": "WETH",
+      "token1Symbol": "USDT",
+      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 3000,
+      "pairedToken": "ETH"
     }
   },
   "uniswap-v3-ethereum-on-chain-weth-500": {
@@ -325,6 +337,18 @@
       "token1Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       "token0Decimals": 18,
       "token1Decimals": 18,
+      "fee": 500,
+      "pairedToken": "ETH"
+    },
+    "USDT": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x11b815efb8f581194ae79006d24e0d814b7697f6",
+      "token0Symbol": "WETH",
+      "token1Symbol": "USDT",
+      "token0Address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+      "token1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
       "fee": 500,
       "pairedToken": "ETH"
     }
@@ -656,6 +680,17 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "fee": 100
+    },
+    "USDT": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x48da0965ab2d2cbf1c17c09cfb5cbe67ad5b1406",
+      "token0Symbol": "DAI",
+      "token1Symbol": "USDT",
+      "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+      "token1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 100
     }
   },
   "uniswap-v3-ethereum-on-chain-usdc-3000": {
@@ -781,6 +816,17 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "fee": 500
+    },
+    "USDT": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x7858e59e0c01ea06df3af3d20ac7b0003275d4bf",
+      "token0Symbol": "USDC",
+      "token1Symbol": "USDT",
+      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "token0Decimals": 6,
+      "token1Decimals": 6,
+      "fee": 500
     }
   },
   "uniswap-v3-ethereum-on-chain-usdc-10000": {
@@ -827,6 +873,17 @@
       "token0Decimals": 18,
       "token1Decimals": 6,
       "fee": 10000
+    },
+    "USDT": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0xbb256c2F1B677e27118b0345FD2b3894D2E6D487",
+      "token0Symbol": "USDC",
+      "token1Symbol": "USDT",
+      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "token0Decimals": 6,
+      "token1Decimals": 6,
+      "fee": 10000
     }
   },
   "uniswap-v3-ethereum-on-chain-usdc-100": {
@@ -860,6 +917,17 @@
       "token0Address": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
       "token1Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
       "token0Decimals": 18,
+      "token1Decimals": 6,
+      "fee": 100
+    },
+    "USDT": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0x3416cF6C708Da44DB2624D63ea0AAef7113527C6",
+      "token0Symbol": "USDC",
+      "token1Symbol": "USDT",
+      "token0Address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+      "token1Address": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      "token0Decimals": 6,
       "token1Decimals": 6,
       "fee": 100
     }

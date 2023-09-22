@@ -499,6 +499,11 @@
     "url": "https://curve.fi/",
     "color": "#78151d"
   },
+  "curve-dai": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
+    "url": "https://curve.fi/",
+    "color": "#78151d"
+  },
   "curve-eth": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
     "url": "https://curve.fi/",
@@ -618,5 +623,15 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/trader-joe.png",
     "url": "https://www.traderjoexyz.com/",
     "color": "#e2786f"
+  },
+  "digifinex": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/digifinex.png",
+    "url": "https://www.digifinex.com/",
+    "color": "#00e5da"
+  },
+  "bitmart": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bitmart.png",
+    "url": "https://www.bitmart.com/en-US",
+    "color": "#13c2c2"
   }
 }
