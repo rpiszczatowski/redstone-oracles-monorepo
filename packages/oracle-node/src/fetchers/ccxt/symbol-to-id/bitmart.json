@@ -11,5 +11,6 @@
   "MNT": "MNT/USDT",
   "ETH": "ETH/USDT",
   "BTC": "BTC/USDT",
-  "USDC": "USDC/USDT"
+  "USDC": "USDC/USDT",
+  "CELO": "CELO/USDT"
 }

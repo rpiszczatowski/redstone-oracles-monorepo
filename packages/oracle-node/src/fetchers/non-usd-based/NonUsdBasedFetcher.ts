@@ -1,8 +1,8 @@
-import { getLastPrice } from "../../db/local-db";
 import {
   MultiRequestFetcher,
   RequestIdToResponse,
 } from "../MultiRequestFetcher";
+import { getLastPriceOrFail } from "../../db/local-db";
 
 interface TokenPrices {
   mainTokenPrice: number;
@@ -19,13 +19,8 @@ export class NonUsdBasedFetcher extends MultiRequestFetcher {
     const { mainToken, pairedToken } =
       NonUsdBasedFetcher.extractTokensFromId(id);
 
-    const mainTokenPrice = getLastPrice(mainToken)?.value;
-    const pairedTokenPrice = getLastPrice(pairedToken)?.value;
-    if (!mainTokenPrice || !pairedTokenPrice) {
-      throw new Error(
-        `Cannot get last price from cache for: ${mainToken} or ${pairedToken}`
-      );
-    }
+    const mainTokenPrice = getLastPriceOrFail(mainToken).value;
+    const pairedTokenPrice = getLastPriceOrFail(pairedToken).value;
     return { mainTokenPrice, pairedTokenPrice };
   }
 
