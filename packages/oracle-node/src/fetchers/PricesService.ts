@@ -376,8 +376,8 @@ export default class PricesService {
         priceValuesToCompareWith
       );
       return SafeNumber.calculateDeviationPercent({
-        prevValue: value,
-        currValue: recentPricesAvg,
+        deviatedValue: value,
+        baseValue: recentPricesAvg,
       });
     }
   }
