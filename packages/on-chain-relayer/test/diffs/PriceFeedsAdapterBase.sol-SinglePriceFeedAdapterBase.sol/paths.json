@@ -1,0 +1,4 @@
+{
+  "filePath1": "./contracts/price-feeds/PriceFeedsAdapterBase.sol",
+  "filePath2": "./contracts/price-feeds/SinglePriceFeedAdapterBase.sol"
+}

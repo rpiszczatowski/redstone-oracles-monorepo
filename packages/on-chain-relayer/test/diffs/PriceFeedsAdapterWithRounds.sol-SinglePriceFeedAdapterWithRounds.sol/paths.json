@@ -1,0 +1,4 @@
+{
+  "filePath1": "./contracts/price-feeds/with-rounds/PriceFeedsAdapterWithRounds.sol",
+  "filePath2": "./contracts/price-feeds/with-rounds/SinglePriceFeedAdapterWithRounds.sol"
+}

@@ -1,0 +1,4 @@
+{
+  "filePath1": "./contracts/price-feeds/with-rounds/PriceFeedWithRounds.sol",
+  "filePath2": "./contracts/price-feeds/with-rounds/SinglePriceFeedWithRounds.sol"
+}

@@ -1,0 +1,100 @@
+5a6
+> import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+9c10
+<  * @title Common logic of the price feeds adapter contracts
+---
+>  * @title Common logic of the price feed adapter contracts for only one symbol
+12c13
+< abstract contract PriceFeedsAdapterBase is RedstoneAdapterBase, Initializable {
+---
+> abstract contract SinglePriceFeedAdapterBase is RedstoneAdapterBase, Initializable {
+13a15,18
+>   error CannotUpdateMoreThanOneDataFeed();
+> 
+>   event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 updatedAt);
+> 
+20a26,61
+> 
+>   /**
+>    * @notice Returns the only data feed identifer supported by the adapter
+>    * @dev This function should be overriden in the final contract,
+>    * but `getDataFeedIds` and `getDataFeedIndex` should not (and can not)
+>    * @return dataFeedId The only data feed identifer supported by the adapter
+>    */
+>   function getSingleDataFeedId() public view virtual returns (bytes32);
+> 
+>   /**
+>    * @notice Returns identifiers of all data feeds supported by the Adapter contract
+>    * In this case - an array with only one element
+>    * @return dataFeedIds
+>    */
+>   function getDataFeedIds() public view virtual override returns (bytes32[] memory dataFeedIds) {
+>     dataFeedIds = new bytes32[](1);
+>     dataFeedIds[0] = getSingleDataFeedId();
+>   }
+> 
+>   /**
+>    * @dev Returns 0 if dataFeedId is the one, otherwise reverts
+>    * @param dataFeedId The identifier of the requested data feed
+>    */
+>   function getDataFeedIndex(bytes32 dataFeedId) public virtual view override returns(uint256) {
+>     if (dataFeedId == getSingleDataFeedId()) {
+>       return 0;
+>     }
+>     revert DataFeedIdNotFound(dataFeedId);
+>   }
+> 
+>   /**
+>    * @notice Returns latest successful round number
+>    * @dev for adapter without rounds it always returns 0
+>    * @return latestRoundId
+>    */
+>   function getLatestRoundId() public view virtual returns (uint256 latestRoundId);
+33,35c74,75
+<     for (uint256 i = 0; i < dataFeedIdsArray.length;) {
+<       _validateAndUpdateDataFeedValue(dataFeedIdsArray[i], values[i]);
+<       unchecked { i++; } // reduces gas costs
+---
+>     if (dataFeedIdsArray.length != 1 || values.length != 1) {
+>       revert CannotUpdateMoreThanOneDataFeed();
+36a77,79
+>     _validateAndUpdateDataFeedValue(dataFeedIdsArray[0], values[0]);
+>     _emitEventAfterSingleValueUpdate(values[0]);
+>     
+38a82,86
+>   function _emitEventAfterSingleValueUpdate(uint256 newValue) internal virtual {
+>     // TODO: add a comment, how the ideal (but not cost-effective implementation would look like)
+>     emit AnswerUpdated(SafeCast.toInt256(newValue), getLatestRoundId(), block.timestamp);
+>   }
+> 
+45a94,123
+> 
+> 
+>   ////// FUNCTIONS FROM PRICE FEED //////
+> 
+>   /**
+>    * @notice Returns the number of decimals for the price feed
+>    * @dev By default, RedStone uses 8 decimals for data feeds
+>    * @return decimals The number of decimals in the price feed values
+>    */
+>   function decimals() public virtual pure returns (uint8) {
+>     return 8;
+>   }
+> 
+>   /**
+>    * @notice Description of the Price Feed
+>    * @return description
+>    */
+>   function description() public view virtual returns (string memory) {
+>     return "Redstone Price Feed";
+>   }
+> 
+>   /**
+>    * @notice Version of the Price Feed
+>    * @dev Currently it has no specific motivation and was added
+>    * only to be compatible with the Chainlink interface
+>    * @return version
+>    */
+>   function version() public virtual pure returns (uint256) {
+>     return 1;
+>   }

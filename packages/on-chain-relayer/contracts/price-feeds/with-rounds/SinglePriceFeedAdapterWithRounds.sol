@@ -4,7 +4,6 @@ pragma solidity ^0.8.14;
 
 import {SinglePriceFeedAdapterBase} from "../SinglePriceFeedAdapterBase.sol";
 
-// TODO: add comments
 /**
  * @title Price feeds adapter contract with rounds support
  * @author The Redstone Oracles team

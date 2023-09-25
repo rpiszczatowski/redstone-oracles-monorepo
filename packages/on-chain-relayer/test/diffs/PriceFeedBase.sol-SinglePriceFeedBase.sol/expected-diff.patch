@@ -1,0 +1,80 @@
+5a6,7
+> import {SinglePriceFeedAdapterBase} from "./SinglePriceFeedAdapterBase.sol";
+> import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+9c11
+<  * @title Main logic of the price feed contract
+---
+>  * @title Main logic of the price feed contract for Single Feed Adapter
+20c22
+< abstract contract PriceFeedBase is IPriceFeed, Initializable {
+---
+> abstract contract SinglePriceFeedBase is IPriceFeed, Initializable {
+37,52c39,40
+<   function getDataFeedId() public view virtual returns (bytes32);
+< 
+<   /**
+<    * @notice Returns the address of the price feed adapter
+<    * @return address The address of the price feed adapter
+<    */
+<   function getPriceFeedAdapter() public view virtual returns (IRedstoneAdapter);
+< 
+< 
+<   /**
+<    * @notice Returns the number of decimals for the price feed
+<    * @dev By default, RedStone uses 8 decimals for data feeds
+<    * @return decimals The number of decimals in the price feed values
+<    */
+<   function decimals() public virtual pure override returns (uint8) {
+<     return 8;
+---
+>   function getDataFeedId() public view virtual returns (bytes32) {
+>     return getPriceFeedAdapter().getSingleDataFeedId();
+55d42
+< 
+57,58c44,45
+<    * @notice Description of the Price Feed
+<    * @return description
+---
+>    * @notice Added to be compatible with Chainlink contracts
+>    * @return dataFeedId The identifier of the data feed
+60,61c47,48
+<   function description() public view virtual override returns (string memory) {
+<     return "Redstone Price Feed";
+---
+>   function aggregator() public view virtual returns (address) {
+>     return address(getPriceFeedAdapter());
+65,68c52,53
+<    * @notice Version of the Price Feed
+<    * @dev Currently it has no specific motivation and was added
+<    * only to be compatible with the Chainlink interface
+<    * @return version
+---
+>    * @notice Returns the address of the price feed adapter
+>    * @return address The address of the price feed adapter
+70,72c55
+<   function version() public virtual pure override returns (uint256) {
+<     return 1;
+<   }
+---
+>   function getPriceFeedAdapter() public view virtual returns (SinglePriceFeedAdapterBase);
+74d56
+< 
+132c114,129
+<   function latestRound() public view virtual returns (uint80);
+---
+>   function latestRound() public view returns (uint80) {
+>     uint256 latestRoundUint256 = getPriceFeedAdapter().getLatestRoundId();
+>     return SafeCast.toUint80(latestRoundUint256);
+>   }
+> 
+>   function decimals() public virtual view override returns (uint8) {
+>     return getPriceFeedAdapter().decimals();
+>   }
+> 
+>   function description() public view virtual override returns (string memory) {
+>     return getPriceFeedAdapter().description();
+>   }
+> 
+>   function version() public virtual view override returns (uint256) {
+>     return getPriceFeedAdapter().version();
+>   }

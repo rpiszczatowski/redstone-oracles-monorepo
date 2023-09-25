@@ -1,0 +1,21 @@
+5c5
+< import {PriceFeedsAdapterBase} from "../PriceFeedsAdapterBase.sol";
+---
+> import {SinglePriceFeedAdapterBase} from "../SinglePriceFeedAdapterBase.sol";
+19c19
+< abstract contract PriceFeedsAdapterWithoutRounds is PriceFeedsAdapterBase {
+---
+> abstract contract SinglePriceFeedAdapterWithoutRounds is SinglePriceFeedAdapterBase {
+51d50
+<    * @param dataFeedId Requested data feed identifier
+54,55c53,54
+<   function _getValueLocationInStorage(bytes32 dataFeedId) private pure returns (bytes32) {
+<     return keccak256(abi.encode(dataFeedId, VALUES_MAPPING_STORAGE_LOCATION));
+---
+>   function _getValueLocationInStorage(bytes32) private pure returns (bytes32) {
+>     return VALUES_MAPPING_STORAGE_LOCATION;
+56a56,59
+> 
+>   function getLatestRoundId() public pure override returns (uint256 latestRoundId) {
+>     return 0;
+>   }

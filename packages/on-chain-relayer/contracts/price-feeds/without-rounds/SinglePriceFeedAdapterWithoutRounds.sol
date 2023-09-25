@@ -4,7 +4,6 @@ pragma solidity ^0.8.14;
 
 import {SinglePriceFeedAdapterBase} from "../SinglePriceFeedAdapterBase.sol";
 
-// TODO: update comments
 /**
  * @title Implementation of a price feeds adapter without rounds support
  * @author The Redstone Oracles team

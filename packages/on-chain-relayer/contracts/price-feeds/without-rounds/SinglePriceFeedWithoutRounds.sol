@@ -3,7 +3,6 @@ pragma solidity ^0.8.14;
 
 import {SinglePriceFeedBase} from "../SinglePriceFeedBase.sol";
 
-// TODO: update comments here
 /**
  * @title Implementation of a price feed contract without rounds support
  * @author The Redstone Oracles team

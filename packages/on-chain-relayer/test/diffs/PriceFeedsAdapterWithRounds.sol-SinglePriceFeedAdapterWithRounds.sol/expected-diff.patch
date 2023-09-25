@@ -1,0 +1,12 @@
+5c5
+< import {PriceFeedsAdapterBase} from "../PriceFeedsAdapterBase.sol";
+---
+> import {SinglePriceFeedAdapterBase} from "../SinglePriceFeedAdapterBase.sol";
+19c19
+< abstract contract PriceFeedsAdapterWithRounds is PriceFeedsAdapterBase {
+---
+> abstract contract SinglePriceFeedAdapterWithRounds is SinglePriceFeedAdapterBase {
+141c141
+<   function getLatestRoundId() public view returns (uint256 latestRoundId) {
+---
+>   function getLatestRoundId() public view override returns (uint256 latestRoundId) {

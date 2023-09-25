@@ -1,0 +1,27 @@
+6c6
+< import {PriceFeedBase} from "../PriceFeedBase.sol";
+---
+> import {SinglePriceFeedBase} from "../SinglePriceFeedBase.sol";
+16,20c16
+< abstract contract PriceFeedWithRounds is PriceFeedBase {
+<   uint256 internal constant UINT80_MAX = uint256(type(uint80).max);
+< 
+<   error UnsafeUint256ToUint80Conversion(uint256 value);
+< 
+---
+> abstract contract SinglePriceFeedWithRounds is SinglePriceFeedBase {
+26,39d21
+<    * @notice Old Chainlink function for getting the number of latest round
+<    * @return latestRound The number of the latest successful round
+<    */
+<   function latestRound() public view override returns (uint80) {
+<     uint256 latestRoundUint256 = getPriceFeedAdapterWithRounds().getLatestRoundId();
+< 
+<     if (latestRoundUint256 > UINT80_MAX) {
+<       revert UnsafeUint256ToUint80Conversion(latestRoundUint256);
+<     }
+< 
+<     return uint80(latestRoundUint256);
+<   }
+< 
+<   /**
