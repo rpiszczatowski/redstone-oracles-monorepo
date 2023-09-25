@@ -149,6 +149,11 @@
     "url": "https://www.kaiko.com",
     "color": "#e4cd05"
   },
+  "kaiko-v2": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/kaiko.png",
+    "url": "https://www.kaiko.com",
+    "color": "#e4cd05"
+  },
   "gate": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/gate.png",
     "url": " https://www.gate.io/",
@@ -635,32 +640,32 @@
     "color": "#13c2c2"
   },
   "kucoin-api": {
-    "logoURI": "https://cdn.redstone.finance/sources/kucoin.png",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/kucoin.png",
     "url": "https://www.kucoin.com",
     "color": "#3f91db"
   },
   "mercado-api": {
-    "logoURI": "https://cdn.redstone.finance/sources/mercado.png",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/mercado.png",
     "url": "https://www.mercadobitcoin.com.br/",
     "color": "#ef4723"
   },
   "binance-api": {
-    "logoURI": "https://cdn.redstone.finance/sources/binance.svg",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/binance.svg",
     "url": "https://www.binance.com/",
     "color": "#d6ab3c"
   },
   "bitso-api": {
-    "logoURI": "https://cdn.redstone.finance/sources/bitso.png",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bitso.png",
     "url": "https://bitso.com/",
     "color": "#4ebc42"
   },
   "coinbase-api": {
-    "logoURI": "https://cdn.redstone.finance/sources/coinbase.svg",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/coinbase.svg",
     "url": "https://www.coinbase.com/",
     "color": "#2a67d0"
   },
   "bitstamp-api": {
-    "logoURI": "https://cdn.redstone.finance/sources/bitstamp.png",
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bitstamp.png",
     "url": "https://www.bitstamp.net/",
     "color": "#003b2f"
   }
