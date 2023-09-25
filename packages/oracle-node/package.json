@@ -41,7 +41,7 @@
     "@metamask/eth-sig-util": "^4.0.1",
     "@redstone-finance/oracles-smartweave-contracts": "^0.3.3-alpha.0",
     "@redstone-finance/protocol": "^0.3.3-alpha.0",
-    "@redstone-finance/rpc-providers": "file:/Users/wojciechrybakiewicz/Repositories/redstone-oracles-monorepo/packages/rpc-providers",
+    "@redstone-finance/rpc-providers": "file:../rpc-providers",
     "@redstone-finance/sdk": "^0.3.3-alpha.0",
     "@redstone-finance/streamr-proxy": "^0.3.3-alpha.0",
     "@redstone-finance/utils": "^0.3.3-alpha.0",
