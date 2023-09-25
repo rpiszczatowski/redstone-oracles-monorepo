@@ -12,8 +12,6 @@ import {RedstoneAdapterBase} from "../core/RedstoneAdapterBase.sol";
  */
 abstract contract SinglePriceFeedAdapterBase is RedstoneAdapterBase, Initializable {
 
-  error CannotUpdateMoreThanOneDataFeed();
-
   event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 updatedAt);
 
   /**
@@ -37,7 +35,7 @@ abstract contract SinglePriceFeedAdapterBase is RedstoneAdapterBase, Initializab
    * In this case - an array with only one element
    * @return dataFeedIds
    */
-  function getDataFeedIds() public view virtual override returns (bytes32[] memory dataFeedIds) {
+  function getDataFeedIds() public view override returns (bytes32[] memory dataFeedIds) {
     dataFeedIds = new bytes32[](1);
     dataFeedIds[0] = getSingleDataFeedId();
   }
@@ -46,7 +44,7 @@ abstract contract SinglePriceFeedAdapterBase is RedstoneAdapterBase, Initializab
    * @dev Returns 0 if dataFeedId is the one, otherwise reverts
    * @param dataFeedId The identifier of the requested data feed
    */
-  function getDataFeedIndex(bytes32 dataFeedId) public virtual view override returns(uint256) {
+  function getDataFeedIndex(bytes32 dataFeedId) public view override returns(uint256) {
     if (dataFeedId == getSingleDataFeedId()) {
       return 0;
     }
@@ -71,16 +69,15 @@ abstract contract SinglePriceFeedAdapterBase is RedstoneAdapterBase, Initializab
     bytes32[] memory dataFeedIdsArray,
     uint256[] memory values
   ) internal virtual override {
-    if (dataFeedIdsArray.length != 1 || values.length != 1) {
-      revert CannotUpdateMoreThanOneDataFeed();
-    }
     _validateAndUpdateDataFeedValue(dataFeedIdsArray[0], values[0]);
     _emitEventAfterSingleValueUpdate(values[0]);
-    
   }
 
+  /**
+   * @dev Helpful function for emitting the event for each update
+   * To disable events you can override it with an empty implementation
+   */
   function _emitEventAfterSingleValueUpdate(uint256 newValue) internal virtual {
-    // TODO: add a comment, how the ideal (but not cost-effective implementation would look like)
     emit AnswerUpdated(SafeCast.toInt256(newValue), getLatestRoundId(), block.timestamp);
   }
 
@@ -93,7 +90,7 @@ abstract contract SinglePriceFeedAdapterBase is RedstoneAdapterBase, Initializab
   function _validateAndUpdateDataFeedValue(bytes32 dataFeedId, uint256 dataFeedValue) internal virtual;
 
 
-  ////// FUNCTIONS FROM PRICE FEED //////
+  ////// FUNCTIONS FROM CHAINLINK AGGREGATOR //////
 
   /**
    * @notice Returns the number of decimals for the price feed

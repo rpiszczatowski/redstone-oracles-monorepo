@@ -8,12 +8,10 @@
 < abstract contract PriceFeedsAdapterBase is RedstoneAdapterBase, Initializable {
 ---
 > abstract contract SinglePriceFeedAdapterBase is RedstoneAdapterBase, Initializable {
-13a15,18
->   error CannotUpdateMoreThanOneDataFeed();
-> 
+13a15,16
 >   event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 updatedAt);
 > 
-20a26,61
+20a24,59
 > 
 >   /**
 >    * @notice Returns the only data feed identifer supported by the adapter
@@ -28,7 +26,7 @@
 >    * In this case - an array with only one element
 >    * @return dataFeedIds
 >    */
->   function getDataFeedIds() public view virtual override returns (bytes32[] memory dataFeedIds) {
+>   function getDataFeedIds() public view override returns (bytes32[] memory dataFeedIds) {
 >     dataFeedIds = new bytes32[](1);
 >     dataFeedIds[0] = getSingleDataFeedId();
 >   }
@@ -37,7 +35,7 @@
 >    * @dev Returns 0 if dataFeedId is the one, otherwise reverts
 >    * @param dataFeedId The identifier of the requested data feed
 >    */
->   function getDataFeedIndex(bytes32 dataFeedId) public virtual view override returns(uint256) {
+>   function getDataFeedIndex(bytes32 dataFeedId) public view override returns(uint256) {
 >     if (dataFeedId == getSingleDataFeedId()) {
 >       return 0;
 >     }
@@ -50,27 +48,27 @@
 >    * @return latestRoundId
 >    */
 >   function getLatestRoundId() public view virtual returns (uint256 latestRoundId);
-33,35c74,75
+33,36c72,73
 <     for (uint256 i = 0; i < dataFeedIdsArray.length;) {
 <       _validateAndUpdateDataFeedValue(dataFeedIdsArray[i], values[i]);
 <       unchecked { i++; } // reduces gas costs
+<     }
 ---
->     if (dataFeedIdsArray.length != 1 || values.length != 1) {
->       revert CannotUpdateMoreThanOneDataFeed();
-36a77,79
 >     _validateAndUpdateDataFeedValue(dataFeedIdsArray[0], values[0]);
 >     _emitEventAfterSingleValueUpdate(values[0]);
->     
-38a82,86
+39a77,84
+>    * @dev Helpful function for emitting the event for each update
+>    * To disable events you can override it with an empty implementation
+>    */
 >   function _emitEventAfterSingleValueUpdate(uint256 newValue) internal virtual {
->     // TODO: add a comment, how the ideal (but not cost-effective implementation would look like)
 >     emit AnswerUpdated(SafeCast.toInt256(newValue), getLatestRoundId(), block.timestamp);
 >   }
 > 
-45a94,123
+>   /**
+45a91,120
 > 
 > 
->   ////// FUNCTIONS FROM PRICE FEED //////
+>   ////// FUNCTIONS FROM CHAINLINK AGGREGATOR //////
 > 
 >   /**
 >    * @notice Returns the number of decimals for the price feed

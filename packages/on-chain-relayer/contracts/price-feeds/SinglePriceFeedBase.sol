@@ -2,13 +2,13 @@
 pragma solidity ^0.8.14;
 
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import {IRedstoneAdapter} from "../core/IRedstoneAdapter.sol";
-import {SinglePriceFeedAdapterBase} from "./SinglePriceFeedAdapterBase.sol";
 import {SafeCast} from "@openzeppelin/contracts/utils/math/SafeCast.sol";
+import {IRedstoneAdapter} from "../core/IRedstoneAdapter.sol";
 import {IPriceFeed} from "./interfaces/IPriceFeed.sol";
+import {SinglePriceFeedAdapterBase} from "./SinglePriceFeedAdapterBase.sol";
 
 /**
- * @title Main logic of the price feed contract for Single Feed Adapter
+ * @title Main logic of the price feed contract
  * @author The Redstone Oracles team
  * @dev Implementation of common functions for the PriceFeed contract
  * that queries data from the specified PriceFeedAdapter
@@ -41,18 +41,40 @@ abstract contract SinglePriceFeedBase is IPriceFeed, Initializable {
   }
 
   /**
-   * @notice Added to be compatible with Chainlink contracts
-   * @return dataFeedId The identifier of the data feed
-   */
-  function aggregator() public view virtual returns (address) {
-    return address(getPriceFeedAdapter());
-  }
-
-  /**
    * @notice Returns the address of the price feed adapter
    * @return address The address of the price feed adapter
    */
   function getPriceFeedAdapter() public view virtual returns (SinglePriceFeedAdapterBase);
+
+
+  /**
+   * @notice Returns the number of decimals for the price feed
+   * @dev By default, RedStone uses 8 decimals for data feeds
+   * @return decimals The number of decimals in the price feed values
+   */
+  function decimals() public virtual view override returns (uint8) {
+    return getPriceFeedAdapter().decimals();
+  }
+
+
+  /**
+   * @notice Description of the Price Feed
+   * @return description
+   */
+  function description() public view virtual override returns (string memory) {
+    return getPriceFeedAdapter().description();
+  }
+
+  /**
+   * @notice Version of the Price Feed
+   * @dev Currently it has no specific motivation and was added
+   * only to be compatible with the Chainlink interface
+   * @return version
+   */
+  function version() public virtual view override returns (uint256) {
+    return getPriceFeedAdapter().version();
+  }
+
 
   /**
    * @notice Returns details of the latest successful update round
@@ -114,17 +136,5 @@ abstract contract SinglePriceFeedBase is IPriceFeed, Initializable {
   function latestRound() public view returns (uint80) {
     uint256 latestRoundUint256 = getPriceFeedAdapter().getLatestRoundId();
     return SafeCast.toUint80(latestRoundUint256);
-  }
-
-  function decimals() public virtual view override returns (uint8) {
-    return getPriceFeedAdapter().decimals();
-  }
-
-  function description() public view virtual override returns (string memory) {
-    return getPriceFeedAdapter().description();
-  }
-
-  function version() public virtual view override returns (uint256) {
-    return getPriceFeedAdapter().version();
   }
 }
