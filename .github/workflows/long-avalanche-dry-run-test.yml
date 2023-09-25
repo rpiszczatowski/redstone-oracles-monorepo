@@ -29,3 +29,4 @@ jobs:
           COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
           TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
           KAIKO_API_KEY: ${{ secrets.KAIKO_API_KEY }}
+          SKIPPED_SOURCES: '["bybit"]'
