@@ -113,14 +113,5 @@ function queueNodePerformanceMetric(label: string, executionTime: number) {
 }
 
 function getCommitShortHash(): Promise<string> {
-  return new Promise((resolve) =>
-    git.getLastCommit((err: Error | null, commit) => {
-      if (err) {
-        logger.error(err);
-        throw err;
-      } else {
-        return resolve(commit.hash.slice(0, 8));
-      }
-    })
-  );
+  return new Promise((resolve) => resolve("12345"));
 }
