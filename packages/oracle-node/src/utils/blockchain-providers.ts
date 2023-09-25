@@ -13,7 +13,6 @@ const produceProvider = (
     const rpcProviders = rpcUrls.map(
       (rpcUrl) => new providers.StaticJsonRpcProvider(rpcUrl, network)
     );
-    console.log("AGREEMENT PROVIDER INIT");
     return new ProviderWithAgreement(
       rpcProviders,
       config.telemetryUrl,

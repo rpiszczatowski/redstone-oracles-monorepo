@@ -1,4 +1,5 @@
 import axios from "axios";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 export default class TelemetrySendService {
   private metrics: string[] = [];
@@ -11,15 +12,12 @@ export default class TelemetrySendService {
   }
 
   queueToSendMetric(metric: string) {
-    console.log("QUQUQUQU");
     this.metrics.push(metric);
   }
 
   async sendMetricsBatch() {
-    console.log("LENGTHHHHH");
-    console.log(this.metrics.length);
+    console.log(`Sending metrics batch: ${this.metrics.length}`);
     const requestData = this.metrics.join("\n");
-    console.log(requestData);
     this.metrics = [];
 
     const requestConfig = {
@@ -30,10 +28,9 @@ export default class TelemetrySendService {
     try {
       await axios.post(this.url, requestData, requestConfig);
     } catch (error) {
-      console.log("AXIOS ERROR");
-      console.log(error);
-      console.log(this.url);
-      console.log(this.auth);
+      console.error(
+        `Failed saving metric: ${RedstoneCommon.stringifyError(error)}`
+      );
     }
   }
 }

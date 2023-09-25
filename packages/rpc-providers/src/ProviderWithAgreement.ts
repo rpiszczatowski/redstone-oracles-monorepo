@@ -56,7 +56,6 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     > = {}
   ) {
     super(providers, config);
-    console.log("AGREEMENT PROVIDER CONSTRUCTOR10");
     this.agreementConfig = {
       ...defaultConfig,
       ...config,
@@ -76,15 +75,13 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         "numberOfProvidersWhichHaveToAgree should be >= 2 and > then supplied providers count"
       );
     }
-    const send = this.telemetrySendService;
+    const telemetrySendService = this.telemetrySendService;
     setInterval(function () {
-      console.log("SENDINGGGG");
-      send.sendMetricsBatch();
+      telemetrySendService.sendMetricsBatch();
     }, 10 * 1000);
   }
 
   override getBlockNumber(): Promise<number> {
-    console.log("getBlockNumberssss");
     return this.electBlockNumber();
   }
 
@@ -92,7 +89,6 @@ export class ProviderWithAgreement extends ProviderWithFallback {
     transaction: Deferrable<TransactionRequest>,
     blockTag?: BlockTag
   ): Promise<string> {
-    console.log("CALLLLLLLLLL");
     const electedBlockTag = utils.hexlify(
       blockTag ?? (await this.electBlockNumber())
     );
@@ -107,36 +103,20 @@ export class ProviderWithAgreement extends ProviderWithFallback {
 
   private electBlockNumber = RedstoneCommon.memoize({
     functionToMemoize: async () => {
-      console.log("ELECTTTT");
       // collect block numbers
       const blockNumbersResults = await Promise.allSettled(
         this.providers.map(async (provider) => {
-          console.log("SOME PROVIDER");
-          const jsonProvider1 = provider as JsonRpcProvider;
-          const url1 = jsonProvider1.connection.url;
-          console.log(url1);
           const start = Date.now();
           const result = RedstoneCommon.timeout(
             provider.getBlockNumber(),
             this.agreementConfig.getBlockNumberTimeoutMS
           );
-          // .then((x) => {
-          //   console.log("RESULT: " + x);
-          //   return x;
-          // })
-          // .catch((fail) => {
-          //   console.log("RESULT FAIL");
-          //   console.log(fail);
-          //   return -1;
-          // });
 
-          console.log("Sent request1");
           const measurementName = "electBlockNumber";
           const jsonProvider = provider as JsonRpcProvider;
           const url = jsonProvider.connection.url;
           const network = jsonProvider.network.name;
           try {
-            console.log("TRY 1");
             const promiseResult = await result;
             const stop = Date.now();
             const executionTime = stop - start;
@@ -145,13 +125,9 @@ export class ProviderWithAgreement extends ProviderWithFallback {
               .join("-")},network=${network.split(" ").join("-")}`;
             const fields = `executionTime=${executionTime},blockNumber=${promiseResult}`;
             const metric = `${measurementName},${tags} ${fields} ${start}`;
-            console.log("TRY 2");
             this.telemetrySendService.queueToSendMetric(metric);
-            console.log("TRY 3");
             return promiseResult;
           } catch (error) {
-            console.log("ERROR 1");
-            console.log(error);
             const stop = Date.now();
             const executionTime = stop - start;
             const tags = `address=${this.address},success=false,url=${url
@@ -160,7 +136,6 @@ export class ProviderWithAgreement extends ProviderWithFallback {
             const fields = `executionTime=${executionTime}`;
             const metric = `${measurementName},${tags} ${fields} ${start}`;
             this.telemetrySendService.queueToSendMetric(metric);
-            console.log("ERROR 2");
           }
 
           return result;
