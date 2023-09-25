@@ -45,12 +45,14 @@ export class ProviderWithAgreement extends ProviderWithFallback {
   private readonly agreementConfig: ProviderWithAgreementConfig;
   private telemetrySendService: TelemetrySendService;
   private address: string;
+  private network: string;
 
   constructor(
     providers: JsonRpcProvider[],
     telemetryUrl: string,
     telemetryAuth: string,
     address: string,
+    network: string,
     config: Partial<
       ProviderWithAgreementConfig & ProviderWithFallbackConfig
     > = {}
@@ -65,6 +67,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
       telemetryUrl,
       telemetryAuth
     );
+    this.network = network;
     const numberOfProvidersThatHaveToAgree =
       this.agreementConfig.numberOfProvidersThatHaveToAgree;
     if (
@@ -103,26 +106,27 @@ export class ProviderWithAgreement extends ProviderWithFallback {
 
   private electBlockNumber = RedstoneCommon.memoize({
     functionToMemoize: async () => {
+        const measurementName = "electBlockNumber";
+      const networkName = this.network.split(" ").join("_")
+          const start = Date.now();
+
       // collect block numbers
       const blockNumbersResults = await Promise.allSettled(
         this.providers.map(async (provider) => {
-          const start = Date.now();
           const result = RedstoneCommon.timeout(
             provider.getBlockNumber(),
             this.agreementConfig.getBlockNumberTimeoutMS
           );
 
-          const measurementName = "electBlockNumber";
           const jsonProvider = provider as JsonRpcProvider;
           const url = jsonProvider.connection.url;
-          const network = jsonProvider.network.name;
           try {
             const promiseResult = await result;
             const stop = Date.now();
             const executionTime = stop - start;
             const tags = `address=${this.address},success=true,url=${url
               .split("=")
-              .join("-")},network=${network.split(" ").join("-")}`;
+              .join("-")},network=${networkName}`;
             const fields = `executionTime=${executionTime},blockNumber=${promiseResult}`;
             const metric = `${measurementName},${tags} ${fields} ${start}`;
             this.telemetrySendService.queueToSendMetric(metric);
@@ -132,7 +136,7 @@ export class ProviderWithAgreement extends ProviderWithFallback {
             const executionTime = stop - start;
             const tags = `address=${this.address},success=false,url=${url
               .split("=")
-              .join("-")},network=${network.split(" ").join("_")}`;
+              .join("-")},network=${networkName}`;
             const fields = `executionTime=${executionTime}`;
             const metric = `${measurementName},${tags} ${fields} ${start}`;
             this.telemetrySendService.queueToSendMetric(metric);
@@ -147,6 +151,12 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         .map((result) => (result as PromiseFulfilledResult<number>).value);
 
       if (blockNumbers.length === 0) {
+        const tags = `address=${this.address},elected=false,network=${networkName}`;
+        const stop = Date.now();
+        const executionTime = stop - start;
+        const fields = `executionTime=${executionTime}`;
+        const metric = `${measurementName},${tags} ${fields} ${start}`;
+        this.telemetrySendService.queueToSendMetric(metric);
         throw new AggregateError(
           blockNumbersResults.map(
             (result) =>
@@ -160,6 +170,12 @@ export class ProviderWithAgreement extends ProviderWithFallback {
         blockNumbers,
         this.providers.length
       );
+      const tags = `address=${this.address},elected=true,network=${networkName}`;
+      const stop = Date.now();
+      const executionTime = stop - start;
+      const fields = `executionTime=${executionTime},blockNumber=${electedBlockNumber}`;
+      const metric = `${measurementName},${tags} ${fields} ${start}`;
+      this.telemetrySendService.queueToSendMetric(metric);
 
       return electedBlockNumber;
     },

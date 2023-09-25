@@ -17,7 +17,8 @@ const produceProvider = (
       rpcProviders,
       config.telemetryUrl,
       config.telemetryAuthorizationToken,
-      ethers.utils.computeAddress(config.privateKeys.ethereumPrivateKey)
+      ethers.utils.computeAddress(config.privateKeys.ethereumPrivateKey),
+      network.name
     );
   }
   throw new Error(
