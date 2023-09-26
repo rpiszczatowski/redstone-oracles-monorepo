@@ -8,5 +8,7 @@
   "AAVE": "aave_usdt",
   "OP": "op_usdt",
   "DYDX": "dydx_usdt",
-  "BAL": "bal_usdt"
+  "BAL": "bal_usdt",
+  "ETH": "eth_usdt",
+  "BTC": "btc_usdt"
 }

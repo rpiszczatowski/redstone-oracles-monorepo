@@ -17,5 +17,9 @@
   "GMX": "GMX/USDT",
   "FXS": "FXS/USDT",
   "BAL": "BAL/USDT",
-  "LVL": "LVL/USDT"
+  "LVL": "LVL/USDT",
+  "ETH": "ETH/USDT",
+  "BTC": "BTC/USDT",
+  "USDC": "USDC/USDT",
+  "CELO": "CELO/USDT"
 }

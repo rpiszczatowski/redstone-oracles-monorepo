@@ -10,6 +10,10 @@ const REMOVED_DATA_FEEDS = [
   "USDT.e",
   "SHLB_USDT.e-USDt_C",
 ];
+const DATA_FEEDS_NOT_WORKING_LOCALLY: string[] = [];
+const SKIPPED_SOURCES = JSON.parse(
+  process.env.SKIPPED_SOURCES ?? "[]"
+) as string[];
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 (async () => {
@@ -22,6 +26,8 @@ const REMOVED_DATA_FEEDS = [
     nodeWorkingTimeInMinutes,
     nodeIntervalInMilliseconds,
     coldStartIterationsCount,
-    REMOVED_DATA_FEEDS
+    REMOVED_DATA_FEEDS,
+    DATA_FEEDS_NOT_WORKING_LOCALLY,
+    SKIPPED_SOURCES
   );
 })();

@@ -149,6 +149,11 @@
     "url": "https://www.kaiko.com",
     "color": "#e4cd05"
   },
+  "kaiko-v2": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/kaiko.png",
+    "url": "https://www.kaiko.com",
+    "color": "#e4cd05"
+  },
   "gate": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/gate.png",
     "url": " https://www.gate.io/",
@@ -499,6 +504,11 @@
     "url": "https://curve.fi/",
     "color": "#78151d"
   },
+  "curve-dai": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
+    "url": "https://curve.fi/",
+    "color": "#78151d"
+  },
   "curve-eth": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
     "url": "https://curve.fi/",
@@ -618,5 +628,45 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/trader-joe.png",
     "url": "https://www.traderjoexyz.com/",
     "color": "#e2786f"
+  },
+  "digifinex": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/digifinex.png",
+    "url": "https://www.digifinex.com/",
+    "color": "#00e5da"
+  },
+  "bitmart": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bitmart.png",
+    "url": "https://www.bitmart.com/en-US",
+    "color": "#13c2c2"
+  },
+  "kucoin-api": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/kucoin.png",
+    "url": "https://www.kucoin.com",
+    "color": "#3f91db"
+  },
+  "mercado-api": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/mercado.png",
+    "url": "https://www.mercadobitcoin.com.br/",
+    "color": "#ef4723"
+  },
+  "binance-api": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/binance.svg",
+    "url": "https://www.binance.com/",
+    "color": "#d6ab3c"
+  },
+  "bitso-api": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bitso.png",
+    "url": "https://bitso.com/",
+    "color": "#4ebc42"
+  },
+  "coinbase-api": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/coinbase.svg",
+    "url": "https://www.coinbase.com/",
+    "color": "#2a67d0"
+  },
+  "bitstamp-api": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bitstamp.png",
+    "url": "https://www.bitstamp.net/",
+    "color": "#003b2f"
   }
 }

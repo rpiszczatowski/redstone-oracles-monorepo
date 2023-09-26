@@ -1,0 +1,51 @@
+{
+  "kucoin": {
+    "BRL": {
+      "url": "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=USDT-BRL",
+      "jsonpath": "$.data.price",
+      "pairedToken": "USDT",
+      "isReverted": true
+    },
+    "EUR": {
+      "url": "https://api.kucoin.com/api/v1/market/orderbook/level1?symbol=USDT-EUR",
+      "jsonpath": "$.data.price",
+      "pairedToken": "USDT",
+      "isReverted": true
+    }
+  },
+  "mercado": {
+    "BRL": {
+      "url": "https://api.mercadobitcoin.net/api/v4/tickers?symbols=USDT-BRL",
+      "jsonpath": "$[0].last",
+      "pairedToken": "USDT",
+      "isReverted": true
+    }
+  },
+  "binance": {
+    "BRL": {
+      "url": "https://api.binance.com/api/v3/ticker/price?symbol=USDTBRL",
+      "jsonpath": "$.price",
+      "pairedToken": "USDT",
+      "isReverted": true
+    }
+  },
+  "bitso": {
+    "BRL": {
+      "url": "https://bitso.com/api/v3/ticker?book=usd_brl",
+      "jsonpath": "$.payload.last",
+      "isReverted": true
+    }
+  },
+  "coinbase": {
+    "EUR": {
+      "url": "https://api.coinbase.com/v2/prices/EUR-USD/spot",
+      "jsonpath": "$.data.amount"
+    }
+  },
+  "bitstamp": {
+    "EUR": {
+      "url": "https://www.bitstamp.net/api/v2/ticker/eurusd",
+      "jsonpath": "$.last"
+    }
+  }
+}

@@ -24,8 +24,8 @@ describe("yf-unofficial fetcher", () => {
       "AAPL",
       "CHF",
       "MXN",
-      "BRLUSD=X",
-      "COPUSD=X",
+      "BRL",
+      "COP",
       "ARS",
       "PEN",
     ]);
@@ -60,11 +60,11 @@ describe("yf-unofficial fetcher", () => {
         value: 0.05058169,
       },
       {
-        symbol: "BRLUSD=X",
+        symbol: "BRL",
         value: 0.2149382,
       },
       {
-        symbol: "COPUSD=X",
+        symbol: "COP",
         value: 0.0002667983,
       },
       {

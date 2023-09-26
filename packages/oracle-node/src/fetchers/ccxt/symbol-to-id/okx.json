@@ -355,5 +355,6 @@
   "OP": "OP/USDT",
   "STETH": "STETH/USDT",
   "GMX": "GMX/USDT",
-  "FXS": "FXS/USDT"
+  "FXS": "FXS/USDT",
+  "USDT": "USDT/USDC"
 }

@@ -48,12 +48,13 @@
   "CB=F": "CB=F",
   "CSC=F": "CSC=F",
 
+  "EUR": "EURUSD=X",
   "CHF": "CHFUSD=X",
   "MXN": "MXNUSD=X",
   "ARS": "ARSUSD=X",
   "PEN": "PENUSD=X",
-  "COPUSD=X": "COPUSD=X",
-  "BRLUSD=X": "BRLUSD=X",
+  "COP": "COPUSD=X",
+  "BRL": "BRLUSD=X",
 
   "BBBY": "BBBY",
   "UPST": "UPST",

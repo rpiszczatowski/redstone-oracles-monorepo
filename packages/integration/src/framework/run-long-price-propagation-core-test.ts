@@ -60,8 +60,9 @@ export const runLongPricePropagationCoreTest = async (
   nodeWorkingTimeInMinutes: number,
   nodeIntervalInMilliseconds: number,
   coldStartIterationsCount: number,
-  removedDataFeeds?: string[],
-  dataFeedsNotWorkingLocally?: string[]
+  removedDataFeeds: string[],
+  dataFeedsNotWorkingLocally: string[],
+  sourcesToSkip: string[]
 ) => {
   await buildCacheLayer();
   await buildOracleNode();
@@ -137,7 +138,8 @@ export const runLongPricePropagationCoreTest = async (
     );
     checkSourcesDeviations(
       sourceDeviationsPerDataFeed,
-      MAX_PERCENTAGE_VALUE_DIFFERENCE
+      MAX_PERCENTAGE_VALUE_DIFFERENCE,
+      sourcesToSkip
     );
   }
   process.exit();

@@ -9,5 +9,9 @@
   "OP": "OP/USDT",
   "DYDX": "DYDX/USDT",
   "ALCX": "ALCX/USDT",
-  "GMX": "GMX/USDT"
+  "GMX": "GMX/USDT",
+  "ETH": "ETH/USDT",
+  "BTC": "BTC/USDT",
+  "USDC": "USDC/USDT",
+  "CELO": "CELO/USDT"
 }

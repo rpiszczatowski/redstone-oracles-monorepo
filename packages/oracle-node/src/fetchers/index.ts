@@ -42,6 +42,7 @@ import { twapCacheServicesMinuteFetchers } from "./twap-cache-service-minute/all
 import { camelotV3Fetchers } from "./evm-chain/arbitrum/camelot-v3/all-camelot-v3-fetchers";
 import pancakeSwapFetchers from "./evm-chain/ethereum/pancake-swap-on-chain/all-pancake-swap-fetchers";
 import { WombatFetcher } from "./wombat/WombatFetcher";
+import { apiFetchers } from "./api-fetcher/all-api-fetchers";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -87,4 +88,5 @@ export default {
   ...twapCacheServicesMinuteFetchers,
   ...camelotV3Fetchers,
   ...pancakeSwapFetchers,
+  ...apiFetchers,
 } as { [name: string]: Fetcher | undefined };
