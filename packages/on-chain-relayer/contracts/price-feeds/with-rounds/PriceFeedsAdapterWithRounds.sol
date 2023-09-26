@@ -148,7 +148,7 @@ abstract contract PriceFeedsAdapterWithRounds is PriceFeedsAdapterBase {
    * @dev Helpful function for incrementing the latest round number by 1 in
    * the contract storage
    */
-  function _incrementLatestRoundId() private {
+  function _incrementLatestRoundId() internal virtual {
     uint256 latestRoundId = getLatestRoundId();
     assembly {
       sstore(LATEST_ROUND_ID_STORAGE_LOCATION, add(latestRoundId, 1))
