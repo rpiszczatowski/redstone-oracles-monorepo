@@ -1,7 +1,7 @@
 name: Long avalanche dry run test
 on:
   push:
-    branches: "main"
+    branches: ["main"]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -11,17 +11,23 @@ jobs:
   long-avalanche-dry-run:
     runs-on: self-hosted
     timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: packages/integration
     steps:
       - uses: actions/checkout@v3
       - name: Install deps
-        run: yarn
-      - name: Build
-        run: yarn build
+        run: yarn --frozen-lockfile --immutable
+      - name: Build all
+        run: |
+          echo 0 > STATUS_TMP 
+          cd packages/cache-service && yarn build || echo 1 > STATUS_TMP  &
+          cd packages/evm-connector && yarn compile && yarn build || echo 2 > STATUS_TMP  &
+          cd packages/oracle-node && yarn build || echo 3 > STATUS_TMP  &
+          cd packages/on-chain-relayer && yarn compile && yarn build || echo 4 > STATUS_TMP  &
+
+          wait
+          exit $(cat STATUS_TMP)
       - name: Run long avalanche dry run tests
-        run: node dist/src/avalanche-long-price-propagation-core.js
+        run: yarn ts-node src/avalanche-long-price-propagation-core.ts
+        working-directory: packages/integration
         env:
           NODE_ENV: test
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
