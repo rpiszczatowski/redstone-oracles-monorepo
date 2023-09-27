@@ -204,9 +204,14 @@ export interface MulticallRequest {
   name: string;
 }
 
+export interface MulticallParsedResponse {
+  value: string;
+  data?: string;
+}
+
 // If value is undefined it means that request failed
 export type MulticallParsedResponses = {
   [address in string]?: {
-    [functionName in string]?: string;
+    [functionName in string]?: MulticallParsedResponse;
   }[];
 };

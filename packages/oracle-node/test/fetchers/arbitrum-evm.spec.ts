@@ -194,7 +194,7 @@ describe("Arbitrum EVM fetcher", () => {
 
       const result = await fetcher.fetchAll(["arbMzeLLP"]);
       expect(result).toEqual([
-        { symbol: "arbMzeLLP", value: 764607448463.2075 },
+        { symbol: "arbMzeLLP", value: 0.7646074484632076 },
       ]);
     });
   });

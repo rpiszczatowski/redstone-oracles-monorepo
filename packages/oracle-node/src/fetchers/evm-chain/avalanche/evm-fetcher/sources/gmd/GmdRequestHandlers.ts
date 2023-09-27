@@ -33,7 +33,7 @@ export class GmdRequestHandler implements IEvmRequestHandlers {
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   extractPrice(
-    response: MulticallParsedResponses,
+    responses: MulticallParsedResponses,
     id: GmdContractsDetailsKeys
   ): number | undefined {
     const { address, tokenToFetch } =
@@ -41,17 +41,17 @@ export class GmdRequestHandler implements IEvmRequestHandlers {
     const { vaultAddress } = gmdTokensContractsDetails;
 
     const totalSupply = new Decimal(
-      extractValueFromMulticallResponse(response, address, "totalSupply")
+      extractValueFromMulticallResponse(responses, address, "totalSupply")
     );
     const poolsInfo = extractValuesWithTheSameNameFromMulticall(
-      response,
+      responses,
       vaultAddress,
       "poolInfo"
     );
 
     // Pool info returns struct which by multicall contract is returned as string which requires slicing
     const poolInfo = poolsInfo.find((poolInfo) => {
-      const gmdTokenAddress = poolInfo?.slice(
+      const gmdTokenAddress = poolInfo.value.slice(
         ...INDEXES_OF_GLP_TOKEN_ADDRESS_FROM_CONTRACT
       );
       return `0x${gmdTokenAddress}` === address.toLowerCase();
@@ -59,7 +59,7 @@ export class GmdRequestHandler implements IEvmRequestHandlers {
 
     if (poolInfo) {
       const totalStaked = new Decimal(
-        `0x${poolInfo.slice(...INDEXES_OF_TOTAL_STAKED_FROM_CONTRACT)}`
+        `0x${poolInfo.value.slice(...INDEXES_OF_TOTAL_STAKED_FROM_CONTRACT)}`
       );
       const ratio = totalStaked.div(totalSupply);
       const tokenToFetchPrice = getLastPrice(tokenToFetch);

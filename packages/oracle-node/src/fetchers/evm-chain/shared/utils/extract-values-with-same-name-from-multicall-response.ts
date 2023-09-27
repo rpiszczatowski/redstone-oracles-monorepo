@@ -1,19 +1,22 @@
-import { MulticallParsedResponses } from "../../../../types";
+import {
+  MulticallParsedResponses,
+  MulticallParsedResponse,
+} from "../../../../types";
 
 export const extractValuesWithTheSameNameFromMulticall = (
   multicallResult: MulticallParsedResponses,
   address: string,
   id: string
-): Array<string | undefined> => {
+): MulticallParsedResponse[] => {
   const results = multicallResult[address];
   if (!results) {
     throw new Error(`Multicall results for [${address}] is empty`);
   }
-  const values = results.map((result) => result[id]);
-  if (values.some((value) => !value)) {
+  const responseObjects = results.map((result) => result[id]);
+  if (responseObjects.some((responseObject) => !responseObject?.value)) {
     throw new Error(
       `Multicall results doesn't contain some value for [${address}][${id}]`
     );
   }
-  return values;
+  return responseObjects as MulticallParsedResponse[];
 };

@@ -1,5 +1,8 @@
 import Decimal from "decimal.js";
-import { MulticallParsedResponses } from "../../../../types";
+import {
+  MulticallParsedResponse,
+  MulticallParsedResponses,
+} from "../../../../types";
 import { IEvmRequestHandlers } from "../IEvmRequestHandlers";
 import {
   buildMulticallRequests,
@@ -96,15 +99,15 @@ export class CurveRequestHandlers implements IEvmRequestHandlers {
   }
 
   static calculateTokenBalancesSum(
-    balances: (string | undefined)[],
+    balanceResponses: MulticallParsedResponse[],
     tokensToFetchPrice: Record<string, Decimal>,
     tokens: Tokens[]
   ) {
     let balancesSum = new Decimal(0);
     for (const [tokenIndex, token] of Object.entries(tokens)) {
-      const balance = balances[Number(tokenIndex)];
-      if (balance) {
-        const balanceAsDecimal = new Decimal(balance);
+      const balanceResponse = balanceResponses[Number(tokenIndex)];
+      if (balanceResponse.value) {
+        const balanceAsDecimal = new Decimal(balanceResponse.value);
         const balanceSerialized = serializeDecimalsToDefault(
           balanceAsDecimal,
           token.decimals

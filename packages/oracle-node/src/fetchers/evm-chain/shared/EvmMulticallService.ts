@@ -20,11 +20,12 @@ export class EvmMulticallService {
     )) as [boolean, string][];
     const parsedResponses: MulticallParsedResponses = {};
     for (let i = 0; i < requests.length; i++) {
-      const { name, address } = requests[i];
+      const { name, address, data } = requests[i];
       const [success, value] = responses[i];
 
       // omit values which comes from responses with error
-      const parsedResponse = { [name]: success ? value : undefined };
+      const responseObject = success ? { value, data } : undefined;
+      const parsedResponse = { [name]: responseObject };
       if (!parsedResponses[address]) {
         parsedResponses[address] = [];
       }

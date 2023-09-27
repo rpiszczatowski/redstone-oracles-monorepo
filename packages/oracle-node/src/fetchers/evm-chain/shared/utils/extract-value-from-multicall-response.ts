@@ -6,11 +6,11 @@ export const extractValueFromMulticallResponse = (
   id: string
 ): string => {
   const results = multicallResult[address];
-  const value = results!.find((result) => !!result[id])?.[id];
-  if (!value) {
+  const responseObject = results!.find((result) => !!result[id])?.[id];
+  if (!responseObject) {
     throw new Error(
       `Multicall result doesn't contain value for [${address}][${id}]`
     );
   }
-  return value;
+  return responseObject.value;
 };
