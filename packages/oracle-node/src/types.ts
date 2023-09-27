@@ -193,6 +193,9 @@ export interface NodeConfig {
   simulationValueInUsdForSlippageCheck: string;
   maxAllowedSlippagePercent: number;
   historicalDataPackagesUrl: string;
+  telemetryUrl: string;
+  telemetryAuthorizationToken: string;
+  dockerImageTag: string;
 }
 
 export interface MulticallRequest {

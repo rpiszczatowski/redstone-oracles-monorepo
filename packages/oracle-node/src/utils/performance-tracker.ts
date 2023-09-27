@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { performance } from "perf_hooks";
 import { config } from "../config";
 import loggerFactory from "./logger";
+import { telemetrySendService } from "../telemetry/TelemetrySendService";
 
 const logger = loggerFactory("utils/performance-tracker");
 
@@ -49,14 +50,37 @@ export function trackEnd(trackingId: string): void {
 
   // Calculating time elapsed from the task trackStart
   // execution for the same label
-  const value = performance.now() - tasks[trackingId]!.startTime;
+  const executionTime = performance.now() - tasks[trackingId]!.startTime;
   const label = tasks[trackingId]!.label;
 
   // Clear the start value
   delete tasks[trackingId];
 
-  // Saving metric using Redstone HTTP endpoint
-  saveMetric(label, value);
+  queueNodePerformanceMetric(label, executionTime);
+}
+
+export function queueNodeTelemetry() {
+  try {
+    if (isTelemetryEnabled()) {
+      logger.info("Sending node telemetry");
+      const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
+      const evmAddress = ethers.utils.computeAddress(evmPrivateKey);
+      const dockerImageTag = config.dockerImageTag;
+      const measurementName = "nodeTelemetry";
+      const tags = `address=${evmAddress}`;
+      const fields = `dockerImageTag="${dockerImageTag}"`;
+      const metric = `${measurementName},${tags} ${fields} ${Date.now()}`;
+      telemetrySendService.queueToSendMetric(metric);
+    }
+  } catch (error) {
+    logger.error(`Queue node telemetry failed`, (error as Error).stack);
+  }
+}
+
+export function isTelemetryEnabled() {
+  return (
+    config.telemetryUrl !== "" && config.telemetryAuthorizationToken !== ""
+  );
 }
 
 export function printTrackingState() {
@@ -64,10 +88,25 @@ export function printTrackingState() {
   logger.info(`Perf tracker tasks: ${tasksCount}`, JSON.stringify(tasks));
 }
 
-function saveMetric(label: string, value: number) {
-  const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
-  const evmAddress = new ethers.Wallet(evmPrivateKey).address;
-  const labelWithPrefix = `${evmAddress.slice(0, 14)}-${label}`;
+function queueNodePerformanceMetric(label: string, executionTime: number) {
+  try {
+    const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
+    const evmAddress = ethers.utils.computeAddress(evmPrivateKey);
+    const labelWithPrefix = `${evmAddress.slice(0, 14)}-${label}`;
 
-  logger.info(`Metric: ${labelWithPrefix}. Value: ${value}`);
+    logger.info(`Metric: ${labelWithPrefix}. Value: ${executionTime}`);
+
+    if (isTelemetryEnabled()) {
+      const measurementName = "nodePerformance";
+      const tags = `label=${label},address=${evmAddress}`;
+      const fields = `executionTime=${executionTime}`;
+      const metric = `${measurementName},${tags} ${fields} ${Date.now()}`;
+      telemetrySendService.queueToSendMetric(metric);
+    }
+  } catch (error) {
+    logger.error(
+      `Queue node performance metric failed`,
+      (error as Error).stack
+    );
+  }
 }

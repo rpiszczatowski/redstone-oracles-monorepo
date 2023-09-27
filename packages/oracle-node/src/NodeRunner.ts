@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import git from "git-last-commit";
 import { ExpressAppRunner } from "./ExpressAppRunner";
 import { AggregatedPriceHandler } from "./aggregated-price-handlers/AggregatedPriceHandler";
 import { AggregatedPriceLocalDBSaver } from "./aggregated-price-handlers/AggregatedPriceLocalDBSaver";
@@ -32,6 +31,11 @@ import {
 import { TimeoutError, promiseTimeout } from "./utils/promise-timeout";
 import loggerFactory from "./utils/logger";
 import pjson from "../package.json";
+import {
+  queueNodeTelemetry,
+  isTelemetryEnabled,
+} from "./utils/performance-tracker";
+import { telemetrySendService } from "./telemetry/TelemetrySendService";
 
 const logger = loggerFactory("runner");
 
@@ -149,18 +153,11 @@ export default class NodeRunner {
     `
     );
 
-    // Printing git details
-    git.getLastCommit((err: Error | null, commit) => {
-      if (err) {
-        logger.error(err);
-      } else {
-        logger.info(
-          `Git details: ${commit.hash} (latest commit), ` +
-            `${commit.branch} (branch), ` +
-            `${commit.subject} (latest commit message)`
-        );
-      }
-    });
+    logger.info(`Docker image tag: ${config.dockerImageTag} (latest commit)`);
+
+    logger.info(
+      `Node telemetry is ${isTelemetryEnabled() ? "enabled" : "disabled"}`
+    );
   }
 
   private maybeRunDiagnosticInfoPrinting() {
@@ -198,6 +195,8 @@ export default class NodeRunner {
     await this.safeProcessManifestTokens(iterationContext);
 
     printTrackingState();
+    queueNodeTelemetry();
+    void telemetrySendService.sendMetricsBatch();
   }
 
   private async safeProcessManifestTokens(iterationContext: IterationContext) {

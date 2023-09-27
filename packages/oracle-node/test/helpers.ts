@@ -58,6 +58,9 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   simulationValueInUsdForSlippageCheck: "10000",
   maxAllowedSlippagePercent: 5,
   historicalDataPackagesUrl: "",
+  telemetryUrl: "",
+  telemetryAuthorizationToken: "",
+  dockerImageTag: "",
 };
 
 export const mockHardLimits = {

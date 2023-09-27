@@ -25,7 +25,7 @@ jobs:
           echo TAG=$(echo ${GITHUB_SHA} | cut -c1-7) >> "$GITHUB_ENV"
       - name: Build docker image
         run: |
-          docker build -t "$IMAGE:$TAG" -f packages/oracle-node/Dockerfile .
+          docker build -t "$IMAGE:$TAG" -f packages/oracle-node/Dockerfile --build-arg DOCKER_IMAGE_TAG=$TAG .
       - name: Push docker image to ECR public
         if: ${{ github.ref_name == 'main' }}
         run: |

@@ -40,6 +40,9 @@ export const getDryRunTestNodeConfig = (manifest: Manifest) => ({
   coingeckoApiUrl: "",
   enableHttpServer: false,
   pricesHardLimitsUrls: [""],
+  telemetryUrl: "",
+  telemetryAuthorizationToken: "",
+  dockerImageTag: "",
 });
 
 export const MockScheduler = {
