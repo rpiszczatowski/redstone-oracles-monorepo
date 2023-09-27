@@ -2,65 +2,34 @@ name: Integration tests
 
 on:
   push:
-    branches: "**"
+    branches: ["*"]
 
 jobs:
   integration-tests-core:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: packages/integration
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.15
-      - name: Install deps
-        run: yarn
-      - name: Build
-        run: yarn build
-      - name: Lint
-        run: yarn lint
-      - name: Run core tests - simple propagation
-        run: node dist/src/simple-price-propagation-core.js
-        env:
-          NODE_ENV: test
+    uses: ./.github/workflows/integration-test-template.yml
+    with:
+      command: yarn ts-node src/simple-price-propagation-classic.ts
   intergration-tests-core-with-node-failure:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: packages/integration
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.15
-      - name: Install deps
-        run: yarn
-      - name: Build
-        run: yarn build
-      - name: Run tests - node failures
-        run: node dist/src/prices-updates-node-failures.js
-        env:
-          NODE_ENV: test
+    uses: ./.github/workflows/integration-test-template.yml
+    with:
+      command: yarn ts-node src/prices-updates-node-failures.ts
   integration-tests-classic:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    defaults:
-      run:
-        working-directory: packages/integration
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.15
-      - name: Install deps
-        run: yarn
-      - name: Build
-        run: yarn build
-      - name: Run classic tests - simple propagation
-        run: node dist/src/simple-price-propagation-classic.js
-        env:
-          NODE_ENV: test
+    uses: ./.github/workflows/integration-test-template.yml
+    with:
+      command: yarn ts-node src/simple-price-propagation-classic.ts
+  integration-test-classic-relayer-condition-cron:
+    uses: ./.github/workflows/integration-test-template.yml
+    with:
+      command: yarn ts-node src/relayer-conditions/relayer-cron-condition.ts
+  integration-test-classic-relayer-condition-time:
+    uses: ./.github/workflows/integration-test-template.yml
+    with:
+      command: yarn ts-node src/relayer-conditions/relayer-time-condition.ts
+  integration-test-classic-relayer-condition-value-deviation:
+    uses: ./.github/workflows/integration-test-template.yml
+    with:
+      command: yarn ts-node src/relayer-conditions/relayer-value-deviation-condition.ts
+  integration-test-classic-relayer-condition-value-deviation-and-time:
+    uses: ./.github/workflows/integration-test-template.yml
+    with:
+      command: yarn ts-node src/relayer-conditions/relayer-value-and-time-condition.ts
