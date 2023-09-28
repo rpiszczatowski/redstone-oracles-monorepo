@@ -208,9 +208,9 @@ export const curveFetchersConfig: Record<string, PoolsConfig> = {
       fee: 0.0006,
     },
     ETHx: {
-      address: "0xd82C2eB10F4895CABED6EDa6eeee234bd1A9838B",
-      tokenIndex: 0,
-      pairedTokenIndex: 1,
+      address: "0x59ab5a5b5d617e478a2479b0cad80da7e2831492",
+      tokenIndex: 1,
+      pairedTokenIndex: 0,
       pairedToken: "ETH",
       provider: ethereumProvider,
       tokenDecimalsMultiplier: 1e18,
