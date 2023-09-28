@@ -22,6 +22,7 @@ import {
   prepareSanitizeAndAggregatePrices,
 } from "./fetchers/_helpers";
 import { config } from "../src/config";
+import { DataPoint, NumericDataPoint } from "@redstone-finance/protocol";
 
 jest.mock("../src/Terminator", () => ({
   terminateWithManifestConfigError: (details: string) => {
@@ -38,6 +39,14 @@ const pricesService = new PricesService({
   defaultSource: ["src1"],
 });
 
+function priceToDataPoint(price: PriceDataAfterAggregation): NumericDataPoint {
+  return new NumericDataPoint({
+    dataFeedId: price.symbol,
+    value: price.value.unsafeToNumber(),
+    decimals: 18,
+    metadata: undefined,
+  });
+}
 describe("PricesService", () => {
   beforeAll(() => {
     setupLocalDb();
@@ -201,8 +210,8 @@ describe("PricesService", () => {
     });
   });
 
-  describe("filterPricesForSigning", () => {
-    it("should properly filter prices for signing", () => {
+  describe("filterPricesForBigPackage", () => {
+    it("should properly filter prices for big package", () => {
       const pricesService = new PricesService({
         ...emptyManifest,
         tokens: {
@@ -224,9 +233,16 @@ describe("PricesService", () => {
         },
       ]);
 
-      const filteredPrices = pricesService.filterPricesForSigning(prices);
+      const dataPoints: DataPoint[] = [];
+      for (const price of prices) {
+        const dataPoint = priceToDataPoint(price);
+        dataPoints.push(dataPoint);
+      }
 
-      expect(filteredPrices.map((p) => p.symbol)).toEqual(["ETH"]);
+      const filteredDataPoints =
+        pricesService.filterDataPointsForBigPackage(dataPoints);
+
+      expect(filteredDataPoints.map((p) => p.dataFeedId)).toEqual(["ETH"]);
     });
   });
 

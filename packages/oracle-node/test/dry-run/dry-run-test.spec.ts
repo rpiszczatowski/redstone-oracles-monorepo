@@ -4,13 +4,12 @@ import { PriceDataBroadcastPerformer } from "../../src/aggregated-price-handlers
 import {
   HARDHAT_MOCK_ADDRESS,
   MockScheduler,
-  PricesForDataFeedId,
   getPricesPerDataFeedId,
   getSourcesForToken,
   getTokensFromManifest,
-  getTokensWithoutSkipSigning,
   removeSkippedItemsFromManifest,
   runTestNode,
+  PricesForDataFeedId,
 } from "./helpers";
 import ManifestHelper from "../../src/manifest/ManifestHelper";
 import { CronScheduler } from "../../src/schedulers/CronScheduler";
@@ -114,9 +113,8 @@ describe("Main dry run test", () => {
     const dataPackages = getDataPackagesFromBroadcaster();
     const sourcesData = getSourcesDataFromAggregator();
     const pricesPerDataFeedId = getPricesPerDataFeedId(dataPackages);
-    const tokensWithoutSkipSigning = getTokensWithoutSkipSigning(
-      config.manifest
-    );
+
+    checkTokensBroadcasted(pricesPerDataFeedId, tokens);
 
     for (const token of tokens) {
       const currentDataFeedPrice = getLastPrice(token);
@@ -125,18 +123,9 @@ describe("Main dry run test", () => {
           `Missing token ${token} in local cache during dry run test`
         );
       }
-      if (
-        !pricesPerDataFeedId[token] &&
-        tokensWithoutSkipSigning.includes(token)
-      ) {
-        console.log(
-          `Missing token ${token} in broadcaster during dry run test`
-        );
-      }
       if (config.additionalCheck) {
         config.additionalCheck(token, currentDataFeedPrice?.value);
       }
-      checkTokensBroadcasted(pricesPerDataFeedId, tokensWithoutSkipSigning);
       checkTokensSources(sourcesData, token, config.manifest);
     }
   });
@@ -156,12 +145,10 @@ describe("Main dry run test", () => {
 
   function checkTokensBroadcasted(
     pricesPerDataFeedId: PricesForDataFeedId,
-    tokensWithoutSkipSigning: string[]
+    allTokens: string[]
   ) {
     const allTokensBroadcasted = Object.keys(pricesPerDataFeedId);
-    expect(allTokensBroadcasted.sort()).toEqual(
-      tokensWithoutSkipSigning.sort()
-    );
+    expect(allTokensBroadcasted.sort()).toEqual(allTokens.sort());
   }
 
   function getSourcesDataFromAggregator() {
@@ -187,7 +174,12 @@ describe("Main dry run test", () => {
     const sourcesFromManifest = getSourcesForToken(manifest, token);
     if (sourcesMetadataForToken && sourcesFromManifest) {
       const sourcesFetched = Object.keys(sourcesMetadataForToken);
-      expect(sourcesFetched.sort()).toEqual(sourcesFromManifest.sort());
+      try {
+        expect(sourcesFetched.sort()).toEqual(sourcesFromManifest.sort());
+      } catch (e) {
+        console.log(`sources for token ${token} are not as expected`);
+        throw e;
+      }
     }
   }
 });

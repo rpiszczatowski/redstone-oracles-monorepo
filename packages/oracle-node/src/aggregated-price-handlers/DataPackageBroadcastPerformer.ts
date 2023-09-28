@@ -55,20 +55,10 @@ export class DataPackageBroadcastPerformer
     pricesService: PricesService,
     iterationContext: IterationContext
   ): Promise<void> {
-    // Excluding "helpful" prices, which should not be signed
-    // "Helpful" prices (e.g. AVAX_SPOT) can be used to calculate TWAP values
-    const pricesForSigning =
-      pricesService.filterPricesForSigning(aggregatedPrices);
-
-    // When nothing to broadcast
-    if (pricesForSigning.length === 0) {
-      logger.warn("No prices to broadcast, skipping broadcasting.");
-      return;
-    }
-
     // Signing
     const signedDataPackages = this.signPrices(
-      pricesForSigning,
+      pricesService,
+      aggregatedPrices,
       iterationContext
     );
 
@@ -77,6 +67,7 @@ export class DataPackageBroadcastPerformer
   }
 
   private signPrices(
+    pricesService: PricesService,
     prices: PriceDataAfterAggregation[],
     iterationContext: IterationContext
   ): SignedDataPackage[] {
@@ -114,14 +105,17 @@ export class DataPackageBroadcastPerformer
       return dataPackage.sign(this.ethereumPrivateKey);
     });
 
+    const dataPointsForBigPackage =
+      pricesService.filterDataPointsForBigPackage(dataPoints);
+
     // Adding a data package with all data points
     const areEnoughDataPoint = validateDataPointsForBigPackage(
-      dataPoints,
+      dataPointsForBigPackage,
       this.manifestDataProvider.allTokensConfig
     );
     if (areEnoughDataPoint) {
       const bigDataPackage = new DataPackage(
-        dataPoints,
+        dataPointsForBigPackage,
         timeIdentifierForSigning
       );
       const signedBigDataPackage = bigDataPackage.sign(this.ethereumPrivateKey);

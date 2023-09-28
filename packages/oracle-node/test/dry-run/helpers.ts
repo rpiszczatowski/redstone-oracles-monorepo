@@ -113,13 +113,3 @@ export const removeSkippedItemsFromManifest = (manifest: Manifest) => {
   }
   manifest.tokens = filteredTokens;
 };
-
-export const getTokensWithoutSkipSigning = (manifest: Manifest) => {
-  const tokensWithoutSkipSigning: string[] = [];
-  for (const [dataFeedId, config] of Object.entries(manifest.tokens)) {
-    if (!config!.skipSigning) {
-      tokensWithoutSkipSigning.push(dataFeedId);
-    }
-  }
-  return tokensWithoutSkipSigning;
-};

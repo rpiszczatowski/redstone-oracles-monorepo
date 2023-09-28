@@ -18,7 +18,7 @@ jobs:
         run: yarn --frozen-lockfile --immutable
       - name: Build all
         run: |
-          echo 0 > STATUS_TMP 
+          echo 0 > STATUS_TMP
           cd packages/cache-service && yarn build || echo 1 > STATUS_TMP  &
           cd packages/evm-connector && yarn compile && yarn build || echo 2 > STATUS_TMP  &
           cd packages/oracle-node && yarn build || echo 3 > STATUS_TMP  &

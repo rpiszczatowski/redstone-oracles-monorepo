@@ -21,6 +21,7 @@ import { config } from "../config";
 import { createMetadataPerSource } from "./MetadataForRedstonePrice";
 import loggerFactory from "../utils/logger";
 import axios, { AxiosError } from "axios";
+import { DataPoint } from "@redstone-finance/protocol";
 
 export const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -382,10 +383,10 @@ export default class PricesService {
     }
   }
 
-  filterPricesForSigning(
-    prices: PriceDataAfterAggregation[]
-  ): PriceDataAfterAggregation[] {
-    return prices.filter((p) => !this.manifest.tokens[p.symbol]!.skipSigning);
+  filterDataPointsForBigPackage(dataPoints: DataPoint[]): DataPoint[] {
+    return dataPoints.filter(
+      (dp) => !this.manifest.tokens[dp.dataFeedId]!.skipSigning
+    );
   }
 
   static preparePricesForSigning(
