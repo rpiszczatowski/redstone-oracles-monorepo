@@ -2,14 +2,18 @@ name: Integration tests
 
 on:
   push:
-    branches: ["*"]
+    branches: ["**"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   integration-tests-core:
     uses: ./.github/workflows/integration-test-template.yml
     with:
-      command: yarn ts-node src/simple-price-propagation-classic.ts
-  intergration-tests-core-with-node-failure:
+      command: yarn ts-node src/simple-price-propagation-core.ts
+  integration-tests-core-with-node-failure:
     uses: ./.github/workflows/integration-test-template.yml
     with:
       command: yarn ts-node src/prices-updates-node-failures.ts
@@ -33,3 +37,7 @@ jobs:
     uses: ./.github/workflows/integration-test-template.yml
     with:
       command: yarn ts-node src/relayer-conditions/relayer-value-and-time-condition.ts
+  integration-test-classic-relayer-one-node-down:
+    uses: ./.github/workflows/integration-test-template.yml
+    with:
+      command: yarn ts-node src/relayer-conditions/relayer-one-rpc-down.ts
