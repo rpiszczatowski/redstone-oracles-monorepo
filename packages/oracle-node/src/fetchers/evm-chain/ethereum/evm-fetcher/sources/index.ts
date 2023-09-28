@@ -22,7 +22,7 @@ export const requestHandlers = {
   ),
 
   ...buildRequestHandlersFromContractDetails(
-    lidoTokensContractDetails,
+    lidoTokensContractDetails.contractsDetails,
     LidoTokensRequestHandlers
   ),
 };

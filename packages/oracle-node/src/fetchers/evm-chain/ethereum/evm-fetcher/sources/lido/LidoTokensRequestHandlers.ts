@@ -6,12 +6,14 @@ import { extractValueFromMulticallResponse } from "../../../../shared/utils/extr
 import { getRawPriceOrFail } from "../../../../../../db/local-db";
 import { MulticallParsedResponses } from "../../../../../../types";
 
-export type LidoDetailsKeys = keyof typeof lidoTokensContractDetails;
+export type LidoDetailsKeys =
+  keyof typeof lidoTokensContractDetails.contractsDetails;
 
 export class LidoTokensRequestHandlers implements IEvmRequestHandlers {
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   prepareMulticallRequest(id: LidoDetailsKeys) {
-    const { address, abi } = lidoTokensContractDetails[id];
+    const { abi } = lidoTokensContractDetails;
+    const { address } = lidoTokensContractDetails.contractsDetails[id];
     const stEthPerTokenFunction = {
       name: "stEthPerToken",
     };
@@ -26,7 +28,9 @@ export class LidoTokensRequestHandlers implements IEvmRequestHandlers {
 
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   extractPrice(response: MulticallParsedResponses, id: LidoDetailsKeys) {
-    const { address, underlyingToken } = lidoTokensContractDetails[id];
+    const { address, underlyingToken } =
+      lidoTokensContractDetails.contractsDetails[id];
+
     const stEthPerTokenAsHex = extractValueFromMulticallResponse(
       response,
       address,
@@ -40,10 +44,11 @@ export class LidoTokensRequestHandlers implements IEvmRequestHandlers {
     );
     const decimals = new Decimal(decimalsAsHex);
     const decimalsAsDivider = 10 ** decimals.toNumber();
+    const stEthPerTokenParsed = stEthPerToken.div(decimalsAsDivider);
+    if (!underlyingToken) {
+      return stEthPerTokenParsed.toNumber();
+    }
     const underlyingTokenPrice = getRawPriceOrFail(underlyingToken);
-    return stEthPerToken
-      .div(decimalsAsDivider)
-      .mul(underlyingTokenPrice.value)
-      .toNumber();
+    return stEthPerTokenParsed.mul(underlyingTokenPrice.value).toNumber();
   }
 }

@@ -97,7 +97,7 @@ describe("Ethereum EVM fetcher", () => {
 
       const wstethContract = await deployMockContract(
         wallet,
-        lidoTokensContractDetails.wstETH_FUNDAMENTAL.abi
+        lidoTokensContractDetails.abi
       );
       await asAwaitable(
         wstethContract.mock.stEthPerToken.returns("1136995300838313055")
@@ -106,8 +106,8 @@ describe("Ethereum EVM fetcher", () => {
 
       multicallContract = await deployMulticallContract(wallet);
 
-      lidoTokensContractDetails.wstETH_FUNDAMENTAL = {
-        ...lidoTokensContractDetails.wstETH_FUNDAMENTAL,
+      lidoTokensContractDetails.contractsDetails.wstETH_FUNDAMENTAL = {
+        ...lidoTokensContractDetails.contractsDetails.wstETH_FUNDAMENTAL,
         address: wstethContract.address,
       };
     });
