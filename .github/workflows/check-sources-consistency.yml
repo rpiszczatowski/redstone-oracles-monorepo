@@ -1,0 +1,23 @@
+name: Oracle main dry run test
+
+on:
+  push:
+    paths:
+      - packages/oracle-node/manifests/**
+      - .github/workflows/check-sources-consistency.yml
+
+jobs:
+  main-dry-run-test:
+    runs-on: self-hosted
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: packages/oracle-node
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install modules
+        run: yarn
+      - name: Build
+        run: yarn build
+      - name: Run dry run test
+        run: yarn test:sources-consistency
