@@ -1,4 +1,4 @@
-name: Oracle main dry run test
+name: Check sources consistency
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - .github/workflows/check-sources-consistency.yml
 
 jobs:
-  main-dry-run-test:
+  check-sources-consistency-test:
     runs-on: self-hosted
     timeout-minutes: 10
     defaults:
@@ -19,5 +19,5 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
-      - name: Run dry run test
+      - name: Run sources consistency check
         run: yarn test:sources-consistency
