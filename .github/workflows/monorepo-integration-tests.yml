@@ -41,3 +41,11 @@ jobs:
     uses: ./.github/workflows/integration-test-template.yml
     with:
       command: yarn ts-node src/relayer-conditions/relayer-one-rpc-down.ts
+  integration-test-gateway-cache:
+    uses: ./.github/workflows/integration-test-template.yml
+    with:
+      command: yarn ts-node src/gateway-cache-test.ts
+  integration-test-gateway-history:
+    uses: ./.github/workflows/integration-test-template.yml
+    with:
+      command: yarn ts-node src/gateway-history-test.ts
