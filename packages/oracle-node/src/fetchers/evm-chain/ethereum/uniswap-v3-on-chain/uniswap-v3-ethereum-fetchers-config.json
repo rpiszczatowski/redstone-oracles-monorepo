@@ -981,5 +981,18 @@
       "token1Decimals": 6,
       "fee": 3000
     }
+  },
+  "uniswap-v3-ethereum-on-chain-fxs-10000": {
+    "FRAX": {
+      "quoterAddress": "0x61fFE014bA17989E743c5F6cB21bF9697530B21e",
+      "poolAddress": "0xb64508b9f7b81407549e13db970dd5bb5c19107f",
+      "token0Symbol": "FXS",
+      "token1Symbol": "FRAX",
+      "token0Address": "0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0",
+      "token1Address": "0x853d955aCEf822Db058eb8505911ED77F175b99e",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "fee": 10000
+    }
   }
 }
