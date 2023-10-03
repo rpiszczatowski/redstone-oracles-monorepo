@@ -7,6 +7,9 @@ import { getLastPrice } from "../../../../db/local-db";
 import { MulticallParsedResponses } from "../../../../types";
 import YieldYakLpTokenAbi from "../../shared/abis/YieldYakLPToken.abi.json";
 
+const TOTAL_DEPOSITS_FUNCTION_NAME = "totalDeposits";
+const TOTAL_SUPPLY_FUNCTION_NAME = "totalSupply";
+
 type YieldYakContractDetails = {
   address: string;
   tokenToFetch: string;
@@ -27,8 +30,8 @@ export class YieldYakTokensRequestHandlers implements IEvmRequestHandlers {
     >(this.yieldYakContractDetails, id);
 
     const functionsNamesWithValues = [
-      { name: "totalDeposits" },
-      { name: "totalSupply" },
+      { name: TOTAL_DEPOSITS_FUNCTION_NAME },
+      { name: TOTAL_SUPPLY_FUNCTION_NAME },
     ];
     return buildMulticallRequests(
       YieldYakLpTokenAbi,
@@ -47,10 +50,18 @@ export class YieldYakTokensRequestHandlers implements IEvmRequestHandlers {
     >(this.yieldYakContractDetails, id);
 
     const totalDeposits = new Decimal(
-      extractValueFromMulticallResponse(response, address, "totalDeposits")
+      extractValueFromMulticallResponse(
+        response,
+        address,
+        TOTAL_DEPOSITS_FUNCTION_NAME
+      )
     );
     const totalSupply = new Decimal(
-      extractValueFromMulticallResponse(response, address, "totalSupply")
+      extractValueFromMulticallResponse(
+        response,
+        address,
+        TOTAL_SUPPLY_FUNCTION_NAME
+      )
     );
 
     const tokenValue = totalDeposits.div(totalSupply);

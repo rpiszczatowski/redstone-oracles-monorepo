@@ -6,6 +6,8 @@ import { balancerTokensContractDetails } from "./balancerTokensContractDetails";
 import { MulticallParsedResponses } from "../../../../../../types";
 import { getRawPriceOrFail } from "../../../../../../db/local-db";
 
+const GET_RATE_FUNCTION_NAME = "getRate";
+
 export type BalancerTokensDetailsKeys =
   keyof typeof balancerTokensContractDetails;
 
@@ -16,12 +18,12 @@ export class BalancerRequestHandlers implements IEvmRequestHandlers {
       balancerTokensContractDetails[id];
     const firstPoolFunctions = [
       {
-        name: "getRate",
+        name: GET_RATE_FUNCTION_NAME,
       },
     ];
     const secondPoolFunctions = [
       {
-        name: "getRate",
+        name: GET_RATE_FUNCTION_NAME,
       },
     ];
 
@@ -79,12 +81,12 @@ export class BalancerRequestHandlers implements IEvmRequestHandlers {
     const mainPoolReserve = extractValueFromMulticallResponse(
       response,
       mainPoolAddress,
-      "getRate"
+      GET_RATE_FUNCTION_NAME
     );
     const secondPoolReserve = extractValueFromMulticallResponse(
       response,
       secondPoolAddress,
-      "getRate"
+      GET_RATE_FUNCTION_NAME
     );
 
     return {

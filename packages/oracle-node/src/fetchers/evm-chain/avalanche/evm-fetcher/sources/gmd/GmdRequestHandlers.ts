@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+import { Interface } from "ethers/lib/utils";
 import { Decimal } from "decimal.js";
 import { IEvmRequestHandlers } from "../../../../shared/IEvmRequestHandlers";
 import { buildMulticallRequests } from "../../../../shared/utils/build-multicall-request";
@@ -5,13 +7,16 @@ import { extractValueFromMulticallResponse } from "../../../../shared/utils/extr
 import { extractValuesWithTheSameNameFromMulticall } from "../../../../shared/utils/extract-values-with-same-name-from-multicall-response";
 import { gmdTokensContractsDetails } from "./gmdTokensContractsDetails";
 import { getLastPrice } from "../../../../../../db/local-db";
-import { MulticallParsedResponses } from "../../../../../../types";
+import {
+  MulticallParsedResponse,
+  MulticallParsedResponses,
+} from "../../../../../../types";
 
 export type GmdContractsDetailsKeys =
   keyof typeof gmdTokensContractsDetails.contractDetails;
 
-const INDEXES_OF_GLP_TOKEN_ADDRESS_FROM_CONTRACT = [90, 130];
-const INDEXES_OF_TOTAL_STAKED_FROM_CONTRACT = [194, 258];
+const POOL_INFO_FUNCTION_NAME = "poolInfo";
+const TOTAL_SUPPLY_FUNCTION_NAME = "totalSupply";
 
 export class GmdRequestHandler implements IEvmRequestHandlers {
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
@@ -21,11 +26,11 @@ export class GmdRequestHandler implements IEvmRequestHandlers {
     const { abi, vaultAbi, vaultAddress } = gmdTokensContractsDetails;
 
     const poolInfoRequest = buildMulticallRequests(vaultAbi, vaultAddress, [
-      { name: "poolInfo", values: [poolInfoArg] },
+      { name: POOL_INFO_FUNCTION_NAME, values: [poolInfoArg] },
     ]);
 
     const totalSupplyRequest = buildMulticallRequests(abi, address, [
-      { name: "totalSupply" },
+      { name: TOTAL_SUPPLY_FUNCTION_NAME },
     ]);
 
     return [...poolInfoRequest, ...totalSupplyRequest];
@@ -41,26 +46,29 @@ export class GmdRequestHandler implements IEvmRequestHandlers {
     const { vaultAddress } = gmdTokensContractsDetails;
 
     const totalSupply = new Decimal(
-      extractValueFromMulticallResponse(responses, address, "totalSupply")
+      extractValueFromMulticallResponse(
+        responses,
+        address,
+        TOTAL_SUPPLY_FUNCTION_NAME
+      )
     );
     const poolsInfo = extractValuesWithTheSameNameFromMulticall(
       responses,
       vaultAddress,
-      "poolInfo"
+      POOL_INFO_FUNCTION_NAME
     );
 
-    // Pool info returns struct which by multicall contract is returned as string which requires slicing
-    const poolInfo = poolsInfo.find((poolInfo) => {
-      const gmdTokenAddress = poolInfo.value.slice(
-        ...INDEXES_OF_GLP_TOKEN_ADDRESS_FROM_CONTRACT
-      );
-      return `0x${gmdTokenAddress}` === address.toLowerCase();
+    const poolsInfoDecoded = GmdRequestHandler.decodePoolInfoResults(poolsInfo);
+    const poolInfo = poolsInfoDecoded.find((poolInfo) => {
+      const addressFromResult = (poolInfo.GDlptoken as string).toLowerCase();
+      return addressFromResult === address.toLowerCase();
     });
 
     if (poolInfo) {
-      const totalStaked = new Decimal(
-        `0x${poolInfo.value.slice(...INDEXES_OF_TOTAL_STAKED_FROM_CONTRACT)}`
-      );
+      const totalStakedAsHex = (
+        poolInfo.totalStaked as BigNumber
+      ).toHexString();
+      const totalStaked = new Decimal(totalStakedAsHex);
       const ratio = totalStaked.div(totalSupply);
       const tokenToFetchPrice = getLastPrice(tokenToFetch);
       if (tokenToFetchPrice) {
@@ -68,5 +76,16 @@ export class GmdRequestHandler implements IEvmRequestHandlers {
       }
     }
     return undefined;
+  }
+
+  static decodePoolInfoResults(poolsInfo: MulticallParsedResponse[]) {
+    const { vaultAbi } = gmdTokensContractsDetails;
+    const contractInterface = new Interface(vaultAbi);
+    return poolsInfo.map((poolInfo) =>
+      contractInterface.decodeFunctionResult(
+        POOL_INFO_FUNCTION_NAME,
+        poolInfo.value
+      )
+    );
   }
 }

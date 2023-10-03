@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+import { Interface } from "ethers/lib/utils";
 import { Decimal } from "decimal.js";
 import { IEvmRequestHandlers } from "../../../../shared/IEvmRequestHandlers";
 import { buildMulticallRequests } from "../../../../shared/utils/build-multicall-request";
@@ -14,8 +16,8 @@ export type SteakHutTokensDetailsValues =
   (typeof steakHutTokensContractDetails)[SteakHutTokensDetailsKeys];
 
 const TEN_TO_POWER_EIGHTEEN_AS_STRING = "1000000000000000000";
-const FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [0, 66];
-const SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [66, 130];
+
+const GET_UNDERLYING_ASSETS_FUNCTION_NAME = "getUnderlyingAssets";
 
 const DEFAULT_DECIMALS = 1;
 const STABLECOIN_DECIMALS = 6;
@@ -44,7 +46,7 @@ export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
 
     const functionsNamesWithValues = [
       {
-        name: "getUnderlyingAssets",
+        name: GET_UNDERLYING_ASSETS_FUNCTION_NAME,
         values: [TEN_TO_POWER_EIGHTEEN_AS_STRING],
       },
     ];
@@ -56,30 +58,20 @@ export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
     response: MulticallParsedResponses,
     id: SteakHutTokensDetailsKeys
   ): number | undefined {
-    const { address, tokensToFetch } = getContractDetailsFromConfig<
+    const { tokensToFetch } = getContractDetailsFromConfig<
       SteakHutTokensDetailsKeys,
       SteakHutTokensDetailsValues
     >(steakHutTokensContractDetails, id);
 
-    const underlyingAssets = extractValueFromMulticallResponse(
-      response,
-      address,
-      "getUnderlyingAssets"
-    );
-    const firstUnderlyingAsset = new Decimal(
-      underlyingAssets.slice(...FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE)
-    );
+    const { firstAssetValue, secondAssetValue } =
+      SteakHutTokensRequestHandlers.extractUnderlyingAssets(response, id);
+
     const firstToken = tokensToFetch[0];
-    const secondUnderlyingAsset = new Decimal(
-      `0x${underlyingAssets.slice(
-        ...SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE
-      )}`
-    );
     const secondToken = tokensToFetch[1];
 
     const underlyingTokens = {
-      [firstToken]: firstUnderlyingAsset,
-      [secondToken]: secondUnderlyingAsset,
+      [firstToken]: firstAssetValue,
+      [secondToken]: secondAssetValue,
     };
     const serializedUnderlyingTokens =
       SteakHutTokensRequestHandlers.serializeDecimals(underlyingTokens);
@@ -107,5 +99,36 @@ export class SteakHutTokensRequestHandlers implements IEvmRequestHandlers {
       serializedTokenReserves[tokenName] = tokenReserveSerialized;
     }
     return serializedTokenReserves;
+  }
+
+  static extractUnderlyingAssets(
+    response: MulticallParsedResponses,
+    id: SteakHutTokensDetailsKeys
+  ) {
+    const { abi, address } = getContractDetailsFromConfig<
+      SteakHutTokensDetailsKeys,
+      SteakHutTokensDetailsValues
+    >(steakHutTokensContractDetails, id);
+
+    const underlyingAssetsResult = extractValueFromMulticallResponse(
+      response,
+      address,
+      GET_UNDERLYING_ASSETS_FUNCTION_NAME
+    );
+
+    const contractInterface = new Interface(abi);
+    const underlyingAssets = contractInterface.decodeFunctionResult(
+      GET_UNDERLYING_ASSETS_FUNCTION_NAME,
+      underlyingAssetsResult
+    );
+    const firstAssetValueAsHex = (
+      underlyingAssets.totalX as BigNumber
+    ).toHexString();
+    const firstAssetValue = new Decimal(firstAssetValueAsHex);
+    const secondAssetValueAsHex = (
+      underlyingAssets.totalY as BigNumber
+    ).toHexString();
+    const secondAssetValue = new Decimal(secondAssetValueAsHex);
+    return { firstAssetValue, secondAssetValue };
   }
 }
