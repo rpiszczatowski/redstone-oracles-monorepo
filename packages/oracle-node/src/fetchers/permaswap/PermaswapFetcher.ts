@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getLastPrice } from "../../db/local-db";
+import { getLastPriceOrFail } from "../../db/local-db";
 import {
   MultiRequestFetcher,
   RequestIdToResponse,
@@ -63,11 +63,6 @@ export class PermaswapFetcher extends MultiRequestFetcher {
   protected getPairedTokenPrice(assetId: string): number {
     const { pairedToken } = this.getPool(assetId);
 
-    const lastPriceFromCache = getLastPrice(pairedToken);
-    if (!lastPriceFromCache) {
-      throw new Error(`Cannot get last price from cache for: ${pairedToken}`);
-    }
-
-    return lastPriceFromCache.value;
+    return getLastPriceOrFail(pairedToken).value;
   }
 }
