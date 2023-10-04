@@ -162,6 +162,8 @@ export const requestDataPackages = async (
     const errMessage = `Request failed ${JSON.stringify({
       reqParams,
     })}, Original error: ${errToString(e)}`;
+
+    console.error(errMessage); // Do not remove - to have the full message visible as the Gelato web3FunctionLogs log entry.
     throw new Error(errMessage);
   }
 };
