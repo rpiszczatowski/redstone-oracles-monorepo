@@ -44,7 +44,7 @@ jobs:
         run: |
           docker history --no-trunc $IMAGE:$TAG
           IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
-          echo "image size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
+          echo "image: $IMAGE:$TAG, size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
 
   cache-service-image:
     runs-on: ubuntu-latest
@@ -76,7 +76,7 @@ jobs:
         run: |
           docker history --no-trunc $IMAGE:$TAG
           IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
-          echo "image size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
+          echo "image: $IMAGE:$TAG, size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
 
   on-chain-relayer-image:
     runs-on: ubuntu-latest
@@ -108,7 +108,7 @@ jobs:
         run: |
           docker history --no-trunc $IMAGE:$TAG
           IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
-          echo "image size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
+          echo "image: $IMAGE:$TAG, size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
 
   ton-relayer-image:
     runs-on: ubuntu-latest
@@ -128,5 +128,5 @@ jobs:
         run: |
           docker history --no-trunc $IMAGE:$TAG
           IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
-          echo "image size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
+          echo "image: $IMAGE:$TAG, size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
       # for now we do not publish ton-relayer docker images
