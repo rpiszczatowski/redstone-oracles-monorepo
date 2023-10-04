@@ -12,5 +12,6 @@
   "ETH": "ETH/USDT",
   "BTC": "BTC/USDT",
   "USDC": "USDC/USDT",
-  "CELO": "CELO/USDT"
+  "CELO": "CELO/USDT",
+  "AVAX": "AVAX/USDT"
 }
