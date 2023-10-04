@@ -9,10 +9,10 @@ COPY package.json .
 COPY yarn.lock .
 COPY .yarnrc .
 
-RUN yarn install --pure-lockfile --non-interactive --production=false
+RUN yarn install --frozen-lockfile --non-interactive --production=false
 
 COPY . .
-RUN cd "packages/${PACKAGE}" && echo $PWD && yarn install  --pure-lockfile --non-interactive  && yarn build && yarn bundle 
+RUN cd "packages/${PACKAGE}" && echo $PWD && yarn install  --frozen-lockfile --non-interactive  && yarn build && yarn bundle 
 
 FROM node:16
 ARG PACKAGE
@@ -20,7 +20,7 @@ ARG PACKAGE
 COPY --from=build "/app/packages/$PACKAGE/package.json" yarn.lock
 COPY --from=build "/app/packages/$PACKAGE/package.json" package.json 
 
-RUN yarn install --pure-lockfile --non-interactive --production=false
+RUN yarn install --pure-lockfile --non-interactive --production=true
 COPY --from=build "/app/packages/$PACKAGE/dist/" .
 
 ARG DOCKER_IMAGE_TAG="no_tag"
