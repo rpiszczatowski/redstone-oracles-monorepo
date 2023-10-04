@@ -20,7 +20,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run dry run test
-        run: yarn test:main-dry-run
+        run: yarn test:main-dry-run 2>&1 | tee logs.log; test ${PIPESTATUS[0]} -eq 0
         env:
           NODE_ENV: test
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
@@ -28,3 +28,6 @@ jobs:
           COINMARKETCAP_API_KEY: ${{ secrets.COINMARKETCAP_API_KEY }}
           STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
           SKIPPED_SOURCES: '["binance", "binancecoinm", "binanceusdm", "bybit", "kaiko", "kaiko-v2", "twelve-data", "twelve-data-etf-uk"]'
+      - name: Create summary
+        if: ${{ !cancelled() }}
+        run: scripts/filter-logs.sh logs.log >> $GITHUB_STEP_SUMMARY || true

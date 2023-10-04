@@ -18,14 +18,15 @@ jobs:
         run: yarn --frozen-lockfile --immutable
       - name: Build all
         run: |
-          echo 0 > STATUS_TMP
-          cd packages/cache-service && yarn build || echo 1 > STATUS_TMP  &
-          cd packages/evm-connector && yarn compile && yarn build || echo 2 > STATUS_TMP  &
-          cd packages/oracle-node && yarn build || echo 3 > STATUS_TMP  &
-          cd packages/on-chain-relayer && yarn compile && yarn build || echo 4 > STATUS_TMP  &
+          STATUS_TMP=$(pwd)/status.tmp
+          echo 0 > $STATUS_TMP
+          cd packages/cache-service && yarn build || echo 1 > $STATUS_TMP &
+          cd packages/evm-connector && yarn compile && yarn build || echo 2 > $STATUS_TMP &
+          cd packages/oracle-node && yarn build || echo 3 > $STATUS_TMP &
+          cd packages/on-chain-relayer && yarn compile && yarn build || echo 4 > $STATUS_TMP &
 
           wait
-          exit $(cat STATUS_TMP)
+          exit $(cat $STATUS_TMP)
       - name: Run long primary dry run tests
         run: yarn ts-node src/primary-long-price-propagation-core.ts
         working-directory: packages/integration

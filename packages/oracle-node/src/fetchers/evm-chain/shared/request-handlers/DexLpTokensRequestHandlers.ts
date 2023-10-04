@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+import { Interface } from "ethers/lib/utils";
 import { Decimal } from "decimal.js";
 import { IEvmRequestHandlers } from "../IEvmRequestHandlers";
 import { buildMulticallRequests } from "../utils/build-multicall-request";
@@ -15,8 +17,8 @@ interface DexLpTokensContractDetails {
   tokensToFetch: string[];
 }
 
-const FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [0, 66];
-const SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [66, 130];
+const GET_RESERVES_FUNCTION_NAME = "getReserves";
+const TOTAL_SUPPLY_FUNCTION_NAME = "totalSupply";
 
 export class DexLpTokensRequestHandlers implements IEvmRequestHandlers {
   constructor(
@@ -33,8 +35,8 @@ export class DexLpTokensRequestHandlers implements IEvmRequestHandlers {
     >(this.dexLpTokensContractsDetails, id);
 
     const functionsNamesWithValues = [
-      { name: "getReserves" },
-      { name: "totalSupply" },
+      { name: GET_RESERVES_FUNCTION_NAME },
+      { name: TOTAL_SUPPLY_FUNCTION_NAME },
     ];
     return buildMulticallRequests(
       DexLpTokenAbi,
@@ -52,23 +54,12 @@ export class DexLpTokensRequestHandlers implements IEvmRequestHandlers {
       DexLpTokensContractDetails
     >(this.dexLpTokensContractsDetails, id);
 
-    const reserves = extractValueFromMulticallResponse(
-      response,
-      address,
-      "getReserves"
-    );
-
-    const firstTokenReserve = new Decimal(
-      reserves.slice(...FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE)
-    );
+    const { firstReserve, secondReserve } = this.extractReserves(response, id);
     const firstToken = tokensToFetch[0];
-    const secondTokenReserve = new Decimal(
-      `0x${reserves.slice(...SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE)}`
-    );
     const secondToken = tokensToFetch[1];
     const tokenReserves = {
-      [firstToken]: firstTokenReserve,
-      [secondToken]: secondTokenReserve,
+      [firstToken]: firstReserve,
+      [secondToken]: secondReserve,
     };
 
     const reservesSerialized = serializeDecimalsForLpTokens(tokenReserves);
@@ -78,5 +69,31 @@ export class DexLpTokensRequestHandlers implements IEvmRequestHandlers {
     );
 
     return getFairPriceForLpToken(reservesSerialized, totalSupply);
+  }
+
+  extractReserves(response: MulticallParsedResponses, id: string) {
+    const { address } = getContractDetailsFromConfig<
+      string,
+      DexLpTokensContractDetails
+    >(this.dexLpTokensContractsDetails, id);
+    const reservesResult = extractValueFromMulticallResponse(
+      response,
+      address,
+      GET_RESERVES_FUNCTION_NAME
+    );
+    const contractInterface = new Interface(DexLpTokenAbi);
+    const reservesDecoded = contractInterface.decodeFunctionResult(
+      GET_RESERVES_FUNCTION_NAME,
+      reservesResult
+    );
+    const firstReserveAsHex = (
+      reservesDecoded._reserve0 as BigNumber
+    ).toHexString();
+    const secondReserveAsHex = (
+      reservesDecoded._reserve1 as BigNumber
+    ).toHexString();
+    const firstReserve = new Decimal(firstReserveAsHex);
+    const secondReserve = new Decimal(secondReserveAsHex);
+    return { firstReserve, secondReserve };
   }
 }

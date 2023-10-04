@@ -6,6 +6,8 @@ import { getContractDetailsFromConfig } from "../utils/get-contract-details-from
 import { GLP_MANAGER_PRICE_PRECISION, TEN_AS_BASE_OF_POWER } from "../contants";
 import { MulticallParsedResponses } from "../../../../types";
 
+const GET_PRICE_FUNCTION_NAME = "getPrice";
+
 export interface TokenContractDetails {
   abi: string;
   address: string;
@@ -22,7 +24,9 @@ export class GlpManagerRequestHandler implements IEvmRequestHandlers {
       id
     );
 
-    const functionsNamesWithValues = [{ name: "getPrice", values: ["false"] }];
+    const functionsNamesWithValues = [
+      { name: GET_PRICE_FUNCTION_NAME, values: ["false"] },
+    ];
     return buildMulticallRequests(abi, address, functionsNamesWithValues);
   }
 
@@ -36,7 +40,11 @@ export class GlpManagerRequestHandler implements IEvmRequestHandlers {
     );
 
     const value = new Decimal(
-      extractValueFromMulticallResponse(response, address, "getPrice")
+      extractValueFromMulticallResponse(
+        response,
+        address,
+        GET_PRICE_FUNCTION_NAME
+      )
     );
     const divider = new Decimal(TEN_AS_BASE_OF_POWER).toPower(
       GLP_MANAGER_PRICE_PRECISION

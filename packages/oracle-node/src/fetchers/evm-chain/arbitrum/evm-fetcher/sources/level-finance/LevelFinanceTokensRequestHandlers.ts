@@ -1,3 +1,4 @@
+import { Interface } from "ethers/lib/utils";
 import Decimal from "decimal.js";
 import { levelFinanceContractDetails } from "./leveFinanceContractDetails";
 import { IEvmRequestHandlers } from "../../../../shared/IEvmRequestHandlers";
@@ -18,7 +19,6 @@ const TOTAL_SUPPLY_FUNCTION_NAME = "totalSupply";
 const GET_TRANCHE_VALUE_FUNCTION_NAME = "getTrancheValue";
 
 const LLP_TOKEN_MULTIPLIER = 1e12;
-const INDEXES_OF_LLP_TOKEN_ADDRESS_IN_MULTICALL_DATA = [34, 74];
 
 type LevelFinanceContractDetailsKeys = keyof typeof levelFinanceContractDetails;
 
@@ -77,12 +77,15 @@ export class LevelFinanceTokensRequestHandlers implements IEvmRequestHandlers {
     trancheValuesResponses: MulticallParsedResponse[],
     address: string
   ) {
+    const contractInterface = new Interface(LevelFinanceLiquidityCalculatorAbi);
     return trancheValuesResponses.find((trancheValueResponse) => {
       if (trancheValueResponse.data) {
-        const llpTokenAddress = trancheValueResponse.data.slice(
-          ...INDEXES_OF_LLP_TOKEN_ADDRESS_IN_MULTICALL_DATA
+        const functionData = contractInterface.decodeFunctionData(
+          GET_TRANCHE_VALUE_FUNCTION_NAME,
+          trancheValueResponse.data
         );
-        return `0x${llpTokenAddress}` === address.toLowerCase();
+        const addressFromFunctionData = functionData._tranche as string;
+        return addressFromFunctionData.toLowerCase() === address.toLowerCase();
       }
       return false;
     });

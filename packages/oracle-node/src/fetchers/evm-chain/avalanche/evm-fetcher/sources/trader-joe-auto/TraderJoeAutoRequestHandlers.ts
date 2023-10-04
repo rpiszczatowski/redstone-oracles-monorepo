@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+import { Interface } from "ethers/lib/utils";
 import { Decimal } from "decimal.js";
 import { IEvmRequestHandlers } from "../../../../shared/IEvmRequestHandlers";
 import { buildMulticallRequests } from "../../../../shared/utils/build-multicall-request";
@@ -10,8 +12,9 @@ import { serializeDecimalsToDefault } from "../../../../shared/utils/serialize-d
 export type TraderJoeAutoPoolTokensDetailsKeys =
   keyof typeof traderJoeAutoPoolTokenContractDetails;
 
-const FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [0, 66];
-const SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE = [66, 130];
+const GET_BALANCES_FUNCTION_NAME = "getBalances";
+const TOTAL_SUPPLY_FUNCTION_NAME = "totalSupply";
+const DECIMALS_FUNCTION_NAME = "decimals";
 
 export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
@@ -19,13 +22,13 @@ export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
     const { abi, address } = traderJoeAutoPoolTokenContractDetails[id];
     const functionsNamesWithValues = [
       {
-        name: "getBalances",
+        name: GET_BALANCES_FUNCTION_NAME,
       },
       {
-        name: "totalSupply",
+        name: TOTAL_SUPPLY_FUNCTION_NAME,
       },
       {
-        name: "decimals",
+        name: DECIMALS_FUNCTION_NAME,
       },
     ];
     return buildMulticallRequests(abi, address, functionsNamesWithValues);
@@ -58,21 +61,13 @@ export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
     response: MulticallParsedResponses,
     id: TraderJoeAutoPoolTokensDetailsKeys
   ) {
-    const { address, tokensToFetch, token0Decimals, token1Decimals } =
+    const { tokensToFetch, token0Decimals, token1Decimals } =
       traderJoeAutoPoolTokenContractDetails[id];
 
-    const balances = extractValueFromMulticallResponse(
-      response,
-      address,
-      "getBalances"
-    );
-    const firstBalance = new Decimal(
-      balances.slice(...FIRST_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE)
-    );
+    const { firstBalance, secondBalance } =
+      TraderJoeAutoRequestHandlers.extractBalances(response, id);
+
     const firstToken = tokensToFetch[0];
-    const secondBalance = new Decimal(
-      `0x${balances.slice(...SECOND_TOKEN_INDEXES_FROM_CONTRACT_RESPONSE)}`
-    );
     const secondToken = tokensToFetch[1];
 
     const firstBalanceSerialized = serializeDecimalsToDefault(
@@ -99,11 +94,45 @@ export class TraderJoeAutoRequestHandlers implements IEvmRequestHandlers {
     const { address } = traderJoeAutoPoolTokenContractDetails[id];
 
     const totalSupply = new Decimal(
-      extractValueFromMulticallResponse(response, address, "totalSupply")
+      extractValueFromMulticallResponse(
+        response,
+        address,
+        TOTAL_SUPPLY_FUNCTION_NAME
+      )
     );
     const totalSupplyDecimals = new Decimal(
-      extractValueFromMulticallResponse(response, address, "decimals")
+      extractValueFromMulticallResponse(
+        response,
+        address,
+        DECIMALS_FUNCTION_NAME
+      )
     ).toNumber();
     return serializeDecimalsToDefault(totalSupply, totalSupplyDecimals);
+  }
+
+  static extractBalances(
+    response: MulticallParsedResponses,
+    id: TraderJoeAutoPoolTokensDetailsKeys
+  ) {
+    const { abi, address } = traderJoeAutoPoolTokenContractDetails[id];
+    const balancesResult = extractValueFromMulticallResponse(
+      response,
+      address,
+      GET_BALANCES_FUNCTION_NAME
+    );
+    const contractInterface = new Interface(abi);
+    const balancesDecoded = contractInterface.decodeFunctionResult(
+      GET_BALANCES_FUNCTION_NAME,
+      balancesResult
+    );
+    const firstBalanceAsHex = (
+      balancesDecoded.amountX as BigNumber
+    ).toHexString();
+    const secondBalanceAsHex = (
+      balancesDecoded.amountY as BigNumber
+    ).toHexString();
+    const firstBalance = new Decimal(firstBalanceAsHex);
+    const secondBalance = new Decimal(secondBalanceAsHex);
+    return { firstBalance, secondBalance };
   }
 }

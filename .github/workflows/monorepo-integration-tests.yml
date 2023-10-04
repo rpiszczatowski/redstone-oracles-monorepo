@@ -3,6 +3,15 @@ name: Integration tests
 on:
   push:
     branches: ["**"]
+    paths-ignore:
+      - packages/fuel-*/**
+      - packages/gelato-*/**
+      - packages/ton-*/**
+      - packages/starknet-*/**
+      - packages/cli/**
+      - packages/custom-urls-manifest-updater/**
+      - packages/data-analytics/**
+      - packages/eth-contracts/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

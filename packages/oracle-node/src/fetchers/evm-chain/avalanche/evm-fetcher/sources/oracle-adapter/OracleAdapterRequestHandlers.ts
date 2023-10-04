@@ -7,6 +7,8 @@ import { getContractDetailsFromConfig } from "../../../../shared/utils/get-contr
 import { MulticallParsedResponses } from "../../../../../../types";
 import { TEN_AS_BASE_OF_POWER } from "../../../../shared/contants";
 
+const LATEST_ANSWER_FUNCTION_NAME = "latestAnswer";
+
 export type OracleAdapterDetailsKeys =
   keyof typeof oracleAdapterContractsDetails;
 export type OracleAdapterDetailsValues =
@@ -22,7 +24,7 @@ export class OracleAdapterRequestHandlers implements IEvmRequestHandlers {
       OracleAdapterDetailsValues
     >(oracleAdapterContractsDetails, id);
 
-    const functionsNamesWithValues = [{ name: "latestAnswer" }];
+    const functionsNamesWithValues = [{ name: LATEST_ANSWER_FUNCTION_NAME }];
     return buildMulticallRequests(abi, address, functionsNamesWithValues);
   }
 
@@ -37,7 +39,11 @@ export class OracleAdapterRequestHandlers implements IEvmRequestHandlers {
     >(oracleAdapterContractsDetails, id);
 
     const latestAnswer = new Decimal(
-      extractValueFromMulticallResponse(response, address, "latestAnswer")
+      extractValueFromMulticallResponse(
+        response,
+        address,
+        LATEST_ANSWER_FUNCTION_NAME
+      )
     );
     const decimalDivider = new Decimal(TEN_AS_BASE_OF_POWER).toPower(
       ORACLE_ADAPTER_PRICE_PRECISION

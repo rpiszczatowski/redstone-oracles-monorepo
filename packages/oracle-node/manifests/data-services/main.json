@@ -343,7 +343,6 @@
     "TRX": {
       "source": [
         "ascendex",
-        "bequant",
         "binance",
         "binancecoinm",
         "binanceusdm",
@@ -409,18 +408,23 @@
       "source": [
         "binance",
         "binanceusdm",
+        "bingx",
         "bitfinex2",
+        "bitget",
         "bittrex",
+        "bitmart",
         "btcturk",
         "bybit",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
+        "gate",
         "huobipro",
         "kaiko",
         "kaiko-v2",
         "kucoin",
         "lbank",
+        "mexc",
         "okx"
       ]
     },
@@ -433,7 +437,6 @@
         "binancecoinm",
         "binanceusdm",
         "bitfinex2",
-        "bittrex",
         "btcturk",
         "coinbaseprime",
         "coinbasepro",
@@ -496,7 +499,6 @@
         "ascendex",
         "bequant",
         "binance",
-        "binancecoinm",
         "binanceusdm",
         "bitcoincom",
         "bitfinex2",

@@ -1,7 +1,7 @@
 import Decimal from "decimal.js";
 import { BigNumber, Contract, providers } from "ethers";
 import { RedstoneTypes, MathUtils } from "@redstone-finance/utils";
-import { getLastPrice } from "../../db/local-db";
+import { getLastPriceOrFail } from "../../db/local-db";
 import { DexOnChainFetcher } from "../dex-on-chain/DexOnChainFetcher";
 import {
   calculateSlippage,
@@ -200,10 +200,7 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeRespons
     const reserve0Scaled = reserve0Scaler.fromSolidityValue(reserve0);
     const reserve1Scaled = reserve1Scaler.fromSolidityValue(reserve1);
 
-    const pairedTokenPrice = getLastPrice(pairedToken);
-    if (!pairedTokenPrice) {
-      throw new Error(`Cannot get last price from cache for: ${pairedToken}`);
-    }
+    const pairedTokenPrice = getLastPriceOrFail(pairedToken);
 
     return {
       reserve0Scaled,

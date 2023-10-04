@@ -13,6 +13,9 @@ import { extractValuesWithTheSameNameFromMulticall } from "../utils/extract-valu
 import { getTokensPricesFromLocalCache } from "../utils/get-tokens-prices-from-local-cache";
 import { serializeDecimalsToDefault } from "../utils/serialize-decimals-to-default";
 
+const BALANCES_FUNCTION_NAME = "balances";
+const TOTAL_SUPPLY_FUNCTION_NAME = "totalSupply";
+
 interface Tokens {
   name: string;
   decimals: number;
@@ -37,7 +40,7 @@ export class CurveRequestHandlers implements IEvmRequestHandlers {
     const { erc20abi } = this.curveTokensContractsDetails;
     const { erc20Address } = this.curveTokensContractsDetails[id];
     const erc20BalanceRequests = this.prepareInternalRequestForCurveTokens(id);
-    const functionsNamesWithValues = [{ name: "totalSupply" }];
+    const functionsNamesWithValues = [{ name: TOTAL_SUPPLY_FUNCTION_NAME }];
     const totalSupplyRequest = buildMulticallRequests(
       erc20abi,
       erc20Address,
@@ -63,7 +66,7 @@ export class CurveRequestHandlers implements IEvmRequestHandlers {
     const { poolAddress } = this.curveTokensContractsDetails[id];
 
     return buildMulticallRequests(abi, poolAddress, [
-      { name: "balances", values: [tokenIndex] },
+      { name: BALANCES_FUNCTION_NAME, values: [tokenIndex] },
     ]);
   }
 
@@ -73,7 +76,11 @@ export class CurveRequestHandlers implements IEvmRequestHandlers {
   ): number | undefined {
     const { erc20Address } = this.curveTokensContractsDetails[id];
     const totalSupply = new Decimal(
-      extractValueFromMulticallResponse(response, erc20Address, "totalSupply")
+      extractValueFromMulticallResponse(
+        response,
+        erc20Address,
+        TOTAL_SUPPLY_FUNCTION_NAME
+      )
     );
     const balancesSum = this.getTokenBalancesSum(response, id);
     return balancesSum.div(totalSupply).toNumber();
@@ -88,7 +95,7 @@ export class CurveRequestHandlers implements IEvmRequestHandlers {
     const balances = extractValuesWithTheSameNameFromMulticall(
       multicallResult,
       poolAddress,
-      "balances"
+      BALANCES_FUNCTION_NAME
     );
 
     return CurveRequestHandlers.calculateTokenBalancesSum(

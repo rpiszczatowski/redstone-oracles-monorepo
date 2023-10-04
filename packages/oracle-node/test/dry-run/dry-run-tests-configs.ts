@@ -44,7 +44,7 @@ const config: Record<DryRunTestType, DryRunTestConfig> = {
   },
   [DryRunTestType.stocks]: {
     manifest: stocksManifest,
-    nodeIterations: 1,
+    nodeIterations: 2,
   },
   [DryRunTestType.avalanche]: {
     manifest: avalancheManifest,

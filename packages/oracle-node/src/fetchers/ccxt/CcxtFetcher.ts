@@ -1,7 +1,7 @@
 import _ from "lodash";
 import ccxt, { Exchange, exchanges, Ticker } from "ccxt";
 import { BaseFetcher } from "../BaseFetcher";
-import { getLastPrice } from "../../db/local-db";
+import { getLastPriceOrFail } from "../../db/local-db";
 import { getRequiredPropValue } from "../../utils/objects";
 import symbolToIdForExchanges from "./symbol-to-id/index";
 import { PricesObj } from "../../types";
@@ -69,10 +69,7 @@ export class CcxtFetcher extends BaseFetcher {
       return { value: lastPrice, id: pairSymbol };
     }
     const stableCoinSymbol = pairSymbol.slice(-4);
-    const lastUsdInStablePrice = getLastPrice(stableCoinSymbol)?.value;
-    if (lastUsdInStablePrice) {
-      return { value: lastPrice * lastUsdInStablePrice, id: pairSymbol };
-    }
-    throw new Error(`Cannot get last price from cache for ${stableCoinSymbol}`);
+    const lastUsdInStablePrice = getLastPriceOrFail(stableCoinSymbol).value;
+    return { value: lastPrice * lastUsdInStablePrice, id: pairSymbol };
   };
 }

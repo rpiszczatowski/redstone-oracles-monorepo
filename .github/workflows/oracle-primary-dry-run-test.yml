@@ -19,7 +19,7 @@ jobs:
       - name: Build
         run: yarn build
       - name: Run dry run test
-        run: yarn test:primary-dry-run
+        run: yarn test:primary-dry-run 2>&1 | tee logs.log; test ${PIPESTATUS[0]} -eq 0
         env:
           NODE_ENV: test
           COINGECKO_API_URL: https://pro-api.coingecko.com/api/v3/simple/price
@@ -29,3 +29,6 @@ jobs:
           STLOUISFED_API_KEY: ${{ secrets.STLOUISFED_API_KEY }}
           HISTORICAL_DATA_PACKAGES_URL: https://oracle-gateway-2.a.redstone.finance
           SKIPPED_SOURCES: '["binance", "binancecoinm", "binanceusdm", "bybit"]'
+      - name: Create summary
+        if: ${{ !cancelled() }}
+        run: scripts/filter-logs.sh logs.log >> $GITHUB_STEP_SUMMARY || true
