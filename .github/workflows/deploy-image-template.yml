@@ -30,7 +30,7 @@ jobs:
           echo TAG=$(echo ${GITHUB_SHA} | cut -c1-7) >> "$GITHUB_ENV"
       - name: Build docker image
         run: |
-          docker build -t "$IMAGE:$TAG" --build-arg DOCKER_IMAGE_TAG=$TAG --build-arg PACKAGE=${{ inputs.package }}
+          docker build -t "$IMAGE:$TAG" --build-arg DOCKER_IMAGE_TAG=$TAG --build-arg PACKAGE=${{ inputs.package }} .
       - name: Push docker image to ECR public
         if: ${{ github.ref_name == 'main' }}
         run: |
