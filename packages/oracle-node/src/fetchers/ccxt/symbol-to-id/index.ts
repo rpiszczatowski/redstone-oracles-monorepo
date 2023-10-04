@@ -1,4 +1,5 @@
 import { exchanges } from "ccxt";
+import * as fs from "fs";
 import supportedExchanges from "../all-supported-exchanges.json";
 
 type Exchanges = keyof typeof exchanges;
@@ -12,11 +13,13 @@ type MappingsForCCXT = {
 const mappings: MappingsForCCXT = {};
 
 for (const exchangeId of supportedExchanges) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  mappings[exchangeId as Exchanges] = require(`./${exchangeId}.json`) as Record<
-    string,
-    string
-  >;
+  mappings[exchangeId as Exchanges] = JSON.parse(
+    fs
+      .readFileSync(
+        `${process.cwd()}/src/fetchers/ccxt/symbol-to-id/${exchangeId}.json`
+      )
+      .toString()
+  ) as Record<string, string>;
 }
 
 export default mappings;

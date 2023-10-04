@@ -1,0 +1,43 @@
+name: Reusable workflow for building and deploying packages
+
+on:
+  workflow_call:
+    inputs:
+      package:
+        required: true
+        type: string
+      image_name:
+        required: true
+        type: string
+
+jobs:
+  run-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Configure AWS credentials
+        if: ${{ github.ref_name == 'main' }}
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Setup env variables
+        run: |
+          echo IMAGE=public.ecr.aws/y7v2w8b2/${{ inputs.image_name }} >> "$GITHUB_ENV"
+          echo TAG=$(echo ${GITHUB_SHA} | cut -c1-7) >> "$GITHUB_ENV"
+      - name: Build docker image
+        run: |
+          docker build -t "$IMAGE:$TAG" --build-arg DOCKER_IMAGE_TAG=$TAG --build-arg PACKAGE=${{ inputs.package }}
+      - name: Push docker image to ECR public
+        if: ${{ github.ref_name == 'main' }}
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+          docker push $IMAGE:$TAG
+      - name: Print image details
+        run: |
+          docker history --no-trunc $IMAGE:$TAG
+          IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
+          echo "image size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY

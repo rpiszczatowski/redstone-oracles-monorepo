@@ -2,7 +2,7 @@ import consola, { JSONReporter, FancyReporter } from "consola";
 import { config } from "../config";
 import { ConsolaErrorReporter } from "./error-reporter";
 
-export = (moduleName: string) => {
+export default (moduleName: string) => {
   // Currently we can set reporters using env variables
   const { enableJsonLogs } = config;
   const mainReporter = enableJsonLogs

@@ -28,8 +28,6 @@ async function main(): Promise<void> {
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 start();
 
-export = {};
-
 process.on("beforeExit", () => {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   closeLocalLevelDB();
