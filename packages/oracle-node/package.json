@@ -47,7 +47,7 @@
     "@redstone-finance/streamr-proxy": "^0.3.3-alpha.0",
     "@redstone-finance/utils": "^0.3.3-alpha.0",
     "arweave": "^1.12.2",
-    "axios": "^1.5.0",
+    "axios": "^1.5.1",
     "ccxt": "^4.0.78",
     "consola": "^2.15.3",
     "cors": "^2.8.5",
