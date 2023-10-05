@@ -140,7 +140,6 @@ const getOptionallyPriceDataServiceUrls = () => {
   return undefined;
 };
 
-console.log("Config file was ran");
 const safeSigner = SafeSignerFromProcessEnv("ECDSA_PRIVATE_KEY");
 
 const getRpcUrls = (name: string, defaultValue: string[]): string[] => {

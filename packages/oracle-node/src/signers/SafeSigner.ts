@@ -12,11 +12,11 @@ export interface ISafeSigner {
   address: string;
 }
 
-const signDigest = (hash: Uint8Array, privateKey: string) => {
+function signDigest(hash: Uint8Array, privateKey: string) {
   const signingKey = new SigningKey(privateKey);
 
   return signingKey.signDigest(hash);
-};
+}
 
 /** Use for tests */
 export function TestSafeSignerFromPrivateKey(privateKey: string): ISafeSigner {
