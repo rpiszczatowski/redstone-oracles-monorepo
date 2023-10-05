@@ -40,4 +40,4 @@ jobs:
         run: |
           docker history --no-trunc $IMAGE:$TAG
           IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
-          echo "image size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
+          echo "$IMAGE:$TAG, image size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY

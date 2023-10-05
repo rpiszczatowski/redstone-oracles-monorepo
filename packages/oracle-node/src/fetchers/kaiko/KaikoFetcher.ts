@@ -16,7 +16,7 @@ const KAIKO_PRICES_URL =
 const KAIKO_REQUEST_HEADERS = {
   "X-Api-Key": config.kaikoApiKey,
   Accept: "application/json",
-} as Record<string, string>;
+};
 const KAIKO_REQUEST_PARAMS = {
   page_size: 10,
   interval: "5m",

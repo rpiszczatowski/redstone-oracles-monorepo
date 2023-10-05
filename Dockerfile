@@ -1,4 +1,4 @@
-ARG PACKAGE="oracle-node"
+ARG PACKAGE
 
 FROM node:16 AS build
 ARG PACKAGE
@@ -12,12 +12,12 @@ COPY .yarnrc .
 RUN yarn install --frozen-lockfile --non-interactive --production=false
 
 COPY . .
-RUN cd "packages/${PACKAGE}" && echo $PWD && yarn install  --frozen-lockfile --non-interactive  && yarn build && yarn bundle 
+RUN cd "packages/${PACKAGE}" && echo $PWD && yarn install  --frozen-lockfile --non-interactive --production=false  && yarn build && yarn bundle 
 
 FROM node:16
 ARG PACKAGE
 
-COPY --from=build "/app/packages/$PACKAGE/package.json" yarn.lock
+COPY --from=build "/app/packages/$PACKAGE/yarn.lock" yarn.lock
 COPY --from=build "/app/packages/$PACKAGE/package.json" package.json 
 
 RUN yarn install --pure-lockfile --non-interactive --production=true

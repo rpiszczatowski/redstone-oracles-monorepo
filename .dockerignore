@@ -4,6 +4,5 @@ node_modules
 packages/starknet-connector/build
 **/dist
 **/.DS_Store
-Dockerfile*
 docs
 *.log
