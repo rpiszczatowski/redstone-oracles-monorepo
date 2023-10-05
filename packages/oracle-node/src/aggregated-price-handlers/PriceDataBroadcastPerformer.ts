@@ -17,14 +17,13 @@ export class PriceDataBroadcastPerformer
 
   constructor(
     broadcasterURLs: string[] | undefined,
-    ethereumPrivateKey: string,
     private readonly providerAddress: string
   ) {
     super();
     this.priceBroadcaster = new PriceDataBroadcaster(
       broadcasterURLs ?? DEFAULT_PRICE_BROADCASTER_URLS
     );
-    this.priceSignerService = new PriceSignerService(ethereumPrivateKey);
+    this.priceSignerService = new PriceSignerService(config.safeSigner);
   }
 
   async handle(

@@ -53,7 +53,7 @@ export default function (app: express.Application, nodeConfig: NodeConfig) {
       };
       const signedPackage = evmSigner.signPricePackage(
         dataPackage,
-        nodeConfig.privateKeys.ethereumPrivateKey
+        nodeConfig.safeSigner
       );
 
       // Sending response

@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Manifest, NodeConfig } from "./types";
 import { readJSON } from "./utils/objects";
 import { ethers } from "ethers";
+import { SafeSignerFromProcessEnv } from "./signers/SafeSigner";
 
 const DEFAULT_ENABLE_PERFORMANCE_TRACKING = "true";
 const DEFAULT_ENABLE_JSON_LOGS = "true";
@@ -139,9 +140,8 @@ const getOptionallyPriceDataServiceUrls = () => {
   return undefined;
 };
 
-const ethereumPrivateKey = parserFromString.hex(
-  getFromEnv("ECDSA_PRIVATE_KEY")
-);
+console.log("Config file was ran");
+const safeSigner = SafeSignerFromProcessEnv("ECDSA_PRIVATE_KEY");
 
 const getRpcUrls = (name: string, defaultValue: string[]): string[] => {
   const rpcUrls = JSON.parse(
@@ -156,6 +156,7 @@ const getRpcUrls = (name: string, defaultValue: string[]): string[] => {
 };
 
 export const config: NodeConfig = Object.freeze({
+  safeSigner: safeSigner,
   enableJsonLogs: parserFromString.boolean(
     getFromEnv("ENABLE_JSON_LOGS", DEFAULT_ENABLE_JSON_LOGS)
   ),
@@ -191,10 +192,7 @@ export const config: NodeConfig = Object.freeze({
     "STLOUISFED_API_KEY",
     DEFAULT_STLOUISFED_API_KEY
   ),
-  privateKeys: {
-    ethereumPrivateKey,
-  },
-  ethereumAddress: new ethers.Wallet(ethereumPrivateKey).address,
+  ethereumAddress: safeSigner.address,
   coinbaseIndexerMongoDbUrl: getFromEnv(
     "COINBASE_INDEXER_MONGODB_URL",
     DEFAULT_COINBASE_INDEXER_MONGODB_URL

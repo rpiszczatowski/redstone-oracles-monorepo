@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { TestSafeSignerFromPrivateKey } from "../src/signers/SafeSigner";
 import { NodeConfig } from "../src/types";
 
 const baseManifest = {
@@ -37,9 +38,6 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   printDiagnosticInfo: false,
   manifestRefreshInterval: 120000,
   overrideManifestUsingFile: MOCK_MANIFEST,
-  privateKeys: {
-    ethereumPrivateKey: MOCK_ETH_PRIV_KEY,
-  },
   ethereumAddress: new ethers.Wallet(MOCK_ETH_PRIV_KEY).address,
   levelDbLocation: "oracle-node-level-db-tests",
   ttlForPricesInLocalDBInMilliseconds: 900000,
@@ -61,6 +59,7 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   telemetryUrl: "",
   telemetryAuthorizationToken: "",
   dockerImageTag: "",
+  safeSigner: TestSafeSignerFromPrivateKey(MOCK_ETH_PRIV_KEY),
 };
 
 export const mockHardLimits = {

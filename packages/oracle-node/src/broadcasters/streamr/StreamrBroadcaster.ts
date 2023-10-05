@@ -1,5 +1,3 @@
-import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
-import { providers, utils, Wallet } from "ethers";
 import { SignedDataPackage } from "@redstone-finance/protocol";
 import {
   compressMsg,
@@ -8,7 +6,10 @@ import {
   StreamPermission,
   StreamrClient,
 } from "@redstone-finance/streamr-proxy";
+import { providers, utils } from "ethers";
+import { ISafeSigner } from "../../signers/SafeSigner";
 import loggerFactory from "../../utils/logger";
+import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
 
 const POLYGON_RPC = {
   name: "Polygon",
@@ -28,14 +29,15 @@ export class StreamrBroadcaster implements DataPackageBroadcaster {
   private streamExistsCached: boolean = false;
   private isStreamCreationRequested: boolean = false;
 
-  constructor(ethereumPrivateKey: string) {
+  constructor(safeSigner: ISafeSigner) {
     this.streamrClient = new StreamrClient({
-      auth: { privateKey: ethereumPrivateKey },
+      // FIXME: very unsafe this method should be removed
+      auth: { privateKey: safeSigner.veryUnsafeGetPrivateKey(), ethereum: {} },
       network: {
         webrtcDisallowPrivateAddresses: false,
       },
     });
-    this.address = new Wallet(ethereumPrivateKey).address;
+    this.address = safeSigner.address;
     this.streamId = getStreamIdForNodeByEvmAddress(this.address);
   }
 

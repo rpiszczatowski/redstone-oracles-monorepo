@@ -1,10 +1,12 @@
-import EvmPriceSigner from "../../src/signers/EvmPriceSigner";
-import { PricePackage, SignedPricePackage } from "../../src/types";
 import { SafeNumber } from "@redstone-finance/utils";
+import EvmPriceSigner from "../../src/signers/EvmPriceSigner";
+import { TestSafeSignerFromPrivateKey } from "../../src/signers/SafeSigner";
+import { PricePackage, SignedPricePackage } from "../../src/types";
 
 const evmSigner = new EvmPriceSigner();
 const ethereumPrivateKey =
   "0xb1a057470659e2abab372d853183847cc9c4269ed781d222b2e50f805129490a";
+const safeSigner = TestSafeSignerFromPrivateKey(ethereumPrivateKey);
 
 const timestamp = 1688730801416;
 describe("evmSignPricesAndVerify", () => {
@@ -33,7 +35,7 @@ describe("evmSignPricesAndVerify", () => {
     // when
     const signedPricesData: SignedPricePackage = evmSigner.signPricePackage(
       pricePackage,
-      ethereumPrivateKey
+      safeSigner
     );
 
     expect(signedPricesData.liteSignature).toEqual(
@@ -62,7 +64,7 @@ describe("evmSignPricesAndVerify", () => {
     // when
     const signedPricesData: SignedPricePackage = evmSigner.signPricePackage(
       pricePackage,
-      ethereumPrivateKey
+      safeSigner
     );
 
     // then
@@ -92,7 +94,7 @@ describe("evmSignPricesAndVerify", () => {
     // when
     const signedPricesData = evmSigner.signPricePackage(
       pricePackage,
-      ethereumPrivateKey
+      safeSigner
     );
 
     // then
@@ -140,7 +142,7 @@ describe("evmSignPricesAndVerify", () => {
     // when
     const signedPricesData = evmSigner.signPricePackage(
       pricePackage1,
-      ethereumPrivateKey
+      safeSigner
     );
 
     // then
@@ -170,7 +172,7 @@ describe("evmSignPricesAndVerify", () => {
       timestamp: Date.now(),
     };
     expect(() =>
-      evmSigner.signPricePackage(pricePackage1, ethereumPrivateKey)
+      evmSigner.signPricePackage(pricePackage1, safeSigner)
     ).toThrow();
   });
 
@@ -189,7 +191,7 @@ describe("evmSignPricesAndVerify", () => {
       timestamp: Date.now(),
     };
     expect(() =>
-      evmSigner.signPricePackage(pricePackage1, ethereumPrivateKey)
+      evmSigner.signPricePackage(pricePackage1, safeSigner)
     ).toThrow();
   });
 });

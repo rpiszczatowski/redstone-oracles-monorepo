@@ -9,6 +9,7 @@ import {
   SignedPricePackage,
 } from "../types";
 import _ from "lodash";
+import { ISafeSigner } from "./SafeSigner";
 
 /** IMPORTANT: This function as side effect convert Class instances to pure objects */
 const sortDeepObjects = <T>(arr: T[]): T[] => sortDeepObjectArrays<T>(arr);
@@ -92,16 +93,14 @@ export default class EvmPriceSigner {
   // eslint-disable-next-line @typescript-eslint/class-methods-use-this
   signPricePackage(
     pricePackage: PricePackage,
-    privateKey: string
+    safeSigner: ISafeSigner
   ): SignedPricePackage {
     const serializedPriceData = EvmPriceSigner.serializeToMessage(pricePackage);
+
     return {
       pricePackage,
-      signerAddress: new ethers.Wallet(privateKey).address,
-      liteSignature: EvmPriceSigner.calculateLiteEvmSignature(
-        serializedPriceData,
-        privateKey
-      ),
+      signerAddress: safeSigner.address,
+      liteSignature: safeSigner.calculateLiteEvmSignature(serializedPriceData),
     };
   }
 
