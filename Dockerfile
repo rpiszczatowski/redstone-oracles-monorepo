@@ -17,7 +17,7 @@ RUN cd "packages/${PACKAGE}" && echo $PWD && yarn install  --frozen-lockfile --n
 FROM node:16
 ARG PACKAGE
 
-COPY --from=build "/app/packages/$PACKAGE/yarn.lock" yarn.lock
+COPY --from=build "/app/yarn.lock" yarn.lock
 COPY --from=build "/app/packages/$PACKAGE/package.json" package.json 
 
 RUN yarn install --pure-lockfile --non-interactive --production=true
