@@ -5,4 +5,5 @@ packages/starknet-connector/build
 **/dist
 **/.DS_Store
 docs
+Dockerfile
 *.log
