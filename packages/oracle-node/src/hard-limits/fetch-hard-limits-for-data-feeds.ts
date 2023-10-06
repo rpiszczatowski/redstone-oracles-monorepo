@@ -36,9 +36,9 @@ export const fetchHardLimitsForDataFeeds = async (
     }
   }
 
-  throw new Error(
-    `Failed to fetch hard limits from ${hardLimitsUrls.join(", ")} urls`
-  );
+  logFailedFetchingFromAllUrls(hardLimitsUrls);
+  // Despite not fetching hard limits we still want to deliver prices
+  return {};
 };
 
 const validateLastUpdatedTimestamp = (
@@ -83,5 +83,11 @@ const logFailedFetching = (
 ) => {
   const attemptMessage = `(${urlIndex + 1}/${urlsCount} attempt)`;
   const message = `Failed to fetch hard limits from ${url} ${attemptMessage}`;
+  logger.warn(message);
+};
+
+const logFailedFetchingFromAllUrls = (hardLimitsUrls: string[]) => {
+  const urlsJoined = hardLimitsUrls.join(", ");
+  const message = `Failed to fetch hard limits from all URLs: ${urlsJoined}, proceeding without hard limits validation`;
   logger.warn(message);
 };
