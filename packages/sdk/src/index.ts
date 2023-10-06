@@ -163,7 +163,6 @@ export const requestDataPackages = async (
       reqParams,
     })}, Original error: ${errToString(e)}`;
 
-    console.error(errMessage); // Do not remove - to have the full message visible as the Gelato web3FunctionLogs log entry.
     throw new Error(errMessage);
   }
 };
