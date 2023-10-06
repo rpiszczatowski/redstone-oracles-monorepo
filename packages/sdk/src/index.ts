@@ -162,7 +162,6 @@ export const requestDataPackages = async (
     const errMessage = `Request failed ${JSON.stringify({
       reqParams,
     })}, Original error: ${errToString(e)}`;
-
     throw new Error(errMessage);
   }
 };
