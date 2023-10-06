@@ -60,6 +60,7 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeRespons
 
     return this.parseResponse(spotAssetId, _reserve0, _reserve1);
   }
+
   override calculateSpotPrice(
     assetId: string,
     response: UniswapV2LikeResponse
@@ -93,6 +94,7 @@ export class UniswapV2LikeFetcher extends DexOnChainFetcher<UniswapV2LikeRespons
 
     return reserve.mul(2).mul(pairedTokenPrice).toString();
   }
+
   override calculateSlippage(
     assetId: string,
     response: UniswapV2LikeResponse

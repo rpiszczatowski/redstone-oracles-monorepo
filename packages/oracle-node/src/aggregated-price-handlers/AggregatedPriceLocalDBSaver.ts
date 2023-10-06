@@ -1,6 +1,6 @@
 import { AggregatedPriceHandler } from "./AggregatedPriceHandler";
 import { PriceDataAfterAggregation } from "../types";
-import localDB from "../db/local-db";
+import { savePrices } from "../db/local-db";
 import loggerFactory from "../utils/logger";
 
 const logger = loggerFactory("runner");
@@ -17,7 +17,7 @@ export class AggregatedPriceLocalDBSaver implements AggregatedPriceHandler {
     prices: PriceDataAfterAggregation[]
   ) {
     logger.info(`Saving ${prices.length} prices in local db`);
-    await localDB.savePrices(prices);
+    await savePrices(prices);
     logger.info("Prices saved in local db");
   }
 }

@@ -13,7 +13,8 @@ import Multicall2 from "../../src/fetchers/evm-chain/shared/abis/Multicall2.abi.
 
 export const saveMockPriceInLocalDb = async (
   value: number,
-  symbol: string = "USDT"
+  symbol: string = "USDT",
+  timestampMilliseconds?: number
 ) => {
   const priceToSave = sanitizePrice(
     preparePrice({
@@ -21,7 +22,13 @@ export const saveMockPriceInLocalDb = async (
     })
   );
   const sanitizedValue = SafeNumber.createSafeNumber(value);
-  await savePrices([{ value: sanitizedValue, ...priceToSave }]);
+  await savePrices([
+    {
+      value: sanitizedValue,
+      ...priceToSave,
+      timestamp: timestampMilliseconds ?? priceToSave.timestamp,
+    },
+  ]);
 };
 
 export const saveMockPricesInLocalDb = async (
