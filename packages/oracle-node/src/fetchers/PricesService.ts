@@ -1,9 +1,19 @@
+import { AxiosError } from "axios";
+import { DataPoint } from "@redstone-finance/protocol";
 import { v4 as uuidv4 } from "uuid";
 import { RedstoneTypes, SafeNumber } from "@redstone-finance/utils";
+import { RedstoneCommon } from "@redstone-finance/utils";
 import { getPrices, PriceValueInLocalDB } from "../db/local-db";
 import ManifestHelper, { TokensBySource } from "../manifest/ManifestHelper";
 import { IterationContext } from "../schedulers/IScheduler";
 import { terminateWithManifestConfigError } from "../Terminator";
+import { fetchHardLimitsForDataFeeds } from "../hard-limits/fetch-hard-limits-for-data-feeds";
+import { trackEnd, trackStart } from "../utils/performance-tracker";
+import { promiseTimeout } from "../utils/promise-timeout";
+import fetchers from "./index";
+import { config } from "../config";
+import { createMetadataPerSource } from "./MetadataForRedstonePrice";
+import loggerFactory from "../utils/logger";
 import {
   DeviationCheckConfig,
   Manifest,
@@ -13,15 +23,6 @@ import {
   PriceDataFetched,
   SanitizedPriceDataBeforeAggregation,
 } from "../types";
-import { RedstoneCommon } from "@redstone-finance/utils";
-import { trackEnd, trackStart } from "../utils/performance-tracker";
-import { promiseTimeout } from "../utils/promise-timeout";
-import fetchers from "./index";
-import { config } from "../config";
-import { createMetadataPerSource } from "./MetadataForRedstonePrice";
-import loggerFactory from "../utils/logger";
-import axios, { AxiosError } from "axios";
-import { DataPoint } from "@redstone-finance/protocol";
 
 export const VALUE_FOR_FAILED_FETCHER = "error";
 
@@ -42,16 +43,7 @@ export interface PriceValidationArgs {
   timestamp: number;
   deviationConfig: DeviationCheckConfig;
   recentPrices: PriceValueInLocalDB[];
-  priceLimits?: PriceLimits;
-}
-
-interface PriceLimits {
-  lower: number;
-  upper: number;
-}
-
-interface PricesLimits {
-  [symbol: string]: PriceLimits;
+  hardLimits?: RedstoneTypes.HardLimitsWithTimestamp;
 }
 
 export default class PricesService {
@@ -178,7 +170,9 @@ export default class PricesService {
     prices: NotSanitizedPriceDataBeforeAggregation[]
   ): Promise<PriceDataAfterAggregation[]> {
     const pricesInLocalDB = await getPrices(prices.map((p) => p.symbol));
-    const pricesLimits = await this.fetchPricesLimits();
+    const hardLimitsPerSymbol = await fetchHardLimitsForDataFeeds(
+      config.hardLimitsUrls
+    );
 
     const aggregatedPrices: PriceDataAfterAggregation[] = [];
     for (const price of prices) {
@@ -209,7 +203,7 @@ export default class PricesService {
         priceAfterAggregation.value.assertNonNegative();
         PricesService.assertInHardLimits(
           priceAfterAggregation.value,
-          pricesLimits[price.symbol]
+          hardLimitsPerSymbol[price.symbol]
         );
         PricesService.assertStableDeviation({
           value: priceAfterAggregation.value,
@@ -280,13 +274,13 @@ export default class PricesService {
 
   static assertInHardLimits(
     value: SafeNumber.ISafeNumber,
-    priceLimits?: PriceLimits
+    hardLimits?: RedstoneTypes.HardLimitsForSymbol
   ) {
     if (
-      priceLimits &&
-      (value.gt(priceLimits.upper) || value.lt(priceLimits.lower))
+      hardLimits &&
+      (value.gt(hardLimits.upper) || value.lt(hardLimits.lower))
     ) {
-      const { lower, upper } = priceLimits;
+      const { lower, upper } = hardLimits;
       throw new Error(
         `Value is out of hard limits (value: ${String(
           value
@@ -438,40 +432,5 @@ export default class PricesService {
           `Valid sources: ${sources.join(",")}`
       );
     }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/class-methods-use-this
-  async fetchPricesLimits(): Promise<PricesLimits> {
-    if (config.pricesHardLimitsUrls.length === 0) {
-      return {};
-    }
-
-    for (let i = 0; i < config.pricesHardLimitsUrls.length; i++) {
-      const url = config.pricesHardLimitsUrls[i];
-
-      try {
-        const response = await axios.get<PricesLimits>(url);
-        logger.info(
-          `Fetched hard limit ${JSON.stringify(
-            response.data,
-            null,
-            2
-          )} from ${url}`
-        );
-        return response.data;
-      } catch (e) {
-        logger.warn(
-          `Failed to fetch hard limit from ${url} (${i + 1}/${
-            config.pricesHardLimitsUrls.length
-          } attempt)`
-        );
-      }
-    }
-
-    throw new Error(
-      `Failed to fetch hard limits from ${config.pricesHardLimitsUrls.join(
-        ", "
-      )} urls`
-    );
   }
 }

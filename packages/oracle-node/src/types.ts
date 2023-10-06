@@ -185,7 +185,7 @@ export interface NodeConfig {
   coingeckoApiUrl: string;
   coingeckoApiKey?: string;
   enableHttpServer: boolean;
-  pricesHardLimitsUrls: string[];
+  hardLimitsUrls: string[];
   newyorkfedRatesUrl: string;
   simulationValueInUsdForSlippageCheck: string;
   maxAllowedSlippagePercent: number;

@@ -20,7 +20,6 @@ import {
 } from "../../src/db/local-db";
 import emptyManifest from "../../manifests/dev/empty.json";
 import * as Terminator from "../../src/Terminator";
-import PricesService from "../../src/fetchers/PricesService";
 import { SafeNumber } from "@redstone-finance/utils";
 import EvmPriceSigner from "../../src/signers/EvmPriceSigner";
 
@@ -73,9 +72,10 @@ jest.mock("../../src/utils/objects", () => ({
 
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 
-jest
-  .spyOn(PricesService.prototype, "fetchPricesLimits")
-  .mockImplementation(() => Promise.resolve(mockHardLimits));
+jest.mock("../../src/hard-limits/fetch-hard-limits-for-data-feeds", () => ({
+  fetchHardLimitsForDataFeeds: () => mockHardLimits,
+}));
+
 /****** MOCKS END ******/
 
 describe("NodeRunner", () => {

@@ -47,7 +47,7 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   coinmarketcapApiUrl: "https://coinmarketcap-mock.url",
   coingeckoApiUrl: "",
   enableHttpServer: false,
-  pricesHardLimitsUrls: ["mock-hard-prices-limits-url"],
+  hardLimitsUrls: ["mock-hard-limits-url"],
   avalancheRpcUrls: ["https://mock-rpc.url"],
   ethMainRpcUrls: ["https://mock-rpc.url"],
   arbitrumRpcUrls: ["https://mock-rpc.url"],
