@@ -38,7 +38,6 @@ import {
   mockSigner,
   produceMockDataPackage,
 } from "../common/mock-values";
-import "../common/set-test-envs";
 import { createTestDB, dropTestDatabase } from "../common/test-db";
 import { signByMockSigner } from "../common/test-utils";
 
