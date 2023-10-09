@@ -54,9 +54,8 @@ export class DataPackagesController {
   }
 
   private static async validateDataServiceId(dataServiceId: string) {
-    const isDataServiceIdValid = await DataPackagesService.isDataServiceIdValid(
-      dataServiceId
-    );
+    const isDataServiceIdValid =
+      await DataPackagesService.isDataServiceIdValid(dataServiceId);
     if (!isDataServiceIdValid) {
       throw new HttpException(
         {

@@ -4,7 +4,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import "../common/set-test-envs";
 import { INestApplication } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import {
@@ -22,7 +21,6 @@ import { base64 } from "ethers/lib/utils";
 import request from "supertest";
 import { AppModule } from "../../src/app.module";
 import { BundlrBroadcaster } from "../../src/brodcasters/bundlr-brodcaster";
-import { MongoBroadcaster } from "../../src/brodcasters/mongo-broadcaster";
 import { ResponseFormat } from "../../src/data-packages/data-packages.interface";
 import {
   CachedDataPackage,
@@ -40,6 +38,7 @@ import {
   mockSigner,
   produceMockDataPackage,
 } from "../common/mock-values";
+import "../common/set-test-envs";
 import { createTestDB, dropTestDatabase } from "../common/test-db";
 import { signByMockSigner } from "../common/test-utils";
 
