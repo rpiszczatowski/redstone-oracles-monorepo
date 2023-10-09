@@ -3249,6 +3249,13 @@
   dependencies:
     ethereumjs-util "^7.1.4"
 
+"@nomicfoundation/hardhat-network-helpers@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-network-helpers/-/hardhat-network-helpers-1.0.9.tgz#767449e8a2acda79306ac84626117583d95d25aa"
+  integrity sha512-OXWCv0cHpwLUO2u7bFxBna6dQtCC2Gg/aN/KtJLO7gmuuA28vgmVKYFRCDUqrbjujzgfwQ2aKyZ9Y3vSmDqS7Q==
+  dependencies:
+    ethereumjs-util "^7.1.4"
+
 "@nomicfoundation/hardhat-toolbox@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@nomicfoundation/hardhat-toolbox/-/hardhat-toolbox-2.0.2.tgz#ec95f23b53cb4e71a1a7091380fa223aad18f156"
@@ -5304,17 +5311,30 @@
     ton-x "^2.1.0"
     ts-node "^10.9.1"
 
+"@ton-community/func-js-bin@0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@ton-community/func-js-bin/-/func-js-bin-0.4.4.tgz#b7b1b5b5e0939286cf2ccb0b8ff6c1db5774e623"
+  integrity sha512-zCSVXmh+rFMgouzTbWkSVDIt1Z5i36u9rws/Kuqn89/a0vhA1aEoJJ3oJypz0TjWKJQveU4doJsPlqu7UT2zkw==
+
 "@ton-community/func-js-bin@0.4.5-tvmbeta.1":
   version "0.4.5-tvmbeta.1"
   resolved "https://registry.yarnpkg.com/@ton-community/func-js-bin/-/func-js-bin-0.4.5-tvmbeta.1.tgz#0d6785ebf9cf1a689db4568f663e41586ed3e0c8"
   integrity sha512-RjiF47XnOwZ26/HDX5M1KPoH9Xd8FwRqEYtj6FXMYOS2lUlYdZOnBYTMuwRkfNl2hRSrg15NkErl5aRR8YTMzg==
 
-"@ton-community/func-js@0.6.3-tvmbeta.1", "@ton-community/func-js@^0.6.2":
+"@ton-community/func-js@0.6.3-tvmbeta.1":
   version "0.6.3-tvmbeta.1"
   resolved "https://registry.yarnpkg.com/@ton-community/func-js/-/func-js-0.6.3-tvmbeta.1.tgz#90ec7987f341d1a56862a72b6b0415eb42c04bbb"
   integrity sha512-6/Iz3bbDQFMzyFUc0tOLukY2l+ItXZJt7q5Jcs8edHlBsYhffHUIgXinPE7E70Bb0E3Cbs3p+8RxPSLLrUDGhQ==
   dependencies:
     "@ton-community/func-js-bin" "0.4.5-tvmbeta.1"
+    arg "^5.0.2"
+
+"@ton-community/func-js@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@ton-community/func-js/-/func-js-0.6.2.tgz#bd82279e1c489a1422d141d99506bdea12ded9dc"
+  integrity sha512-5bewe8APG2TVgIPLUV5atQfAy+NtdjjGBfsWUeRdVUclzQ5H2wZ8aJsVNLiDBpKSNEKdOAP/1PownOFeodpQHg==
+  dependencies:
+    "@ton-community/func-js-bin" "0.4.4"
     arg "^5.0.2"
 
 "@ton-community/sandbox@0.12.0-tvmbeta.1":
@@ -7265,7 +7285,7 @@ axios@^0.27.0, axios@^0.27.2:
     follow-redirects "^1.14.9"
     form-data "^4.0.0"
 
-axios@^1.0.0, axios@^1.5.0:
+axios@^1.0.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/axios/-/axios-1.5.0.tgz#f02e4af823e2e46a9768cfc74691fdd0517ea267"
   integrity sha512-D4DdjDo5CY50Qms0qGQTTw6Q44jl7zRwY7bthds06pUGfChBCTcQs+N743eFWGEd6pRTMd6A+I87aWyFV5wiZQ==

@@ -1,15 +1,17 @@
-import { SignedDataPackage } from "@redstone-finance/protocol";
+import { Injectable, Logger } from "@nestjs/common";
+import { SignedDataPackagePlainObj } from "@redstone-finance/protocol";
 import {
+  StreamPermission,
+  StreamrClient,
   compressMsg,
   doesStreamExist,
   getStreamIdForNodeByEvmAddress,
-  StreamPermission,
-  StreamrClient,
 } from "@redstone-finance/streamr-proxy";
-import { providers, utils } from "ethers";
-import { ISafeSigner } from "../../signers/SafeSigner";
-import loggerFactory from "../../utils/logger";
-import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
+import { Wallet, providers, utils } from "ethers";
+import { CachedDataPackage } from "../data-packages/data-packages.model";
+import { DataPackagesBroadcaster } from "./data-pacakges-brodcaster";
+import config from "../config";
+import { RedstoneCommon } from "@redstone-finance/utils";
 
 const POLYGON_RPC = {
   name: "Polygon",
@@ -20,39 +22,51 @@ const MINIMAL_MATIC_BALANCE = "0.1";
 const STORAGE_DAYS = 7;
 const INACTIVITY_THRESHOLD_HOURS = 24 * 20; // 20 days
 
-const logger = loggerFactory("StreamrBroadcaster");
-
-export class StreamrBroadcaster implements DataPackageBroadcaster {
+@Injectable()
+export class StreamrBroadcaster implements DataPackagesBroadcaster {
   private readonly streamrClient: StreamrClient;
   private readonly streamId: string;
   private readonly address: string;
   private streamExistsCached: boolean = false;
   private isStreamCreationRequested: boolean = false;
+  private readonly logger = new Logger(StreamrBroadcaster.name);
 
-  constructor(safeSigner: ISafeSigner) {
+  constructor() {
+    const streamrPrivateKey = config.streamrPrivateKey;
+    RedstoneCommon.assert(
+      !!streamrPrivateKey,
+      `Misconfiguration: Trying to create ${StreamrBroadcaster.name}, but STREAMR_PRIVATE_KEY is not defined`
+    );
+
     this.streamrClient = new StreamrClient({
-      // FIXME: very unsafe this method should be removed
-      auth: { privateKey: safeSigner.veryUnsafeGetPrivateKey(), ethereum: {} },
+      auth: { privateKey: streamrPrivateKey! },
       network: {
         webrtcDisallowPrivateAddresses: false,
       },
     });
-    this.address = safeSigner.address;
+    this.address = new Wallet(streamrPrivateKey!).address;
     this.streamId = getStreamIdForNodeByEvmAddress(this.address);
   }
 
-  async broadcast(dataPackages: SignedDataPackage[]): Promise<void> {
-    const dataToBroadcast = dataPackages.map((dp) => dp.toObj());
+  async broadcast(dataPackages: CachedDataPackage[]): Promise<void> {
+    const dataToBroadcast: SignedDataPackagePlainObj[] = dataPackages.map(
+      (dp) => ({
+        timestampMilliseconds: dp.timestampMilliseconds,
+        dataPoints: dp.dataPoints,
+        signature: dp.signature,
+      })
+    );
+
     const streamExists = await this.lazyCheckIfStreamExists();
     if (streamExists) {
-      logger.info("Broadcasting data packages to streamr");
+      this.logger.log("Broadcasting data packages to streamr");
       await this.streamrClient.publish(
         {
           streamId: this.streamId,
         },
         compressMsg(dataToBroadcast)
       );
-      logger.info(`New data published to the stream: ${this.streamId}`);
+      this.logger.log(`New data published to the stream: ${this.streamId}`);
     } else {
       await this.tryToCreateStream();
     }
@@ -60,11 +74,11 @@ export class StreamrBroadcaster implements DataPackageBroadcaster {
 
   private async tryToCreateStream() {
     if (this.isStreamCreationRequested) {
-      logger.info("Stream creation already requested, skipping");
+      this.logger.log("Stream creation already requested, skipping");
       return;
     }
 
-    logger.info(`Trying to create new Streamr stream: ${this.streamId}`);
+    this.logger.log(`Trying to create new Streamr stream: ${this.streamId}`);
 
     await this.assertEnoughMaticBalance();
 
@@ -75,14 +89,14 @@ export class StreamrBroadcaster implements DataPackageBroadcaster {
       inactivityThresholdHours: INACTIVITY_THRESHOLD_HOURS,
     });
     this.isStreamCreationRequested = true;
-    logger.info(`Stream created: ${this.streamId}`);
+    this.logger.log(`Stream created: ${this.streamId}`);
 
     // Adding permissions
     await stream.grantPermissions({
       public: true,
       permissions: [StreamPermission.SUBSCRIBE],
     });
-    logger.info(`Added permissions to the stream: ${stream.id}`);
+    this.logger.log(`Added permissions to the stream: ${stream.id}`);
   }
 
   private async lazyCheckIfStreamExists() {
@@ -93,7 +107,7 @@ export class StreamrBroadcaster implements DataPackageBroadcaster {
   }
 
   private async assertEnoughMaticBalance() {
-    logger.info("Checking MATIC balance");
+    this.logger.log("Checking MATIC balance");
     const provider = new providers.JsonRpcProvider(POLYGON_RPC.rpc, {
       name: POLYGON_RPC.name,
       chainId: POLYGON_RPC.chainId,
