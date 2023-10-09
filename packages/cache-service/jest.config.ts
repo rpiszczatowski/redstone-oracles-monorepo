@@ -11,7 +11,7 @@ const config: Config.InitialOptions = {
   collectCoverageFrom: ["**/*.(t|j)s"],
   coverageDirectory: "../coverage",
   testEnvironment: "node",
-  setupFiles: ["<rootDir>/.jest/set-test-envs.ts"],
+  setupFiles: ["<rootDir>/../.jest/set-env-vars.ts"],
 };
 
 export default config;
