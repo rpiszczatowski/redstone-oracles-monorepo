@@ -1,13 +1,16 @@
-import PriceSignerService from "../../src/signers/PriceSignerService";
-import { PriceDataBeforeSigning } from "../../src/types";
 import { SafeNumber } from "@redstone-finance/utils";
+import PriceSignerService from "../../src/signers/PriceSignerService";
+import { TestSafeSignerFromPrivateKey } from "../../src/signers/SafeSigner";
+import { PriceDataBeforeSigning } from "../../src/types";
 
 const testPrivKey =
   "0xc094df8d4a95134e721b2e418f53658c3927ee21b62b9b63c4331a902199e1e8";
 
 describe("PriceSignerService", () => {
   describe("signPrices", () => {
-    const signer = new PriceSignerService(testPrivKey);
+    const signer = new PriceSignerService(
+      TestSafeSignerFromPrivateKey(testPrivKey)
+    );
     it("should sign prices which are numbers", async () => {
       const prices: PriceDataBeforeSigning[] = [
         {

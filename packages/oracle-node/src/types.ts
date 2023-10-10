@@ -1,4 +1,5 @@
 import { RedstoneTypes, SafeNumber } from "@redstone-finance/utils";
+import { ISafeSigner } from "./signers/SafeSigner";
 
 export interface Manifest {
   txId?: string; // Note, you need to set this field manually (after downloading the manifest data)
@@ -153,16 +154,12 @@ export interface ArweaveTransactionTags {
   [tag: string]: string;
 }
 
-export interface PrivateKeys {
-  ethereumPrivateKey: string;
-}
-
 export interface NodeConfig {
+  safeSigner: ISafeSigner;
   enableJsonLogs: boolean;
   enablePerformanceTracking: boolean;
   printDiagnosticInfo: boolean;
   manifestRefreshInterval: number;
-  privateKeys: PrivateKeys;
   overrideManifestUsingFile?: Manifest;
   ethereumAddress: string;
   overrideDirectCacheServiceUrls?: string[];
@@ -188,7 +185,7 @@ export interface NodeConfig {
   coingeckoApiUrl: string;
   coingeckoApiKey?: string;
   enableHttpServer: boolean;
-  pricesHardLimitsUrls: string[];
+  hardLimitsUrls: string[];
   newyorkfedRatesUrl: string;
   simulationValueInUsdForSlippageCheck: string;
   maxAllowedSlippagePercent: number;

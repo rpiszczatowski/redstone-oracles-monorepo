@@ -1,6 +1,3 @@
-import { AggregatedPriceHandler } from "./AggregatedPriceHandler";
-import { PriceDataAfterAggregation } from "../types";
-import PricesService from "./../fetchers/PricesService";
 import {
   DataPackage,
   DataPoint,
@@ -13,13 +10,16 @@ import {
   StreamrBroadcaster,
 } from "../broadcasters";
 import { config } from "../config";
-import ManifestHelper from "../manifest/ManifestHelper";
 import { createMetadataForRedstonePrice } from "../fetchers/MetadataForRedstonePrice";
+import ManifestHelper from "../manifest/ManifestHelper";
 import { IterationContext } from "../schedulers/IScheduler";
+import { PriceDataAfterAggregation } from "../types";
+import loggerFactory from "../utils/logger";
 import { validateDataPointsForBigPackage } from "../validators/validate-data-feed-for-big-package";
+import PricesService from "./../fetchers/PricesService";
+import { AggregatedPriceHandler } from "./AggregatedPriceHandler";
 import { BroadcastPerformer } from "./BroadcastPerformer";
 import { ManifestDataProvider } from "./ManifestDataProvider";
-import loggerFactory from "../utils/logger";
 
 const logger = loggerFactory("runner");
 
@@ -38,16 +38,15 @@ export class DataPackageBroadcastPerformer
 
   constructor(
     broadcasterURLs: string[] | undefined,
-    private readonly ethereumPrivateKey: string,
     private readonly manifestDataProvider: ManifestDataProvider
   ) {
     super();
     this.httpBroadcaster = new HttpBroadcaster(
       broadcasterURLs ?? DEFAULT_HTTP_BROADCASTER_URLS,
-      ethereumPrivateKey
+      config.safeSigner
     );
 
-    this.streamrBroadcaster = new StreamrBroadcaster(ethereumPrivateKey);
+    this.streamrBroadcaster = new StreamrBroadcaster(config.safeSigner);
   }
 
   async handle(
@@ -102,7 +101,11 @@ export class DataPackageBroadcastPerformer
         [dataPoint],
         timeIdentifierForSigning
       );
-      return dataPackage.sign(this.ethereumPrivateKey);
+
+      return new SignedDataPackage(
+        dataPackage,
+        config.safeSigner.signDigest(dataPackage.getSignableHash())
+      );
     });
 
     const dataPointsForBigPackage =
@@ -118,7 +121,12 @@ export class DataPackageBroadcastPerformer
         dataPointsForBigPackage,
         timeIdentifierForSigning
       );
-      const signedBigDataPackage = bigDataPackage.sign(this.ethereumPrivateKey);
+      const signableHashBytes = bigDataPackage.getSignableHash();
+
+      const signedBigDataPackage = new SignedDataPackage(
+        bigDataPackage,
+        config.safeSigner.signDigest(signableHashBytes)
+      );
       signedDataPackages.push(signedBigDataPackage);
     }
 

@@ -414,7 +414,6 @@
         "bittrex",
         "bitmart",
         "btcturk",
-        "bybit",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -784,7 +783,6 @@
         "bitget",
         "bitmart",
         "bitrue",
-        "bybit",
         "coingecko",
         "gate",
         "huobipro",
@@ -836,7 +834,6 @@
     "STETH": {
       "source": [
         "bitget",
-        "bybit",
         "curve-eth",
         "curve-weth",
         "gate",
@@ -1145,6 +1142,17 @@
     },
     "EUROC/EUR": {
       "source": ["non-usd-based"]
+    },
+    "crvFRAX": {
+      "source": ["ethereum-evm-fetcher"]
+    },
+    "ALUSD": {
+      "source": [
+        "curve-3crv",
+        "curve-crvfrax",
+        "velodrome-on-chain-usdc",
+        "velodrome-on-chain-frax"
+      ]
     },
     "ARDRIVE": {
       "source": ["permaswap"]
@@ -1866,7 +1874,15 @@
       "source": ["avalanche-evm-fetcher"]
     },
     "SWETH": {
-      "source": ["balancer-ethereum-weth", "maverick"]
+      "source": [
+        "balancer-ethereum-weth",
+        "maverick",
+        "uniswap-v3-ethereum-on-chain-weth-500",
+        "uniswap-v3-ethereum-on-chain-weth-3000"
+      ]
+    },
+    "SWETH/ETH": {
+      "source": ["non-usd-based"]
     },
     "gmdUSDC": {
       "source": ["avalanche-evm-fetcher"]

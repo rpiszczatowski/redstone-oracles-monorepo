@@ -7,13 +7,14 @@ import {
 } from "../types";
 import { trackStart, trackEnd } from "../utils/performance-tracker";
 import loggerFactory from "../utils/logger";
+import { ISafeSigner } from "./SafeSigner";
 
 const logger = loggerFactory("ArweaveService");
 
 // Business service that supplies signing operations required by Redstone-Node
 export default class PriceSignerService {
   private evmSigner: EvmPriceSigner;
-  constructor(private readonly ethereumPrivateKey: string) {
+  constructor(private readonly safeSigner: ISafeSigner) {
     this.evmSigner = new EvmPriceSigner();
   }
 
@@ -45,7 +46,7 @@ export default class PriceSignerService {
         prices: [{ symbol: price.symbol, value: price.value }],
         timestamp: price.timestamp,
       },
-      this.ethereumPrivateKey
+      this.safeSigner
     );
 
     return {
@@ -68,9 +69,6 @@ export default class PriceSignerService {
       })),
     };
 
-    return this.evmSigner.signPricePackage(
-      pricePackage,
-      this.ethereumPrivateKey
-    );
+    return this.evmSigner.signPricePackage(pricePackage, this.safeSigner);
   }
 }

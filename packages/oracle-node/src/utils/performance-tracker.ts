@@ -1,8 +1,7 @@
-import { ethers } from "ethers";
 import { performance } from "perf_hooks";
 import { config } from "../config";
-import loggerFactory from "./logger";
 import { telemetrySendService } from "../telemetry/TelemetrySendService";
+import loggerFactory from "./logger";
 
 const logger = loggerFactory("utils/performance-tracker");
 
@@ -63,11 +62,9 @@ export function queueNodeTelemetry() {
   try {
     if (isTelemetryEnabled()) {
       logger.info("Sending node telemetry");
-      const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
-      const evmAddress = ethers.utils.computeAddress(evmPrivateKey);
       const dockerImageTag = config.dockerImageTag;
       const measurementName = "nodeTelemetry";
-      const tags = `address=${evmAddress}`;
+      const tags = `address=${config.safeSigner.address}`;
       const fields = `dockerImageTag="${dockerImageTag}"`;
       const metric = `${measurementName},${tags} ${fields} ${Date.now()}`;
       telemetrySendService.queueToSendMetric(metric);
@@ -90,15 +87,16 @@ export function printTrackingState() {
 
 function queueNodePerformanceMetric(label: string, executionTime: number) {
   try {
-    const evmPrivateKey = config.privateKeys.ethereumPrivateKey;
-    const evmAddress = ethers.utils.computeAddress(evmPrivateKey);
-    const labelWithPrefix = `${evmAddress.slice(0, 14)}-${label}`;
+    const labelWithPrefix = `${config.safeSigner.address.slice(
+      0,
+      14
+    )}-${label}`;
 
     logger.info(`Metric: ${labelWithPrefix}. Value: ${executionTime}`);
 
     if (isTelemetryEnabled()) {
       const measurementName = "nodePerformance";
-      const tags = `label=${label},address=${evmAddress}`;
+      const tags = `label=${label},address=${config.safeSigner.address}`;
       const fields = `executionTime=${executionTime}`;
       const metric = `${measurementName},${tags} ${fields} ${Date.now()}`;
       telemetrySendService.queueToSendMetric(metric);

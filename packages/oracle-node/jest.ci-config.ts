@@ -2,7 +2,10 @@ import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
   roots: ["<rootDir>/"],
-  testMatch: ["<rootDir>/test/dry-run/?(*.)+(spec).+(ts)"],
+  testMatch: [
+    "<rootDir>/test/dry-run/?(*.)+(spec).+(ts)",
+    "<rootDir>/test/sources-consistency/?(*.)+(spec).+(ts)",
+  ],
   transform: {
     "^.+\\.(ts|js)$": "ts-jest",
   },

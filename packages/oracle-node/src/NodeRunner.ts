@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { ExpressAppRunner } from "./ExpressAppRunner";
 import { AggregatedPriceHandler } from "./aggregated-price-handlers/AggregatedPriceHandler";
 import { AggregatedPriceLocalDBSaver } from "./aggregated-price-handlers/AggregatedPriceLocalDBSaver";
@@ -62,7 +61,6 @@ export default class NodeRunner {
     private readonly nodeConfig: NodeConfig,
     initialManifest: Manifest
   ) {
-    const ethereumPrivKey = nodeConfig.privateKeys.ethereumPrivateKey;
     this.version = getVersionFromPackageJSON();
     this.useNewManifest(initialManifest);
     this.lastManifestLoadTimestamp = Date.now();
@@ -73,12 +71,10 @@ export default class NodeRunner {
       new AggregatedPriceLocalDBSaver(),
       new DataPackageBroadcastPerformer(
         httpBroadcasterURLs,
-        ethereumPrivKey,
         this.manifestDataProvider
       ),
       new PriceDataBroadcastPerformer(
         priceHttpBroadcasterURLs,
-        ethereumPrivKey,
         this.providerAddress
       ),
     ];
@@ -95,9 +91,7 @@ export default class NodeRunner {
     // Otherwise App Runner crashes ¯\_(ツ)_/¯
     new ExpressAppRunner(nodeConfig).run();
     await connectToDb();
-    const providerAddress = new ethers.Wallet(
-      nodeConfig.privateKeys.ethereumPrivateKey
-    ).address;
+    const providerAddress = nodeConfig.safeSigner.address;
     const arweaveService = new ArweaveService();
 
     let manifestData = null;

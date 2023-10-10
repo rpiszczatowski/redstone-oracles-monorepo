@@ -218,7 +218,6 @@
     "STETH": {
       "source": [
         "bitget",
-        "bybit",
         "curve-eth",
         "curve-weth",
         "gate",
@@ -245,7 +244,15 @@
       "source": ["ethereum-evm-fetcher"]
     },
     "SWETH": {
-      "source": ["balancer-ethereum-weth", "maverick"]
+      "source": [
+        "balancer-ethereum-weth",
+        "maverick",
+        "uniswap-v3-ethereum-on-chain-weth-500",
+        "uniswap-v3-ethereum-on-chain-weth-3000"
+      ]
+    },
+    "SWETH/ETH": {
+      "source": ["non-usd-based"]
     },
     "3Crv": {
       "source": ["ethereum-evm-fetcher"]
@@ -529,7 +536,6 @@
         "bittrex",
         "bitmart",
         "btcturk",
-        "bybit",
         "coinbaseprime",
         "coinbasepro",
         "coingecko",
@@ -541,6 +547,17 @@
         "lbank",
         "mexc",
         "okx"
+      ]
+    },
+    "crvFRAX": {
+      "source": ["ethereum-evm-fetcher"]
+    },
+    "ALUSD": {
+      "source": [
+        "curve-3crv",
+        "curve-crvfrax",
+        "velodrome-on-chain-usdc",
+        "velodrome-on-chain-frax"
       ]
     }
   }

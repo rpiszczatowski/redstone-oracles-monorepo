@@ -10,6 +10,7 @@ import {
   Manifest,
   NodeConfig,
   PriceDataAfterAggregation,
+  PricePackage,
 } from "../../src/types";
 import {
   clearPricesSublevel,
@@ -19,8 +20,8 @@ import {
 } from "../../src/db/local-db";
 import emptyManifest from "../../manifests/dev/empty.json";
 import * as Terminator from "../../src/Terminator";
-import PricesService from "../../src/fetchers/PricesService";
 import { SafeNumber } from "@redstone-finance/utils";
+import EvmPriceSigner from "../../src/signers/EvmPriceSigner";
 
 const TEST_PROVIDER_EVM_ADDRESS = "0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A";
 
@@ -36,22 +37,13 @@ const terminateWithManifestConfigErrorSpy = jest
   .spyOn(Terminator, "terminateWithManifestConfigError")
   .mockImplementation((message: string) => message as never);
 
-jest.mock("../../src/signers/EvmPriceSigner", () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-      signPricePackage: (pricePackage: unknown) => ({
-        liteSignature: "mock_evm_signed_lite",
-        signerAddress: "mock_evm_signer_address",
-        pricePackage,
-      }),
-    };
-  });
-});
-
-jest.mock("../../src/fetchers/coingecko/CoingeckoFetcher");
-jest.mock(
-  "../../src/fetchers/evm-chain/shared/uniswap-v3-on-chain/UniswapV3OnChainFetcher.ts"
-);
+jest
+  .spyOn(EvmPriceSigner.prototype, "signPricePackage")
+  .mockImplementation((pricePackage: PricePackage) => ({
+    liteSignature: "mock_evm_signed_lite",
+    signerAddress: "mock_evm_signer_address",
+    pricePackage,
+  }));
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -80,9 +72,10 @@ jest.mock("../../src/utils/objects", () => ({
 
 jest.mock("uuid", () => ({ v4: () => "00000000-0000-0000-0000-000000000000" }));
 
-jest
-  .spyOn(PricesService.prototype, "fetchPricesLimits")
-  .mockImplementation(() => Promise.resolve(mockHardLimits));
+jest.mock("../../src/hard-limits/fetch-hard-limits-for-data-feeds", () => ({
+  fetchHardLimitsForDataFeeds: () => mockHardLimits,
+}));
+
 /****** MOCKS END ******/
 
 describe("NodeRunner", () => {

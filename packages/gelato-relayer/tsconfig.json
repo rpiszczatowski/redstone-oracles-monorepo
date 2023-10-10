@@ -4,16 +4,7 @@
     "outDir": "dist",
     "downlevelIteration": true
   },
-  "include": [
-    "hardhat",
-    "deploy",
-    "scripts",
-    "src",
-    "typechain",
-    "web3-functions",
-    "hardhat.config.ts"
-  ],
-  "exclude": ["node_modules"],
+  "include": ["**/*", "**/.json"],
   "references": [
     {
       "path": "../on-chain-relayer/tsconfig.build.json"

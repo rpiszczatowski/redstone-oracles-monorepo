@@ -3,10 +3,14 @@ import {
   deployMockContract,
   MockContract,
 } from "ethereum-waffle";
-import { UniswapV2LikeFetcher } from "../../src/fetchers/uniswap-v2-like/UniswapV2LikeFetcher";
+import {
+  PoolsConfig,
+  UniswapV2LikeFetcher,
+} from "../../src/fetchers/uniswap-v2-like/UniswapV2LikeFetcher";
 import abi from "../../src/fetchers/uniswap-v2-like/UniswapV2.abi.json";
 import { asAwaitable, saveMockPriceInLocalDb } from "./_helpers";
 import {
+  clearLastPricesCache,
   clearPricesSublevel,
   closeLocalLevelDB,
   setupLocalDb,
@@ -15,6 +19,7 @@ import {
 describe("UniswapV2Like", () => {
   let uniswapV2LikeContract: MockContract;
   let provider: MockProvider;
+  let fetcherConfig: PoolsConfig;
 
   beforeAll(async () => {
     setupLocalDb();
@@ -28,10 +33,21 @@ describe("UniswapV2Like", () => {
         1681731755
       )
     );
+    fetcherConfig = {
+      USDC: {
+        address: uniswapV2LikeContract.address,
+        symbol0: "USDC",
+        symbol0Decimals: 6,
+        symbol1: "WETH",
+        symbol1Decimals: 18,
+        pairedToken: "ETH",
+      },
+    };
   });
 
   beforeEach(async () => {
     await clearPricesSublevel();
+    clearLastPricesCache();
   });
 
   afterAll(async () => {
@@ -41,16 +57,7 @@ describe("UniswapV2Like", () => {
   test("Should properly fetch data", async () => {
     const fetcher = new UniswapV2LikeFetcher(
       "uniswap-v2-like-mock",
-      {
-        USDC: {
-          address: uniswapV2LikeContract.address,
-          symbol0: "USDC",
-          symbol0Decimals: 6,
-          symbol1: "WETH",
-          symbol1Decimals: 18,
-          pairedToken: "ETH",
-        },
-      },
+      fetcherConfig,
       provider
     );
 

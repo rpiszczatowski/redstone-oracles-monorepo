@@ -1,16 +1,16 @@
-import { ethers } from "ethers";
 import { SignedDataPackage } from "@redstone-finance/protocol";
-import NodeRunner from "../../src/NodeRunner";
-import { IterationContext } from "../../src/schedulers/IScheduler";
-import { roundTimestamp } from "../../src/utils/timestamps";
+import { ethers } from "ethers";
 import mainManifest from "../../manifests/data-services/main.json";
+import NodeRunner from "../../src/NodeRunner";
+import { config } from "../../src/config";
+import { IterationContext } from "../../src/schedulers/IScheduler";
 import {
   Manifest,
   NodeConfig,
   TokenConfig,
   TokensConfig,
 } from "../../src/types";
-import { config } from "../../src/config";
+import { roundTimestamp } from "../../src/utils/timestamps";
 
 export interface PricesForDataFeedId {
   [dataFeedId: string]: number;
@@ -22,24 +22,22 @@ export const HARDHAT_MOCK_PRIVATE_KEY =
 export const HARDHAT_MOCK_ADDRESS = new ethers.Wallet(HARDHAT_MOCK_PRIVATE_KEY)
   .address;
 
-export const getDryRunTestNodeConfig = (manifest: Manifest) => ({
+export const getDryRunTestNodeConfig = (
+  manifest: Manifest
+): Partial<NodeConfig> => ({
   enableJsonLogs: false,
   enablePerformanceTracking: false,
   printDiagnosticInfo: false,
   manifestRefreshInterval: 120000,
   overrideManifestUsingFile: { ...manifest, sourceTimeout: 40000 },
-  privateKeys: {
-    ethereumPrivateKey: HARDHAT_MOCK_PRIVATE_KEY,
-  },
   enableStreamrBroadcasting: false,
-  ethereumAddress: HARDHAT_MOCK_ADDRESS,
   levelDbLocation: "oracle-node-level-db-tests",
   ttlForPricesInLocalDBInMilliseconds: 900000,
   mockPricesUrlOrPath: "",
   minDataFeedsPercentageForBigPackage: 50,
   coingeckoApiUrl: "",
   enableHttpServer: false,
-  pricesHardLimitsUrls: [""],
+  hardLimitsUrls: [""],
   telemetryUrl: "",
   telemetryAuthorizationToken: "",
   dockerImageTag: "",

@@ -1,23 +1,22 @@
-import axios from "axios";
-import { SignedDataPackage, UniversalSigner } from "@redstone-finance/protocol";
+import { SignedDataPackage } from "@redstone-finance/protocol";
 import { RedstoneCommon } from "@redstone-finance/utils";
-import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
+import axios from "axios";
+import { ISafeSigner } from "../../signers/SafeSigner";
 import loggerFactory from "../../utils/logger";
+import { DataPackageBroadcaster } from "../DataPackageBroadcaster";
 
 const logger = loggerFactory("HttpBroadcaster");
 
 export class HttpBroadcaster implements DataPackageBroadcaster {
   constructor(
     private readonly broadcasterURLs: string[],
-    private readonly ethereumPrivateKey: string
+    private readonly safeSigner: ISafeSigner
   ) {}
 
   async broadcast(dataPackages: SignedDataPackage[]): Promise<void> {
     const dataPackagesObjects = dataPackages.map((dp) => dp.toObj());
-    const requestSignature = UniversalSigner.signStringifiableData(
-      dataPackagesObjects,
-      this.ethereumPrivateKey
-    );
+    const requestSignature =
+      this.safeSigner.signStringifiableData(dataPackagesObjects);
 
     const signedDataPackagesPostReqBody = {
       requestSignature,

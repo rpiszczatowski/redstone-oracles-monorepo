@@ -2,6 +2,7 @@ import "dotenv/config";
 import { Manifest, NodeConfig } from "./types";
 import { readJSON } from "./utils/objects";
 import { ethers } from "ethers";
+import { SafeSignerFromProcessEnv } from "./signers/SafeSigner";
 
 const DEFAULT_ENABLE_PERFORMANCE_TRACKING = "true";
 const DEFAULT_ENABLE_JSON_LOGS = "true";
@@ -29,7 +30,7 @@ const DEFAULT_COINGECKO_API_KEY = "";
 const DEFAULT_ENABLE_HTTP_SERVER = "false";
 const DEFAULT_MAX_ALLOWED_SLIPPAGE_PERCENT = "10";
 const DEFAULT_SIMULATION_VALUE_IN_USD_FOR_SLIPPAGE_CHECK = "10000";
-const DEFAULT_PRICES_HARD_LIMITS_URLS = "[]";
+const DEFAULT_HARD_LIMITS_URLS = "[]";
 const DEFAULT_NEWYORKFED_RATES_URL =
   "https://markets.newyorkfed.org/api/rates/all/latest.json";
 const DEFAULT_AVALANCHE_RPC_URLS = [
@@ -100,7 +101,7 @@ const parserFromString = {
 
 const getHardLimitsUrls = () => {
   const hardLimitsUrls = JSON.parse(
-    getFromEnv("PRICES_HARD_LIMITS_URLS", DEFAULT_PRICES_HARD_LIMITS_URLS)
+    getFromEnv("PRICES_HARD_LIMITS_URLS", DEFAULT_HARD_LIMITS_URLS)
   ) as string[];
 
   return hardLimitsUrls;
@@ -139,9 +140,7 @@ const getOptionallyPriceDataServiceUrls = () => {
   return undefined;
 };
 
-const ethereumPrivateKey = parserFromString.hex(
-  getFromEnv("ECDSA_PRIVATE_KEY")
-);
+const safeSigner = SafeSignerFromProcessEnv("ECDSA_PRIVATE_KEY");
 
 const getRpcUrls = (name: string, defaultValue: string[]): string[] => {
   const rpcUrls = JSON.parse(
@@ -156,6 +155,7 @@ const getRpcUrls = (name: string, defaultValue: string[]): string[] => {
 };
 
 export const config: NodeConfig = Object.freeze({
+  safeSigner: safeSigner,
   enableJsonLogs: parserFromString.boolean(
     getFromEnv("ENABLE_JSON_LOGS", DEFAULT_ENABLE_JSON_LOGS)
   ),
@@ -191,10 +191,7 @@ export const config: NodeConfig = Object.freeze({
     "STLOUISFED_API_KEY",
     DEFAULT_STLOUISFED_API_KEY
   ),
-  privateKeys: {
-    ethereumPrivateKey,
-  },
-  ethereumAddress: new ethers.Wallet(ethereumPrivateKey).address,
+  ethereumAddress: safeSigner.address,
   coinbaseIndexerMongoDbUrl: getFromEnv(
     "COINBASE_INDEXER_MONGODB_URL",
     DEFAULT_COINBASE_INDEXER_MONGODB_URL
@@ -243,7 +240,7 @@ export const config: NodeConfig = Object.freeze({
     "SIMULATION_VALUE_IN_USD_FOR_SLIPPAGE_CHECK",
     DEFAULT_SIMULATION_VALUE_IN_USD_FOR_SLIPPAGE_CHECK
   ),
-  pricesHardLimitsUrls: getHardLimitsUrls(),
+  hardLimitsUrls: getHardLimitsUrls(),
   newyorkfedRatesUrl: getFromEnv(
     "NEWYORKFED_RATES_URL",
     DEFAULT_NEWYORKFED_RATES_URL
