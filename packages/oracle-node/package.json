@@ -25,7 +25,6 @@
     "test:sources-consistency": "jest --runInBand test/sources-consistency/check-sources-consistency.spec.ts",
     "prepublishOnly": "yarn test && yarn build",
     "version": "git add -A src",
-    "docker:build": "docker build -f Dockerfile.public -t redstone-node .",
     "run-ts": "ts-node",
     "lint": "eslint ."
   },

@@ -9,6 +9,10 @@ on:
       image_name:
         required: true
         type: string
+      disable_push:
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   run-test:
@@ -32,7 +36,7 @@ jobs:
         run: |
           docker build -t "$IMAGE:$TAG" --build-arg DOCKER_IMAGE_TAG=$TAG --build-arg PACKAGE=${{ inputs.package }} .
       - name: Push docker image to ECR public
-        if: ${{ github.ref_name == 'main' }}
+        if: ${{ github.ref_name == 'main' && !inputs.disabled_push }}
         run: |
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           docker push $IMAGE:$TAG

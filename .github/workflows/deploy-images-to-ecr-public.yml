@@ -29,54 +29,16 @@ jobs:
       image_name: redstone-on-chain-relayer
 
   cache-service-image:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    name: cache service docker image
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Configure AWS credentials
-        if: ${{ github.ref_name == 'main' }}
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Setup env variables
-        run: |
-          echo IMAGE=public.ecr.aws/y7v2w8b2/redstone-cache-service >> "$GITHUB_ENV"
-          echo TAG=$(echo ${GITHUB_SHA} | cut -c1-7) >> "$GITHUB_ENV"
-      - name: Build docker image
-        run: |
-          docker build -t "$IMAGE:$TAG" -f packages/cache-service/Dockerfile .
-      - name: Push docker image to ECR public
-        if: ${{ github.ref_name == 'main' }}
-        run: |
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          docker push $IMAGE:$TAG
-      - name: Print image details
-        run: |
-          docker history --no-trunc $IMAGE:$TAG
-          IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
-          echo "image: $IMAGE:$TAG, size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
+    name: cache-service docker image
+    uses: ./.github/workflows/deploy-image-template.yml
+    with:
+      package: cache-service
+      image_name: redstone-cache-service
 
   ton-relayer-image:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    name: ton relayer docker image
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Setup env variables
-        run: |
-          echo IMAGE=public.ecr.aws/y7v2w8b2/redstone-ton-relayer >> "$GITHUB_ENV"
-          echo TAG=$(echo ${GITHUB_SHA} | cut -c1-7) >> "$GITHUB_ENV"
-      - name: Build docker image
-        run: |
-          docker build -t "$IMAGE:$TAG" -f packages/ton-relayer/Dockerfile .
-      - name: Print image details
-        run: |
-          docker history --no-trunc $IMAGE:$TAG
-          IMAGE_SIZE=$(docker inspect -f "{{ .Size }}" $IMAGE:$TAG | numfmt --to=iec --format='%.2f')
-          echo "image: $IMAGE:$TAG, size ${IMAGE_SIZE}" >> $GITHUB_STEP_SUMMARY
-      # for now we do not publish ton-relayer docker images
+    name: ton-relayer docker image
+    uses: ./.github/workflows/deploy-image-template.yml
+    with:
+      package: ton-relayer
+      image_name: redstone-ton-relayer
+      disable_push: true
