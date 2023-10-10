@@ -16,6 +16,8 @@ RUN  cd "packages/${PACKAGE}" && mkdir -p jsons && find . -name "*.json" -not -p
 FROM node:16
 ARG PACKAGE
 
+WORKDIR  /app
+
 COPY --from=build "/app/yarn.lock" yarn.lock
 COPY --from=build "/app/packages/$PACKAGE/package.json" package.json 
 

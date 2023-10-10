@@ -20,10 +20,10 @@ export default {
     },
     plugins: [
         typescript({ composite: false }),
-        nodeResolve(),
         commonjs({
             ignoreGlobal: false,
         }),
+        nodeResolve(),
         json(),
         obfuscator(),
     ]
