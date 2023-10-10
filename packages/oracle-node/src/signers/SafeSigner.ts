@@ -8,7 +8,6 @@ export interface ISafeSigner {
   signStringifiableData: (data: unknown) => string;
   calculateLiteEvmSignature: (priceData: SerializedPriceData) => string;
   signDigest: (hash: Uint8Array) => Signature;
-  veryUnsafeGetPrivateKey: () => string;
   address: string;
 }
 
@@ -26,7 +25,6 @@ export function TestSafeSignerFromPrivateKey(privateKey: string): ISafeSigner {
     calculateLiteEvmSignature: (priceData: SerializedPriceData) =>
       EvmPriceSigner.calculateLiteEvmSignature(priceData, privateKey),
     signDigest: (hash: Uint8Array) => signDigest(hash, privateKey),
-    veryUnsafeGetPrivateKey: () => privateKey,
     address: new Wallet(privateKey).address,
   });
 }
@@ -52,7 +50,6 @@ export function SafeSignerFromProcessEnv(envName: string): ISafeSigner {
     calculateLiteEvmSignature: (priceData: SerializedPriceData) =>
       EvmPriceSigner.calculateLiteEvmSignature(priceData, privateKey),
     signDigest: (hash: Uint8Array) => signDigest(hash, privateKey),
-    veryUnsafeGetPrivateKey: () => privateKey,
     address,
   });
 }
