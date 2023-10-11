@@ -8004,9 +8004,9 @@ cbor@^9.0.0:
     nofilter "^3.1.0"
 
 ccxt@^4.0.78:
-  version "4.0.78"
-  resolved "https://registry.yarnpkg.com/ccxt/-/ccxt-4.0.78.tgz#22870a1d43bafadd1788b5b97a81fa5aa593fd5a"
-  integrity sha512-IOHgMiGFT7bpaOcCnLe8pYCLX5Fzio6UtVRSAvL8OnxepyWzWXChgvko26xaSh4ms39ZOBQE2UbcCLuiyDINKw==
+  version "4.1.10"
+  resolved "https://registry.yarnpkg.com/ccxt/-/ccxt-4.1.10.tgz#f497e76f2503f89a6ae943e73a2c1f6d56017753"
+  integrity sha512-O1kRRQvjHyARpXYcrSiYgEUfdBqQQO+JePkqmMzGj8fxkFMvva4lrE7r2C97AB3TbXSXUROoU6663271yRn7AA==
   dependencies:
     ws "^8.8.1"
 
