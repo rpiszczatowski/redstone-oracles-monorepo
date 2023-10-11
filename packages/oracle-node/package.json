@@ -10,7 +10,7 @@
     "build": "rm -rf dist && tsc --build tsconfig.build.json",
     "bundle": "ENTRYPOINT=index.ts rollup -c ../../rollup.config.mjs",
     "start": "ts-node index.ts",
-    "start:prod": "node index.js",
+    "start:prod": "node dist/index.js",
     "start:dev": "yarn start > tmp.out",
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
