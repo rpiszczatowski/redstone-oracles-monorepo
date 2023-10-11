@@ -38,7 +38,10 @@ import {
   mockSigner,
   produceMockDataPackage,
 } from "../common/mock-values";
-import { createTestDB as createAndConnectToTestDb, dropTestDatabase } from "../common/test-db";
+import {
+  createTestDB as createAndConnectToTestDb,
+  dropTestDatabase,
+} from "../common/test-db";
 import { signByMockSigner } from "../common/test-utils";
 
 type WithSigner = { signerAddress: string };
