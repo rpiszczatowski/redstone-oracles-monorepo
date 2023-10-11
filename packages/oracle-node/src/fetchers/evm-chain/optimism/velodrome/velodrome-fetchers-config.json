@@ -1,20 +1,14 @@
 {
   "velodrome-on-chain-usdc": {
     "ALUSD": {
-      "poolAddress": "0xe75a3f4bf99882ad9f8aebab2115873315425d00",
+      "poolAddress": "0x4d7959d17B9710BE87e3657e69d946914221BB88",
       "token0Symbol": "USDC",
       "token1Symbol": "ALUSD",
       "token0Address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
       "token1Address": "0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A",
       "token0Decimals": 6,
       "token1Decimals": 18,
-      "stable": true,
-      "slippage": [
-        { "direction": "buy", "simulationValueInUsd": 10000 },
-        { "direction": "buy", "simulationValueInUsd": 100000 },
-        { "direction": "sell", "simulationValueInUsd": 10000 },
-        { "direction": "sell", "simulationValueInUsd": 100000 }
-      ]
+      "stable": true
     },
     "OP": {
       "poolAddress": "0x0df083de449f75691fc5a36477a6f3284c269108",
@@ -24,13 +18,7 @@
       "token1Address": "0x7F5c764cBc14f9669B88837ca1490cCa17c31607",
       "token0Decimals": 18,
       "token1Decimals": 6,
-      "stable": false,
-      "slippage": [
-        { "direction": "buy", "simulationValueInUsd": 10000 },
-        { "direction": "buy", "simulationValueInUsd": 100000 },
-        { "direction": "sell", "simulationValueInUsd": 10000 },
-        { "direction": "sell", "simulationValueInUsd": 100000 }
-      ]
+      "stable": false
     },
     "LUSD": {
       "poolAddress": "0xf04458f7B21265b80FC340dE7Ee598e24485c5bB",
@@ -40,13 +28,7 @@
       "token1Address": "0xc40F949F8a4e094D1b49a23ea9241D289B7b2819",
       "token0Decimals": 6,
       "token1Decimals": 18,
-      "stable": true,
-      "slippage": [
-        { "direction": "buy", "simulationValueInUsd": 10000 },
-        { "direction": "buy", "simulationValueInUsd": 100000 },
-        { "direction": "sell", "simulationValueInUsd": 10000 },
-        { "direction": "sell", "simulationValueInUsd": 100000 }
-      ]
+      "stable": true
     }
   },
   "velodrome-on-chain-weth": {
@@ -59,13 +41,7 @@
       "token0Decimals": 18,
       "token1Decimals": 18,
       "pairedToken": "ETH",
-      "stable": true,
-      "slippage": [
-        { "direction": "buy", "simulationValueInUsd": 10000 },
-        { "direction": "buy", "simulationValueInUsd": 100000 },
-        { "direction": "sell", "simulationValueInUsd": 10000 },
-        { "direction": "sell", "simulationValueInUsd": 100000 }
-      ]
+      "stable": true
     },
     "OP": {
       "poolAddress": "0xd25711edfbf747efce181442cc1d8f5f8fc8a0d3",
@@ -76,13 +52,7 @@
       "token0Decimals": 18,
       "token1Decimals": 18,
       "pairedToken": "ETH",
-      "stable": false,
-      "slippage": [
-        { "direction": "buy", "simulationValueInUsd": 10000 },
-        { "direction": "buy", "simulationValueInUsd": 100000 },
-        { "direction": "sell", "simulationValueInUsd": 10000 },
-        { "direction": "sell", "simulationValueInUsd": 100000 }
-      ]
+      "stable": false
     },
     "FRXETH": {
       "poolAddress": "0x63642a192bab08b09a70a997bb35b36b9286b01e",
@@ -93,13 +63,20 @@
       "token0Decimals": 18,
       "token1Decimals": 18,
       "pairedToken": "ETH",
-      "stable": true,
-      "slippage": [
-        { "direction": "buy", "simulationValueInUsd": 10000 },
-        { "direction": "buy", "simulationValueInUsd": 100000 },
-        { "direction": "sell", "simulationValueInUsd": 10000 },
-        { "direction": "sell", "simulationValueInUsd": 100000 }
-      ]
+      "stable": true
+    }
+  },
+  "velodrome-on-chain-frax": {
+    "ALUSD": {
+      "poolAddress": "0xaF03f51DE7a0E62BF061F6Fc3931cF79166B0a29",
+      "token0Symbol": "FRAX",
+      "token1Symbol": "ALUSD",
+      "token0Address": "0x2E3D870790dC77A83DD1d18184Acc7439A53f475",
+      "token1Address": "0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A",
+      "token0Decimals": 18,
+      "token1Decimals": 18,
+      "pairedToken": "FRAX",
+      "stable": true
     }
   }
 }

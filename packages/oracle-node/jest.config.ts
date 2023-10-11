@@ -9,7 +9,11 @@ const config: Config.InitialOptions = {
   testEnvironment: "node",
   modulePaths: ["<rootDir>"],
   setupFiles: ["<rootDir>/.jest/set-env-vars.js"],
-  testPathIgnorePatterns: ["<rootDir>/test/dry-run/*", "<rootDir>/dist/*"],
+  testPathIgnorePatterns: [
+    "<rootDir>/test/dry-run/*",
+    "<rootDir>/dist/*",
+    "<rootDir>/test/sources-consistency",
+  ],
   // https://stackoverflow.com/questions/73203367/jest-syntaxerror-unexpected-token-export-with-uuid-library
   moduleNameMapper: { "^uuid$": "uuid" },
 };

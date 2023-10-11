@@ -26,10 +26,10 @@ jobs:
     uses: ./.github/workflows/integration-test-template.yml
     with:
       command: yarn ts-node src/prices-updates-node-failures.ts
-  integration-tests-classic:
+  integration-tests-classic-relayer-not-all-nodes-deviate:
     uses: ./.github/workflows/integration-test-template.yml
     with:
-      command: yarn ts-node src/simple-price-propagation-classic.ts
+      command: yarn ts-node src/relayer-conditions/relayer-not-all-nodes-deviate.ts
   integration-test-classic-relayer-condition-cron:
     uses: ./.github/workflows/integration-test-template.yml
     with:

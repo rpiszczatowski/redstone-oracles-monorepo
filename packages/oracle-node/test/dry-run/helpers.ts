@@ -37,7 +37,7 @@ export const getDryRunTestNodeConfig = (
   minDataFeedsPercentageForBigPackage: 50,
   coingeckoApiUrl: "",
   enableHttpServer: false,
-  pricesHardLimitsUrls: [""],
+  hardLimitsUrls: [""],
   telemetryUrl: "",
   telemetryAuthorizationToken: "",
   dockerImageTag: "",

@@ -30,7 +30,7 @@ const DEFAULT_COINGECKO_API_KEY = "";
 const DEFAULT_ENABLE_HTTP_SERVER = "false";
 const DEFAULT_MAX_ALLOWED_SLIPPAGE_PERCENT = "10";
 const DEFAULT_SIMULATION_VALUE_IN_USD_FOR_SLIPPAGE_CHECK = "10000";
-const DEFAULT_PRICES_HARD_LIMITS_URLS = "[]";
+const DEFAULT_HARD_LIMITS_URLS = "[]";
 const DEFAULT_NEWYORKFED_RATES_URL =
   "https://markets.newyorkfed.org/api/rates/all/latest.json";
 const DEFAULT_AVALANCHE_RPC_URLS = [
@@ -101,7 +101,7 @@ const parserFromString = {
 
 const getHardLimitsUrls = () => {
   const hardLimitsUrls = JSON.parse(
-    getFromEnv("PRICES_HARD_LIMITS_URLS", DEFAULT_PRICES_HARD_LIMITS_URLS)
+    getFromEnv("PRICES_HARD_LIMITS_URLS", DEFAULT_HARD_LIMITS_URLS)
   ) as string[];
 
   return hardLimitsUrls;
@@ -240,7 +240,7 @@ export const config: NodeConfig = Object.freeze({
     "SIMULATION_VALUE_IN_USD_FOR_SLIPPAGE_CHECK",
     DEFAULT_SIMULATION_VALUE_IN_USD_FOR_SLIPPAGE_CHECK
   ),
-  pricesHardLimitsUrls: getHardLimitsUrls(),
+  hardLimitsUrls: getHardLimitsUrls(),
   newyorkfedRatesUrl: getFromEnv(
     "NEWYORKFED_RATES_URL",
     DEFAULT_NEWYORKFED_RATES_URL

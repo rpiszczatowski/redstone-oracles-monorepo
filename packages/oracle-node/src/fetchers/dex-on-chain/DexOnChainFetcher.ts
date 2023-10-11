@@ -41,12 +41,7 @@ export abstract class DexOnChainFetcher<T> extends MultiRequestFetcher {
   ): RedstoneTypes.MetadataPerSource | undefined {
     const metadata: RedstoneTypes.MetadataPerSource = {};
 
-    // we don't care if we fail here, cause it is only metadata
-    try {
-      metadata.slippage = this.calculateSlippage(dataFeedId, response);
-    } catch (e) {
-      // ignore
-    }
+    metadata.slippage = this.calculateSlippage(dataFeedId, response);
 
     try {
       metadata.liquidity = this.calculateLiquidity(
@@ -54,7 +49,7 @@ export abstract class DexOnChainFetcher<T> extends MultiRequestFetcher {
         response
       )?.toString();
     } catch (e) {
-      // ignore
+      // ignore, liquidity is not obligatory
     }
 
     // return undefined instead of empty metadata

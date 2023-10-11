@@ -1,5 +1,5 @@
 import Decimal from "decimal.js";
-import { getRawPrice, getRawPriceOrFail } from "../db/local-db";
+import { getRawPriceOrFail, getRawPriceNotOlderThan } from "../db/local-db";
 
 export const DEFAULT_AMOUNT_IN_USD_FOR_SLIPPAGE = 10_000; // 10k usd
 
@@ -15,17 +15,19 @@ export const convertUsdToTokenAmount = (
     .toString();
 };
 
+const MAX_PRICE_IN_DB_TIME_DIFF_FOR_SLIPPAGE = 1000 * 60 * 180;
+
+const getRawPriceForSlippage = (symbol: string) =>
+  getRawPriceNotOlderThan(symbol, MAX_PRICE_IN_DB_TIME_DIFF_FOR_SLIPPAGE);
+
 export const tryConvertUsdToTokenAmount = (
   assetId: string,
   decimalsMultiplier: number,
   amountInUsd: number
 ): string | undefined => {
-  let rawPrice = undefined;
-  try {
-    rawPrice = getRawPrice(assetId)?.value;
-  } catch (e) {
-    // ignore
-  }
+  // we want this method to throw if price is too old
+  // a manual intervention is required in such a situation
+  const rawPrice = getRawPriceForSlippage(assetId)?.value;
   if (!rawPrice) {
     return undefined;
   }

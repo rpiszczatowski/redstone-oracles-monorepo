@@ -2254,7 +2254,7 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
-"@gelatonetwork/automate-sdk@^2.3.1":
+"@gelatonetwork/automate-sdk@^2.14.0":
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/@gelatonetwork/automate-sdk/-/automate-sdk-2.14.0.tgz#07445ce5341c7b1b59b5309c97cc8aa2bb98e727"
   integrity sha512-wj+q42yzrhLG4k3EBKBHFyHiPRSNjwk7fdRPgDZrGe52MhaM+Rwxhly4ME6cUWgIhh31KrU8N60kkhIR3lWhww==

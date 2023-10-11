@@ -169,17 +169,18 @@ export const clearLastPricesCache = () => {
   }
 };
 
-export const getRawPrice = (
-  symbol: string
+export const getRawPriceNotOlderThan = (
+  symbol: string,
+  acceptablePriceAge: number
 ): PriceValueInLocalDB | undefined => {
   const currentTimestamp = Date.now();
   const lastPrice = lastPrices[symbol];
 
   if (lastPrice) {
     const timeDiff = currentTimestamp - lastPrice.timestamp;
-    if (timeDiff >= MAX_PRICE_IN_DB_TIME_DIFF) {
+    if (timeDiff >= acceptablePriceAge) {
       throw new Error(
-        `Last price in local DB for ${symbol} is obsolete, time diff ${timeDiff}`
+        `Last price in local DB for ${symbol} is obsolete, time diff ${timeDiff}, acceptable time diff ${acceptablePriceAge}`
       );
     }
     return lastPrice;
@@ -187,11 +188,5 @@ export const getRawPrice = (
   return undefined;
 };
 
-export default {
-  savePrices,
-  getPrices,
-  clearPricesSublevel,
-  closeLocalLevelDB,
-  getLastPrice,
-  clearLastPricesCache,
-};
+export const getRawPrice = (symbol: string) =>
+  getRawPriceNotOlderThan(symbol, MAX_PRICE_IN_DB_TIME_DIFF);
