@@ -9,7 +9,7 @@ import {
 } from "@redstone-finance/streamr-proxy";
 import { Wallet, providers, utils } from "ethers";
 import { CachedDataPackage } from "../data-packages/data-packages.model";
-import { DataPackagesBroadcaster } from "./data-pacakges-brodcaster";
+import { DataPackagesBroadcaster } from "./data-packages-broadcaster";
 import config from "../config";
 import { RedstoneCommon } from "@redstone-finance/utils";
 

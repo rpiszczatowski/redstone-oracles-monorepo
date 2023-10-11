@@ -15,8 +15,8 @@ import {
 import { sleep } from "../common/test-utils";
 import { StreamrListenerService } from "../../src/streamr-listener/streamr-listener.service";
 import { DataPackagesService } from "../../src/data-packages/data-packages.service";
-import { BundlrBroadcaster } from "../../src/brodcasters/bundlr-brodcaster";
-import { MongoBroadcaster } from "../../src/brodcasters/mongo-broadcaster";
+import { BundlrBroadcaster } from "../../src/broadcasters/bundlr-broadcaster";
+import { MongoBroadcaster } from "../../src/broadcasters/mongo-broadcaster";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-return
 jest.mock("@redstone-finance/sdk", () => ({

@@ -20,7 +20,7 @@ import { ethers } from "ethers";
 import { base64 } from "ethers/lib/utils";
 import request from "supertest";
 import { AppModule } from "../../src/app.module";
-import { BundlrBroadcaster } from "../../src/brodcasters/bundlr-brodcaster";
+import { BundlrBroadcaster } from "../../src/broadcasters/bundlr-broadcaster";
 import { ResponseFormat } from "../../src/data-packages/data-packages.interface";
 import {
   CachedDataPackage,
@@ -38,7 +38,7 @@ import {
   mockSigner,
   produceMockDataPackage,
 } from "../common/mock-values";
-import { createTestDB, dropTestDatabase } from "../common/test-db";
+import { createTestDB as createAndConnectToTestDb, dropTestDatabase } from "../common/test-db";
 import { signByMockSigner } from "../common/test-utils";
 
 type WithSigner = { signerAddress: string };
@@ -84,7 +84,7 @@ describe("Data packages (e2e)", () => {
 
   beforeEach(async () => {
     // Connect to mongoDB in memory
-    await createTestDB();
+    await createAndConnectToTestDb();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -95,8 +95,8 @@ describe("Data packages (e2e)", () => {
     await app.init();
     httpServer = app.getHttpServer();
 
-    const bundlrService = app.get(BundlrBroadcaster);
-    bundlrSaveDataPackagesSpy = jest.spyOn(bundlrService, "broadcast");
+    const bundlrBroadcaster = app.get(BundlrBroadcaster);
+    bundlrSaveDataPackagesSpy = jest.spyOn(bundlrBroadcaster, "broadcast");
     bundlrSaveDataPackagesSpy.mockImplementation(() => Promise.resolve());
     bundlrSaveDataPackagesSpy.mockClear();
 

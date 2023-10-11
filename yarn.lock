@@ -2265,9 +2265,9 @@
     siwe "1.1.6"
 
 "@gelatonetwork/web3-functions-sdk@^2.1.1":
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/@gelatonetwork/web3-functions-sdk/-/web3-functions-sdk-2.1.3.tgz#b52b802c7691d69bb1ce561f65e69d6358372c8f"
-  integrity sha512-3VfBSOSnxxr43YmIWtRv6i9udUHLoCbeyE7C8hjQoWNDaIVsVfYEC7uWxxY+1XuIvNwc8R5ha4k735fgYiWpKQ==
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/@gelatonetwork/web3-functions-sdk/-/web3-functions-sdk-2.1.7.tgz#1a47d702708232acb734028d6b7b01a6e664b295"
+  integrity sha512-lVK2LqKhOg2TGSHCqpmzM1NzPo8VxyppDz2SC92kywlBiGSozz35uGwqaFZF6wnoX9ghPjjNsXqEABtK4nAB/g==
   dependencies:
     "@ethersproject/address" "^5.7.0"
     "@ethersproject/contracts" "^5.7.0"
@@ -2278,6 +2278,7 @@
     axios "1.1.2"
     body-parser "^1.20.1"
     colors "^1.4.0"
+    deep-object-diff "^1.1.9"
     deno-bin "^1.36.0"
     dockerode "^3.3.4"
     dotenv "^16.0.3"
@@ -2286,7 +2287,6 @@
     express "^4.18.2"
     form-data "^4.0.0"
     ky "^0.32.2"
-    object-hash "^3.0.0"
     pidusage "^3.0.1"
     semver "^7.5.0"
     signal-exit "^3.0.7"
@@ -5304,30 +5304,17 @@
     ton-x "^2.1.0"
     ts-node "^10.9.1"
 
-"@ton-community/func-js-bin@0.4.4":
-  version "0.4.4"
-  resolved "https://registry.yarnpkg.com/@ton-community/func-js-bin/-/func-js-bin-0.4.4.tgz#b7b1b5b5e0939286cf2ccb0b8ff6c1db5774e623"
-  integrity sha512-zCSVXmh+rFMgouzTbWkSVDIt1Z5i36u9rws/Kuqn89/a0vhA1aEoJJ3oJypz0TjWKJQveU4doJsPlqu7UT2zkw==
-
 "@ton-community/func-js-bin@0.4.5-tvmbeta.1":
   version "0.4.5-tvmbeta.1"
   resolved "https://registry.yarnpkg.com/@ton-community/func-js-bin/-/func-js-bin-0.4.5-tvmbeta.1.tgz#0d6785ebf9cf1a689db4568f663e41586ed3e0c8"
   integrity sha512-RjiF47XnOwZ26/HDX5M1KPoH9Xd8FwRqEYtj6FXMYOS2lUlYdZOnBYTMuwRkfNl2hRSrg15NkErl5aRR8YTMzg==
 
-"@ton-community/func-js@0.6.3-tvmbeta.1":
+"@ton-community/func-js@0.6.3-tvmbeta.1", "@ton-community/func-js@^0.6.2":
   version "0.6.3-tvmbeta.1"
   resolved "https://registry.yarnpkg.com/@ton-community/func-js/-/func-js-0.6.3-tvmbeta.1.tgz#90ec7987f341d1a56862a72b6b0415eb42c04bbb"
   integrity sha512-6/Iz3bbDQFMzyFUc0tOLukY2l+ItXZJt7q5Jcs8edHlBsYhffHUIgXinPE7E70Bb0E3Cbs3p+8RxPSLLrUDGhQ==
   dependencies:
     "@ton-community/func-js-bin" "0.4.5-tvmbeta.1"
-    arg "^5.0.2"
-
-"@ton-community/func-js@^0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@ton-community/func-js/-/func-js-0.6.2.tgz#bd82279e1c489a1422d141d99506bdea12ded9dc"
-  integrity sha512-5bewe8APG2TVgIPLUV5atQfAy+NtdjjGBfsWUeRdVUclzQ5H2wZ8aJsVNLiDBpKSNEKdOAP/1PownOFeodpQHg==
-  dependencies:
-    "@ton-community/func-js-bin" "0.4.4"
     arg "^5.0.2"
 
 "@ton-community/sandbox@0.12.0-tvmbeta.1":
@@ -9124,6 +9111,11 @@ deep-is@^0.1.3, deep-is@~0.1.3:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.4.tgz#a6f2dce612fadd2ef1f519b73551f17e85199831"
   integrity sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==
+
+deep-object-diff@^1.1.9:
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/deep-object-diff/-/deep-object-diff-1.1.9.tgz#6df7ef035ad6a0caa44479c536ed7b02570f4595"
+  integrity sha512-Rn+RuwkmkDwCi2/oXOFS9Gsr5lJZu/yTGpK7wAaAIE75CC+LCGEZHpY6VQJa/RoJcrmaA/docWJZvYohlNkWPA==
 
 deep-sort-object@^1.0.2:
   version "1.0.2"
@@ -15729,11 +15721,6 @@ object-assign@^4, object-assign@^4.0.1, object-assign@^4.1.0, object-assign@^4.1
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==
-
-object-hash@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-3.0.0.tgz#73f97f753e7baffc0e2cc9d6e079079744ac82e9"
-  integrity sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==
 
 object-inspect@^1.12.3, object-inspect@^1.9.0:
   version "1.12.3"

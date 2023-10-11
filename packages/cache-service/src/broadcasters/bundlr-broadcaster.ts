@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { CachedDataPackage } from "../data-packages/data-packages.model";
 import Bundlr from "@bundlr-network/client";
 import config from "../config";
-import { DataPackagesBroadcaster } from "./data-pacakges-brodcaster";
+import { DataPackagesBroadcaster } from "./data-packages-broadcaster";
 
 const REDSTONE_TYPE_TAG_VALUE = "redstone-oracles";
 

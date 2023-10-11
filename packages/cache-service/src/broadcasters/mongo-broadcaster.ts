@@ -3,7 +3,7 @@ import {
   CachedDataPackage,
   DataPackage,
 } from "../data-packages/data-packages.model";
-import { DataPackagesBroadcaster } from "./data-pacakges-brodcaster";
+import { DataPackagesBroadcaster } from "./data-packages-broadcaster";
 
 @Injectable()
 export class MongoBroadcaster implements DataPackagesBroadcaster {

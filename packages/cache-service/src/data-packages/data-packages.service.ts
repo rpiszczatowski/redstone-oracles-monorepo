@@ -16,10 +16,10 @@ import {
   parseDataPackagesResponse,
 } from "@redstone-finance/sdk";
 import { RedstoneCommon } from "@redstone-finance/utils";
-import { BundlrBroadcaster } from "../brodcasters/bundlr-brodcaster";
-import { DataPackagesBroadcaster } from "../brodcasters/data-pacakges-brodcaster";
-import { MongoBroadcaster } from "../brodcasters/mongo-broadcaster";
-import { StreamrBroadcaster } from "../brodcasters/streamr-brodcaster";
+import { BundlrBroadcaster } from "../broadcasters/bundlr-broadcaster";
+import { DataPackagesBroadcaster } from "../broadcasters/data-packages-broadcaster";
+import { MongoBroadcaster } from "../broadcasters/mongo-broadcaster";
+import { StreamrBroadcaster } from "../broadcasters/streamr-broadcaster";
 import config from "../config";
 import { getOracleState } from "../utils/get-oracle-state";
 import { makePayload } from "../utils/make-redstone-payload";
@@ -95,14 +95,14 @@ export class DataPackagesService {
     await Promise.allSettled(savePromises);
   }
 
-  private performBroadcast(
+  private async performBroadcast(
     dataPackagesToSave: CachedDataPackage[],
     nodeEvmAddress: string,
     { instance: broadcaster, name }: BroadcasterInfo
   ): Promise<void> {
     const message = `broadcast ${dataPackagesToSave.length} data packages for node ${nodeEvmAddress}`;
 
-    return broadcaster
+    return await broadcaster
       .broadcast(dataPackagesToSave)
       .then((result) => {
         this.logger.log(`[${name}] succeeded to ${message}.`);

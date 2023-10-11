@@ -10,9 +10,9 @@ import { DataPackagesController } from "./data-packages/data-packages.controller
 import { DataPackagesService } from "./data-packages/data-packages.service";
 import { OracleRegistryStateController } from "./oracle-registry-state/oracle-registry-state.controller";
 import { StreamrListenerService } from "./streamr-listener/streamr-listener.service";
-import { StreamrBroadcaster } from "./brodcasters/streamr-brodcaster";
-import { BundlrBroadcaster } from "./brodcasters/bundlr-brodcaster";
-import { MongoBroadcaster } from "./brodcasters/mongo-broadcaster";
+import { StreamrBroadcaster } from "./broadcasters/streamr-broadcaster";
+import { BundlrBroadcaster } from "./broadcasters/bundlr-broadcaster";
+import { MongoBroadcaster } from "./broadcasters/mongo-broadcaster";
 
 const providers: Provider[] = [
   DataPackagesService,
