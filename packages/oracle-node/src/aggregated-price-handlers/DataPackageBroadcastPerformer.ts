@@ -4,11 +4,7 @@ import {
   NumericDataPoint,
   SignedDataPackage,
 } from "@redstone-finance/protocol";
-import {
-  DataPackageBroadcaster,
-  HttpBroadcaster,
-  StreamrBroadcaster,
-} from "../broadcasters";
+import { DataPackageBroadcaster, HttpBroadcaster } from "../broadcasters";
 import { config } from "../config";
 import { createMetadataForRedstonePrice } from "../fetchers/MetadataForRedstonePrice";
 import ManifestHelper from "../manifest/ManifestHelper";
@@ -34,7 +30,6 @@ export class DataPackageBroadcastPerformer
   implements AggregatedPriceHandler
 {
   private readonly httpBroadcaster: DataPackageBroadcaster;
-  private readonly streamrBroadcaster: DataPackageBroadcaster;
 
   constructor(
     broadcasterURLs: string[] | undefined,
@@ -45,8 +40,6 @@ export class DataPackageBroadcastPerformer
       broadcasterURLs ?? DEFAULT_HTTP_BROADCASTER_URLS,
       config.safeSigner
     );
-
-    this.streamrBroadcaster = new StreamrBroadcaster(config.safeSigner);
   }
 
   async handle(
@@ -136,9 +129,6 @@ export class DataPackageBroadcastPerformer
   public async broadcastDataPackages(signedDataPackages: SignedDataPackage[]) {
     const promises = [];
     promises.push(this.httpBroadcaster.broadcast(signedDataPackages));
-    if (config.enableStreamrBroadcasting) {
-      promises.push(this.streamrBroadcaster.broadcast(signedDataPackages));
-    }
 
     await this.performBroadcast(promises, "data package");
   }
