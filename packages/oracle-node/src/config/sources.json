@@ -524,6 +524,16 @@
     "url": "https://curve.fi/",
     "color": "#78151d"
   },
+  "curve-3crv": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
+    "url": "https://curve.fi/",
+    "color": "#78151d"
+  },
+  "curve-crvfrax": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/curve.png",
+    "url": "https://curve.fi/",
+    "color": "#78151d"
+  },
   "camelot-weth": {
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/camelot.png",
     "url": "https://excalibur.exchange/",
@@ -668,5 +678,20 @@
     "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/bitstamp.png",
     "url": "https://www.bitstamp.net/",
     "color": "#003b2f"
+  },
+  "velodrome-on-chain-frax": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/velodrome.png",
+    "url": "https://velodrome.finance/",
+    "color": "#0f172a"
+  },
+  "velodrome-on-chain-usdc": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/velodrome.png",
+    "url": "https://velodrome.finance/",
+    "color": "#0f172a"
+  },
+  "velodrome-on-chain-weth": {
+    "logoURI": "https://raw.githubusercontent.com/redstone-finance/redstone-images/main/sources/velodrome.png",
+    "url": "https://velodrome.finance/",
+    "color": "#0f172a"
   }
 }
