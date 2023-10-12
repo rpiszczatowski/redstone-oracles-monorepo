@@ -1,3 +1,0 @@
-# docs on specifying paths --paths-from-file https://htmlpreview.github.io/?https://github.com/newren/git-filter-repo/blob/docs/html/git-filter-repo.html
-regex:^packages\/oracle-node\/(?!manifests).+$
-.github
