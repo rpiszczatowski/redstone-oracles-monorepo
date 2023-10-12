@@ -4,5 +4,5 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: "module",
   },
-  ignorePatterns: ["dist", "jest.config*", "*.js", "tools"],
+  ignorePatterns: ["dist", "*.js", "tools"],
 };
