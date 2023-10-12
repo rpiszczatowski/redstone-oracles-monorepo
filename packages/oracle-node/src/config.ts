@@ -4,6 +4,8 @@ import { readJSON } from "./utils/objects";
 import { ethers } from "ethers";
 import { SafeSignerFromProcessEnv } from "./signers/SafeSigner";
 
+const DEFAULT_AGREEMENT_PROVIDER_SINGLE_RPC_TIMEOUT = "5000";
+const DEFAULT_AGREEMENT_PROVIDERS_TIMEOUT = "25000";
 const DEFAULT_ENABLE_PERFORMANCE_TRACKING = "true";
 const DEFAULT_ENABLE_JSON_LOGS = "true";
 const DEFAULT_PRINT_DIAGNOSTIC_INFO = "true";
@@ -80,7 +82,7 @@ const parserFromString = {
   number(value: string): number {
     const numberValue = Number(value);
     if (isNaN(numberValue)) {
-      throw new Error(`Invalid number value: ${numberValue}`);
+      throw new Error(`Invalid number value: ${value}`);
     }
     return numberValue;
   },
@@ -259,4 +261,16 @@ export const config: NodeConfig = Object.freeze({
   telemetryUrl: getFromEnv("TELEMETRY_URL", ""),
   telemetryAuthorizationToken: getFromEnv("TELEMETRY_AUTHORIZATION_TOKEN", ""),
   dockerImageTag: getFromEnv("DOCKER_IMAGE_TAG", "no_tag"),
+  agreementProvidersTimeout: parserFromString.number(
+    getFromEnv(
+      "AGREEMENT_PROVIDER_TIMEOUT",
+      DEFAULT_AGREEMENT_PROVIDERS_TIMEOUT
+    )
+  ),
+  agreementProviderSingleRpcTimeout: parserFromString.number(
+    getFromEnv(
+      "AGREEMENT_PROVIDER_SINGLE_RPC_TIMEOUT",
+      DEFAULT_AGREEMENT_PROVIDER_SINGLE_RPC_TIMEOUT
+    )
+  ),
 });

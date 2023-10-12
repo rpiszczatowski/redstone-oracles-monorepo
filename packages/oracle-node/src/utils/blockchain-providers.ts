@@ -12,12 +12,16 @@ const produceProvider = (
     const rpcProviders = rpcUrls.map(
       (rpcUrl) => new providers.StaticJsonRpcProvider(rpcUrl, network)
     );
-    return new ProviderWithAgreement(rpcProviders);
+    return new ProviderWithAgreement(rpcProviders, {
+      singleProviderOperationTimeout: config.agreementProviderSingleRpcTimeout,
+      allProvidersOperationTimeout: config.agreementProvidersTimeout,
+    });
   }
   throw new Error(
     `At least one rpc url has to be specified for network ${network.name}`
   );
 };
+
 const ethereumNetworkConfig = {
   name: "Ethereum Mainnet",
   chainId: 1,

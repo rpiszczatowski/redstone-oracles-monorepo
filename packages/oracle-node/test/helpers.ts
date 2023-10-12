@@ -60,6 +60,8 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   telemetryAuthorizationToken: "",
   dockerImageTag: "",
   safeSigner: TestSafeSignerFromPrivateKey(MOCK_ETH_PRIV_KEY),
+  agreementProvidersTimeout: 30_000,
+  agreementProviderSingleRpcTimeout: 10_000,
 };
 
 export const mockHardLimits = {

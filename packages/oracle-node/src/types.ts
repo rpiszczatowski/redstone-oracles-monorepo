@@ -193,6 +193,8 @@ export interface NodeConfig {
   telemetryUrl: string;
   telemetryAuthorizationToken: string;
   dockerImageTag: string;
+  agreementProvidersTimeout: number;
+  agreementProviderSingleRpcTimeout: number;
 }
 
 export interface MulticallRequest {
