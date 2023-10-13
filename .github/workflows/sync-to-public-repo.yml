@@ -14,16 +14,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Sync to target repo respecting .gitignore
-        env:
-          PRIVATE_KEY: ${{ secrets.PUBLIC_REPO_KEY }}
+      - name: Setup public monorepo access
+        uses: redstone-finance/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.PUBLIC_REPO_KEY }}
+      - name: Sync to public monorepo
         run: |
-          # Install SSH key
-          echo "$PRIVATE_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          eval `ssh-agent -s`
-          ssh-add private_key.pem
 
           # Configure user
           git config --global user.name "Syncer Man"
@@ -40,6 +36,3 @@ jobs:
 
           # Push modified
           git push -f target "$BRANCH_NAME"
-
-          # Cleanup
-          ssh-agent -k
