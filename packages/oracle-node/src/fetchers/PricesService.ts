@@ -73,16 +73,18 @@ export default class PricesService {
         [source]: pricesFromSource,
       };
     } catch (err) {
-      const e = err as AxiosError;
       // We don't throw an error because we want to continue with
       // other fetchers even if some fetchers failed
-      const resData = e.response ? e.response.data : "";
-
+      let resData: any = '';
+      if (err instanceof AxiosError) {
+        const e = err as AxiosError;
+        resData = e.response ? e.response.data : "";
+      }
       // We use warn level instead of error because
       // price fetching errors occur quite often
       logger.warn(
         `Fetching failed for source: ${source}: ${String(resData)}`,
-        RedstoneCommon.stringifyError(e)
+        RedstoneCommon.stringifyError(err)
       );
       return {
         [source]: tokens.map((symbol) => ({

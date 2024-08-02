@@ -1,0 +1,27 @@
+{
+  "id": "ae99ab04-eec2-43a4-b495-7ad2a5e957ac",
+  "status": 200,
+  "result": [
+    {
+      "symbol": "BTCUSDT",
+      "price": "64452.00000000"
+    },
+    {
+      "symbol": "ETHUSDT",
+      "price": "3184.12000000"
+    },
+    {
+      "symbol": "TRXUSDT",
+      "price": "0.12930000"
+    }
+  ],
+  "rateLimits": [
+    {
+      "rateLimitType": "REQUEST_WEIGHT",
+      "interval": "MINUTE",
+      "intervalNum": 1,
+      "limit": 6000,
+      "count": 90
+    }
+  ]
+}
