@@ -1,0 +1,42 @@
+{
+  "interval": 10000,
+  "priceAggregator": "median",
+  "defaultSource": [
+    "binance-ws"
+  ],
+  "sourceTimeout": 7000,
+  "minValidSourcesPercentage": 1,
+  "deviationCheck": {
+    "deviationWithRecentValues": {
+      "maxPercent": 30,
+      "maxDelayMilliseconds": 300000
+    }
+  },
+  "tokens": {
+    "USDC": {
+      "source": [
+        "binance-ws"
+      ]
+    },
+    "BTC": {
+      "source": [
+        "binance-ws"
+      ]
+    },
+    "ETH": {
+      "source": [
+        "binance-ws"
+      ]
+    },
+    "SOL": {
+      "source": [
+        "binance-ws"
+      ]
+    },
+    "AR": {
+      "source": [
+        "binance-ws"
+      ]
+    }
+  }
+}
