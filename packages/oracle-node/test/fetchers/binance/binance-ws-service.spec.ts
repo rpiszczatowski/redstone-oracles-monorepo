@@ -67,7 +67,7 @@ describe("BinanceWsService", () => {
             });
             fail('Should throw error');
         } catch (err: any) {
-            expect(err.message).toEqual(`[binanceWs] Binance response message has unexpected (error) response code: 400. Response message: ${JSON.stringify(exampleResponseJson)}`);
+            expect(err.message).toEqual(`Binance response message has unexpected (error) response code: 400. Response message: ${JSON.stringify(exampleResponseJson)}`);
         }
     });
 });
