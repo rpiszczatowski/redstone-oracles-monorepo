@@ -1,0 +1,18 @@
+{
+  "id": "",
+  "status": 200,
+  "result": [
+    {
+      "symbol": "BTCUSDT",
+      "price": 38190
+    },
+    {
+      "symbol": "ETHUSDT",
+      "price": 2704.39
+    },
+    {
+      "symbol": "ARUSDT",
+      "price": 17.46
+    }
+  ]
+}

@@ -10,6 +10,7 @@ import {
   SanitizedPriceDataBeforeAggregation,
 } from "../../src/types";
 import Multicall2 from "../../src/fetchers/evm-chain/shared/abis/Multicall2.abi.json";
+import { WebSocketServer } from "ws";
 
 export const saveMockPriceInLocalDb = async (
   value: number,
@@ -66,6 +67,29 @@ export function mockFetcherResponseWithFunction(getResponse: () => unknown) {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
   mockedAxios.get.mockResolvedValue({ data: getResponse() });
   mockedAxios.post.mockResolvedValue({ data: getResponse() });
+}
+
+export function mockWsFetcherResponse<Req, Res>(
+  port: number,
+  handler: (request: Req) => Res
+) {
+  const server = new WebSocketServer({ port });
+
+  server.on("connection", function connection(ws) {
+    ws.on("error", console.error);
+
+    ws.on("message", function message(rawData) {
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
+      const requestData: Req = JSON.parse(rawData.toString()) as Req;
+      const response: Res = handler(requestData);
+
+      ws.send(
+        typeof response === "string" ? response : JSON.stringify(response)
+      );
+      ws.close();
+      server.close();
+    });
+  });
 }
 
 export function mockFetcherResponseOnceWithFunction(

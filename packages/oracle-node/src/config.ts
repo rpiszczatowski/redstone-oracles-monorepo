@@ -66,6 +66,8 @@ const DEFAULT_OPTIMISM_RPC_URLS = [
 ];
 const DEFAULT_HISTORICAL_DATA_PACKAGES_URL =
   "https://oracle-gateway-1.b.redstone.finance";
+const DEFAULT_BINANCE_WEBSOCKET_API_URL =
+  "wss://testnet.binance.vision/ws-api/v3";
 
 const getFromEnv = (envName: string, defaultValue?: string): string => {
   const valueFromEnv = process.env[envName];
@@ -272,5 +274,9 @@ export const config: NodeConfig = Object.freeze({
       "AGREEMENT_PROVIDER_SINGLE_RPC_TIMEOUT",
       DEFAULT_AGREEMENT_PROVIDER_SINGLE_RPC_TIMEOUT
     )
+  ),
+  binanceWebsocketApiUrl: getFromEnv(
+    "BINANCE_WEBSOCKET_API_URL",
+    DEFAULT_BINANCE_WEBSOCKET_API_URL
   ),
 });

@@ -17,6 +17,7 @@
     "USDC": {
       "source": [
         "binance",
+        "binance-ws",
         "binanceusdm",
         "bitfinex2",
         "bitget",
@@ -89,6 +90,7 @@
         "ascendex",
         "bequant",
         "binance",
+        "binance-ws",
         "binancecoinm",
         "binanceusdm",
         "bingx",
@@ -183,6 +185,7 @@
       "source": [
         "ascendex",
         "binance",
+        "binance-ws",
         "binancecoinm",
         "binanceusdm",
         "bitcoincom",
