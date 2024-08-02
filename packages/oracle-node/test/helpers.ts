@@ -62,6 +62,7 @@ export const MOCK_NODE_CONFIG: NodeConfig = {
   safeSigner: TestSafeSignerFromPrivateKey(MOCK_ETH_PRIV_KEY),
   agreementProvidersTimeout: 30_000,
   agreementProviderSingleRpcTimeout: 10_000,
+  binanceWsUrl: "",
 };
 
 export const mockHardLimits = {

@@ -47,7 +47,8 @@
         "uniswap-v3-ethereum-on-chain-weth-3000",
         "uniswap-v3-ethereum-on-chain-dai-500",
         "uniswap-v3-ethereum-on-chain-weth-10000",
-        "uniswap-v3-ethereum-on-chain-usdt-500"
+        "uniswap-v3-ethereum-on-chain-usdt-500",
+        "binanceWs"
       ],
       "deviationCheck": {
         "deviationWithRecentValues": {
@@ -118,7 +119,8 @@
         "okx",
         "poloniex",
         "probit",
-        "xt"
+        "xt",
+        "binanceWs"
       ]
     },
     "DAI": {
@@ -156,7 +158,8 @@
         "mexc",
         "kucoin",
         "okx",
-        "phemex"
+        "phemex",
+        "binanceWs"
       ],
       "skipSigning": true
     },
@@ -212,7 +215,8 @@
         "okx",
         "poloniex",
         "probit",
-        "xt"
+        "xt",
+        "binanceWs"
       ]
     },
     "STETH": {
@@ -306,7 +310,8 @@
         "phemex",
         "poloniex",
         "uniswap-v3-ethereum-on-chain-weth-3000",
-        "xt"
+        "xt",
+        "binanceWs"
       ]
     },
     "C3M": {
@@ -368,7 +373,8 @@
         "mexc",
         "okx",
         "phemex",
-        "poloniex"
+        "poloniex",
+        "binanceWs"
       ]
     },
     "PREMIA": {
@@ -425,7 +431,8 @@
         "uniswap-v3-arbitrum-on-chain-weth-500",
         "uniswap-v3-arbitrum-on-chain-weth-3000",
         "uniswap-v3-arbitrum-on-chain-usdc-500",
-        "uniswap-v3-arbitrum-on-chain-usdc-3000"
+        "uniswap-v3-arbitrum-on-chain-usdc-3000",
+        "binanceWs"
       ]
     },
     "OP": {
@@ -450,7 +457,8 @@
         "okx",
         "xt",
         "uniswap-v3-optimism-on-chain-weth-3000",
-        "uniswap-v3-optimism-on-chain-usdc-3000"
+        "uniswap-v3-optimism-on-chain-usdc-3000",
+        "binanceWs"
       ]
     },
     "CELO": {
@@ -471,7 +479,8 @@
         "kucoin",
         "latoken",
         "mexc",
-        "okx"
+        "okx",
+        "binanceWs"
       ]
     },
     "BRL": {
@@ -497,7 +506,8 @@
         "kaiko-v2",
         "kraken",
         "kucoin-api",
-        "twelve-data"
+        "twelve-data",
+        "binanceWs"
       ]
     },
     "CELO/EUR": {
@@ -546,7 +556,8 @@
         "kucoin",
         "lbank",
         "mexc",
-        "okx"
+        "okx",
+        "binanceWs"
       ]
     },
     "crvFRAX": {

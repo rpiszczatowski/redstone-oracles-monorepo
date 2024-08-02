@@ -43,6 +43,7 @@ import { camelotV3Fetchers } from "./evm-chain/arbitrum/camelot-v3/all-camelot-v
 import pancakeSwapFetchers from "./evm-chain/ethereum/pancake-swap-on-chain/all-pancake-swap-fetchers";
 import { WombatFetcher } from "./wombat/WombatFetcher";
 import { apiFetchers } from "./api-fetcher/all-api-fetchers";
+import { BinanceWsFetcher } from './binance/BinanceWsFetcher';
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
@@ -71,6 +72,7 @@ export default {
   "ethereum-evm-fetcher": ethereumEvmFetcher,
   "fixed-value": new FixedValueFetcher(),
   wombat: new WombatFetcher(),
+  binanceWs: new BinanceWsFetcher(),
   ...ccxtFetchers,
   ...twapFetchers,
   ...uniswapV3Fetchers,
