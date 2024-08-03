@@ -1,0 +1,25 @@
+export const websocketMockClient = {
+  connect: jest.fn(),
+  handleOpen: jest.fn(),
+  handleMessage: jest.fn(),
+  handleClose: jest.fn(),
+  handleError: jest.fn(),
+  handlePing: jest.fn(),
+  startHeartbeat: jest.fn(),
+  stopHeartbeat: jest.fn(),
+  reconnect: jest.fn(),
+  cleanup: jest.fn(),
+  sendMessage: jest.fn(),
+  onResponse: jest.fn(),
+  close: jest.fn(),
+  logger: {
+    info: jest.fn(),
+    error: jest.fn(),
+  },
+  ws: {
+    on: jest.fn(),
+    send: jest.fn(),
+    close: jest.fn(),
+    terminate: jest.fn(),
+  },
+};
