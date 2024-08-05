@@ -1,10 +1,13 @@
 import { BaseFetcher } from "../../src/fetchers/BaseFetcher";
 import { PriceDataFetchedValue } from "../../src/types";
 import { isDefined } from "../../src/utils/objects";
+import { WebSocketFetcher } from "../../src/fetchers/WebSocketFetcher";
+
+jest.mock("../../src/fetchers/WebSocketFetcher");
 
 class BaseFetcherImpl extends BaseFetcher {
-  constructor() {
-    super("test");
+  constructor(wsUrl?: string, pingIntervalMs?: number) {
+    super("test", wsUrl, pingIntervalMs);
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
@@ -95,6 +98,79 @@ describe("base fetcher", () => {
       expect(sut.extractPrices({ NULL: 420, b: 0 })).toEqual({
         B: 0,
       });
+    });
+  });
+  describe("WebSocket functionality", () => {
+    let sut: BaseFetcherImpl;
+    let mockWebSocketFetcher: jest.Mocked<WebSocketFetcher>;
+
+    beforeEach(() => {
+      mockWebSocketFetcher =
+        new (WebSocketFetcher as unknown as jest.Mock<WebSocketFetcher>)(
+          "ws://test-url",
+          1000
+        ) as jest.Mocked<WebSocketFetcher>;
+      (WebSocketFetcher as unknown as jest.Mock).mockReturnValue(
+        mockWebSocketFetcher
+      );
+      sut = new BaseFetcherImpl("ws://test-url", 1000);
+    });
+
+    it("should initialize WebSocketFetcher when URL and interval are provided", () => {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(mockWebSocketFetcher.connect).toHaveBeenCalled();
+    });
+
+    it("should fetch data via WebSocket", async () => {
+      const ids = ["A", "B"];
+      const mockResponse = { A: 11, B: 12 };
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      mockWebSocketFetcher.on.mockImplementation((event, callback) => {
+        if (event === "data") {
+          callback(JSON.stringify(mockResponse));
+        }
+      });
+
+      // Mock the fetchData method to avoid "Method not implemented." error
+      sut.fetchData = jest.fn().mockResolvedValue(mockResponse);
+
+      const result = await sut.fetchAll(ids);
+
+      expect(result).toEqual([
+        { symbol: "A", value: 11 },
+        { symbol: "B", value: 12 },
+      ]);
+    });
+
+    it("should handle WebSocket data fetching error gracefully", async () => {
+      const ids = ["A", "B"];
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      mockWebSocketFetcher.on.mockImplementation((event, callback) => {
+        if (event === "data") {
+          callback("INVALID_JSON");
+        }
+      });
+
+      // Mock the fetchData method to avoid "Method not implemented." error
+      sut.fetchData = jest.fn().mockResolvedValue({});
+
+      await expect(sut.fetchAll(ids)).rejects.toThrow();
+    });
+
+    it("should handle missing WebSocketFetcher gracefully", async () => {
+      sut = new BaseFetcherImpl();
+      const ids = ["A", "B"];
+      sut.fetchData = jest.fn().mockResolvedValue({ A: 11, B: 12 });
+
+      const result = await sut.fetchAll(ids);
+
+      expect(result).toEqual([
+        { symbol: "A", value: 11 },
+        { symbol: "B", value: 12 },
+      ]);
     });
   });
 });
