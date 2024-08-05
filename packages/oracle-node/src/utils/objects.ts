@@ -1,4 +1,5 @@
 import fs from "fs";
+import WebSocket from "ws";
 
 export function mergeObjects<T = unknown>(objects: Array<unknown>) {
   return Object.assign({}, ...objects) as T;
@@ -29,4 +30,10 @@ export function getRequiredPropValue<T = unknown>(
 
 export function isDefined(value: unknown) {
   return value !== null && value !== undefined;
+}
+
+export function stringifyData(message: WebSocket.Data): string {
+  return typeof message === "object"
+    ? JSON.stringify(message)
+    : message.toString();
 }

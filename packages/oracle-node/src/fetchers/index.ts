@@ -43,10 +43,12 @@ import { camelotV3Fetchers } from "./evm-chain/arbitrum/camelot-v3/all-camelot-v
 import pancakeSwapFetchers from "./evm-chain/ethereum/pancake-swap-on-chain/all-pancake-swap-fetchers";
 import { WombatFetcher } from "./wombat/WombatFetcher";
 import { apiFetchers } from "./api-fetcher/all-api-fetchers";
+import { BinanceFetcher } from "./binance/BinanceFetcher";
 
 export default {
   "yf-unofficial": new YfUnofficialFetcher(),
   "custom-urls": new CustomUrlsFetcher(),
+  "binance-websocket": new BinanceFetcher(),
   mock: new MockFetcher(),
   coingecko: new CoingeckoFetcher(),
   drand: new DrandFetcher(),
