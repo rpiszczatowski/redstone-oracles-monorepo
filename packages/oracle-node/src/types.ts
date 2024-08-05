@@ -195,6 +195,7 @@ export interface NodeConfig {
   dockerImageTag: string;
   agreementProvidersTimeout: number;
   agreementProviderSingleRpcTimeout: number;
+  binanceWsApiUrl: string;
 }
 
 export interface MulticallRequest {

@@ -24,6 +24,11 @@
     "url": "https://www.binance.com/",
     "color": "#d6ab3c"
   },
+  "binance-ws": {
+    "logoURI": "https://cdn.redstone.finance/sources/binance.svg",
+    "url": "https://www.binance.com/",
+    "color": "#d6ab3c"
+  },
   "binancecoinm": {
     "logoURI": "https://cdn.redstone.finance/sources/binancecoinm.svg",
     "url": "https://www.binance.com",
