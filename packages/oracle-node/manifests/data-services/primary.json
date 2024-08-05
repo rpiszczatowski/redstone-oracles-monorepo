@@ -17,6 +17,7 @@
     "USDC": {
       "source": [
         "binance",
+        "binance-ws",
         "binanceusdm",
         "bitfinex2",
         "bitget",
@@ -89,6 +90,7 @@
         "ascendex",
         "bequant",
         "binance",
+        "binance-ws",
         "binancecoinm",
         "binanceusdm",
         "bingx",
@@ -146,6 +148,7 @@
     "FXS": {
       "source": [
         "binance",
+        "binance-ws",
         "bitget",
         "bitmart",
         "bitrue",
@@ -183,6 +186,7 @@
       "source": [
         "ascendex",
         "binance",
+        "binance-ws",
         "binancecoinm",
         "binanceusdm",
         "bitcoincom",
@@ -285,6 +289,7 @@
     "AAVE": {
       "source": [
         "binance",
+        "binance-ws",
         "binanceusdm",
         "bitget",
         "bitmart",
@@ -352,6 +357,7 @@
       "source": [
         "ascendex",
         "binance",
+        "binance-ws",
         "binancecoinm",
         "binanceusdm",
         "bitcoincom",
@@ -406,6 +412,7 @@
       "source": [
         "ascendex",
         "binance",
+        "binance-ws",
         "binanceusdm",
         "bitget",
         "bitmart",
@@ -432,6 +439,7 @@
       "source": [
         "ascendex",
         "binance",
+        "binance-ws",
         "binancecoinm",
         "binanceusdm",
         "bitget",
@@ -456,6 +464,7 @@
     "CELO": {
       "source": [
         "binance",
+        "binance-ws",
         "binanceusdm",
         "bingx",
         "bitget",
@@ -489,6 +498,7 @@
     "EUR": {
       "source": [
         "binance",
+        "binance-ws",
         "bitstamp-api",
         "coinbase-api",
         "currencycom",
@@ -529,6 +539,7 @@
     "AVAX": {
       "source": [
         "binance",
+        "binance-ws",
         "binanceusdm",
         "bingx",
         "bitfinex2",
